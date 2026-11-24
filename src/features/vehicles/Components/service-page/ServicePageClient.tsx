@@ -73,7 +73,12 @@ import { referenceMissing } from '@/features/customer-reference/Lib/reference'
 import { ModernHero as ModernHeroBase } from './modern/ModernHero'
 import { revealRequiredMeters } from '@/features/meters/Lib/requiredMetersReveal'
 import type { WorkOrderJobProps, WorkOrderSidebarProps } from './modern/details-props'
-import { lineTotal, resolvePartPrice } from '@/features/inventory/Lib/partPricing'
+import {
+  costFieldsForPrice,
+  isPriceOverridden,
+  lineTotal,
+  resolvePartPrice,
+} from '@/features/inventory/Lib/partPricing'
 import { vehicleName } from '@/lib/vehicle-name'
 
 export type { ServicePageClientProps, BoardTechnicianOption } from './service-page-types'
@@ -295,6 +300,11 @@ export function ServicePageClient({
             total: lineTotal(1, unitPrice),
             unitCost: part.unitCost,
             markupPercent,
+            priceOverridden: isPriceOverridden({
+              unitCost: part.unitCost,
+              markupPercent,
+              unitPrice,
+            }),
             inventoryPartId: part.id,
           },
           ...prev,
@@ -437,8 +447,8 @@ export function ServicePageClient({
         category: part.category ?? null,
         unitPrice: part.unitPrice,
         total: lineTotal(part.quantity, part.unitPrice),
-        unitCost: 0,
-        markupPercent: 0,
+        // The cost of the linked stock item, so the job's margin is real.
+        ...costFieldsForPrice(part.unitCost, part.unitPrice),
         inventoryPartId: part.inventoryPartId || '',
       }))
       formState.dirtySetPartItems((prev) => [...newParts, ...prev])

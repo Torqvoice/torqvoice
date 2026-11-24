@@ -42,6 +42,7 @@ import {
   type PartSuggestion,
 } from '@/features/inventory/Components/PartNameSuggestions'
 import {
+  isPriceOverridden,
   lineTotal,
   priceFromCostAndMarkup,
   resolvePartPrice,
@@ -145,7 +146,7 @@ const SortablePartRow = memo(function SortablePartRow({
         // Stacked card while the editor is narrow, one table row once its
         // container is wide enough to hold every column at a usable size
         'grid grid-cols-[auto_1fr] gap-2 rounded-lg border p-2',
-        '@2xl:grid-cols-[auto_1fr_2fr_0.6fr_0.9fr_0.7fr_0.9fr_0.9fr_auto] @2xl:rounded-none @2xl:border-0 @2xl:p-0',
+        '@2xl:grid-cols-[auto_1fr_2fr_0.6fr_0.9fr_0.9fr_0.9fr_0.9fr_auto] @2xl:rounded-none @2xl:border-0 @2xl:p-0',
         isDragging && dragEnabled && 'z-10 opacity-75'
       )}
     >
@@ -246,7 +247,9 @@ const SortablePartRow = memo(function SortablePartRow({
               title={t('markupPercentHint')}
               value={part.markupPercent ?? 0}
               onChange={(e) => updatePart(index, 'markupPercent', e.target.value)}
-              className="pr-6"
+              // No spinner: beside the % sign it left room for two digits, and
+              // a markup of 95.3% read as "9".
+              className="pr-6 [appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
             />
             <Percent className="pointer-events-none absolute right-2 top-1/2 h-3 w-3 -translate-y-1/2 text-muted-foreground" />
           </div>
@@ -337,6 +340,11 @@ export function PartsEditor({
             unitCost: picked.unitCost,
             unitPrice,
             markupPercent,
+            priceOverridden: isPriceOverridden({
+              unitCost: picked.unitCost,
+              markupPercent,
+              unitPrice,
+            }),
             // Derived from the row's own quantity, so the line still satisfies
             // total === quantity * unitPrice. Defaulting an empty or zero
             // quantity to 1 would bill a total its fields do not add up to.
@@ -461,7 +469,7 @@ export function PartsEditor({
               <option key={category} value={category} />
             ))}
           </datalist>
-          <div className="hidden grid-cols-[auto_1fr_2fr_0.6fr_0.9fr_0.7fr_0.9fr_0.9fr_auto] gap-2 text-xs font-medium text-muted-foreground @2xl:grid">
+          <div className="hidden grid-cols-[auto_1fr_2fr_0.6fr_0.9fr_0.9fr_0.9fr_0.9fr_auto] gap-2 text-xs font-medium text-muted-foreground @2xl:grid">
             <span className="w-6" />
             <span>{t('partNumber')}</span>
             <span>{t('name')}</span>

@@ -277,8 +277,25 @@ describe('readPartsPricingSettings', () => {
 })
 
 describe('resolvePartPrice', () => {
-  it("uses the part's own sell price when it has one", () => {
+  it("uses the part's own sell price when it has one, with the markup that price implies", () => {
+    // Reported as 0 beside a price over cost, the line read as sold at cost.
     expect(resolvePartPrice({ unitCost: 10, sellPrice: 25 })).toEqual({
+      unitPrice: 25,
+      markupPercent: 150,
+    })
+  })
+
+  it('reports a sell-price markup the part row shows unchanged', () => {
+    // The live case: bought at 6.40, sold at 12.50. The row rebuilds the price
+    // from cost and markup, and it must land on the sell price, not move it.
+    const picked = resolvePartPrice({ unitCost: 6.4, sellPrice: 12.5 })
+    expect(picked).toEqual({ unitPrice: 12.5, markupPercent: 95.3 })
+    expect(priceFromCostAndMarkup(6.4, picked.markupPercent)).toBe(12.5)
+    expect(isPriceOverridden({ unitCost: 6.4, ...picked })).toBe(false)
+  })
+
+  it('reports no markup on a part with no cost, rather than an infinite one', () => {
+    expect(resolvePartPrice({ unitCost: 0, sellPrice: 25 })).toEqual({
       unitPrice: 25,
       markupPercent: 0,
     })
@@ -303,7 +320,7 @@ describe('resolvePartPrice', () => {
         { unitCost: 10, sellPrice: 25 },
         { markupAppliesToInventory: false, defaultMarkupPercent: 40 }
       )
-    ).toEqual({ unitPrice: 25, markupPercent: 0 })
+    ).toEqual({ unitPrice: 25, markupPercent: 150 })
   })
 
   it('prices from cost plus markup when the setting is on', () => {
@@ -342,7 +359,7 @@ describe('resolvePartPrice', () => {
           { unitCost: 10, sellPrice: 25 },
           { markupAppliesToInventory: true, defaultMarkupPercent }
         )
-      ).toEqual({ unitPrice: 25, markupPercent: 0 })
+      ).toEqual({ unitPrice: 25, markupPercent: 150 })
     }
   })
 })
@@ -360,7 +377,7 @@ describe('settings to line total, end to end', () => {
     const pricing = readSettings(settingsMap('50', 'false'))
     const { unitPrice, markupPercent } = resolvePartPrice(part, pricing)
     expect(unitPrice).toBe(90)
-    expect(markupPercent).toBe(0)
+    expect(markupPercent).toBe(125)
     expect(lineTotal(part.quantity, unitPrice)).toBe(270)
   })
 

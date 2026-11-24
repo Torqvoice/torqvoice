@@ -163,7 +163,8 @@ describe('fluidPartLine', () => {
       unit: 'l',
       category: null,
       unitCost: 100,
-      markupPercent: 0,
+      // The markup the sell price implies over the cost, as the part row shows it.
+      markupPercent: 89,
       unitPrice: 189,
       total: 1077.3,
       inventoryPartId: 'a',
