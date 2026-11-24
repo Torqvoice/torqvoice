@@ -328,5 +328,19 @@
     "irreversible": "Dit kan niet ongedaan worden gemaakt.",
     "andMore": "en {count} meer",
     "typeToConfirm": "Typ <b>{text}</b> om te bevestigen"
+  },
+  "fieldErrors": {
+    "required": "Vul dit in.",
+    "email": "Vul een e-mailadres in, zoals naam@voorbeeld.nl.",
+    "tooShort": "Gebruik minstens {limit} tekens.",
+    "tooLong": "Gebruik hoogstens {limit} tekens.",
+    "negative": "Mag niet negatief zijn.",
+    "tooSmall": "Moet minstens {limit} zijn.",
+    "tooLarge": "Moet {limit} of minder zijn.",
+    "notNumber": "Vul een getal in.",
+    "wholeNumber": "Vul een heel getal in.",
+    "invalid": "Deze waarde is niet geldig.",
+    "notSaved": "Niet opgeslagen. Controleer de gemarkeerde velden.",
+    "withLabel": "{label}: {problem}"
   }
 }

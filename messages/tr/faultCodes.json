@@ -185,7 +185,8 @@
     "skipped": "{count, plural, one {# kod bu işte zaten vardı} other {# kod bu işte zaten vardı}}",
     "failed": "Kodlar eklenemedi",
     "descriptionOem": "Arıza tespit cihazındaki kodları yazın veya yapıştırın: P0420 gibi OBD kodları ya da 2A82 gibi BMW kodları. Her biri bu işte, anlamı kaydedilmiş bir gözlem olur.",
-    "placeholderOem": "P0420, 2A82 kayıtlı"
+    "placeholderOem": "P0420, 2A82 kayıtlı",
+    "unrecognised": "{count, plural, other {Arıza kodu değil, atlandı: {codes}}}"
   },
   "finding": {
     "seenBefore": "Görüldü: {date}",

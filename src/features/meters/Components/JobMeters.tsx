@@ -9,7 +9,12 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { setJobMeterReading } from '../Actions/jobMeterActions'
-import { isLowerMeterValue, parseMeterValue } from '../Lib/meterValue'
+import {
+  isLowerMeterValue,
+  METER_PROBLEM_KEY,
+  meterValueProblem,
+  parseMeterValue,
+} from '../Lib/meterValue'
 import { ReadingQuestion } from '@/features/vehicles/Components/ReadingQuestion'
 import { readingNeedsAnswer } from '@/features/vehicles/Lib/vehicleReading'
 import { meterReadingKind } from '../Lib/meterAsk'
@@ -162,8 +167,14 @@ function JobMeterField({
       confirmed,
     })
 
+  // A reading that does not read is said under the box, not sent.
+  const [refused, setRefused] = useState<'negative' | 'invalid' | null>(null)
+
   const save = async (answered = false) => {
     if (typed.trim() === saved.current.trim()) return
+    const problem = typed.trim() === '' ? null : meterValueProblem(typed)
+    setRefused(problem)
+    if (problem) return
     if (asking && !answered) return
     const result = await setJobMeterReading({
       jobId,
@@ -219,9 +230,12 @@ function JobMeterField({
             )}
             value={typed}
             aria-required={meter.required || undefined}
-            aria-invalid={missing || undefined}
+            aria-invalid={missing || refused ? true : undefined}
             disabled={locked}
-            onChange={(e) => setTyped(e.target.value)}
+            onChange={(e) => {
+              setTyped(e.target.value)
+              setRefused(null)
+            }}
             // Saved here, on its own: not an unsaved change of the page's form.
             onInput={(e) => e.stopPropagation()}
             onBlur={() => void save()}
@@ -232,8 +246,9 @@ function JobMeterField({
               }
             }}
             aria-describedby={
-              [missing && `${id}-required`, lower && `${id}-lower`].filter(Boolean).join(' ') ||
-              undefined
+              [missing && `${id}-required`, refused && `${id}-invalid`, lower && `${id}-lower`]
+                .filter(Boolean)
+                .join(' ') || undefined
             }
           />
           {meter.unit && <span className="text-xs text-muted-foreground">{meter.unit}</span>}
@@ -256,6 +271,11 @@ function JobMeterField({
           className="text-xs text-destructive"
         >
           {t('requiredMissing')}
+        </p>
+      )}
+      {refused && (
+        <p id={`${id}-invalid`} role="alert" className="text-xs text-destructive">
+          {t(METER_PROBLEM_KEY[refused])}
         </p>
       )}
       {asking && last != null && typedValue !== null && (

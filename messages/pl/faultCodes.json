@@ -185,7 +185,8 @@
     "skipped": "{count, plural, one {# kod był już w tym zleceniu} few {# kody były już w tym zleceniu} many {# kodów było już w tym zleceniu} other {# kodu było już w tym zleceniu}}",
     "failed": "Nie udało się dodać kodów",
     "descriptionOem": "Wpisz lub wklej kody z testera diagnostycznego: kody OBD, np. P0420, lub kody BMW, np. 2A82. Każdy staje się obserwacją w tym zleceniu z zapisanym znaczeniem.",
-    "placeholderOem": "P0420, 2A82 zapisany"
+    "placeholderOem": "P0420, 2A82 zapisany",
+    "unrecognised": "{count, plural, one {To nie kod usterki, pominięto: {codes}} few {To nie kody usterek, pominięto: {codes}} many {To nie kody usterek, pominięto: {codes}} other {To nie kody usterek, pominięto: {codes}}}"
   },
   "finding": {
     "seenBefore": "Widziany {date}",

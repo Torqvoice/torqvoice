@@ -328,5 +328,19 @@
     "irreversible": "Šio veiksmo negalima atšaukti.",
     "andMore": "ir dar {count}",
     "typeToConfirm": "Įveskite <b>{text}</b>, kad patvirtintumėte"
+  },
+  "fieldErrors": {
+    "required": "Užpildykite šį lauką.",
+    "email": "Įveskite el. pašto adresą, pvz., vardas@pavyzdys.lt.",
+    "tooShort": "Naudokite bent {limit} simbolių.",
+    "tooLong": "Naudokite ne daugiau kaip {limit} simbolių.",
+    "negative": "Negali būti neigiamas.",
+    "tooSmall": "Turi būti ne mažiau kaip {limit}.",
+    "tooLarge": "Turi būti {limit} arba mažiau.",
+    "notNumber": "Įveskite skaičių.",
+    "wholeNumber": "Įveskite sveikąjį skaičių.",
+    "invalid": "Ši reikšmė netinkama.",
+    "notSaved": "Neišsaugota. Patikrinkite pažymėtus laukus.",
+    "withLabel": "{label}: {problem}"
   }
 }

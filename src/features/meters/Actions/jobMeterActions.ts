@@ -7,6 +7,7 @@ import { requireFeature } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { withAuth } from '@/lib/with-auth'
 import { writeJobMeterReading } from '../Lib/jobMeterReading.server'
+import { METER_PROBLEM_KEY, meterValueProblem } from '../Lib/meterValue'
 import { setJobMeterReadingSchema } from '../Schema/meterSchema'
 
 /**
@@ -36,7 +37,8 @@ export async function setJobMeterReading(input: unknown) {
         return { ...result, jobId: data.jobId, jobRef: job?.invoiceNumber || data.jobId }
       } catch (error) {
         if (error instanceof Error && error.name === 'InvalidMeterReadingError') {
-          throw new Error((await getTranslations('vehicles.meters'))('invalidReading'))
+          const problem = meterValueProblem(data.value) ?? 'invalid'
+          throw new Error((await getTranslations('vehicles.meters'))(METER_PROBLEM_KEY[problem]))
         }
         throw error
       }

@@ -71,6 +71,6 @@
     "saveFailed": "Error al guardar la plantilla de mano de obra",
     "deleteFailed": "Error al eliminar la plantilla de mano de obra",
     "loadFailed": "Error al cargar la plantilla de mano de obra",
-    "noItems": "Se requiere al menos un elemento"
+    "itemNameMissing": "Ponle un nombre a este elemento."
   }
 }
