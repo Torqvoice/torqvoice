@@ -162,8 +162,9 @@ export function QuotePageClient({
   // the next autosave to be refused.
   const handleQuoteSent = useCallback(() => router.refresh(), [router])
 
-  useSaveShortcut(() => {
-    if (state.hasUnsavedChanges) return state.saveNow()
+  useSaveShortcut(async () => {
+    // The shortcut only saves; a refusal is already said on the page.
+    if (state.hasUnsavedChanges) await state.saveNow()
   })
 
   const [showPresetPicker, setShowPresetPicker] = useState(false)
