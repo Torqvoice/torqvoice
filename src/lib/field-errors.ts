@@ -22,6 +22,7 @@ export type FieldIssue =
   | 'tooLarge'
   | 'notNumber'
   | 'wholeNumber'
+  | 'phone'
   | 'invalid'
 
 export interface FieldError {
@@ -33,6 +34,9 @@ export interface FieldError {
 }
 
 type Issue = ZodError['issues'][number]
+
+/** The kinds a rule of the app's own may name, beyond what zod reports itself. */
+const NAMED_ISSUES = new Set<FieldIssue>(['phone'])
 
 function issueOf(issue: Issue): Pick<FieldError, 'issue' | 'limit'> {
   switch (issue.code) {
@@ -59,6 +63,14 @@ function issueOf(issue: Issue): Pick<FieldError, 'issue' | 'limit'> {
       // A number box sent empty or with letters arrives as undefined or NaN.
       if (issue.expected === 'number') return { issue: 'notNumber' }
       return { issue: 'invalid' }
+    case 'custom': {
+      // A rule of the app's own names the kind of problem it is, so the
+      // form can say it: `refine(check, { params: { fieldIssue: 'phone' } })`.
+      const named = (issue.params as { fieldIssue?: unknown } | undefined)?.fieldIssue
+      return typeof named === 'string' && NAMED_ISSUES.has(named as FieldIssue)
+        ? { issue: named as FieldIssue }
+        : { issue: 'invalid' }
+    }
     default:
       return { issue: 'invalid' }
   }
