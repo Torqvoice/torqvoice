@@ -94,6 +94,9 @@
     "invoiceDueDateOnIssuePlaceholder": "Etter vilkår",
     "invoiceDateOnIssueHint": "Står feltet tomt, dateres fakturaen den dagen den sendes, og forfaller etter betalingsbetingelsene dine.",
     "invoiceDueDateOnIssueHint": "Står feltet tomt, settes forfallsdatoen etter betalingsbetingelsene dine når fakturaen sendes.",
+    "noPaymentTerms": "Ingen betalingsbetingelser er satt, så fakturaen har ingen forfallsdato.",
+    "setPaymentTerms": "Sett betalingsbetingelser",
+    "noDueDatePlaceholder": "Ingen forfallsdato",
     "typeOptions": {
       "maintenance": "Vedlikehold",
       "repair": "Reparasjon",
@@ -522,6 +525,7 @@
     "slotPicked": "Booket inn på neste ledige tid",
     "noSlotFound": "Fant ingen ledig tid de neste ukene",
     "assignedTitle": "Tilordnet tekniker",
+    "notAssigned": "Ikke tildelt ennå. Velg hvem som skal gjøre jobben.",
     "boardLink": "Arbeidstavle",
     "someoneElse": "Noen andre",
     "loadOf": "{booked} / {capacity} t",

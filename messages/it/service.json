@@ -94,6 +94,9 @@
     "invoiceDueDateOnIssuePlaceholder": "Da termini",
     "invoiceDateOnIssueHint": "Se lasciata vuota, la fattura è datata al giorno dell'invio e scade secondo i tuoi termini di pagamento.",
     "invoiceDueDateOnIssueHint": "Se lasciata vuota, la scadenza viene fissata secondo i tuoi termini di pagamento all'invio della fattura.",
+    "noPaymentTerms": "Nessun termine di pagamento impostato, quindi nessuna scadenza.",
+    "setPaymentTerms": "Imposta i termini di pagamento",
+    "noDueDatePlaceholder": "Nessuna scadenza",
     "typeOptions": {
       "maintenance": "Manutenzione",
       "repair": "Riparazione",
@@ -522,6 +525,7 @@
     "slotPicked": "Spostato sulla prossima fascia libera",
     "noSlotFound": "Nessuna fascia libera trovata nelle prossime settimane",
     "assignedTitle": "Tecnico assegnato",
+    "notAssigned": "Non ancora assegnato. Scegli chi esegue questo lavoro.",
     "boardLink": "Lavagna di lavoro",
     "someoneElse": "Qualcun altro",
     "loadOf": "{booked} / {capacity} h",

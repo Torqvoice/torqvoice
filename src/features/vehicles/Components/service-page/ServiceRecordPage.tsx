@@ -47,7 +47,7 @@ import {
 } from '@/features/condition-map/Lib/loadMarks.server'
 import { invoiceDesignPrintsConditionMap } from '@/features/invoices/Lib/assembleInvoicePrint'
 import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
-import { canEditSettings } from '@/lib/settings-access'
+import { canEditSettings, canOpenAndEditSettings } from '@/lib/settings-access'
 import { canEditVehicles } from '@/lib/vehicle-access'
 import { canTakePayments } from '@/lib/billing-access'
 import { ServicePageClient } from '@/features/vehicles/Components/service-page/ServicePageClient'
@@ -60,6 +60,7 @@ import { PageHeader } from '@/components/page-header'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { zonedDayKey } from '@/lib/timezone'
+import { promiseTimesByWeekday } from '@/features/workshop-calendar/Lib/calendar'
 import { editorPartRow } from '@/features/vehicles/Lib/partLines'
 
 /**
@@ -183,6 +184,19 @@ export async function ServiceRecordPage({
   const onlinePayments = organizationId
     ? (await offeredPaymentProviders(organizationId)).length > 0
     : false
+  // When a promise to the customer defaults to on the day picked: the
+  // workshop's closing time. Opening hours are public (the portal shows
+  // them), so they are read here rather than through the member allowlist.
+  const promisedDefaultTimes = promiseTimesByWeekday(
+    organizationId
+      ? (
+          await db.appSetting.findFirst({
+            where: { organizationId, key: SETTING_KEYS.OPENING_HOURS },
+            select: { value: true },
+          })
+        )?.value
+      : null
+  )
   const lockState = organizationId
     ? await getInvoiceLockState(serviceId, organizationId)
     : { locked: false, reason: null, unlockedAt: null }
@@ -193,6 +207,9 @@ export async function ServiceRecordPage({
   // Whether the status menus offer the way to add a status. Somebody who
   // cannot change settings is better off not seeing a link that turns them away.
   const canAddStatus = await canEditSettings(session?.user?.id ?? '', membership?.role)
+  // Whether the invoice's "Set payment terms" link may be offered: the
+  // settings page has to open for them (READ) as well as save (UPDATE).
+  const canSetPaymentTerms = await canOpenAndEditSettings(session?.user?.id ?? '', membership?.role)
   // Whether a job whose vehicle has no owner offers to add one.
   const canSetCustomer = await canEditVehicles(authContext)
   // Whether the header's "Unpaid" opens the payment form.
@@ -494,6 +511,7 @@ export async function ServiceRecordPage({
         tireHotelEnabled={tireHotel.enabled}
         onlinePayments={onlinePayments}
         canAddStatus={canAddStatus}
+        canSetPaymentTerms={canSetPaymentTerms}
         canSetCustomer={canSetCustomer}
         canTakePayment={canTakePayment}
         workOrderStatuses={
@@ -507,6 +525,7 @@ export async function ServiceRecordPage({
           warnMargin: 1,
         }}
         defaultDueDays={defaultDueDays}
+        promisedDefaultTimes={promisedDefaultTimes}
         defaultMarkupPercent={defaultMarkupPercent}
         markupAppliesToInventory={markupAppliesToInventory}
         statusReports={(statusReportsResult.success && statusReportsResult.data

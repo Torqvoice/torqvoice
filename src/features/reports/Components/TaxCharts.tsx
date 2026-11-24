@@ -34,7 +34,7 @@ export function TaxBarChart({ data, formatCurrency, labels }: TaxBarChartProps) 
         />
         <Bar
           dataKey="taxCollected"
-          name={labels?.taxCollected ?? 'Tax Collected'}
+          name={labels?.taxCollected ?? 'Tax'}
           fill="#f59e0b"
           radius={[4, 4, 0, 0]}
         />

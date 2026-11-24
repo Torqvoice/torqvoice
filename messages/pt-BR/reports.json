@@ -203,15 +203,15 @@
     }
   },
   "tax": {
-    "totalTaxCollected": "Total de Impostos Arrecadados",
+    "totalTaxCollected": "Total de Impostos",
     "taxableRevenue": "Receita Tributável",
     "invoicesWithTax": "Faturas com Imposto",
-    "monthlyTaxCollected": "Impostos Mensais Arrecadados",
+    "monthlyTaxCollected": "Impostos por Mês",
     "taxByRate": "Imposto por Alíquota",
     "monthlyBreakdown": "Detalhamento Mensal",
     "tableHeaders": {
       "taxRate": "Alíquota",
-      "taxCollected": "Imposto Arrecadado",
+      "taxCollected": "Imposto",
       "invoices": "Faturas",
       "month": "Mês",
       "taxableAmount": "Valor Tributável"
@@ -254,7 +254,7 @@
     "totalSpent": "Total Gasto",
     "jobs": "Trabalhos",
     "visits": "Visitas",
-    "taxCollected": "Imposto Arrecadado",
+    "taxCollected": "Imposto",
     "partsCost": "Custo de Peças",
     "laborCost": "Custo de Mão de Obra"
   },
@@ -305,7 +305,7 @@
     "customer": "Cliente",
     "visits": "Visitas",
     "avgDaysBetweenVisits": "Méd. Dias Entre Visitas",
-    "taxCollected": "Imposto Arrecadado",
+    "taxCollected": "Imposto",
     "taxableAmount": "Valor Tributável",
     "invoiceCount": "Quantidade de Faturas",
     "invoiceNumber": "N.º Fatura",
@@ -378,7 +378,7 @@
     "over30": "Mais de 30 Dias",
     "over60": "Mais de 60 Dias",
     "over90": "Mais de 90 Dias",
-    "taxCollected": "Imposto Arrecadado",
+    "taxCollected": "Imposto",
     "taxableAmount": "Valor Tributável",
     "taxRate": "Alíquota",
     "invoiceCount": "Quantidade de Faturas",

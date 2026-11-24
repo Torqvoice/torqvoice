@@ -94,6 +94,9 @@
     "invoiceDueDateOnIssuePlaceholder": "Per termijn",
     "invoiceDateOnIssueHint": "Leeg gelaten krijgt de factuur de datum van de dag waarop hij wordt verzonden, en vervalt hij volgens je betalingsvoorwaarden.",
     "invoiceDueDateOnIssueHint": "Leeg gelaten wordt de vervaldatum bij het verzenden van de factuur bepaald volgens je betalingsvoorwaarden.",
+    "noPaymentTerms": "Geen betalingsvoorwaarden ingesteld, dus geen vervaldatum.",
+    "setPaymentTerms": "Betalingsvoorwaarden instellen",
+    "noDueDatePlaceholder": "Geen vervaldatum",
     "typeOptions": {
       "maintenance": "Onderhoud",
       "repair": "Reparatie",
@@ -522,6 +525,7 @@
     "slotPicked": "Ingepland op het eerstvolgende vrije slot",
     "noSlotFound": "Geen vrij slot gevonden in de komende weken",
     "assignedTitle": "Toegewezen technicus",
+    "notAssigned": "Nog niet toegewezen. Kies wie deze klus doet.",
     "boardLink": "Werkbord",
     "someoneElse": "Iemand anders",
     "loadOf": "{booked} / {capacity} u",

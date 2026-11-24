@@ -168,7 +168,9 @@ export function InvoiceSettings({
   const [quoteValidDays, setQuoteValidDays] = useState(
     settings[SETTING_KEYS.QUOTE_VALID_DAYS] ?? '30'
   )
-  const [dueDays, setDueDays] = useState(settings[SETTING_KEYS.INVOICE_DUE_DAYS] || '14')
+  // What is stored, not a 14 nobody saved: work orders read an unset value as
+  // no payment terms, so showing 14 here said terms were set when they were not.
+  const [dueDays, setDueDays] = useState(settings[SETTING_KEYS.INVOICE_DUE_DAYS] ?? '')
   const [footerNote, setFooterNote] = useState(settings[SETTING_KEYS.INVOICE_FOOTER_NOTE] || '')
   const [invoiceLockEnabled, setInvoiceLockEnabled] = useState(
     settings[SETTING_KEYS.INVOICE_LOCK_ENABLED] === 'true'

@@ -112,6 +112,7 @@ export function ServicePageClient({
   onlinePayments = false,
   workOrderStatuses = [],
   canAddStatus = false,
+  canSetPaymentTerms = false,
   canSetCustomer = false,
   canTakePayment = false,
   videoCall = { link: null, providers: [] },
@@ -145,6 +146,7 @@ export function ServicePageClient({
   aiTranscription = false,
   dictationMode = 'choice',
   defaultDueDays = 0,
+  promisedDefaultTimes,
   defaultMarkupPercent = 0,
   markupAppliesToInventory = false,
   statusReports = [],
@@ -794,6 +796,9 @@ export function ServicePageClient({
     designOptions,
     designFollowsName,
     designFollowsRule,
+    paymentTermsDays: defaultDueDays,
+    canSetPaymentTerms,
+    promisedDefaultTimes,
   }
 
   const tTaxOffer = useTranslations('service.taxOffer')

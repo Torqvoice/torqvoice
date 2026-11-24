@@ -635,6 +635,12 @@ type DateTimePickerProps = {
   granularity?: Granularity
   className?: string
   defaultPopupValue?: Date
+  /**
+   * The time of day, "HH:mm", a day picked while nothing is set yet gets.
+   * Given the picked day on the picker's wall clock. Left out, it keeps the
+   * time the popup opened on, which is midnight.
+   */
+  defaultTimeOf?: (day: Date) => string
 } & Pick<DayPickerProps, 'locale' | 'weekStartsOn' | 'showWeekNumber' | 'showOutsideDays'>
 
 type DateTimePickerRef = {
@@ -659,6 +665,7 @@ const LocalDateTimePicker = React.forwardRef<
       granularity = 'second',
       placeholder = 'Pick a date',
       className,
+      defaultTimeOf,
       ...props
     },
     ref
@@ -761,11 +768,17 @@ const LocalDateTimePicker = React.forwardRef<
             month={month}
             onSelect={(newDate) => {
               if (newDate) {
-                newDate.setHours(
-                  month?.getHours() ?? 0,
-                  month?.getMinutes() ?? 0,
-                  month?.getSeconds() ?? 0
-                )
+                const first = !displayDate && defaultTimeOf?.(newDate)
+                if (first && /^\d{1,2}:\d{2}$/.test(first)) {
+                  const [hours, minutes] = first.split(':').map(Number)
+                  newDate.setHours(hours, minutes, 0, 0)
+                } else {
+                  newDate.setHours(
+                    month?.getHours() ?? 0,
+                    month?.getMinutes() ?? 0,
+                    month?.getSeconds() ?? 0
+                  )
+                }
                 onSelect(newDate)
               }
             }}
