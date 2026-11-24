@@ -23,7 +23,10 @@
       "negative": "Quantità, ore, prezzi e costi non possono essere negativi.",
       "partName": "Ogni ricambio con un prezzo deve avere un nome.",
       "laborDescription": "Ogni riga di manodopera con ore o tariffa deve avere una descrizione.",
-      "concernCondition": "Una segnalazione con causa, intervento o verifica deve avere il sintomo compilato."
+      "concernCondition": "Una segnalazione con causa, intervento o verifica deve avere il sintomo compilato.",
+      "negativeReading": "La lettura non può essere negativa.",
+      "tooLarge": "Un valore è troppo grande. Una quantità può essere al massimo {quantity}, un prezzo {price}, un totale di riga {total} e una lettura {reading}.",
+      "zeroQuantity": "Un ricambio con prezzo deve avere una quantità maggiore di zero."
     }
   },
   "header": {

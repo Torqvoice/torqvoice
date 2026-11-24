@@ -23,7 +23,10 @@
       "negative": "Les quantités, heures, prix et coûts ne peuvent pas être négatifs.",
       "partName": "Chaque pièce avec un prix doit avoir un nom.",
       "laborDescription": "Chaque ligne de main-d'œuvre avec des heures ou un taux doit avoir une description.",
-      "concernCondition": "Un point avec une cause, une correction ou un contrôle doit avoir son symptôme renseigné."
+      "concernCondition": "Un point avec une cause, une correction ou un contrôle doit avoir son symptôme renseigné.",
+      "negativeReading": "Le relevé ne peut pas être négatif.",
+      "tooLarge": "Un montant est trop élevé. Une quantité peut être au plus {quantity}, un prix {price}, un total de ligne {total} et un relevé {reading}.",
+      "zeroQuantity": "Une pièce avec un prix doit avoir une quantité supérieure à zéro."
     }
   },
   "header": {

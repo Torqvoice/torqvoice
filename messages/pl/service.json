@@ -23,7 +23,10 @@
       "negative": "Ilości, godziny, ceny i koszty nie mogą być ujemne.",
       "partName": "Każda część z ceną musi mieć nazwę.",
       "laborDescription": "Każda pozycja robocizny z godzinami lub stawką musi mieć opis.",
-      "concernCondition": "Zgłoszenie z przyczyną, naprawą lub weryfikacją musi mieć wypełniony objaw."
+      "concernCondition": "Zgłoszenie z przyczyną, naprawą lub weryfikacją musi mieć wypełniony objaw.",
+      "negativeReading": "Odczyt nie może być ujemny.",
+      "tooLarge": "Liczba jest za duża. Ilość może wynosić najwyżej {quantity}, cena {price}, suma pozycji {total}, a odczyt {reading}.",
+      "zeroQuantity": "Część z ceną musi mieć ilość większą od zera."
     }
   },
   "header": {

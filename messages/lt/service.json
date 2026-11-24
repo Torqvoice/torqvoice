@@ -23,7 +23,10 @@
       "negative": "Kiekiai, valandos, kainos ir sąnaudos negali būti neigiami.",
       "partName": "Kiekviena dalis su kaina turi turėti pavadinimą.",
       "laborDescription": "Kiekviena darbo eilutė su valandomis ar įkainiu turi turėti aprašymą.",
-      "concernCondition": "Punktui su priežastimi, pataisymu ar patikrinimu reikia užpildyti būklę."
+      "concernCondition": "Punktui su priežastimi, pataisymu ar patikrinimu reikia užpildyti būklę.",
+      "negativeReading": "Rodmuo negali būti neigiamas.",
+      "tooLarge": "Skaičius per didelis. Kiekis gali būti ne didesnis kaip {quantity}, kaina {price}, eilutės suma {total}, o rodmuo {reading}.",
+      "zeroQuantity": "Detalei su kaina reikia kiekio, didesnio už nulį."
     }
   },
   "header": {

@@ -341,6 +341,7 @@
     "wholeNumber": "Skriv inn et heltall.",
     "invalid": "Denne verdien er ikke gyldig.",
     "notSaved": "Ikke lagret. Sjekk de merkede feltene.",
-    "withLabel": "{label}: {problem}"
+    "withLabel": "{label}: {problem}",
+    "positive": "Må være mer enn 0."
   }
 }

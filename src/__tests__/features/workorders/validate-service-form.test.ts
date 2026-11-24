@@ -153,3 +153,43 @@ describe('what a work order must have before it saves', () => {
     ).toBe('title')
   })
 })
+
+describe('figures no job has', () => {
+  it('refuses a reading below zero, and leaves an empty one alone', () => {
+    expect(findServiceFormProblem({ ...empty, mileage: '-5' })).toBe('negativeReading')
+    expect(findServiceFormProblem({ ...empty, mileage: '' })).toBeNull()
+    expect(findServiceFormProblem({ ...empty, mileage: null })).toBeNull()
+    expect(findServiceFormProblem({ ...empty, mileage: '120500' })).toBeNull()
+  })
+
+  it('refuses a priced part with a quantity of zero, but not a free one', () => {
+    expect(findServiceFormProblem({ ...empty, partItems: [part({ quantity: 0 })] })).toBe(
+      'zeroQuantity'
+    )
+    expect(
+      findServiceFormProblem({ ...empty, partItems: [part({ quantity: 0, unitPrice: 0 })] })
+    ).toBeNull()
+  })
+
+  it('keeps a labour line with no hours yet', () => {
+    // A line a technician started on the phone arrives at zero hours.
+    expect(findServiceFormProblem({ ...empty, laborItems: [labor({ hours: 0 })] })).toBeNull()
+  })
+
+  it('refuses a quantity, a price or a line total past any job', () => {
+    const tooLarge = [
+      { partItems: [part({ quantity: 1_000_000_000, unitPrice: 99_999_999 })] },
+      { partItems: [part({ quantity: 100_001 })] },
+      { partItems: [part({ unitPrice: 10_000_001 })] },
+      { partItems: [part({ quantity: 1000, unitPrice: 2_000_000 })] },
+      { laborItems: [labor({ hours: 100_001 })] },
+      { mileage: 10_000_001 },
+    ]
+    for (const over of tooLarge) {
+      expect(findServiceFormProblem({ ...empty, ...over })).toBe('tooLarge')
+    }
+    expect(
+      findServiceFormProblem({ ...empty, partItems: [part({ quantity: 100_000, unitPrice: 10 })] })
+    ).toBeNull()
+  })
+})
