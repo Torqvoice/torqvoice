@@ -6,12 +6,12 @@
     "description": "Description",
     "itemCount": "Items",
     "type": "Type",
-    "hrs": "hrs",
-    "units": "unit(s)"
+    "hoursCount": "{hours, plural, one {# hr} other {# hrs}}",
+    "unitsCount": "{units, plural, one {# unit} other {# units}}"
   },
   "empty": {
     "noMatch": "No packages match your search.",
-    "noPresets": "No labor packages yet. Click \"Add Package\" to create one."
+    "noPresets": "No labor packages yet. Click \"Add Labor Preset\" to create one."
   },
   "actions": {
     "edit": "Edit",
@@ -43,7 +43,7 @@
     "itemDescriptionPlaceholder": "Description *",
     "addItem": "Add Item",
     "cancel": "Cancel",
-    "create": "Create Package",
+    "create": "Create Preset",
     "saveChanges": "Save Changes",
     "hourlyTag": "HR",
     "serviceTag": "SVC",
@@ -61,10 +61,10 @@
     "title": "Select Labor Package",
     "search": "Search packages...",
     "noPackages": "No labor packages found.",
-    "items": "{count} items",
+    "items": "{count, plural, one {# item} other {# items}}",
     "totalHours": "{hours}h total",
-    "totalUnits": "{units} unit(s)",
-    "totalParts": "{count} parts"
+    "totalUnits": "{units, plural, one {# unit} other {# units}}",
+    "totalParts": "{count, plural, one {# part} other {# parts}}"
   },
   "errors": {
     "error": "Error",

@@ -6,8 +6,8 @@
     "description": "Beskrivelse",
     "itemCount": "Elementer",
     "type": "Type",
-    "hrs": "timer",
-    "units": "enhet(er)"
+    "hoursCount": "{hours, number} t",
+    "unitsCount": "{units, plural, one {# enhet} other {# enheter}}"
   },
   "empty": {
     "noMatch": "Ingen maler samsvarer med søket ditt.",

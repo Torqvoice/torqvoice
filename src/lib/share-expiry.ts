@@ -186,7 +186,10 @@ export function shareOpenUntilDay(
 ): Date | null {
   if (expiry.kind !== 'date' || isShareExpired(expiry, now)) return null
   const dayStart = startOfZonedDay(expiry.at, timeZone)
-  const endsTheDay = addZonedDays(expiry.at, 1, timeZone).getTime() - 1 === expiry.at.getTime()
+  // Within the day's last minute counts as its end: a close stored as
+  // 23:59:59 or 23:59, without the final milliseconds, used to promise the
+  // day before ("until 07/12" for a link the staff page said closes 08/12).
+  const endsTheDay = addZonedDays(expiry.at, 1, timeZone).getTime() - expiry.at.getTime() <= 60_000
   if (endsTheDay || dayStart.getTime() <= now.getTime()) return expiry.at
   return new Date(dayStart.getTime() - 1)
 }
