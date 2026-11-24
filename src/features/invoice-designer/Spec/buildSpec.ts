@@ -49,7 +49,11 @@ import {
 export interface TotalLine {
   label: string
   value: string
-  kind: 'line' | 'discount' | 'total' | 'payment' | 'due' | 'paid'
+  /**
+   * `payment` is money received, drawn as the positive amount it was;
+   * `refund` is money handed back, the one line under the payments with a minus.
+   */
+  kind: 'line' | 'discount' | 'total' | 'payment' | 'refund' | 'due' | 'paid'
 }
 
 /** A label over a value in the payment panel. Gated ids follow the layout. */
@@ -1502,7 +1506,7 @@ function totals(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
     if (entry.kind === 'paid') return paidBadge(entry)
     const emphasized = entry.kind === 'total' || entry.kind === 'due'
     const valueColor =
-      entry.kind === 'discount'
+      entry.kind === 'discount' || entry.kind === 'refund'
         ? '#dc2626'
         : entry.kind === 'payment'
           ? '#059669'
@@ -1527,7 +1531,7 @@ function totals(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
               color: emphasized ? look.text : look.muted,
               bold: emphasized,
               fontSize:
-                entry.kind === 'payment'
+                entry.kind === 'payment' || entry.kind === 'refund'
                   ? scale(size, 0.85)
                   : bare && emphasized
                     ? scale(size, 1.15)

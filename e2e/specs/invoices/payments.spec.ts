@@ -119,7 +119,7 @@ test.describe('paying an invoice', () => {
     // The payment itself is listed, with the method it came in by.
     const row = paymentRow(page, '$400.00')
     await expect(row).toHaveCount(1)
-    await expect(row).toContainText('cash')
+    await expect(row).toContainText('Cash')
 
     await expect(moneyBar(page, 'balance')).toHaveText('$500.00')
     await expect(paymentsPanel(page).getByTestId('balance-due')).toHaveText('$500.00')
