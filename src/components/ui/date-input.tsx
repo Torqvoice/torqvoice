@@ -11,6 +11,7 @@ import { cn } from '@/lib/utils'
 import { useDateSettings } from '@/components/date-settings-context'
 import { formatDate as formatWithOrgPattern } from '@/lib/format'
 import { parseDateText, toISODate } from '@/lib/parse-date-text'
+import { dayKeyToLocalDate, workshopTodayKey } from '@/lib/workshop-datetime'
 
 /**
  * Typeable date field with a calendar picker (shadcn date picker "Input"
@@ -38,7 +39,7 @@ export function DateInput({
   /** The id of the message that explains why the value is refused. */
   'aria-describedby'?: string
 }) {
-  const { dateFormat } = useDateSettings()
+  const { dateFormat, timezone } = useDateSettings()
   const ta = useTranslations('common.a11y')
   const display = (d: Date | undefined) => (d ? formatWithOrgPattern(d, dateFormat) : '')
 
@@ -92,7 +93,8 @@ export function DateInput({
       <Input
         id={id}
         value={text}
-        placeholder={placeholder ?? display(new Date())}
+        // The workshop's today, the same on the server (UTC) and in the browser.
+        placeholder={placeholder ?? display(dayKeyToLocalDate(workshopTodayKey(timezone)))}
         onChange={(e) => handleTextChange(e.target.value)}
         onBlur={handleBlur}
         onKeyDown={(e) => {

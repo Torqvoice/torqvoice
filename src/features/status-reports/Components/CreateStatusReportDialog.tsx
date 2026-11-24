@@ -1,5 +1,7 @@
 'use client'
 
+import { useDateSettings } from '@/components/date-settings-context'
+import { addDaysToDayKey, workshopTodayKey } from '@/lib/workshop-datetime'
 import { useState, useRef, useEffect } from 'react'
 import { useTranslations } from 'next-intl'
 import {
@@ -74,9 +76,9 @@ export function CreateStatusReportDialog({
   const [uploading, setUploading] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [submitting, setSubmitting] = useState(false)
-  const [expiresAt, setExpiresAt] = useState(
-    new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-  )
+  // Two weeks from the workshop's today; the link stays open to the end of that day.
+  const { timezone } = useDateSettings()
+  const [expiresAt, setExpiresAt] = useState(() => addDaysToDayKey(workshopTodayKey(timezone), 14))
 
   useEffect(() => {
     if (open) {
@@ -87,9 +89,9 @@ export function CreateStatusReportDialog({
       setUploading(false)
       setUploadProgress(0)
       setSubmitting(false)
-      setExpiresAt(new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString().split('T')[0])
+      setExpiresAt(addDaysToDayKey(workshopTodayKey(timezone), 14))
     }
-  }, [open])
+  }, [open, timezone])
 
   async function handleFileUpload(file: File) {
     setUploading(true)
