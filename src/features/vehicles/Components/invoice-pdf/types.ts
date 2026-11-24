@@ -40,6 +40,8 @@ export interface TemplateConfig {
 export interface InvoiceData {
   id: string
   title: string
+  /** The job's status; a cancelled invoice prints marked as cancelled. */
+  status?: string
   description: string | null
   type: string
   serviceDate: Date

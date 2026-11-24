@@ -90,6 +90,14 @@ vi.mock('@/lib/db', () => ({
           return { id: where.id, status: data.status }
         }
       ),
+      // The phone's move, written only while the job is not cancelled.
+      updateMany: vi.fn(
+        async ({ where, data }: { where: { id: string }; data: { status: string } }) => {
+          const job = state.jobs.find((j) => j.id === where.id && j.status !== 'cancelled')
+          if (job) job.status = data.status
+          return { count: job ? 1 : 0 }
+        }
+      ),
     },
     timeEntry: {
       findFirst: vi.fn(async ({ where }: { where: Record<string, unknown> }) => {
@@ -269,6 +277,33 @@ describe('finishing a job two people are clocked on', () => {
     const response = await finish('truck')
 
     expect(response.status).toBe(404)
+    expect(open().sort()).toEqual(['andy-clock', 'jo-clock', 'sam-clock'])
+  })
+
+  it('refuses a cancelled job, and stops nothing', async () => {
+    state.jobs.find((j) => j.id === 'truck')!.status = 'cancelled'
+
+    const response = await finish('truck')
+
+    expect(response.status).toBe(409)
+    expect(state.jobs.find((j) => j.id === 'truck')!.status).toBe('cancelled')
+    expect(open().sort()).toEqual(['andy-clock', 'jo-clock', 'sam-clock'])
+  })
+
+  it('cannot undo a cancel that lands between reading the job and moving it', async () => {
+    const truck = state.jobs.find((j) => j.id === 'truck')!
+    // Read while still in progress; cancelled at the desk before the write.
+    const { db } = await import('@/lib/db')
+    vi.mocked(db.serviceRecord.findFirst).mockImplementationOnce((async () => {
+      const read = { ...truck, vehicleId: null, vehicle: null }
+      truck.status = 'cancelled'
+      return read
+    }) as never)
+
+    const response = await finish('truck')
+
+    expect(response.status).toBe(409)
+    expect(truck.status).toBe('cancelled')
     expect(open().sort()).toEqual(['andy-clock', 'jo-clock', 'sam-clock'])
   })
 })

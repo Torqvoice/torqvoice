@@ -33,7 +33,13 @@ vi.mock('@/lib/db', () => ({
     vehicle: { findFirst: vi.fn(), count: vi.fn() },
     appSetting: { findMany: vi.fn(), updateMany: vi.fn() },
     organization: { findUnique: vi.fn() },
-    serviceRecord: { findFirst: vi.fn(), findMany: vi.fn(), create: vi.fn(), update: vi.fn() },
+    serviceRecord: {
+      findFirst: vi.fn(),
+      findMany: vi.fn(),
+      create: vi.fn(),
+      update: vi.fn(),
+      updateMany: vi.fn(),
+    },
     workOrderStatus: { findFirst: vi.fn() },
     inspection: { findMany: vi.fn() },
     technician: { findFirst: vi.fn() },
@@ -196,11 +202,14 @@ describe('completing a job', () => {
       endDateTime: new Date('2026-11-24T19:00:00.000Z'),
     } as any)
 
+    vi.mocked(db.serviceRecord.updateMany).mockResolvedValue({ count: 1 } as any)
+
     const result = await updateServiceStatus('job-1', 'completed')
 
     expect(result.success).toBe(true)
-    expect(vi.mocked(db.serviceRecord.update)).toHaveBeenCalledWith({
-      where: { id: 'job-1' },
+    // Written only while the job is not cancelled (a cancel must not be undone).
+    expect(vi.mocked(db.serviceRecord.updateMany)).toHaveBeenCalledWith({
+      where: { id: 'job-1', organizationId: expect.any(String), status: { not: 'cancelled' } },
       data: expect.objectContaining({
         status: 'completed',
         startDateTime: NOW,

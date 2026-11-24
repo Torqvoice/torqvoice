@@ -90,7 +90,9 @@
     "qtyOrHours": "Birim / Saat",
     "customFieldsTitle": "Ek bilgiler",
     "telegramConnect": "Telegram'dan bize yazın",
-    "taxRegistrationLabel": "{name} No."
+    "taxRegistrationLabel": "{name} No.",
+    "cancelledTitle": "FATURA (İPTAL EDİLDİ)",
+    "cancelledNotice": "İPTAL EDİLDİ"
   },
   "quote": {
     "title": "TEKLİF",

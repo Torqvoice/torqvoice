@@ -74,7 +74,9 @@
     "findingSeverityNeedsWork": "Mittel",
     "findingSeverityMonitor": "Niedrig",
     "tel": "Tel: {phone}",
-    "customFields": "Weitere Angaben"
+    "customFields": "Weitere Angaben",
+    "cancelledTitle": "Diese Rechnung wurde storniert",
+    "cancelledBody": "Darauf ist nichts zu zahlen. Wenden Sie sich bei Fragen an die Werkstatt."
   },
   "quote": {
     "title": "Angebot",

@@ -11,6 +11,8 @@ export const statusMessageKeys: Record<string, string> = {
   'in-progress': 'in_progress',
   'waiting-parts': 'waiting_parts',
   completed: 'completed',
+  // Not a stage: set only by cancelling an invoice that went out.
+  cancelled: 'cancelled',
 }
 
 export const paymentStatusColors: Record<string, string> = {
@@ -87,6 +89,8 @@ export interface ServiceDetail {
   designId?: string | null
   /** When the invoice was issued and its sheet frozen. */
   issuedAt?: Date | null
+  /** First time the invoice reached the customer. */
+  sentAt?: Date | null
 }
 
 export interface PartItem {

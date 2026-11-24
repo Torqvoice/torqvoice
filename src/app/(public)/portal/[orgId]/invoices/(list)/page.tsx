@@ -65,7 +65,7 @@ export default async function PortalInvoicesPage({
 
   const rows = invoices.map((inv) => {
     const payment = portalPayment(inv)
-    const due = payment.state !== 'paid' ? inv.invoiceDueDate : null
+    const due = payment.balance > 0 ? inv.invoiceDueDate : null
     // Past its due day on the workshop's calendar: said in the home's own words.
     const overdue = due ? fmt.isPast(new Date(due).toISOString()) : false
     return {

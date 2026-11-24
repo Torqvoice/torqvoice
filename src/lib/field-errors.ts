@@ -16,6 +16,8 @@ export type FieldIssue =
   | 'tooShort'
   | 'tooLong'
   | 'negative'
+  /** Above zero: a priced part's quantity. */
+  | 'positive'
   | 'tooSmall'
   | 'tooLarge'
   | 'notNumber'
@@ -45,6 +47,7 @@ function issueOf(issue: Issue): Pick<FieldError, 'issue' | 'limit'> {
       }
       if (issue.origin === 'array' || issue.origin === 'set') return { issue: 'required' }
       if (minimum === 0 && issue.inclusive !== false) return { issue: 'negative' }
+      if (minimum === 0) return { issue: 'positive' }
       return { issue: 'tooSmall', limit: minimum }
     }
     case 'too_big': {

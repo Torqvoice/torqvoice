@@ -23,7 +23,10 @@
       "negative": "Quantidades, horas, preços e custos não podem ser negativos.",
       "partName": "Todas as peças com preço precisam de um nome.",
       "laborDescription": "Todas as linhas de mão de obra com horas ou taxa precisam de uma descrição.",
-      "concernCondition": "Uma queixa com causa, correção ou confirmação tem de ter a condição preenchida."
+      "concernCondition": "Uma queixa com causa, correção ou confirmação tem de ter a condição preenchida.",
+      "negativeReading": "A leitura não pode ser negativa.",
+      "tooLarge": "Um valor é demasiado grande. Uma quantidade pode ser no máximo {quantity}, um preço {price}, um total de linha {total} e uma leitura {reading}.",
+      "zeroQuantity": "Uma peça com preço precisa de uma quantidade acima de zero."
     }
   },
   "header": {
@@ -63,7 +66,8 @@
     "designRefreshConfirm": "Atualizar a fatura",
     "designRefreshDone": "Esta fatura passa a ser impressa com os dados atuais",
     "designRefreshFailed": "Não foi possível atualizar a fatura",
-    "printWorkOrder": "Imprimir ordem de trabalho"
+    "printWorkOrder": "Imprimir ordem de trabalho",
+    "cancelInvoice": "Anular fatura"
   },
   "basicInfo": {
     "title": "Informações básicas",
@@ -90,6 +94,9 @@
     "invoiceDueDateOnIssuePlaceholder": "Pelo prazo",
     "invoiceDateOnIssueHint": "Se ficar em branco, a fatura fica com a data do dia em que for enviada e vence conforme as suas condições de pagamento.",
     "invoiceDueDateOnIssueHint": "Se ficar em branco, o vencimento é definido pelas suas condições de pagamento quando a fatura for enviada.",
+    "noPaymentTerms": "Sem condições de pagamento definidas, por isso não há vencimento.",
+    "setPaymentTerms": "Definir condições de pagamento",
+    "noDueDatePlaceholder": "Sem vencimento",
     "typeOptions": {
       "maintenance": "Manutenção",
       "repair": "Reparação",
@@ -101,7 +108,8 @@
       "pending": "Pendente",
       "in_progress": "Em curso",
       "waiting_parts": "A aguardar peças",
-      "completed": "Concluído"
+      "completed": "Concluído",
+      "cancelled": "Anulada"
     },
     "searchVehicles": "Pesquisar viaturas...",
     "noVehicleFound": "Nenhuma viatura encontrada.",
@@ -374,6 +382,7 @@
     "received": "Pagamentos recebidos",
     "noneYet": "Ainda nada pago.",
     "balanceDue": "Valor em dívida",
+    "cancelledNotice": "Anulada: nada é devido nesta fatura. Os pagamentos e reembolsos continuam listados acima.",
     "aboveBalance": "O valor em dívida é {amount}. Um pagamento não pode ser superior.",
     "nothingDue": "Não há nada em dívida nesta fatura.",
     "refund": "Reembolso"
@@ -516,6 +525,7 @@
     "slotPicked": "Marcado no próximo horário livre",
     "noSlotFound": "Nenhum horário livre encontrado nas próximas semanas",
     "assignedTitle": "Técnico atribuído",
+    "notAssigned": "Ainda não atribuído. Escolha quem faz este trabalho.",
     "boardLink": "Quadro de trabalho",
     "someoneElse": "Outra pessoa",
     "loadOf": "{booked} / {capacity} h",
@@ -753,7 +763,9 @@
       "preview": "Pré-visualizar fatura",
       "previewShort": "Pré-visualizar",
       "send": "Enviar ao cliente",
-      "sendShort": "Enviar"
+      "sendShort": "Enviar",
+      "cancelled": "Anulada",
+      "nothingOwed": "Nada a pagar"
     },
     "vehicleInfo": {
       "more": "Mais informações",
@@ -883,5 +895,28 @@
     "hint": "Fique para corrigir ou saia e perca as alterações feitas desde a última gravação.",
     "stay": "Ficar e corrigir",
     "leave": "Sair sem guardar"
+  },
+  "cancelInvoice": {
+    "title": "Anular a fatura {number}?",
+    "titleNoNumber": "Anular esta fatura?",
+    "description": "Esta fatura já foi enviada ao cliente, por isso não pode ser eliminada: a maioria dos países exige números de fatura sem falhas.",
+    "pointKept": "O trabalho é mantido e marcado como anulado. A fatura mantém o seu número e já não pode ser alterada.",
+    "pointShown": "A fatura, a ligação partilhada, o PDF e o portal do cliente mostram-na como anulada.",
+    "pointReports": "Deixa de contar na receita, nos impostos e nos valores em dívida.",
+    "pointLedger": "Um sistema de contabilidade ligado anula a sua cópia quando possível. Uma cópia com pagamentos fica para o seu contabilista creditar.",
+    "paidNotice": "O cliente pagou {amount} nesta fatura.",
+    "recordRefund": "Registar um reembolso do valor devolvido ao cliente",
+    "refundAmount": "Valor do reembolso",
+    "refundMethod": "Reembolsado por",
+    "refundTooMuch": "Um reembolso não pode ser superior a {amount}.",
+    "refundNote": "Reembolso de fatura anulada",
+    "noRefundHint": "Sem reembolso, os pagamentos continuam registados como estão.",
+    "keep": "Manter fatura",
+    "confirm": "Anular fatura",
+    "done": "Fatura anulada",
+    "failed": "Não foi possível anular a fatura",
+    "bannerTitle": "A fatura {number} está anulada",
+    "bannerTitleNoNumber": "Esta fatura está anulada",
+    "bannerBody": "Mantém o seu número e já não pode ser alterada. O cliente vê-a marcada como anulada."
   }
 }

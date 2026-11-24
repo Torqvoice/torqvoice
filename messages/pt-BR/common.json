@@ -342,6 +342,7 @@
     "phone": "Digite um número de telefone: apenas dígitos, espaços e + - ( ) .",
     "invalid": "Este valor não é válido.",
     "notSaved": "Não salvo. Verifique os campos marcados.",
-    "withLabel": "{label}: {problem}"
+    "withLabel": "{label}: {problem}",
+    "positive": "Deve ser maior que 0."
   }
 }

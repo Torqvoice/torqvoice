@@ -342,6 +342,7 @@
     "phone": "Wpisz numer telefonu: tylko cyfry, spacje i + - ( ) .",
     "invalid": "Ta wartość jest nieprawidłowa.",
     "notSaved": "Nie zapisano. Sprawdź zaznaczone pola.",
-    "withLabel": "{label}: {problem}"
+    "withLabel": "{label}: {problem}",
+    "positive": "Musi być większe niż 0."
   }
 }

@@ -4,6 +4,13 @@ import { track } from '@/lib/analytics'
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import {
+  ADDRESS_MAX_LENGTH,
+  EMAIL_MAX_LENGTH,
+  NAME_MAX_LENGTH,
+  NOTES_MAX_LENGTH,
+  SHORT_TEXT_MAX_LENGTH,
+} from '@/lib/input-limits'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -464,6 +471,7 @@ export function CustomerForm({
                   <Input
                     id="name"
                     name="name"
+                    maxLength={NAME_MAX_LENGTH}
                     {...fieldErrors.invalidProps('name', duplicateDescribedBy('name'))}
                     placeholder={t('namePlaceholder')}
                     defaultValue={customer?.name ?? defaults?.name ?? ''}
@@ -493,6 +501,7 @@ export function CustomerForm({
                   <Input
                     id="email"
                     name="email"
+                    maxLength={EMAIL_MAX_LENGTH}
                     {...fieldErrors.invalidProps('email', duplicateDescribedBy('email'))}
                     type="email"
                     placeholder={t('emailPlaceholder')}
@@ -507,6 +516,7 @@ export function CustomerForm({
                   <Input
                     id="phone"
                     name="phone"
+                    maxLength={SHORT_TEXT_MAX_LENGTH}
                     {...fieldErrors.invalidProps('phone', duplicateDescribedBy('phone'))}
                     type="tel"
                     inputMode="tel"
@@ -527,6 +537,7 @@ export function CustomerForm({
                 <Textarea
                   id="address"
                   name="address"
+                  maxLength={ADDRESS_MAX_LENGTH}
                   {...fieldErrors.invalidProps('address')}
                   placeholder={t('addressPlaceholder')}
                   rows={2}
@@ -548,6 +559,7 @@ export function CustomerForm({
                 <Input
                   id="company"
                   name="company"
+                  maxLength={NAME_MAX_LENGTH}
                   {...fieldErrors.invalidProps('company')}
                   placeholder={t('companyPlaceholder')}
                   defaultValue={customer?.company ?? ''}
@@ -560,6 +572,7 @@ export function CustomerForm({
                 <Input
                   id="taxId"
                   name="taxId"
+                  maxLength={SHORT_TEXT_MAX_LENGTH}
                   {...fieldErrors.invalidProps('taxId')}
                   placeholder={t('taxIdPlaceholder')}
                   defaultValue={customer?.taxId ?? ''}
@@ -615,6 +628,7 @@ export function CustomerForm({
               <Textarea
                 id="notes"
                 name="notes"
+                maxLength={NOTES_MAX_LENGTH}
                 {...fieldErrors.invalidProps('notes')}
                 placeholder={t('notesPlaceholder')}
                 rows={3}

@@ -342,6 +342,7 @@
     "phone": "Enter a phone number: digits, spaces and + - ( ) . only.",
     "invalid": "This value isn't valid.",
     "notSaved": "Not saved. Check the marked fields.",
-    "withLabel": "{label}: {problem}"
+    "withLabel": "{label}: {problem}",
+    "positive": "Must be more than 0."
   }
 }

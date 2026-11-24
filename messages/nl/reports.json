@@ -203,15 +203,15 @@
     }
   },
   "tax": {
-    "totalTaxCollected": "Totaal Belasting Geïnd",
+    "totalTaxCollected": "Totale Belasting",
     "taxableRevenue": "Belastbare Omzet",
     "invoicesWithTax": "Facturen met Belasting",
-    "monthlyTaxCollected": "Maandelijks Geïnde Belasting",
+    "monthlyTaxCollected": "Belasting per Maand",
     "taxByRate": "Belasting per Tarief",
     "monthlyBreakdown": "Maandelijks Overzicht",
     "tableHeaders": {
       "taxRate": "Belastingtarief",
-      "taxCollected": "Geïnde Belasting",
+      "taxCollected": "Belasting",
       "invoices": "Facturen",
       "month": "Maand",
       "taxableAmount": "Belastbaar Bedrag"
@@ -254,7 +254,7 @@
     "totalSpent": "Totaal Besteed",
     "jobs": "Opdrachten",
     "visits": "Bezoeken",
-    "taxCollected": "Geïnde Belasting",
+    "taxCollected": "Belasting",
     "partsCost": "Onderdeelkosten",
     "laborCost": "Arbeidskosten"
   },
@@ -305,7 +305,7 @@
     "customer": "Klant",
     "visits": "Bezoeken",
     "avgDaysBetweenVisits": "Gem. Dagen Tussen Bezoeken",
-    "taxCollected": "Geïnde Belasting",
+    "taxCollected": "Belasting",
     "taxableAmount": "Belastbaar Bedrag",
     "invoiceCount": "Aantal Facturen",
     "invoiceNumber": "Factuurnr.",
@@ -378,7 +378,7 @@
     "over30": "Meer dan 30 dagen",
     "over60": "Meer dan 60 dagen",
     "over90": "Meer dan 90 dagen",
-    "taxCollected": "Geïnde Belasting",
+    "taxCollected": "Belasting",
     "taxableAmount": "Belastbaar Bedrag",
     "taxRate": "Belastingtarief",
     "invoiceCount": "Aantal Facturen",

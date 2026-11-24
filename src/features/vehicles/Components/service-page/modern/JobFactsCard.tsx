@@ -5,6 +5,7 @@ import { WorkOnPicker } from '@/features/equipment/Components/WorkOnPicker'
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
+import { READING_MAX } from '@/lib/input-limits'
 import { Check, ChevronDown } from 'lucide-react'
 import { CopyValue, useCopy } from '@/components/copy-value'
 import { useFormatCurrency } from '@/components/currency-settings-context'
@@ -444,6 +445,8 @@ export function JobFactsCard({
                     id="mileage"
                     name="mileage"
                     type="number"
+                    min={0}
+                    max={READING_MAX}
                     // The last reading known for this vehicle, so the one
                     // typed can be read against it; none when nothing is known.
                     placeholder={

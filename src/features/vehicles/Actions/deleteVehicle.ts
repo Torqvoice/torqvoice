@@ -1,6 +1,7 @@
 'use server'
 
 import { db } from '@/lib/db'
+import { assertNoInvoicesWentOut } from '@/features/invoices/Lib/wentOutInvoices.server'
 import { unlinkMeterReadingsOfDeletedJobs } from '@/features/meters/Lib/jobMeterReading.server'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -15,6 +16,8 @@ import {
 export async function deleteVehicle(vehicleId: string) {
   return withAuth(
     async ({ organizationId }) => {
+      // Its jobs go with it, and an invoice that went out keeps its number.
+      await assertNoInvoicesWentOut(organizationId, [vehicleId])
       // Its files are read while the rows exist and let go once they are gone:
       // this path used to leave every photo of every job on disk.
       const files = await vehicleFileUrls(organizationId, [vehicleId])

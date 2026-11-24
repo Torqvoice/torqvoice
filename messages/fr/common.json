@@ -342,6 +342,7 @@
     "phone": "Saisissez un numéro de téléphone : chiffres, espaces et + - ( ) . uniquement.",
     "invalid": "Cette valeur n'est pas valide.",
     "notSaved": "Non enregistré. Vérifiez les champs signalés.",
-    "withLabel": "{label} : {problem}"
+    "withLabel": "{label} : {problem}",
+    "positive": "Doit être supérieur à 0."
   }
 }

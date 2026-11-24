@@ -74,7 +74,9 @@
     "findingSeverityNeedsWork": "Средна",
     "findingSeverityMonitor": "Ниска",
     "tel": "Тел.: {phone}",
-    "customFields": "Допълнителна информация"
+    "customFields": "Допълнителна информация",
+    "cancelledTitle": "Тази фактура е анулирана",
+    "cancelledBody": "По нея нищо не се дължи. Свържете се със сервиза, ако имате въпроси."
   },
   "quote": {
     "title": "Оферта",

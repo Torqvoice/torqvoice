@@ -27,7 +27,8 @@
     "filterUnviewed": "Ikke åpnet",
     "filterUnviewedHint": "Fakturaer som er sendt, men aldri åpnet",
     "filterCompleted": "Kun fullførte",
-    "filterCompletedHint": "Vis bare arbeidsordrer som er merket som fullført. Huskes til neste gang."
+    "filterCompletedHint": "Vis bare arbeidsordrer som er merket som fullført. Huskes til neste gang.",
+    "statusCancelled": "Kansellert"
   },
   "recurring": {
     "title": "Gjentakende",

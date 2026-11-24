@@ -342,6 +342,7 @@
     "phone": "Geben Sie eine Telefonnummer ein: nur Ziffern, Leerzeichen und + - ( ) .",
     "invalid": "Dieser Wert ist ungültig.",
     "notSaved": "Nicht gespeichert. Prüfen Sie die markierten Felder.",
-    "withLabel": "{label}: {problem}"
+    "withLabel": "{label}: {problem}",
+    "positive": "Muss größer als 0 sein."
   }
 }

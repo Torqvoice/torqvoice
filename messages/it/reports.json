@@ -203,15 +203,15 @@
     }
   },
   "tax": {
-    "totalTaxCollected": "Totale Tasse Riscosse",
+    "totalTaxCollected": "Imposte Totali",
     "taxableRevenue": "Ricavi Tassabili",
     "invoicesWithTax": "Fatture con Tassa",
-    "monthlyTaxCollected": "Tasse Mensili Riscosse",
+    "monthlyTaxCollected": "Imposte Mensili",
     "taxByRate": "Tassa per Aliquota",
     "monthlyBreakdown": "Riepilogo Mensile",
     "tableHeaders": {
       "taxRate": "Aliquota Fiscale",
-      "taxCollected": "Tassa Riscossa",
+      "taxCollected": "Imposta",
       "invoices": "Fatture",
       "month": "Mese",
       "taxableAmount": "Importo Tassabile"
@@ -254,7 +254,7 @@
     "totalSpent": "Totale Speso",
     "jobs": "Lavori",
     "visits": "Visite",
-    "taxCollected": "Tassa Riscossa",
+    "taxCollected": "Imposta",
     "partsCost": "Costo Ricambi",
     "laborCost": "Costo Manodopera"
   },
@@ -305,7 +305,7 @@
     "customer": "Cliente",
     "visits": "Visite",
     "avgDaysBetweenVisits": "Media Giorni Tra Visite",
-    "taxCollected": "Tassa Riscossa",
+    "taxCollected": "Imposta",
     "taxableAmount": "Importo Tassabile",
     "invoiceCount": "Numero Fatture",
     "invoiceNumber": "N. Fattura",
@@ -378,7 +378,7 @@
     "over30": "Oltre 30 Giorni",
     "over60": "Oltre 60 Giorni",
     "over90": "Oltre 90 Giorni",
-    "taxCollected": "Imposta Riscossa",
+    "taxCollected": "Imposta",
     "taxableAmount": "Imponibile",
     "taxRate": "Aliquota",
     "invoiceCount": "Numero Fatture",

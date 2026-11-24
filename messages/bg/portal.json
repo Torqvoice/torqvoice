@@ -366,7 +366,8 @@
     "summaryDue": "Падеж",
     "summaryReference": "Ваша референция / № на поръчка",
     "summaryDate": "Дата",
-    "fullInvoice": "Пълна фактура"
+    "fullInvoice": "Пълна фактура",
+    "cancelled": "Анулирана"
   },
   "quotes": {
     "title": "Оферти",
@@ -643,7 +644,8 @@
       "scheduled": "Планиран",
       "inProgress": "В изпълнение",
       "waitingParts": "Изчакват се резервни части",
-      "completed": "Завършен"
+      "completed": "Завършен",
+      "cancelled": "Анулирана"
     },
     "request": {
       "pending": "Очаква се отговор",

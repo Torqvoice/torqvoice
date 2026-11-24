@@ -153,7 +153,8 @@
     "summaryDue": "Vencimento",
     "summaryReference": "Sua referência / nº do pedido",
     "summaryDate": "Data",
-    "fullInvoice": "A fatura completa"
+    "fullInvoice": "A fatura completa",
+    "cancelled": "Cancelada"
   },
   "quotes": {
     "title": "Orçamentos",
@@ -384,7 +385,8 @@
       "scheduled": "Programado",
       "inProgress": "Em andamento",
       "waitingParts": "Aguardando peças",
-      "completed": "Concluído"
+      "completed": "Concluído",
+      "cancelled": "Cancelado"
     },
     "request": {
       "pending": "Aguardando resposta",

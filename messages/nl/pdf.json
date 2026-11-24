@@ -90,7 +90,9 @@
     "qtyOrHours": "Eenheid / Uren",
     "customFieldsTitle": "Aanvullende informatie",
     "telegramConnect": "Chat met ons op Telegram",
-    "taxRegistrationLabel": "{name}-nr."
+    "taxRegistrationLabel": "{name}-nr.",
+    "cancelledTitle": "FACTUUR (GEANNULEERD)",
+    "cancelledNotice": "GEANNULEERD"
   },
   "quote": {
     "title": "OFFERTE",

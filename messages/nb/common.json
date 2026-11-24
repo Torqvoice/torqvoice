@@ -342,6 +342,7 @@
     "phone": "Skriv et telefonnummer: bare sifre, mellomrom og + - ( ) .",
     "invalid": "Denne verdien er ikke gyldig.",
     "notSaved": "Ikke lagret. Sjekk de merkede feltene.",
-    "withLabel": "{label}: {problem}"
+    "withLabel": "{label}: {problem}",
+    "positive": "Må være mer enn 0."
   }
 }

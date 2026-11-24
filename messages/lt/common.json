@@ -342,6 +342,7 @@
     "phone": "Įveskite telefono numerį: tik skaitmenys, tarpai ir + - ( ) .",
     "invalid": "Ši reikšmė netinkama.",
     "notSaved": "Neišsaugota. Patikrinkite pažymėtus laukus.",
-    "withLabel": "{label}: {problem}"
+    "withLabel": "{label}: {problem}",
+    "positive": "Turi būti daugiau nei 0."
   }
 }

@@ -23,7 +23,10 @@
       "negative": "Miktarlar, saatler, fiyatlar ve maliyetler negatif olamaz.",
       "partName": "Fiyatı olan her parçanın bir adı olmalı.",
       "laborDescription": "Saati veya ücreti olan her işçilik satırının bir açıklaması olmalı.",
-      "concernCondition": "Nedeni, onarımı veya doğrulaması olan bir maddenin belirtisi doldurulmalı."
+      "concernCondition": "Nedeni, onarımı veya doğrulaması olan bir maddenin belirtisi doldurulmalı.",
+      "negativeReading": "Okuma değeri negatif olamaz.",
+      "tooLarge": "Bir değer çok büyük. Miktar en fazla {quantity}, fiyat {price}, satır toplamı {total} ve okuma {reading} olabilir.",
+      "zeroQuantity": "Fiyatı olan bir parçanın miktarı sıfırdan büyük olmalı."
     }
   },
   "header": {
@@ -63,7 +66,8 @@
     "designRefreshConfirm": "Faturayı güncelle",
     "designRefreshDone": "Bu fatura artık güncel bilgilerle yazdırılıyor",
     "designRefreshFailed": "Fatura güncellenemedi",
-    "printWorkOrder": "İş emrini yazdır"
+    "printWorkOrder": "İş emrini yazdır",
+    "cancelInvoice": "Faturayı iptal et"
   },
   "basicInfo": {
     "title": "Temel Bilgiler",
@@ -90,6 +94,9 @@
     "invoiceDueDateOnIssuePlaceholder": "Vadeye göre",
     "invoiceDateOnIssueHint": "Boş bırakılırsa fatura gönderildiği günün tarihini alır ve vadesi ödeme koşullarınıza göre belirlenir.",
     "invoiceDueDateOnIssueHint": "Boş bırakılırsa vade tarihi, fatura gönderildiğinde ödeme koşullarınıza göre belirlenir.",
+    "noPaymentTerms": "Ödeme koşulu ayarlanmadığı için vade tarihi yok.",
+    "setPaymentTerms": "Ödeme koşullarını ayarla",
+    "noDueDatePlaceholder": "Vade yok",
     "typeOptions": {
       "maintenance": "Bakım",
       "repair": "Onarım",
@@ -101,7 +108,8 @@
       "pending": "Beklemede",
       "in_progress": "Devam Ediyor",
       "waiting_parts": "Parça Bekleniyor",
-      "completed": "Tamamlandı"
+      "completed": "Tamamlandı",
+      "cancelled": "İptal edildi"
     },
     "searchVehicles": "Araç ara...",
     "noVehicleFound": "Araç bulunamadı.",
@@ -374,6 +382,7 @@
     "received": "Alınan ödemeler",
     "noneYet": "Henüz ödeme yapılmadı.",
     "balanceDue": "Kalan bakiye",
+    "cancelledNotice": "İptal edildi: bu fatura için ödenecek bir şey yok. Ödemeler ve iadeler yukarıda listelenmeye devam eder.",
     "aboveBalance": "Kalan bakiye {amount}. Ödeme bundan fazla olamaz.",
     "nothingDue": "Bu faturada ödenecek bir şey kalmadı.",
     "refund": "İade"
@@ -516,6 +525,7 @@
     "slotPicked": "Sıradaki boş saate alındı",
     "noSlotFound": "Önümüzdeki haftalarda boş saat bulunamadı",
     "assignedTitle": "Atanan teknisyen",
+    "notAssigned": "Henüz atanmadı. Bu işi kimin yapacağını seçin.",
     "boardLink": "İş panosu",
     "someoneElse": "Başka biri",
     "loadOf": "{booked} / {capacity} sa",
@@ -753,7 +763,9 @@
       "preview": "Faturayı önizle",
       "previewShort": "Önizle",
       "send": "Müşteriye gönder",
-      "sendShort": "Gönder"
+      "sendShort": "Gönder",
+      "cancelled": "İptal edildi",
+      "nothingOwed": "Ödenecek bir şey yok"
     },
     "vehicleInfo": {
       "more": "Daha fazla bilgi",
@@ -883,5 +895,28 @@
     "hint": "Düzeltmek için kalın ya da çıkın ve son kayıttan bu yana yapılan değişiklikleri kaybedin.",
     "stay": "Kal ve düzelt",
     "leave": "Kaydetmeden çık"
+  },
+  "cancelInvoice": {
+    "title": "{number} numaralı fatura iptal edilsin mi?",
+    "titleNoNumber": "Bu fatura iptal edilsin mi?",
+    "description": "Bu fatura müşteriye ulaştı, bu yüzden silinemez: çoğu ülkede fatura numaraları boşluksuz olmalıdır.",
+    "pointKept": "İş korunur ve iptal edildi olarak işaretlenir. Fatura numarasını korur ve artık değiştirilemez.",
+    "pointShown": "Fatura, paylaşılan bağlantısı, PDF ve müşteri portalı onu iptal edildi olarak gösterir.",
+    "pointReports": "Artık gelir, vergi veya alacaklarda sayılmaz.",
+    "pointLedger": "Bağlı bir muhasebe sistemi, mümkün olduğunda kendi kopyasını iptal eder. Ödeme içeren bir kopya, muhasebecinizin alacak dekontu için bırakılır.",
+    "paidNotice": "Müşteri bu fatura için {amount} ödedi.",
+    "recordRefund": "Müşteriye geri ödenen para için iade kaydet",
+    "refundAmount": "İade tutarı",
+    "refundMethod": "İade yöntemi",
+    "refundTooMuch": "İade {amount} tutarından fazla olamaz.",
+    "refundNote": "İptal edilen fatura iadesi",
+    "noRefundHint": "İade olmadan ödemeler olduğu gibi kayıtlı kalır.",
+    "keep": "Faturayı koru",
+    "confirm": "Faturayı iptal et",
+    "done": "Fatura iptal edildi",
+    "failed": "Fatura iptal edilemedi",
+    "bannerTitle": "{number} numaralı fatura iptal edildi",
+    "bannerTitleNoNumber": "Bu fatura iptal edildi",
+    "bannerBody": "Numarasını korur ve artık değiştirilemez. Müşteri onu iptal edildi olarak görür."
   }
 }

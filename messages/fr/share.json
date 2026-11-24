@@ -74,7 +74,9 @@
     "findingSeverityNeedsWork": "Moyenne",
     "findingSeverityMonitor": "Basse",
     "tel": "Tél. : {phone}",
-    "customFields": "Informations complémentaires"
+    "customFields": "Informations complémentaires",
+    "cancelledTitle": "Cette facture a été annulée",
+    "cancelledBody": "Aucun montant n’est dû. Contactez l’atelier pour toute question."
   },
   "quote": {
     "title": "Devis",

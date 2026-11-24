@@ -1,5 +1,7 @@
 'use server'
 
+import { CancelledInvoiceError } from '@/features/invoices/Lib/cancelInvoice'
+import { isCancelled } from '@/features/work-order-statuses/Lib/stages'
 import { revalidatePath } from 'next/cache'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
@@ -170,9 +172,11 @@ export async function reapplyDesignToInvoice(recordId: string, designId: string 
       requireAdmin(isAdmin)
       const record = await db.serviceRecord.findFirst({
         where: { id: recordId, organizationId },
-        select: { id: true, vehicleId: true, invoiceNumber: true, issuedAt: true },
+        select: { id: true, vehicleId: true, invoiceNumber: true, issuedAt: true, status: true },
       })
       if (!record) throw new Error('Record not found')
+      // A cancelled invoice stays as it went out.
+      if (isCancelled(record.status)) throw new CancelledInvoiceError()
       if (!record.issuedAt) throw new Error('This invoice is not locked to a design')
 
       const updated = await reapplyDesign(organizationId, [record.id], designId)
@@ -217,9 +221,11 @@ export async function refreshIssuedInvoice(recordId: string) {
       requireAdmin(isAdmin)
       const record = await db.serviceRecord.findFirst({
         where: { id: recordId, organizationId },
-        select: { id: true, vehicleId: true, invoiceNumber: true, issuedAt: true },
+        select: { id: true, vehicleId: true, invoiceNumber: true, issuedAt: true, status: true },
       })
       if (!record) throw new Error('Record not found')
+      // A cancelled invoice stays as it went out.
+      if (isCancelled(record.status)) throw new CancelledInvoiceError()
       if (!record.issuedAt) throw new Error('This invoice has not been sent yet')
 
       const updated = await reissueInvoice(record.id, organizationId)

@@ -34,12 +34,22 @@ import {
 } from '@/features/settings/Lib/warrantyDefaults'
 import { EMPTY_WARRANTY, normalizeWarranty } from '@/lib/warranty'
 import { parseTaxComponentDefinitions } from '@/lib/tax-components'
+import { restatedSubtotal, subtotalFromLines } from '@/features/vehicles/Lib/subtotalFromLines'
+import { documentTotals } from '@/features/settings/Lib/workshopTax'
 import { issueInvoice } from '@/features/invoices/Lib/issueInvoice'
+import { invoiceWentOut } from '@/features/invoices/Lib/issuedInvoice'
+import {
+  CANCELLED_JOB_REFUSAL,
+  CancelledInvoiceError,
+  issuedInvoiceDeleteRefusal,
+} from '@/features/invoices/Lib/cancelInvoice'
 import { withAuth } from '@/lib/with-auth'
 import { parseSentFields, sentId } from '@/lib/parse-sent-fields'
 import { createServiceSchema, updateServiceSchema } from '../Schema/serviceSchema'
 import { revalidatePath } from 'next/cache'
 import {
+  CANCELLED,
+  isCancelled,
   isSystemStatus,
   slotOnCompletion,
   statusColumns,
@@ -494,6 +504,34 @@ export async function createServiceRecord(input: unknown) {
       // server's to state whenever the lines decide it (see savedDocumentTax).
       const taxedParts = withTaxableParts(data.partItems ?? [], workshopTax.applies)
       const taxedLabor = withTaxableLabor(data.laborItems ?? [], workshopTax.applies)
+      // The lines are stored to the cent, so the subtotal is what they add up
+      // to as stored, not the page's own sum (see subtotalFromLines).
+      const createdFromLines =
+        (data.partItems?.length ?? 0) + (data.laborItems?.length ?? 0) > 0
+          ? restatedSubtotal({
+              sentSubtotal: data.subtotal,
+              linesSubtotal: subtotalFromLines(data.partItems ?? [], data.laborItems ?? []),
+              discountType: data.discountType,
+              discountValue: data.discountValue,
+            })
+          : null
+      if (createdFromLines) {
+        data.subtotal = createdFromLines.subtotal
+        if (createdFromLines.discountAmount !== undefined) {
+          data.discountAmount = createdFromLines.discountAmount
+        }
+        const totals = documentTotals({
+          subtotal: data.subtotal,
+          discountAmount: data.discountAmount,
+          taxRate: data.taxRate,
+          taxInclusive,
+          taxComponents: null,
+          taxableSubtotal: null,
+        })
+        data.taxAmount = totals.taxAmount
+        data.totalAmount = totals.totalAmount
+        data.cost = totals.totalAmount
+      }
       const savedTax = savedDocumentTax({
         subtotal: data.subtotal,
         discountAmount: data.discountAmount,
@@ -804,6 +842,37 @@ export async function updateServiceRecord(input: unknown) {
         laborItems !== undefined && taxApplies
           ? withTaxableLabor(laborItems, taxApplies)
           : undefined
+      // Lines are stored to the cent (serviceSchema). The subtotal the page
+      // sent was added up from its own figures, so it is restated from the
+      // lines as stored, and the discount and tax with it, or the invoice's
+      // lines would not add up to its subtotal.
+      let fromLines: ReturnType<typeof restatedSubtotal> = null
+      if (linesSent && recordData.subtotal !== undefined) {
+        const linesSubtotal = subtotalFromLines(
+          partItems ??
+            (await db.servicePart.findMany({
+              where: { serviceRecordId: id },
+              select: { total: true },
+            })),
+          laborItems ??
+            (await db.serviceLabor.findMany({
+              where: { serviceRecordId: id },
+              select: { total: true },
+            }))
+        )
+        fromLines = restatedSubtotal({
+          sentSubtotal: recordData.subtotal,
+          linesSubtotal,
+          discountType: recordData.discountType ?? existing.discountType,
+          discountValue: recordData.discountValue ?? existing.discountValue,
+        })
+        if (fromLines) {
+          recordData.subtotal = fromLines.subtotal
+          if (fromLines.discountAmount !== undefined) {
+            recordData.discountAmount = fromLines.discountAmount
+          }
+        }
+      }
       const moneyTouched =
         linesSent ||
         recordData.subtotal !== undefined ||
@@ -844,6 +913,23 @@ export async function updateServiceRecord(input: unknown) {
         if (restated.taxComponents) recordData.taxRate = existing.taxRate
         recordData.taxAmount = restated.taxAmount
         recordData.totalAmount = restated.totalAmount
+      } else if (fromLines) {
+        // A plain job, every line taxed at one rate: its tax and total follow
+        // the restated subtotal too.
+        const totals = documentTotals({
+          subtotal: fromLines.subtotal,
+          discountAmount: recordData.discountAmount ?? existing.discountAmount,
+          taxRate: recordData.taxRate ?? existing.taxRate,
+          taxInclusive: recordData.taxInclusive ?? existing.taxInclusive,
+          taxComponents: existing.taxComponents,
+          taxableSubtotal: null,
+        })
+        recordData.taxAmount = totals.taxAmount
+        recordData.totalAmount = totals.totalAmount
+      }
+      if (fromLines && recordData.cost !== undefined && recordData.totalAmount !== undefined) {
+        // The page sends the job's cost as its total.
+        recordData.cost = recordData.totalAmount
       }
 
       // A null vehicleId from the client means "no vehicle" (counter sale) —
@@ -1176,15 +1262,20 @@ export async function updateServiceStatus(
         },
       })
       if (!record) throw new Error('Record not found')
+      // A cancelled invoice stays cancelled: its number is spent.
+      if (isCancelled(record.status)) throw new Error(CANCELLED_JOB_REFUSAL)
       if (status === 'completed' && record.status !== 'completed') {
         await assertRequiredMetersRead(organizationId, record.id, 'complete')
       }
 
-      await db.serviceRecord.update({
-        where: { id: recordId },
-        // A finished job lets go of booked time still ahead of it.
+      // Conditional on the job not having been cancelled since it was read:
+      // a status change already on its way must not undo a cancel. A
+      // finished job lets go of booked time still ahead of it.
+      const moved = await db.serviceRecord.updateMany({
+        where: { id: recordId, organizationId, status: { not: CANCELLED } },
         data: { ...statusColumns(status, custom), ...slotOnCompletion(record, status) },
       })
+      if (moved.count === 0) throw new Error(CANCELLED_JOB_REFUSAL)
 
       notificationBus.emit('workboard', {
         type: 'job_status_changed',
@@ -1321,6 +1412,8 @@ export async function toggleManuallyPaid(recordId: string) {
         include: { payments: { select: { amount: true } } },
       })
       if (!record) throw new Error('Record not found')
+      // Nothing is owed on a cancelled invoice, paid by hand or otherwise.
+      if (isCancelled(record.status)) throw new CancelledInvoiceError()
 
       // Marking paid is always allowed — it only ever locks the document
       // further. But a flip that would *release* the lock is the admin-only
@@ -1394,12 +1487,13 @@ export async function getWorkOrders(params: {
         const endOfToday = endOfWorkshopDay(zonedDayKey(new Date(), timeZone), timeZone)
         if (endOfToday) {
           where.promisedAt = { not: null, lte: endOfToday }
-          where.AND = [...(where.AND ?? []), { status: { not: 'completed' } }]
+          where.AND = [...(where.AND ?? []), { status: { notIn: ['completed', CANCELLED] } }]
         }
       }
 
       if (params.status === 'active') {
-        where.status = { not: 'completed' }
+        // A cancelled job is not work still to do.
+        where.status = { notIn: ['completed', CANCELLED] }
       } else if (params.status && params.status !== 'all') {
         where.status = params.status
       }
@@ -1515,8 +1609,13 @@ export async function deleteServiceRecord(recordId: string) {
       await assertInvoiceEditable(recordId, organizationId)
       const record = await db.serviceRecord.findFirst({
         where: { id: recordId, organizationId },
+        include: { payments: { select: { amount: true } } },
       })
       if (!record) throw new Error('Record not found')
+      // An invoice that went out keeps its number: deleting it would leave a
+      // gap in the numbering the books and the tax office read. It is
+      // cancelled instead (cancelServiceRecord); only a draft is deleted.
+      if (invoiceWentOut(record)) throw new Error(issuedInvoiceDeleteRefusal(record.invoiceNumber))
 
       // Its attachments and status report videos, read now and let go once
       // the record is gone. A tire set's photo on this job is shared with the

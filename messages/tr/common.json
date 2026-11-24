@@ -342,6 +342,7 @@
     "phone": "Bir telefon numarası girin: yalnızca rakam, boşluk ve + - ( ) .",
     "invalid": "Bu değer geçerli değil.",
     "notSaved": "Kaydedilmedi. İşaretli alanları kontrol edin.",
-    "withLabel": "{label}: {problem}"
+    "withLabel": "{label}: {problem}",
+    "positive": "0'dan büyük olmalı."
   }
 }

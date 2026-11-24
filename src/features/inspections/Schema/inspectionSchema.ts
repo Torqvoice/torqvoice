@@ -1,9 +1,10 @@
 import { z } from 'zod'
+import { READING_MAX } from '@/lib/input-limits'
 
 export const createInspectionSchema = z.object({
   vehicleId: z.string().min(1, 'Vehicle is required'),
   templateId: z.string().min(1, 'Template is required'),
-  mileage: z.coerce.number().int().min(0).optional(),
+  mileage: z.coerce.number().int().min(0).max(READING_MAX).optional(),
   /** The booked job this inspection is the work of, when started from one. */
   serviceRecordId: z.string().min(1).optional(),
 })
@@ -22,7 +23,7 @@ export const updateInspectionItemSchema = z.object({
 
 /** Roadworthiness certificate fields — Directive 2014/45/EU Annex IV. */
 export const updateInspectionDetailsSchema = z.object({
-  mileage: z.coerce.number().int().min(0).nullable().optional(),
+  mileage: z.coerce.number().int().min(0).max(READING_MAX).nullable().optional(),
   vehicleCategory: z.string().max(10).nullable().optional(),
   certificateNumber: z.string().max(64).nullable().optional(),
   // The inspector is picked from the workshop's technicians; the name is

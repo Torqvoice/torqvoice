@@ -43,6 +43,7 @@ import {
 } from '@/features/customers/Actions/customerActions'
 import { CustomerCombobox } from '@/features/quotes/Components/CustomerCombobox'
 import { useFormatter, useTranslations } from 'next-intl'
+import { NAME_MAX_LENGTH, READING_MAX, SHORT_TEXT_MAX_LENGTH } from '@/lib/input-limits'
 import { useFormatDate } from '@/lib/use-format-date'
 import { useServiceType } from '@/components/service-type-context'
 import type { CreateVehicleInput } from '../Schema/vehicleSchema'
@@ -1234,6 +1235,7 @@ export function VehicleForm({
                       <Input
                         id="licensePlate"
                         name="licensePlate"
+                        maxLength={SHORT_TEXT_MAX_LENGTH}
                         {...fieldErrors.invalidProps(
                           'licensePlate',
                           plateDuplicates.length > 0 ? 'duplicate-licensePlate' : undefined
@@ -1313,6 +1315,7 @@ export function VehicleForm({
                       <Input
                         id="vin"
                         name="vin"
+                        maxLength={SHORT_TEXT_MAX_LENGTH}
                         {...fieldErrors.invalidProps('vin', vinUnusual ? 'vin-notice' : undefined)}
                         placeholder="1HGCM82633A004352"
                         defaultValue={vehicle?.vin ?? ''}
@@ -1429,6 +1432,7 @@ export function VehicleForm({
                       <Input
                         id="make"
                         name="make"
+                        maxLength={NAME_MAX_LENGTH}
                         {...fieldErrors.invalidProps('make')}
                         placeholder={isMarine ? 'Boston Whaler' : 'Toyota'}
                         defaultValue={vehicle?.make}
@@ -1441,6 +1445,7 @@ export function VehicleForm({
                       <Input
                         id="model"
                         name="model"
+                        maxLength={NAME_MAX_LENGTH}
                         {...fieldErrors.invalidProps('model')}
                         placeholder={isMarine ? 'Montauk 170' : 'Camry'}
                         defaultValue={vehicle?.model}
@@ -1507,6 +1512,7 @@ export function VehicleForm({
                       <Input
                         id="engineCode"
                         name="engineCode"
+                        maxLength={SHORT_TEXT_MAX_LENGTH}
                         {...fieldErrors.invalidProps('engineCode')}
                         placeholder="2AR-FE"
                         defaultValue={vehicle?.engineCode ?? ''}
@@ -1534,6 +1540,7 @@ export function VehicleForm({
                         <Input
                           id="color"
                           name="color"
+                          maxLength={SHORT_TEXT_MAX_LENGTH}
                           {...fieldErrors.invalidProps('color')}
                           placeholder="Silver"
                           defaultValue={vehicle?.color ?? ''}
@@ -1551,6 +1558,7 @@ export function VehicleForm({
                           name="mileage"
                           type="number"
                           min={0}
+                          max={READING_MAX}
                           placeholder="0"
                           value={mileageDraft}
                           onChange={(e) => setMileageDraft(e.target.value)}

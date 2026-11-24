@@ -90,7 +90,9 @@
     "qtyOrHours": "Enhet / Timer",
     "customFieldsTitle": "Tilleggsinformasjon",
     "telegramConnect": "Chat med oss på Telegram",
-    "taxRegistrationLabel": "{name}-nr."
+    "taxRegistrationLabel": "{name}-nr.",
+    "cancelledTitle": "FAKTURA (KANSELLERT)",
+    "cancelledNotice": "KANSELLERT"
   },
   "quote": {
     "title": "TILBUD",

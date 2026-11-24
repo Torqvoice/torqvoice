@@ -342,6 +342,7 @@
     "phone": "Vul een telefoonnummer in: alleen cijfers, spaties en + - ( ) .",
     "invalid": "Deze waarde is niet geldig.",
     "notSaved": "Niet opgeslagen. Controleer de gemarkeerde velden.",
-    "withLabel": "{label}: {problem}"
+    "withLabel": "{label}: {problem}",
+    "positive": "Moet meer dan 0 zijn."
   }
 }

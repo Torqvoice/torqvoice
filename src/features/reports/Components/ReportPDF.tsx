@@ -416,7 +416,7 @@ export function ReportPDF({
             s={s}
             items={[
               {
-                label: l.taxCollected || 'Tax Collected',
+                label: l.taxCollected || 'Tax',
                 value: fmt(taxData.summary.totalTaxCollected),
               },
               {
@@ -433,7 +433,7 @@ export function ReportPDF({
               s={s}
               headers={[
                 l.month || 'Month',
-                l.taxCollected || 'Tax Collected',
+                l.taxCollected || 'Tax',
                 l.taxableAmount || 'Taxable Amount',
                 l.invoiceCount || 'Invoices',
               ]}
@@ -454,7 +454,7 @@ export function ReportPDF({
                 s={s}
                 headers={[
                   l.taxRate || 'Tax Rate',
-                  l.taxCollected || 'Tax Collected',
+                  l.taxCollected || 'Tax',
                   l.invoiceCount || 'Invoices',
                 ]}
                 widths={[40, 35, 25]}
