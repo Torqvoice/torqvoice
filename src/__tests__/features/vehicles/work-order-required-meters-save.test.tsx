@@ -105,6 +105,7 @@ function page(status: string, saved: string) {
     initialData: { id: 'job1', status: saved, mileage: null, lastReading: null },
     confirmedReadingRef: { current: null },
     acknowledgeSavedLines: vi.fn(),
+    sendingLinesRef: { current: null },
   }
   const hook = renderHook(() =>
     useServiceActions({
