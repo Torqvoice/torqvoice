@@ -373,7 +373,8 @@
     "failedPdf": "Nie udało się wygenerować faktury PDF",
     "received": "Otrzymane płatności",
     "noneYet": "Nic jeszcze nie zapłacono.",
-    "balanceDue": "Pozostało do zapłaty"
+    "balanceDue": "Pozostało do zapłaty",
+    "refund": "Zwrot"
   },
   "attachments": {
     "deleteTitle": "Usuń Załącznik",
