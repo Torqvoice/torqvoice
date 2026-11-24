@@ -23,7 +23,10 @@
       "negative": "Aantallen, uren, prijzen en kosten kunnen niet negatief zijn.",
       "partName": "Elk onderdeel met een prijs heeft een naam nodig.",
       "laborDescription": "Elke arbeidsregel met uren of tarief heeft een omschrijving nodig.",
-      "concernCondition": "Een melding met een oorzaak, oplossing of controle moet een ingevulde klacht hebben."
+      "concernCondition": "Een melding met een oorzaak, oplossing of controle moet een ingevulde klacht hebben.",
+      "negativeReading": "De stand kan niet negatief zijn.",
+      "tooLarge": "Een getal is te groot. Een aantal mag hoogstens {quantity} zijn, een prijs {price}, een regeltotaal {total} en een stand {reading}.",
+      "zeroQuantity": "Een onderdeel met een prijs heeft een aantal boven nul nodig."
     }
   },
   "header": {

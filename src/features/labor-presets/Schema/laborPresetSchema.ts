@@ -1,9 +1,10 @@
 import { z } from 'zod'
+import { LABOR_HOURS_MAX, QUANTITY_MAX, UNIT_PRICE_MAX } from '@/lib/input-limits'
 
 export const laborPresetItemSchema = z.object({
   description: z.string().min(1, 'Description is required'),
-  hours: z.coerce.number().min(0, 'Hours must be 0 or more').default(0),
-  rate: z.coerce.number().min(0, 'Rate must be 0 or more').default(0),
+  hours: z.coerce.number().min(0, 'Hours must be 0 or more').max(LABOR_HOURS_MAX).default(0),
+  rate: z.coerce.number().min(0, 'Rate must be 0 or more').max(UNIT_PRICE_MAX).default(0),
   pricingType: z.enum(['hourly', 'service']).default('hourly'),
   sortOrder: z.coerce.number().int().min(0).default(0),
 })
@@ -11,11 +12,11 @@ export const laborPresetItemSchema = z.object({
 export const laborPresetPartSchema = z.object({
   name: z.string().min(1, 'Part name is required'),
   partNumber: z.string().optional(),
-  quantity: z.coerce.number().min(0, 'Quantity must be 0 or more').default(1),
+  quantity: z.coerce.number().min(0, 'Quantity must be 0 or more').max(QUANTITY_MAX).default(1),
   /** Unit of measure snapshotted from the picked inventory part. */
   unit: z.string().nullish(),
   category: z.string().nullish(),
-  unitPrice: z.coerce.number().min(0, 'Price must be 0 or more').default(0),
+  unitPrice: z.coerce.number().min(0, 'Price must be 0 or more').max(UNIT_PRICE_MAX).default(0),
   inventoryPartId: z.string().optional(),
   sortOrder: z.coerce.number().int().min(0).default(0),
 })

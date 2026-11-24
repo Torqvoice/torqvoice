@@ -4,6 +4,13 @@ import { track } from '@/lib/analytics'
 import { useEffect, useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import {
+  ADDRESS_MAX_LENGTH,
+  EMAIL_MAX_LENGTH,
+  NAME_MAX_LENGTH,
+  NOTES_MAX_LENGTH,
+  SHORT_TEXT_MAX_LENGTH,
+} from '@/lib/input-limits'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -311,6 +318,7 @@ export function CustomerForm({
                   <Input
                     id="name"
                     name="name"
+                    maxLength={NAME_MAX_LENGTH}
                     placeholder={t('namePlaceholder')}
                     defaultValue={customer?.name ?? defaults?.name ?? ''}
                     required
@@ -334,6 +342,7 @@ export function CustomerForm({
                   <Input
                     id="email"
                     name="email"
+                    maxLength={EMAIL_MAX_LENGTH}
                     type="email"
                     placeholder={t('emailPlaceholder')}
                     defaultValue={customer?.email ?? ''}
@@ -344,6 +353,7 @@ export function CustomerForm({
                   <Input
                     id="phone"
                     name="phone"
+                    maxLength={SHORT_TEXT_MAX_LENGTH}
                     placeholder={t('phonePlaceholder')}
                     defaultValue={customer?.phone ?? ''}
                   />
@@ -358,6 +368,7 @@ export function CustomerForm({
                 <Textarea
                   id="address"
                   name="address"
+                  maxLength={ADDRESS_MAX_LENGTH}
                   placeholder={t('addressPlaceholder')}
                   rows={2}
                   className="min-h-9 resize-none"
@@ -377,6 +388,7 @@ export function CustomerForm({
                 <Input
                   id="company"
                   name="company"
+                  maxLength={NAME_MAX_LENGTH}
                   placeholder={t('companyPlaceholder')}
                   defaultValue={customer?.company ?? ''}
                 />
@@ -387,6 +399,7 @@ export function CustomerForm({
                 <Input
                   id="taxId"
                   name="taxId"
+                  maxLength={SHORT_TEXT_MAX_LENGTH}
                   placeholder={t('taxIdPlaceholder')}
                   defaultValue={customer?.taxId ?? ''}
                 />
@@ -440,6 +453,7 @@ export function CustomerForm({
               <Textarea
                 id="notes"
                 name="notes"
+                maxLength={NOTES_MAX_LENGTH}
                 placeholder={t('notesPlaceholder')}
                 rows={3}
                 defaultValue={customer?.notes ?? ''}

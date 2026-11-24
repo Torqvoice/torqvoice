@@ -23,7 +23,10 @@
       "negative": "Quantities, hours, prices and costs cannot be negative.",
       "partName": "Every priced part needs a name.",
       "laborDescription": "Every labor line with hours or a rate needs a description.",
-      "concernCondition": "A concern with a cause, correction or confirmation needs its condition filled in."
+      "concernCondition": "A concern with a cause, correction or confirmation needs its condition filled in.",
+      "negativeReading": "The reading can't be negative.",
+      "tooLarge": "A figure is too large. A quantity can be at most {quantity}, a price {price}, a line total {total} and a reading {reading}.",
+      "zeroQuantity": "A priced part needs a quantity above zero."
     }
   },
   "header": {

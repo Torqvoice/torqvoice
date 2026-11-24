@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { NAME_MAX_LENGTH, READING_MAX, SHORT_TEXT_MAX_LENGTH } from '@/lib/input-limits'
 import { FLEET_NUMBER_MAX_LENGTH } from '../Lib/fleetNumber'
 import { optionalUploadUrlSchema } from '@/lib/upload-url'
 import { registryLookupSchema } from '../Lib/registryLookup'
@@ -15,20 +16,20 @@ const tsnSchema = z
   .refine((v) => v === '' || TSN_PATTERN.test(v), 'TSN is three letters or digits, from field 2.2')
 
 export const createVehicleSchema = z.object({
-  make: z.string().min(1, 'Make is required'),
-  model: z.string().min(1, 'Model is required'),
+  make: z.string().min(1, 'Make is required').max(NAME_MAX_LENGTH),
+  model: z.string().min(1, 'Model is required').max(NAME_MAX_LENGTH),
   year: z.coerce
     .number()
     .min(1900, 'Year must be after 1900')
     .max(new Date().getFullYear() + 2, 'Year is too far in the future'),
-  vin: z.string().optional(),
-  licensePlate: z.string().optional(),
-  color: z.string().optional(),
-  mileage: z.coerce.number().min(0).default(0),
-  fuelType: z.string().optional(),
-  transmission: z.string().optional(),
-  engineSize: z.string().optional(),
-  engineCode: z.string().optional(),
+  vin: z.string().max(SHORT_TEXT_MAX_LENGTH).optional(),
+  licensePlate: z.string().max(SHORT_TEXT_MAX_LENGTH).optional(),
+  color: z.string().max(SHORT_TEXT_MAX_LENGTH).optional(),
+  mileage: z.coerce.number().min(0).max(READING_MAX).default(0),
+  fuelType: z.string().max(SHORT_TEXT_MAX_LENGTH).optional(),
+  transmission: z.string().max(SHORT_TEXT_MAX_LENGTH).optional(),
+  engineSize: z.string().max(NAME_MAX_LENGTH).optional(),
+  engineCode: z.string().max(SHORT_TEXT_MAX_LENGTH).optional(),
   hsn: hsnSchema.optional(),
   tsn: tsnSchema.optional(),
   /** The owner's own number for the vehicle. Kept only by a workshop that uses the field. */
@@ -69,7 +70,7 @@ export const updateVehicleSchema = createVehicleSchema.partial().extend({
   // Without the new vehicle's default: zod fills a default in even on an
   // optional field, so an update that did not send the reading (adding a
   // customer from the work order) came out with `mileage: 0` and wiped it.
-  mileage: z.coerce.number().min(0).optional(),
+  mileage: z.coerce.number().min(0).max(READING_MAX).optional(),
 })
 
 export type CreateVehicleInput = z.infer<typeof createVehicleSchema>

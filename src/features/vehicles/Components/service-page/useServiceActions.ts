@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { useGlassModal } from '@/components/glass-modal'
 import { useConfirm } from '@/components/confirm-dialog'
-import { useTranslations } from 'next-intl'
+import { useFormatter, useTranslations } from 'next-intl'
 import {
   updateServiceRecord,
   deleteServiceRecord,
@@ -17,6 +17,7 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from '@/lib/sms-templates'
 import { formatCurrency } from '@/lib/format'
 import { findServiceFormProblem } from '@/features/vehicles/Lib/validateServiceForm'
+import { LINE_TOTAL_MAX, QUANTITY_MAX, READING_MAX, UNIT_PRICE_MAX } from '@/lib/input-limits'
 import { WARRANTY_NONE } from '@/lib/warranty'
 import { useServiceType } from '@/components/service-type-context'
 import { readingNeedsAnswer } from '@/features/vehicles/Lib/vehicleReading'
@@ -44,6 +45,7 @@ export function useServiceActions({
   const tc = useTranslations('common')
   const tv = useTranslations('vehicles.form')
   const readingKind = useServiceType() === 'marine' ? 'hours' : 'distance'
+  const { number: formatNumber } = useFormatter()
 
   const [carouselIndex, setCarouselIndex] = useState<number | null>(null)
   const [downloading, setDownloading] = useState(false)
@@ -168,13 +170,23 @@ export function useServiceActions({
     // with no name — are not things a `required` attribute can express.
     const problem = findServiceFormProblem({
       title: getVisible('title') ?? '',
+      mileage: getVisible('mileage'),
       partItems,
       laborItems,
       concerns,
     })
     if (problem) {
       isSavingRef.current = false
-      refuse(t(`page.problems.${problem}`))
+      refuse(
+        t(`page.problems.${problem}`, {
+          quantity: formatNumber(QUANTITY_MAX),
+          price: formatNumber(UNIT_PRICE_MAX),
+          total: formatNumber(LINE_TOTAL_MAX),
+          reading: formatNumber(READING_MAX),
+        })
+      )
+      if (problem === 'negativeReading')
+        form.querySelector<HTMLInputElement>('input[name="mileage"]')?.focus()
       return
     }
 

@@ -23,7 +23,10 @@
       "negative": "Las cantidades, horas, precios y costes no pueden ser negativos.",
       "partName": "Toda pieza con precio necesita un nombre.",
       "laborDescription": "Toda línea de mano de obra con horas o tarifa necesita una descripción.",
-      "concernCondition": "Un motivo con causa, corrección o confirmación necesita que se rellene su condición."
+      "concernCondition": "Un motivo con causa, corrección o confirmación necesita que se rellene su condición.",
+      "negativeReading": "La lectura no puede ser negativa.",
+      "tooLarge": "Una cifra es demasiado grande. Una cantidad puede ser como máximo {quantity}, un precio {price}, un total de línea {total} y una lectura {reading}.",
+      "zeroQuantity": "Una pieza con precio necesita una cantidad mayor que cero."
     }
   },
   "header": {
