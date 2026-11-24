@@ -61,7 +61,7 @@ function Section({
 }
 
 async function openAndSave(zone: string) {
-  const onCreatePayment = vi.fn(async () => true)
+  const onCreatePayment = vi.fn(async (_payment: unknown) => true)
   render(<Section zone={zone} onCreatePayment={onCreatePayment} />)
   fireEvent.click(screen.getByRole('button', { name: 'Record Payment' }))
   const shown = (screen.getByLabelText('Date') as HTMLInputElement).value
