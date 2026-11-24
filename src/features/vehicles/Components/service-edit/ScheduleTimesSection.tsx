@@ -197,6 +197,14 @@ export function ScheduleTimesSection({
   const [endDateTime, setEndDateTime] = useState<Date | undefined>(
     initialEndDateTime ? new Date(initialEndDateTime) : new Date(Date.now() + 3600000)
   )
+  // Moved by the server, not here: completing a job ends a booked slot still
+  // ahead of it, and the page showed the old times until it was reloaded.
+  const startKey = initialStartDateTime ? new Date(initialStartDateTime).getTime() : null
+  const endKey = initialEndDateTime ? new Date(initialEndDateTime).getTime() : null
+  useEffect(() => {
+    if (startKey !== null) setStartDateTime(new Date(startKey))
+    if (endKey !== null) setEndDateTime(new Date(endKey))
+  }, [startKey, endKey])
 
   const [promisedAt, setPromisedAt] = useState<Date | undefined>(
     initialPromisedAt ? new Date(initialPromisedAt) : undefined

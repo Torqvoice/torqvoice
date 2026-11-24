@@ -552,7 +552,14 @@ describe('a reading let go of by its job', () => {
     serviceDate: new Date('2026-04-01T09:00:00Z'),
   }
   beforeEach(() => {
-    db.meterReading.findMany.mockResolvedValue([{ serviceRecordId: 'job-1' }])
+    db.meterReading.findMany.mockResolvedValue([
+      {
+        id: 'r-1',
+        serviceRecordId: 'job-1',
+        readAt: new Date('2026-02-01T09:00:00Z'),
+        createdAt: new Date('2026-02-01T10:00:00Z'),
+      },
+    ])
     db.serviceRecord.findMany.mockResolvedValue([rescheduled])
   })
 
@@ -569,6 +576,7 @@ describe('a reading let go of by its job', () => {
       where: {
         organizationId: 'org-1',
         serviceRecordId: 'job-1',
+        id: { in: ['r-1'] },
         NOT: {
           OR: [
             { vehicleMeter: { vehicleId: 'veh-B' } },
@@ -589,7 +597,7 @@ describe('a reading let go of by its job', () => {
       jobIds: ['job-1'],
     })
     expect(db.meterReading.updateMany).toHaveBeenCalledWith({
-      where: { organizationId: 'org-1', serviceRecordId: 'job-1' },
+      where: { organizationId: 'org-1', serviceRecordId: 'job-1', id: { in: ['r-1'] } },
       data: { serviceRecordId: null, readAt: new Date('2026-04-01T07:30:00Z') },
     })
   })
@@ -605,6 +613,7 @@ describe('a reading let go of by its job', () => {
         organizationId: 'org-1',
         vehicleMeter: { equipmentItemId: { in: ['item-1'] } },
         serviceRecordId: 'job-1',
+        id: { in: ['r-1'] },
       },
       data: { serviceRecordId: null, readAt: new Date('2026-04-01T09:00:00Z') },
     })
@@ -634,6 +643,40 @@ describe('a reading let go of by its job', () => {
       expect(['job-2', { in: ['job-2'] }]).toContainEqual(where.AND[0].serviceRecordId)
     }
     expect(db.meterReading.findMany).toHaveBeenCalledTimes(3)
+  })
+
+  it('keeps a reading on a job booked ahead at the moment it was typed, not in the future', async () => {
+    // A job opened after closing time, booked into tomorrow morning, deleted
+    // before then: the reading taken as the car came in is dated when typed.
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date('2026-11-24T18:45:00Z'))
+    try {
+      db.meterReading.findMany.mockResolvedValue([
+        {
+          id: 'r-1',
+          serviceRecordId: 'job-1',
+          readAt: new Date('2026-11-25T07:00:00Z'),
+          createdAt: new Date('2026-11-24T18:42:00Z'),
+        },
+      ])
+      db.serviceRecord.findMany.mockResolvedValue([
+        {
+          id: 'job-1',
+          startDateTime: new Date('2026-11-25T07:00:00Z'),
+          serviceDate: new Date('2026-11-24T00:00:00Z'),
+        },
+      ])
+      await unlinkMeterReadingsOfDeletedJobs(db as never, {
+        organizationId: 'org-1',
+        jobIds: ['job-1'],
+      })
+      expect(db.meterReading.updateMany).toHaveBeenCalledWith({
+        where: { organizationId: 'org-1', serviceRecordId: 'job-1', id: { in: ['r-1'] } },
+        data: { serviceRecordId: null, readAt: new Date('2026-11-24T18:42:00Z') },
+      })
+    } finally {
+      vi.useRealTimers()
+    }
   })
 
   it('touches nothing when the job took no readings', async () => {
