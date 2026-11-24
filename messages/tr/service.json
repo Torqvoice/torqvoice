@@ -375,7 +375,8 @@
     "noneYet": "Henüz ödeme yapılmadı.",
     "balanceDue": "Kalan bakiye",
     "aboveBalance": "Kalan bakiye {amount}. Ödeme bundan fazla olamaz.",
-    "nothingDue": "Bu faturada ödenecek bir şey kalmadı."
+    "nothingDue": "Bu faturada ödenecek bir şey kalmadı.",
+    "refund": "İade"
   },
   "attachments": {
     "deleteTitle": "Eki Sil",

@@ -1,5 +1,7 @@
 'use client'
 
+import { useDateSettings } from '@/components/date-settings-context'
+import { workshopTodayKey } from '@/lib/workshop-datetime'
 import {
   memo,
   useCallback,
@@ -173,6 +175,7 @@ export function ModernDetails(props: ModernDetailsProps) {
     notificationHistory = NO_NOTIFICATIONS,
   } = props
   const t = useTranslations('service')
+  const { timezone } = useDateSettings()
   const tClock = useTranslations('timeTracking.job')
   // What the labor guide matches a fluid against, priced the way a pick from stock is here.
   const { inventoryParts, defaultMarkupPercent, markupAppliesToInventory } = props
@@ -410,7 +413,7 @@ export function ModernDetails(props: ModernDetailsProps) {
             <input
               type="hidden"
               name="serviceDate"
-              value={formState.initialData.serviceDate || new Date().toISOString().split('T')[0]}
+              value={formState.initialData.serviceDate || workshopTodayKey(timezone)}
             />
             {/* Outside the lock: a locked invoice still moves along. */}
             <StatusStepper

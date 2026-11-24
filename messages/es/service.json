@@ -375,7 +375,8 @@
     "noneYet": "Todavía no se ha pagado nada.",
     "balanceDue": "Saldo pendiente",
     "aboveBalance": "El saldo pendiente es {amount}. Un pago no puede superarlo.",
-    "nothingDue": "No hay nada pendiente en esta factura."
+    "nothingDue": "No hay nada pendiente en esta factura.",
+    "refund": "Reembolso"
   },
   "attachments": {
     "deleteTitle": "Eliminar Archivo",

@@ -375,7 +375,8 @@
     "noneYet": "Ingenting betalt ennå.",
     "balanceDue": "Utestående",
     "aboveBalance": "Utestående er {amount}. En betaling kan ikke være høyere enn det.",
-    "nothingDue": "Det er ingenting utestående på denne fakturaen."
+    "nothingDue": "Det er ingenting utestående på denne fakturaen.",
+    "refund": "Refusjon"
   },
   "attachments": {
     "deleteTitle": "Slett vedlegg",

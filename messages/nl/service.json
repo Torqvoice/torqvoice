@@ -375,7 +375,8 @@
     "noneYet": "Nog niets betaald.",
     "balanceDue": "Verschuldigd bedrag",
     "aboveBalance": "Het verschuldigde bedrag is {amount}. Een betaling kan niet hoger zijn.",
-    "nothingDue": "Er staat niets meer open op deze factuur."
+    "nothingDue": "Er staat niets meer open op deze factuur.",
+    "refund": "Terugbetaling"
   },
   "attachments": {
     "deleteTitle": "Bijlage verwijderen",

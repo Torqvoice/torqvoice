@@ -375,7 +375,8 @@
     "noneYet": "Nothing paid yet.",
     "balanceDue": "Balance due",
     "aboveBalance": "The balance due is {amount}. A payment cannot be more than that.",
-    "nothingDue": "Nothing is due on this invoice."
+    "nothingDue": "Nothing is due on this invoice.",
+    "refund": "Refund"
   },
   "attachments": {
     "deleteTitle": "Delete Attachment",

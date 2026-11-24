@@ -375,7 +375,8 @@
     "noneYet": "Ainda nada pago.",
     "balanceDue": "Valor em dívida",
     "aboveBalance": "O valor em dívida é {amount}. Um pagamento não pode ser superior.",
-    "nothingDue": "Não há nada em dívida nesta fatura."
+    "nothingDue": "Não há nada em dívida nesta fatura.",
+    "refund": "Reembolso"
   },
   "attachments": {
     "deleteTitle": "Eliminar anexo",

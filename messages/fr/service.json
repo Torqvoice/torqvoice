@@ -375,7 +375,8 @@
     "noneYet": "Rien de payé pour l'instant.",
     "balanceDue": "Solde dû",
     "aboveBalance": "Le solde dû est de {amount}. Un paiement ne peut pas le dépasser.",
-    "nothingDue": "Rien n’est dû sur cette facture."
+    "nothingDue": "Rien n’est dû sur cette facture.",
+    "refund": "Remboursement"
   },
   "attachments": {
     "deleteTitle": "Supprimer la Pièce Jointe",

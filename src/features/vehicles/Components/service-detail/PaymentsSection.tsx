@@ -18,11 +18,15 @@ import { Check, CreditCard, Loader2, Plus, Trash2, X } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { useFormatDate } from '@/lib/use-format-date'
+import { useDateSettings } from '@/components/date-settings-context'
+import { workshopTodayKey } from '@/lib/workshop-datetime'
 import { paymentStatusColors, paymentStatusLabels } from './types'
 import type { Payment } from './types'
 import { useModernWorkOrder } from '@/components/work-order-layout-context'
 import { paymentBalanceDue } from '@/features/payments/Lib/balanceDue'
 import { roundMoney } from '@/lib/money'
+import { isRefund, paymentMethodLabel } from '@/features/payments/Lib/paymentMethod'
+import { cn } from '@/lib/utils'
 
 interface PaymentsSectionProps {
   payments: Payment[]
@@ -74,9 +78,13 @@ export function PaymentsSection({
   const modern = useModernWorkOrder()
   const [showForm, setShowForm] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState('other')
-  const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split('T')[0])
+  const { timezone } = useDateSettings()
+  // The workshop's day: in Auckland at 05:00 the UTC day is still yesterday,
+  // and Collected in reports counts a payment on the day it is dated.
+  const [paymentDate, setPaymentDate] = useState(() => workshopTodayKey(timezone))
   const { formatDate } = useFormatDate()
   const formRef = useRef<HTMLDivElement>(null)
+  const methodName = (method: string) => paymentMethodLabel(method, (m) => t(`methodOptions.${m}`))
   const sectionRef = useRef<HTMLDivElement>(null)
   const [amountError, setAmountError] = useState<string | null>(null)
   // What may still be paid, counted the way createPayment counts it: recorded
@@ -258,17 +266,23 @@ export function PaymentsSection({
             {payments.map((payment) => (
               <li
                 key={payment.id}
-                className="flex items-center justify-between gap-2 rounded-lg bg-emerald-500/10 px-3 py-2 text-sm text-emerald-800 dark:text-emerald-300"
+                className={cn(
+                  'flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm',
+                  isRefund(payment.amount)
+                    ? 'bg-muted text-foreground'
+                    : 'bg-emerald-500/10 text-emerald-800 dark:text-emerald-300'
+                )}
               >
                 <span className="min-w-0 truncate">
-                  <strong className="font-semibold capitalize">{payment.method}</strong>
+                  {isRefund(payment.amount) && `${t('refund')} · `}
+                  <strong className="font-semibold">{methodName(payment.method)}</strong>
                   {' · '}
                   {formatDate(new Date(payment.date))}
                   {payment.note ? ` · ${payment.note}` : ''}
                 </span>
                 <span className="flex shrink-0 items-center gap-1">
                   <span className="font-mono font-medium tabular-nums">
-                    {formatCurrency(-payment.amount, currencyCode)}
+                    {formatCurrency(payment.amount, currencyCode)}
                   </span>
                   <Button
                     type="button"
@@ -400,9 +414,14 @@ export function PaymentsSection({
                         {formatCurrency(payment.amount, currencyCode)}
                       </td>
                       <td className="py-1.5">
-                        <Badge variant="outline" className="text-xs capitalize">
-                          {payment.method}
+                        <Badge variant="outline" className="text-xs">
+                          {methodName(payment.method)}
                         </Badge>
+                        {isRefund(payment.amount) && (
+                          <span className="ml-1.5 text-xs text-muted-foreground">
+                            {t('refund')}
+                          </span>
+                        )}
                       </td>
                       <td className="py-1.5 text-muted-foreground">{payment.note || '-'}</td>
                       <td className="py-1.5">

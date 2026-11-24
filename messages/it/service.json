@@ -375,7 +375,8 @@
     "noneYet": "Ancora nessun pagamento.",
     "balanceDue": "Importo dovuto",
     "aboveBalance": "L’importo dovuto è {amount}. Un pagamento non può superarlo.",
-    "nothingDue": "Non c’è nulla da pagare su questa fattura."
+    "nothingDue": "Non c’è nulla da pagare su questa fattura.",
+    "refund": "Rimborso"
   },
   "attachments": {
     "deleteTitle": "Elimina Allegato",
