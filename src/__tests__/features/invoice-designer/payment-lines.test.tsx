@@ -67,10 +67,12 @@ const payments: PaymentSummary = {
   ],
 }
 
+const WORKSHOP = { name: 'ZZ Test Garage', address: '', phone: '', email: '' }
+
 function totalsText(labels?: Record<string, string>, summary: PaymentSummary = payments) {
   const spec = buildInvoicePrintSpec({
     data: invoice,
-    workshop: { name: 'ZZ Test Garage' },
+    workshop: WORKSHOP,
     invoiceSettings: { currencyCode: 'GBP' },
     paymentSummary: summary,
     labels,
@@ -137,7 +139,7 @@ describe('payments on the invoice a customer reads', () => {
   it('shows the same on the shared page', async () => {
     const spec = buildInvoicePrintSpec({
       data: invoice,
-      workshop: { name: 'ZZ Test Garage' },
+      workshop: WORKSHOP,
       invoiceSettings: { currencyCode: 'GBP' },
       paymentSummary: payments,
       labels: await loadPrintLabels('en', {}),
@@ -146,7 +148,7 @@ describe('payments on the invoice a customer reads', () => {
       <InvoiceView
         spec={spec}
         record={{ ...invoice, manuallyPaid: false, payments: [], attachments: [] } as never}
-        workshop={{ name: 'ZZ Test Garage' }}
+        workshop={WORKSHOP}
         currencyCode="GBP"
         orgId="org-1"
         token="tok-1"
