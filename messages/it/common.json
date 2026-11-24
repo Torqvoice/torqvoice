@@ -328,5 +328,19 @@
     "irreversible": "Questa azione non può essere annullata.",
     "andMore": "e altri {count}",
     "typeToConfirm": "Digita <b>{text}</b> per confermare"
+  },
+  "fieldErrors": {
+    "required": "Compila questo campo.",
+    "email": "Inserisci un indirizzo email come nome@esempio.it.",
+    "tooShort": "Usa almeno {limit} caratteri.",
+    "tooLong": "Usa al massimo {limit} caratteri.",
+    "negative": "Non può essere negativo.",
+    "tooSmall": "Deve essere almeno {limit}.",
+    "tooLarge": "Deve essere {limit} o meno.",
+    "notNumber": "Inserisci un numero.",
+    "wholeNumber": "Inserisci un numero intero.",
+    "invalid": "Questo valore non è valido.",
+    "notSaved": "Non salvato. Controlla i campi evidenziati.",
+    "withLabel": "{label}: {problem}"
   }
 }

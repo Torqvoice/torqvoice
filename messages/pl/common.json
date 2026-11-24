@@ -328,5 +328,19 @@
     "irreversible": "Tej operacji nie można cofnąć.",
     "andMore": "i jeszcze {count}",
     "typeToConfirm": "Wpisz <b>{text}</b>, aby potwierdzić"
+  },
+  "fieldErrors": {
+    "required": "Wypełnij to pole.",
+    "email": "Wpisz adres e-mail, np. imie@przyklad.pl.",
+    "tooShort": "Użyj co najmniej {limit} znaków.",
+    "tooLong": "Użyj najwyżej {limit} znaków.",
+    "negative": "Nie może być ujemne.",
+    "tooSmall": "Musi wynosić co najmniej {limit}.",
+    "tooLarge": "Musi wynosić {limit} lub mniej.",
+    "notNumber": "Wpisz liczbę.",
+    "wholeNumber": "Wpisz liczbę całkowitą.",
+    "invalid": "Ta wartość jest nieprawidłowa.",
+    "notSaved": "Nie zapisano. Sprawdź zaznaczone pola.",
+    "withLabel": "{label}: {problem}"
   }
 }

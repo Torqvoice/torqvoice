@@ -127,6 +127,22 @@ describe('typing codes into a work order', () => {
     await waitFor(() => expect(h.refresh).toHaveBeenCalled())
   })
 
+  it('says which pasted words were not codes instead of leaving them out silently', async () => {
+    h.lookup.mockResolvedValue({ success: true, data: { available: true, results: [] } })
+    open()
+
+    fireEvent.change(screen.getByRole('textbox'), {
+      target: { value: 'P0401 p0300, XYZ123' },
+    })
+    expect(screen.getByText('P0401')).toBeInTheDocument()
+    expect(screen.getByText('P0300')).toBeInTheDocument()
+    expect(screen.getByText('Not a fault code, left out: XYZ123')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Add 2 codes' })).toBeEnabled()
+
+    fireEvent.change(screen.getByRole('textbox'), { target: { value: 'P0401 p0300' } })
+    expect(screen.queryByText(/left out/)).not.toBeInTheDocument()
+  })
+
   it('says a meaning is not available while the service is down, and still lets the codes be added', async () => {
     h.lookup.mockResolvedValueOnce({
       success: true,

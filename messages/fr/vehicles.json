@@ -749,6 +749,7 @@
     "added": "{name} ajouté",
     "itemTitle": "Compteurs",
     "noItemMeters": "Aucun compteur sur cet élément.",
-    "addItemMeterHint": "Le compteur suit cet élément, quel que soit l'endroit où il est monté."
+    "addItemMeterHint": "Le compteur suit cet élément, quel que soit l'endroit où il est monté.",
+    "negativeReading": "Un relevé ne peut pas être négatif."
   }
 }

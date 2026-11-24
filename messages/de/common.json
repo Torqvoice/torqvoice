@@ -328,5 +328,19 @@
     "irreversible": "Dies kann nicht rückgängig gemacht werden.",
     "andMore": "und {count} weitere",
     "typeToConfirm": "Geben Sie <b>{text}</b> zur Bestätigung ein"
+  },
+  "fieldErrors": {
+    "required": "Bitte ausfüllen.",
+    "email": "Geben Sie eine E-Mail-Adresse wie name@beispiel.de ein.",
+    "tooShort": "Mindestens {limit} Zeichen.",
+    "tooLong": "Höchstens {limit} Zeichen.",
+    "negative": "Darf nicht negativ sein.",
+    "tooSmall": "Muss mindestens {limit} sein.",
+    "tooLarge": "Darf höchstens {limit} sein.",
+    "notNumber": "Geben Sie eine Zahl ein.",
+    "wholeNumber": "Geben Sie eine ganze Zahl ein.",
+    "invalid": "Dieser Wert ist ungültig.",
+    "notSaved": "Nicht gespeichert. Prüfen Sie die markierten Felder.",
+    "withLabel": "{label}: {problem}"
   }
 }

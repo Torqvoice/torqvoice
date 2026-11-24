@@ -12,8 +12,8 @@ import { useDeferredCommit } from '@/hooks/use-deferred-commit'
 import { useSaveBeforeLeaving } from '@/hooks/use-save-before-leaving'
 import { lineTotal, repricePartRow } from '@/features/inventory/Lib/partPricing'
 import { reconcileConcernRows } from '@/features/vehicles/Lib/concernStory'
-import { addedLaborLines } from '@/features/vehicles/Lib/laborLines'
-import { addedPartLines } from '@/features/vehicles/Lib/partLines'
+import { addedLaborLines, savedLaborShape } from '@/features/vehicles/Lib/laborLines'
+import { addedPartLines, savedPartShape } from '@/features/vehicles/Lib/partLines'
 import {
   recalculateShopFeeLines,
   shopFeeLinesLast,
@@ -187,6 +187,15 @@ export function useServiceFormState({
     setStatus(savedStatus)
   }, [savedStatus])
 
+  /**
+   * The lines of the save on its way to the server, if one is. A refresh can
+   * be read either side of its write; see addedLaborLines.
+   */
+  const sendingLinesRef = useRef<{
+    parts: ServicePartInput[]
+    labor: ServiceLaborInput[]
+  } | null>(null)
+
   const [laborAddedElsewhere, setLaborAddedElsewhere] = useState<ServiceLaborInput[]>([])
   const savedLaborKey = JSON.stringify(initialData.laborItems ?? [])
   const syncedLaborRef = useRef<ServiceLaborInput[]>(initialData.laborItems ?? [])
@@ -199,7 +208,7 @@ export function useServiceFormState({
       setLaborAddedElsewhere([])
       return
     }
-    const added = addedLaborLines(previous, saved)
+    const added = addedLaborLines(previous, saved, sendingLinesRef.current?.labor)
     if (added.length > 0) setLaborAddedElsewhere((current) => [...current, ...added])
   }, [savedLaborKey])
 
@@ -219,22 +228,51 @@ export function useServiceFormState({
       setPartsAddedElsewhere([])
       return
     }
-    const added = addedPartLines(previous, saved)
+    const added = addedPartLines(previous, saved, sendingLinesRef.current?.parts)
     if (added.length > 0) setPartsAddedElsewhere((current) => [...current, ...added])
   }, [savedPartsKey])
 
+  // What is waiting behind the banner as of the last render. A save's answer
+  // reads it: lines that arrived while the save ran are on the server too.
+  const laborPendingRef = useRef(laborAddedElsewhere)
+  const partsPendingRef = useRef(partsAddedElsewhere)
+  useEffect(() => {
+    laborPendingRef.current = laborAddedElsewhere
+  }, [laborAddedElsewhere])
+  useEffect(() => {
+    partsPendingRef.current = partsAddedElsewhere
+  }, [partsAddedElsewhere])
+
   /**
-   * A save went through while the page stays unsaved (a reading held back for
-   * its question): the lines it sent are the server's now. Without this the
-   * refresh after it brought them back as lines added elsewhere, and the next
-   * save sent them twice.
+   * A save went through: the lines it sent are the server's now. The page can
+   * be unsaved again when the refresh after it arrives (a reading held back
+   * for its question, or a preset applied while the save ran). Without this
+   * that refresh was compared with the lines from before the save, the line
+   * just edited read as one added elsewhere, it showed twice, and the next
+   * save sent it twice.
+   *
+   * Two things keep that comparison honest. The lines are kept as the server
+   * returns them (savedLaborShape, savedPartShape), not as typed. And a line
+   * a technician added while the save ran stays known: it is still waiting
+   * behind the banner, and forgetting it here brought it back a second time
+   * with the next refresh. Called from the save that was started in this
+   * render, so the waiting lines that save sent are the first ones counted
+   * here; the rest arrived after it (see commitLaborAddedElsewhere).
    */
+  const laborSent = laborAddedElsewhere.length
+  const partsSent = partsAddedElsewhere.length
   const acknowledgeSavedLines = useCallback(
     (lines: { parts: ServicePartInput[]; labor: ServiceLaborInput[] }) => {
-      syncedPartsRef.current = lines.parts
-      syncedLaborRef.current = lines.labor
+      syncedPartsRef.current = [
+        ...lines.parts.map(savedPartShape),
+        ...partsPendingRef.current.slice(partsSent),
+      ]
+      syncedLaborRef.current = [
+        ...lines.labor.map(savedLaborShape),
+        ...laborPendingRef.current.slice(laborSent),
+      ]
     },
-    []
+    [laborSent, partsSent]
   )
 
   useEffect(() => {
@@ -640,6 +678,7 @@ export function useServiceFormState({
     confirmedReadingRef,
     confirmReading,
     acknowledgeSavedLines,
+    sendingLinesRef,
     /**
      * Whether edits are still unsaved, read at the moment of the call. For
      * code that awaits saveNow and has to know whether the save went

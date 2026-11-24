@@ -20,9 +20,11 @@ import {
 } from '@/components/ui/dialog'
 import { DocsLink } from '@/components/docs-link'
 import { toast } from 'sonner'
+import { useFieldErrors } from '@/components/field-errors'
 import { useGlassModal } from '@/components/glass-modal'
 import { useDateSettings } from '@/components/date-settings-context'
 import { inspectionDueInput } from '../Lib/inspectionDueInput'
+import { VEHICLE_YEAR_MIN, vehicleYearMax } from '../Lib/vehicleYear'
 import type { RegistryLookup } from '../Lib/registryLookup'
 import { createVehicle, updateVehicle } from '../Actions/vehicleActions'
 import type { VehicleDocumentScan } from '../Actions/aiAnalyzeVehicleDocument'
@@ -186,9 +188,16 @@ export function VehicleForm({
   const tDetail = useTranslations('vehicles.detail')
   const { timezone } = useDateSettings()
   const tc = useTranslations('common.buttons')
+  const tCommon = useTranslations('common')
   const format = useFormatter()
   const { formatDay } = useFormatDate()
   const [loading, setLoading] = useState(false)
+  // What the server refused, said under each field it was about.
+  const fieldErrors = useFieldErrors()
+  const { reset: resetFieldErrors } = fieldErrors
+  useEffect(() => {
+    if (!open) resetFieldErrors()
+  }, [open, resetFieldErrors])
   const [preview, setPreview] = useState<string | null>(vehicle?.imageUrl ?? null)
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [selectedCustomerId, setSelectedCustomerId] = useState<string>(
@@ -695,6 +704,19 @@ export function VehicleForm({
         return
       }
 
+      // Refused by the vehicle's own rules (a year out of range, a reading
+      // below zero): each is said under its field, the first is focused,
+      // and everything typed stays where it is.
+      if (!result.success && result.fieldErrors?.length) {
+        const unplaced = fieldErrors.report(formRef.current, result.fieldErrors)
+        toast.error(
+          unplaced.length > 0
+            ? unplaced.map((error) => fieldErrors.text(error)).join(' ')
+            : tCommon('fieldErrors.notSaved')
+        )
+        return
+      }
+
       if (result.success) {
         // The vehicle as a picker shows it, with the owner it was saved under:
         // the one chosen, or the keeper off the papers just made a customer.
@@ -735,7 +757,7 @@ export function VehicleForm({
         if (created && onCreated) onCreated(created)
         else router.refresh()
       } else {
-        modal.open('error', 'Error', result.error || t('saveError'))
+        modal.open('error', tCommon('errors.error'), result.error || t('saveError'))
       }
     } finally {
       setLoading(false)
@@ -856,6 +878,8 @@ export function VehicleForm({
             ref={formRef}
             onSubmit={handleSubmit}
             onInput={readDrafts}
+            // A refused field's mark goes as soon as it is changed.
+            onChange={(e) => fieldErrors.clear((e.target as Element).getAttribute('name') ?? '')}
             className="flex min-h-0 flex-1 flex-col"
           >
             <DialogBody className="space-y-4">
@@ -1132,6 +1156,7 @@ export function VehicleForm({
                       <Input
                         id="licensePlate"
                         name="licensePlate"
+                        {...fieldErrors.invalidProps('licensePlate')}
                         placeholder="ABC-1234"
                         defaultValue={vehicle?.licensePlate ?? ''}
                         className="flex-1"
@@ -1163,6 +1188,7 @@ export function VehicleForm({
                         />
                       )}
                     </div>
+                    {fieldErrors.message('licensePlate')}
                   </div>
 
                   <div className="space-y-2">
@@ -1194,6 +1220,7 @@ export function VehicleForm({
                       <Input
                         id="vin"
                         name="vin"
+                        {...fieldErrors.invalidProps('vin')}
                         placeholder="1HGCM82633A004352"
                         defaultValue={vehicle?.vin ?? ''}
                         autoComplete="off"
@@ -1210,6 +1237,7 @@ export function VehicleForm({
                         />
                       )}
                     </div>
+                    {fieldErrors.message('vin')}
                   </div>
 
                   {/* Under both fields, since either button may have answered */}
@@ -1232,6 +1260,7 @@ export function VehicleForm({
                           <Input
                             id="hsn"
                             name="hsn"
+                            {...fieldErrors.invalidProps('hsn')}
                             placeholder="0603"
                             inputMode="numeric"
                             maxLength={6}
@@ -1239,18 +1268,21 @@ export function VehicleForm({
                             className="font-mono"
                             defaultValue={vehicle?.hsn ?? ''}
                           />
+                          {fieldErrors.message('hsn')}
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="tsn">{t('tsn')}</Label>
                           <Input
                             id="tsn"
                             name="tsn"
+                            {...fieldErrors.invalidProps('tsn')}
                             placeholder="BFQ"
                             maxLength={12}
                             autoComplete="off"
                             className="font-mono uppercase"
                             defaultValue={vehicle?.tsn ?? ''}
                           />
+                          {fieldErrors.message('tsn')}
                         </div>
                       </div>
                       <p className="text-xs text-muted-foreground">{t('typeKeyHint')}</p>
@@ -1263,11 +1295,13 @@ export function VehicleForm({
                       <Input
                         id="fleetNumber"
                         name="fleetNumber"
+                        {...fieldErrors.invalidProps('fleetNumber')}
                         placeholder={t('fleetNumberPlaceholder')}
                         autoComplete="off"
                         className="w-full sm:w-48"
                         defaultValue={vehicle?.fleetNumber ?? ''}
                       />
+                      {fieldErrors.message('fleetNumber')}
                     </div>
                   )}
 
@@ -1277,10 +1311,12 @@ export function VehicleForm({
                       <Input
                         id="inspectionDueAt"
                         name="inspectionDueAt"
+                        {...fieldErrors.invalidProps('inspectionDueAt')}
                         type="date"
                         defaultValue={openedInspectionDue}
                         className="w-full sm:w-48"
                       />
+                      {fieldErrors.message('inspectionDueAt')}
                       <p className="text-xs text-muted-foreground">
                         {vehicle?.inspectionStatus?.source &&
                         vehicle.inspectionStatus.source !== 'manual'
@@ -1298,31 +1334,39 @@ export function VehicleForm({
                       <Input
                         id="make"
                         name="make"
+                        {...fieldErrors.invalidProps('make')}
                         placeholder={isMarine ? 'Boston Whaler' : 'Toyota'}
                         defaultValue={vehicle?.make}
                         required
                       />
+                      {fieldErrors.message('make')}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="model">{t('model')}</Label>
                       <Input
                         id="model"
                         name="model"
+                        {...fieldErrors.invalidProps('model')}
                         placeholder={isMarine ? 'Montauk 170' : 'Camry'}
                         defaultValue={vehicle?.model}
                         required
                       />
+                      {fieldErrors.message('model')}
                     </div>
                     <div className="col-span-2 space-y-2 sm:col-span-1">
                       <Label htmlFor="year">{t('year')}</Label>
                       <Input
                         id="year"
                         name="year"
+                        {...fieldErrors.invalidProps('year')}
                         type="number"
+                        min={VEHICLE_YEAR_MIN}
+                        max={vehicleYearMax()}
                         placeholder="2024"
                         defaultValue={vehicle?.year}
                         required
                       />
+                      {fieldErrors.message('year')}
                     </div>
                   </div>
 
@@ -1368,9 +1412,11 @@ export function VehicleForm({
                       <Input
                         id="engineCode"
                         name="engineCode"
+                        {...fieldErrors.invalidProps('engineCode')}
                         placeholder="2AR-FE"
                         defaultValue={vehicle?.engineCode ?? ''}
                       />
+                      {fieldErrors.message('engineCode')}
                     </div>
                   </div>
 
@@ -1393,11 +1439,13 @@ export function VehicleForm({
                         <Input
                           id="color"
                           name="color"
+                          {...fieldErrors.invalidProps('color')}
                           placeholder="Silver"
                           defaultValue={vehicle?.color ?? ''}
                           className="pl-8"
                         />
                       </div>
+                      {fieldErrors.message('color')}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="mileage">{mileageLabel}</Label>
@@ -1407,10 +1455,14 @@ export function VehicleForm({
                           id="mileage"
                           name="mileage"
                           type="number"
+                          min={0}
                           placeholder="0"
                           value={mileageDraft}
                           onChange={(e) => setMileageDraft(e.target.value)}
-                          aria-describedby={readingNotice ? 'mileage-notice' : undefined}
+                          {...fieldErrors.invalidProps(
+                            'mileage',
+                            readingNotice ? 'mileage-notice' : undefined
+                          )}
                           // No spinner: it would sit on top of the unit, and
                           // nobody steps an odometer reading one at a time.
                           className={cn(
@@ -1427,6 +1479,7 @@ export function VehicleForm({
                           </span>
                         )}
                       </div>
+                      {fieldErrors.message('mileage')}
                       <ReadingNotice
                         id="mileage-notice"
                         entered={mileageDraft}
