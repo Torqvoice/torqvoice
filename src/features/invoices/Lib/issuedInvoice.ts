@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import type { Prisma } from '@/generated/prisma/client'
 import type { ConditionMarkData } from '@/features/condition-map/Lib/marks'
 import type { MarkTypeRow } from '@/features/condition-map/Lib/markTypes'
 import type { InspectionResults } from '@/features/inspections/Lib/inspectionResults'
@@ -564,3 +565,19 @@ export function wasIssuedBeforeTracking(record: {
   if (record.issuedAt) return false
   return Boolean(record.sentAt || record.manuallyPaid || (record.payments?.length ?? 0) > 0)
 }
+
+/**
+ * The invoices that went out, as a query: issued, or reached the customer
+ * before issuing existed (the rows wasIssuedBeforeTracking picks out). A
+ * draft with a due date typed in has not been sent to anyone and cannot be
+ * overdue, so whatever counts unpaid invoices past their due day starts from
+ * this. Use it inside an AND, so it never overwrites the caller's own OR.
+ */
+export const WENT_OUT_WHERE = {
+  OR: [
+    { issuedAt: { not: null } },
+    { sentAt: { not: null } },
+    { manuallyPaid: true },
+    { payments: { some: {} } },
+  ],
+} satisfies Prisma.ServiceRecordWhereInput

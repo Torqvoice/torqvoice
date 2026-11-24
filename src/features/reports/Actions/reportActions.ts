@@ -12,6 +12,7 @@ import { workshopDayRange, workshopMonthKey } from '@/lib/workshop-datetime'
 import { isShopFeeLine } from '@/features/settings/Lib/shopFee'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { shareBilledHours } from '../Lib/sharedBilledHours'
+import { WENT_OUT_WHERE } from '@/features/invoices/Lib/issuedInvoice'
 
 /** Hours a labour line stands for. A shop fee line is one unit of a charge, not an hour. */
 const laborHours = (line: { hours: number; pricingType: string }) =>
@@ -683,6 +684,8 @@ export async function getPastDueInvoicesReport() {
           organizationId,
           invoiceDueDate: { lt: now },
           status: { not: 'cancelled' },
+          // A draft with a due date typed in was never sent, so it is not overdue.
+          AND: [WENT_OUT_WHERE],
         },
         select: {
           id: true,
