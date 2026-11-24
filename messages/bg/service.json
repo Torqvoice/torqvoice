@@ -86,8 +86,8 @@
     "invoiceNumber": "Номер на фактурата",
     "invoiceDate": "Дата на фактурата",
     "invoiceDueDate": "Падеж",
-    "invoiceDateOnIssuePlaceholder": "При изпращане",
-    "invoiceDueDateOnIssuePlaceholder": "По условията за плащане",
+    "invoiceDateOnIssuePlaceholder": "Изпращане",
+    "invoiceDueDateOnIssuePlaceholder": "По условия",
     "invoiceDateOnIssueHint": "Ако остане празно, фактурата се датира с деня на изпращане, а падежът следва условията ви за плащане.",
     "invoiceDueDateOnIssueHint": "Ако остане празно, падежът се определя по условията ви за плащане при изпращане на фактурата.",
     "typeOptions": {

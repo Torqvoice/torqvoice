@@ -86,8 +86,8 @@
     "invoiceNumber": "Sąskaitos numeris",
     "invoiceDate": "Sąskaitos data",
     "invoiceDueDate": "Mokėjimo terminas",
-    "invoiceDateOnIssuePlaceholder": "Išsiuntimo dieną",
-    "invoiceDueDateOnIssuePlaceholder": "Pagal mokėjimo sąlygas",
+    "invoiceDateOnIssuePlaceholder": "Išsiuntus",
+    "invoiceDueDateOnIssuePlaceholder": "Iš sąlygų",
     "invoiceDateOnIssueHint": "Palikus tuščią, sąskaita datuojama jos išsiuntimo diena, o apmokėjimo terminas skaičiuojamas pagal jūsų mokėjimo sąlygas.",
     "invoiceDueDateOnIssueHint": "Palikus tuščią, apmokėjimo terminas nustatomas pagal jūsų mokėjimo sąlygas, kai sąskaita išsiunčiama.",
     "typeOptions": {

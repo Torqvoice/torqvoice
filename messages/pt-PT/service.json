@@ -87,7 +87,7 @@
     "invoiceDate": "Data da fatura",
     "invoiceDueDate": "Data de vencimento",
     "invoiceDateOnIssuePlaceholder": "Ao enviar",
-    "invoiceDueDateOnIssuePlaceholder": "Conforme as condições de pagamento",
+    "invoiceDueDateOnIssuePlaceholder": "Pelo prazo",
     "invoiceDateOnIssueHint": "Se ficar em branco, a fatura fica com a data do dia em que for enviada e vence conforme as suas condições de pagamento.",
     "invoiceDueDateOnIssueHint": "Se ficar em branco, o vencimento é definido pelas suas condições de pagamento quando a fatura for enviada.",
     "typeOptions": {

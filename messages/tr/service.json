@@ -86,8 +86,8 @@
     "invoiceNumber": "Fatura Numarası",
     "invoiceDate": "Fatura tarihi",
     "invoiceDueDate": "Vade tarihi",
-    "invoiceDateOnIssuePlaceholder": "Gönderildiğinde",
-    "invoiceDueDateOnIssuePlaceholder": "Ödeme koşullarına göre",
+    "invoiceDateOnIssuePlaceholder": "Gönderince",
+    "invoiceDueDateOnIssuePlaceholder": "Vadeye göre",
     "invoiceDateOnIssueHint": "Boş bırakılırsa fatura gönderildiği günün tarihini alır ve vadesi ödeme koşullarınıza göre belirlenir.",
     "invoiceDueDateOnIssueHint": "Boş bırakılırsa vade tarihi, fatura gönderildiğinde ödeme koşullarınıza göre belirlenir.",
     "typeOptions": {
