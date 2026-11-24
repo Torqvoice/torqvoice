@@ -92,6 +92,7 @@ export function useServiceActions({
     markDirty,
     confirmedReadingRef,
     acknowledgeSavedLines,
+    sendingLinesRef,
   } = formState
 
   /**
@@ -269,9 +270,13 @@ export function useServiceActions({
     }
 
     let result: Awaited<ReturnType<typeof updateServiceRecord>>
+    // A refresh that lands while this runs must not take these lines, the
+    // page's own, for ones added elsewhere.
+    sendingLinesRef.current = { parts: payload.partItems, labor: payload.laborItems }
     try {
       result = await updateServiceRecord(payload)
     } catch (err) {
+      sendingLinesRef.current = null
       // The request never came back (the connection dropped). Saving has to
       // end here, or the next save, and a link waiting on this one, waits
       // forever.
@@ -279,6 +284,7 @@ export function useServiceActions({
       setLoading(false)
       throw err
     }
+    sendingLinesRef.current = null
 
     if (result.success && holdReading) {
       commitLaborAddedElsewhere()

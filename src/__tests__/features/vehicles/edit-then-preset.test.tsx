@@ -223,3 +223,98 @@ describe('a preset applied right after a line was edited', () => {
     expect(sent().laborItems).toEqual([PRESET, EDITED, FROM_THE_BAY])
   })
 })
+
+const SECOND_FROM_THE_BAY = labor('ZZ Brake fluid flush', 0.5)
+const SCANNED = part('ZZ Front pads', 72)
+const SECOND_SCANNED = part('ZZ Wear sensor', 15)
+
+/** Edit, save (held open), and apply a preset while it runs, so the page stays unsaved. */
+function editSaveAndPreset() {
+  const view = openPage()
+  act(() => view.page().dirtySetLaborItems([EDITED]))
+  const finish = heldSave()
+  let saving: Promise<void> = Promise.resolve()
+  act(() => {
+    saving = view.submit()
+  })
+  applyPreset(view.page)
+  const land = () =>
+    act(async () => {
+      finish()
+      await saving
+    })
+  return { ...view, land }
+}
+
+describe('lines a technician adds while a save runs', () => {
+  it('a read taken after the save wrote: each line waits once and is saved once', async () => {
+    const { page, submit, refresh, land } = editSaveAndPreset()
+
+    // The technician's line and part, read with the desk's own edit already on the server.
+    refresh([EDITED, FROM_THE_BAY], [DESK_PART, SCANNED])
+    expect(page().laborAddedElsewhere).toEqual([FROM_THE_BAY])
+    expect(page().partsAddedElsewhere).toEqual([SCANNED])
+
+    await land()
+    // Another line and part arrive; the first ones are still on the job.
+    refresh([EDITED, FROM_THE_BAY, SECOND_FROM_THE_BAY], [DESK_PART, SCANNED, SECOND_SCANNED])
+    expect(page().laborAddedElsewhere).toEqual([FROM_THE_BAY, SECOND_FROM_THE_BAY])
+    expect(page().partsAddedElsewhere).toEqual([SCANNED, SECOND_SCANNED])
+
+    await act(() => submit())
+    expect(sent().laborItems).toEqual([PRESET, EDITED, FROM_THE_BAY, SECOND_FROM_THE_BAY])
+    expect(sent().partItems).toEqual([PRESET_PART, DESK_PART, SCANNED, SECOND_SCANNED])
+  })
+
+  it('a read taken before the save wrote: the old line is not offered, the new one is saved once', async () => {
+    const { page, submit, refresh, land } = editSaveAndPreset()
+
+    refresh([ORIGINAL, FROM_THE_BAY])
+    expect(page().laborAddedElsewhere).toEqual([FROM_THE_BAY])
+
+    await land()
+    // The save replaced every line, so the server lost the technician's line
+    // for now; the page still holds it, and the next save puts it back.
+    refresh([EDITED])
+    expect(page().laborAddedElsewhere).toEqual([FROM_THE_BAY])
+    refresh([EDITED, SECOND_FROM_THE_BAY])
+    expect(page().laborAddedElsewhere).toEqual([FROM_THE_BAY, SECOND_FROM_THE_BAY])
+
+    await act(() => submit())
+    expect(sent().laborItems).toEqual([PRESET, EDITED, FROM_THE_BAY, SECOND_FROM_THE_BAY])
+  })
+})
+
+describe('saved lines compared as the server returns them', () => {
+  it('hours typed as text, and a preset part with empty links, are not read as added elsewhere', async () => {
+    const { page, submit, refresh } = openPage()
+
+    // Typed into the boxes: the editor keeps the strings.
+    act(() => {
+      page().updateLabor(0, 'description', 'ZZ Repro B')
+      page().updateLabor(0, 'hours', '1.5')
+    })
+    expect(page().laborItems[0].hours).toBe('1.5')
+    // A preset part carries '' for its part number and inventory link.
+    act(() => page().dirtySetPartItems((prev) => [PRESET_PART, ...prev]))
+    const finish = heldSave()
+    let saving: Promise<void> = Promise.resolve()
+    act(() => {
+      saving = submit()
+    })
+    // Edited while it runs, so the page is unsaved when the read comes back.
+    act(() => page().dirtySetLaborItems((prev) => [...prev, PRESET]))
+    await act(async () => {
+      finish()
+      await saving
+    })
+    // What the server hands back: numbers, and no inventory link at all.
+    refresh([EDITED], [{ ...PRESET_PART, inventoryPartId: undefined }, DESK_PART])
+
+    expect(page().laborAddedElsewhere).toEqual([])
+    expect(page().partsAddedElsewhere).toEqual([])
+    await act(() => submit())
+    expect(sent().laborItems.map((l) => l.description)).toEqual(['ZZ Repro B', 'ZZ Oil service'])
+    expect(sent().partItems.map((p) => p.name)).toEqual(['ZZ Oil filter', 'ZZ Brake cleaner'])
+  })
+})
