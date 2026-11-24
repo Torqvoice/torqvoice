@@ -749,6 +749,7 @@
     "added": "{name} adicionado",
     "itemTitle": "Medidores",
     "noItemMeters": "Nenhum medidor neste item.",
-    "addItemMeterHint": "O medidor acompanha este item onde quer que esteja instalado."
+    "addItemMeterHint": "O medidor acompanha este item onde quer que esteja instalado.",
+    "negativeReading": "Uma leitura não pode ser negativa."
   }
 }

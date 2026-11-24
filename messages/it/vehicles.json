@@ -749,6 +749,7 @@
     "added": "{name} aggiunto",
     "itemTitle": "Contatori",
     "noItemMeters": "Nessun contatore su questo elemento.",
-    "addItemMeterHint": "Il contatore segue questo elemento ovunque sia montato."
+    "addItemMeterHint": "Il contatore segue questo elemento ovunque sia montato.",
+    "negativeReading": "Una lettura non può essere negativa."
   }
 }

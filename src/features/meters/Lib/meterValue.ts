@@ -45,6 +45,29 @@ export function parseMeterValue(text: string | number | null | undefined): numbe
   return finish(`${head}${groups.map((g) => g.trim()).join('')}${decimal ? `.${decimals}` : ''}`)
 }
 
+/**
+ * Why a typed reading was refused, so the person is told the thing they can
+ * fix: a minus in front of an otherwise good reading is `negative` ("can't be
+ * negative", not "type it as a number"), anything else that does not read is
+ * `invalid`. Null when it reads.
+ */
+export function meterValueProblem(
+  text: string | number | null | undefined
+): 'negative' | 'invalid' | null {
+  if (parseMeterValue(text) !== null) return null
+  if (typeof text === 'number') return text < 0 ? 'negative' : 'invalid'
+  const raw = (text ?? '').trim()
+  const unsigned = raw.replace(/^[-−]\s*/, '')
+  if (unsigned !== raw && parseMeterValue(unsigned) !== null) return 'negative'
+  return 'invalid'
+}
+
+/** The words for a refused reading, as a key under vehicles.meters. */
+export const METER_PROBLEM_KEY = {
+  negative: 'negativeReading',
+  invalid: 'invalidReading',
+} as const
+
 function finish(normalized: string): number | null {
   const value = Number(normalized)
   return validMeterValue(value) ? value : null

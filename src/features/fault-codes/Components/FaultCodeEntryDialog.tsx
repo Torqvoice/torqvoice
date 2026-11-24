@@ -26,7 +26,7 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import { addFaultCodeFindings } from '../Actions/addFaultCodeFindings'
 import { lookupFaultCodes } from '../Actions/lookupFaultCodes'
-import { extractFaultCodes, isManufacturerCode } from '../Lib/codes'
+import { extractFaultCodes, isManufacturerCode, unrecognisedCodeWords } from '../Lib/codes'
 import type { FaultCodeView } from '../Lib/types'
 import { FaultCodeChip, FaultStatusBadge, MeaningSourceLabel, MeaningText } from './FaultCodeChip'
 
@@ -95,6 +95,12 @@ export function FaultCodeEntryDialog({
     [text, oemSource]
   )
   const codes = found.filter((c) => !removed.has(c.code))
+  // Words that look like a code and are not one: said, so a code mistyped off
+  // the scan tool is not left out without a word.
+  const unrecognised = useMemo(
+    () => unrecognisedCodeWords(text, { oem: oemSource !== null }),
+    [text, oemSource]
+  )
 
   // Ask once per code, for the codes not asked about yet.
   useEffect(() => {
@@ -178,7 +184,20 @@ export function FaultCodeEntryDialog({
               className="font-mono"
               spellCheck={false}
               autoCapitalize="characters"
+              aria-describedby={unrecognised.length > 0 ? 'fault-code-unrecognised' : undefined}
             />
+            {unrecognised.length > 0 && (
+              <p
+                id="fault-code-unrecognised"
+                role="status"
+                className="text-xs text-amber-600 dark:text-amber-500"
+              >
+                {t('unrecognised', {
+                  count: unrecognised.length,
+                  codes: unrecognised.join(', '),
+                })}
+              </p>
+            )}
           </div>
 
           {codes.length === 0 ? (
