@@ -57,6 +57,7 @@
     "partsCostDesc": "Inkoopkosten van gebruikte onderdelen",
     "netProfitDesc": "Nettowinst onderdelen plus arbeidsinkomsten",
     "monthlyRevenue": "Maandelijkse Omzet",
+    "dateBasisHint": "Omzet en btw tellen elke factuur op de factuurdatum. Ontvangen telt elke betaling op de dag dat die binnenkwam.",
     "revenueByType": "Omzet per Type",
     "monthlyBreakdown": "Maandelijks Overzicht",
     "tableHeaders": {

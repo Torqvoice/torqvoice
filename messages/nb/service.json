@@ -86,6 +86,10 @@
     "invoiceNumber": "Fakturanummer",
     "invoiceDate": "Fakturadato",
     "invoiceDueDate": "Forfallsdato",
+    "invoiceDateOnIssuePlaceholder": "Ved sending",
+    "invoiceDueDateOnIssuePlaceholder": "Etter vilkår",
+    "invoiceDateOnIssueHint": "Står feltet tomt, dateres fakturaen den dagen den sendes, og forfaller etter betalingsbetingelsene dine.",
+    "invoiceDueDateOnIssueHint": "Står feltet tomt, settes forfallsdatoen etter betalingsbetingelsene dine når fakturaen sendes.",
     "typeOptions": {
       "maintenance": "Vedlikehold",
       "repair": "Reparasjon",

@@ -57,6 +57,7 @@
     "partsCostDesc": "Coste de compra de piezas usadas en servicios",
     "netProfitDesc": "Beneficio neto de repuestos más ingresos de mano de obra",
     "monthlyRevenue": "Ingresos Mensuales",
+    "dateBasisHint": "Los ingresos y los impuestos cuentan cada factura en su fecha de factura. Lo cobrado cuenta cada pago el día en que se recibió.",
     "revenueByType": "Ingresos por Tipo",
     "monthlyBreakdown": "Desglose Mensual",
     "tableHeaders": {

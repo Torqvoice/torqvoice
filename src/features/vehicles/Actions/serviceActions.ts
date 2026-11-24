@@ -562,10 +562,10 @@ export async function createServiceRecord(input: unknown) {
             // Reports and the calendar find a job by when it started; a job
             // without a start is in none of them.
             startDateTime: startsAt,
-            invoiceDate:
-              toSafeWorkshopDate(invoiceDate, timeZone) ??
-              toSafeWorkshopDate(serviceDate, timeZone) ??
-              new Date(),
+            // Only a date somebody chose. Without one the invoice is dated
+            // the day it is issued (invoiceDateAtIssue), not the day the job
+            // was opened.
+            invoiceDate: toSafeWorkshopDate(invoiceDate, timeZone) ?? null,
             invoiceDueDate: toSafeWorkshopDate(invoiceDueDate, timeZone),
             ...warranty,
             warrantyExpiresAt: warrantyExpiryFor(warranty, warrantyStartsOn, timeZone),

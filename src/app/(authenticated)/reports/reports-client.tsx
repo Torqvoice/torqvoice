@@ -1142,6 +1142,7 @@ export default function ReportsClient({
                     </CardContent>
                   </Card>
                 </div>
+                <p className="text-xs text-muted-foreground">{t('revenue.dateBasisHint')}</p>
 
                 {/* Net Profit breakdown */}
                 <AppCard title={t('revenue.netProfit')}>
@@ -1529,6 +1530,7 @@ export default function ReportsClient({
                     </CardContent>
                   </Card>
                 </div>
+                <p className="text-xs text-muted-foreground">{t('revenue.dateBasisHint')}</p>
 
                 {taxData.monthly.length > 0 && (
                   <AppCard title={t('tax.monthlyTaxCollected')}>

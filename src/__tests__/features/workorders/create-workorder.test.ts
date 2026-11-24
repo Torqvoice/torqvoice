@@ -1215,3 +1215,62 @@ describe('createDraftServiceRecord — shop fee', () => {
     expect(data.laborItems).toBeUndefined()
   })
 })
+
+// ---------------------------------------------------------------------------
+// Invoice date: a job opened today is not an invoice dated today. The invoice
+// is dated the day it is issued, so a new job carries no invoice date unless
+// somebody gave it one.
+// ---------------------------------------------------------------------------
+
+describe('new work orders and the invoice date', () => {
+  function transactionWith(mockCreate: ReturnType<typeof vi.fn>) {
+    vi.mocked(db.$transaction).mockImplementation(async (fn: any) =>
+      fn({
+        serviceRecord: { create: mockCreate },
+        servicePart: { createMany: vi.fn() },
+        serviceLabor: { createMany: vi.fn() },
+        serviceAttachment: { createMany: vi.fn() },
+        inventoryPart: { findFirst: vi.fn(), update: vi.fn() },
+      })
+    )
+  }
+
+  it('leaves the invoice date empty on a job opened without one', async () => {
+    setupAuth()
+    setupCommonMocks()
+    const mockCreate = vi.fn().mockResolvedValue({ id: 'sr-1' })
+    transactionWith(mockCreate)
+
+    await createServiceRecord({ vehicleId: VEHICLE_ID, title: 'Brakes', serviceDate: '2026-09-03' })
+
+    expect(mockCreate.mock.calls[0][0].data.invoiceDate).toBeNull()
+  })
+
+  it('keeps an invoice date the caller chose', async () => {
+    setupAuth()
+    setupCommonMocks()
+    const mockCreate = vi.fn().mockResolvedValue({ id: 'sr-1' })
+    transactionWith(mockCreate)
+
+    await createServiceRecord({
+      vehicleId: VEHICLE_ID,
+      title: 'Brakes',
+      serviceDate: '2026-09-03',
+      invoiceDate: '2026-09-10',
+    })
+
+    expect(mockCreate.mock.calls[0][0].data.invoiceDate).toEqual(new Date('2026-09-10T00:00:00Z'))
+  })
+
+  it('opens a draft from the board without an invoice date', async () => {
+    setupAuth()
+    setupCommonMocks()
+    vi.mocked(db.serviceRecord.create).mockResolvedValue({ id: 'sr-draft' } as any)
+
+    await createDraftServiceRecord(VEHICLE_ID)
+
+    const data = vi.mocked(db.serviceRecord.create).mock.calls[0][0].data as any
+    expect(data.invoiceDate).toBeUndefined()
+    expect(data.serviceDate).toBeInstanceOf(Date)
+  })
+})

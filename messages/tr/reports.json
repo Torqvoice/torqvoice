@@ -57,6 +57,7 @@
     "partsCostDesc": "Servislerde kullanılan parçaların alış maliyeti",
     "netProfitDesc": "Parça net kârı artı işçilik geliri",
     "monthlyRevenue": "Aylık Gelir",
+    "dateBasisHint": "Gelir ve vergi her faturayı fatura tarihinde sayar. Tahsil edilen her ödemeyi alındığı günde sayar.",
     "revenueByType": "Türe Göre Gelir",
     "monthlyBreakdown": "Aylık Döküm",
     "tableHeaders": {

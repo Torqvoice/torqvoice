@@ -30,6 +30,7 @@ vi.mock('@/lib/db', () => ({
   db: {
     user: { findUnique: vi.fn() },
     serviceRecord: { findMany: vi.fn() },
+    payment: { findMany: vi.fn() },
     servicePart: { findMany: vi.fn() },
     customer: { findMany: vi.fn() },
     vehicle: { findFirst: vi.fn() },
@@ -64,6 +65,7 @@ function setupAuth() {
 
 beforeEach(() => {
   vi.resetAllMocks()
+  vi.mocked(db.payment.findMany).mockResolvedValue([])
 })
 
 // ---------------------------------------------------------------------------

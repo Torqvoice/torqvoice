@@ -57,6 +57,7 @@
     "partsCostDesc": "Koszt zakupu części użytych w usługach",
     "netProfitDesc": "Zysk netto z części plus przychód z robocizny",
     "monthlyRevenue": "Przychody Miesięczne",
+    "dateBasisHint": "Przychody i podatek liczą każdą fakturę według daty faktury. Wpłacone liczy każdą płatność w dniu jej otrzymania.",
     "revenueByType": "Przychody wg Typu",
     "monthlyBreakdown": "Zestawienie Miesięczne",
     "tableHeaders": {

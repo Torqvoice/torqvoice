@@ -57,6 +57,7 @@
     "partsCostDesc": "Costo di acquisto dei ricambi utilizzati",
     "netProfitDesc": "Profitto netto ricambi più ricavi manodopera",
     "monthlyRevenue": "Ricavi Mensili",
+    "dateBasisHint": "Ricavi e imposte contano ogni fattura alla sua data di fattura. L’incassato conta ogni pagamento nel giorno in cui è stato ricevuto.",
     "revenueByType": "Ricavi per Tipo",
     "monthlyBreakdown": "Riepilogo Mensile",
     "tableHeaders": {

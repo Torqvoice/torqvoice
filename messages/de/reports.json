@@ -57,6 +57,7 @@
     "partsCostDesc": "Einkaufskosten der verwendeten Teile",
     "netProfitDesc": "Ersatzteil-Nettogewinn plus Arbeitsumsatz",
     "monthlyRevenue": "Monatlicher Umsatz",
+    "dateBasisHint": "Umsatz und Steuer zählen jede Rechnung zu ihrem Rechnungsdatum. Eingenommen zählt jede Zahlung an dem Tag, an dem sie eingegangen ist.",
     "revenueByType": "Umsatz nach Typ",
     "monthlyBreakdown": "Monatliche Aufschlüsselung",
     "tableHeaders": {
