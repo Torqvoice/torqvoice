@@ -6,8 +6,8 @@
     "description": "Descrição",
     "itemCount": "Itens",
     "type": "Tipo",
-    "hrs": "h",
-    "units": "unidade(s)"
+    "hoursCount": "{hours, number} h",
+    "unitsCount": "{units, plural, one {# unidade} other {# unidades}}"
   },
   "empty": {
     "noMatch": "Nenhum modelo corresponde à sua pesquisa.",

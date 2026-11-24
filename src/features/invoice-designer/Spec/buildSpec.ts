@@ -2270,9 +2270,9 @@ function footer(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
   if (data.branding) {
     // The workshop's own closing line stays on its own row, so the mark below
     // it reads as a signature on the sheet rather than a tail on their
-    // sentence. This is the one place the branding is meant to be seen: the
-    // header and totals carry it quietly, and three loud mentions on a
-    // customer's invoice would read as an advert rather than a credit.
+    // sentence. The footer is where the mark lives (see brandingHome): it
+    // repeats on every sheet, and the header and totals leave it out, since
+    // three mentions on a customer's invoice read as an advert, not a credit.
     if (note) {
       children.push({
         kind: 'text',
@@ -2403,6 +2403,32 @@ function blockFor(
   }
 }
 
+type BrandingHome = 'footer' | 'header' | 'totals' | null
+
+/**
+ * The one section that prints the "Powered by Torqvoice" mark.
+ *
+ * The header, the totals and the footer each used to print it, so page one
+ * of an invoice carried it three times. The footer is the place: it is
+ * pinned to the foot of every sheet, so the mark sits once on each page in
+ * the same spot. A layout that hides its footer puts it under the
+ * letterhead instead, and one with neither under the totals, so hiding a
+ * section never removes the mark. Whether a sheet carries it at all is
+ * decided before this, by whoever passes `branding` (licensing).
+ */
+export function brandingHome(sections: InvoiceSection[], data: DocumentData): BrandingHome {
+  if (!data.branding) return null
+  for (const id of ['footer', 'header', 'totals'] as const) {
+    if (sections.some((s) => s.id === id && s.visible)) return id
+  }
+  return null
+}
+
+/** The data a section is built from: the mark only for the section that prints it. */
+function dataFor(sectionId: string, data: DocumentData, home: BrandingHome): DocumentData {
+  return data.branding && sectionId !== home ? { ...data, branding: undefined } : data
+}
+
 export function buildDocumentSpec(
   layout: InvoiceLayoutConfig,
   theme: DocumentTheme,
@@ -2426,9 +2452,10 @@ export function buildDocumentSpec(
   // Only the default placement rides the band; a letterhead somebody dragged
   // elsewhere leaves the band at its usual height.
   const headerSection = ordered.find((s) => s.id === 'header' && s.visible)
+  const home = brandingHome(ordered, data)
   const bandHeight =
     framed && headerSection && !anchors.header
-      ? framedBandHeight(headerSection, theme, data)
+      ? framedBandHeight(headerSection, theme, dataFor('header', data, home))
       : FRAMED.bandHeight
   const framedTop = bandHeight + FRAMED_BAND_GAP
 
@@ -2441,7 +2468,13 @@ export function buildDocumentSpec(
       (section.column ? (contentWidth - BLOCK_GAP) / 2 : contentWidth) -
         (section.style?.marginLeft ?? 0) -
         (section.style?.marginRight ?? 0)
-    const content = blockFor(section, theme, data, blockWidth, documentType)
+    const content = blockFor(
+      section,
+      theme,
+      dataFor(section.id, data, home),
+      blockWidth,
+      documentType
+    )
     if (!content) return
 
     const placement: Placement =

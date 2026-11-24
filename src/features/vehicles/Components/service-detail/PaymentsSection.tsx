@@ -128,7 +128,7 @@ export function PaymentsSection({
   const paymentForm = (
     <div
       ref={formRef}
-      className="space-y-3 rounded-lg border p-3"
+      className="@container space-y-3 rounded-lg border p-3"
       onKeyDown={(e) => {
         if (e.key === 'Enter' && e.target instanceof HTMLInputElement) {
           e.preventDefault()
@@ -136,7 +136,10 @@ export function PaymentsSection({
         }
       }}
     >
-      <div className="grid gap-3 sm:grid-cols-2">
+      {/* Two columns only where the form itself has room for them: in the
+          work order sidebar the screen is wide but the form is not, and two
+          columns there cut the date to "24/11/202". */}
+      <div className="grid gap-3 @xs:grid-cols-2">
         <div className="space-y-1">
           <Label htmlFor="paymentAmount" className="text-xs">
             {t('amount')}

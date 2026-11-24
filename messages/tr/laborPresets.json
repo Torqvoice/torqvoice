@@ -6,8 +6,8 @@
     "description": "Açıklama",
     "itemCount": "Kalemler",
     "type": "Tür",
-    "hrs": "saat",
-    "units": "adet"
+    "hoursCount": "{hours, number} saat",
+    "unitsCount": "{units, number} adet"
   },
   "empty": {
     "noMatch": "Aramanızla eşleşen şablon bulunamadı.",

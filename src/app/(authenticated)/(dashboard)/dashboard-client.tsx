@@ -387,6 +387,12 @@ export function DashboardClient({
   const tWorkOrders = useTranslations('workOrders')
   // The customer page already ships every label a service request needs.
   const tCustomerRequests = useTranslations('customers.serviceRequests')
+  // An observation's severity is stored as a key ("needs_work"); the work
+  // order and the observations page call it High, Medium or Low.
+  const severityLabel = (severity: string) => {
+    const key = `findings.severity.${severity}`
+    return tVehicles.has(key) ? tVehicles(key as 'findings.severity.urgent') : severity
+  }
   const distUnit = unitSystem === 'metric' ? 'km' : 'mi'
   const router = useRouter()
   const { formatDate } = useFormatDate()
@@ -2020,8 +2026,10 @@ export function DashboardClient({
                       // and returns a placeholder rather than throwing, so a catch
                       // never runs and the raw key reaches the screen.
                       const friendlyAction = tAudit.has(actionKey) ? tAudit(actionKey) : log.action
-                      const entityLabel =
-                        vehicleDisplay ?? quoteNumber ?? log.entityId?.substring(0, 8)
+                      // Only a name a person knows the record by. The record's
+                      // id meant nothing to anyone ("— cmwuyxad"), and the
+                      // line under it already names the record by its number.
+                      const entityLabel = vehicleDisplay ?? quoteNumber
                       const row = (
                         <>
                           <div className="min-w-0">
@@ -2102,7 +2110,7 @@ export function DashboardClient({
                               variant="outline"
                               className={`shrink-0 px-1.5 py-0 text-[10px] ${observationSeverityColors[obs.severity] || ''}`}
                             >
-                              {obs.severity}
+                              {severityLabel(obs.severity)}
                             </Badge>
                             <span className="min-w-0 max-w-full truncate font-mono text-[11px] text-muted-foreground">
                               {obs.vehicle.licensePlate ?? `${vehicleName(obs.vehicle)}`}
@@ -2145,7 +2153,7 @@ export function DashboardClient({
                                         variant="outline"
                                         className={`text-[10px] px-1.5 py-0 ${observationSeverityColors[obs.severity] || ''}`}
                                       >
-                                        {obs.severity}
+                                        {severityLabel(obs.severity)}
                                       </Badge>
                                     </TableCell>
                                     <TableCell className="py-1.5 font-mono text-xs text-muted-foreground truncate">

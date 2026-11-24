@@ -6,8 +6,8 @@
     "description": "Beschreibung",
     "itemCount": "Positionen",
     "type": "Typ",
-    "hrs": "Std.",
-    "units": "Einheit(en)"
+    "hoursCount": "{hours, number} Std.",
+    "unitsCount": "{units, number} Einheit(en)"
   },
   "empty": {
     "noMatch": "Keine Vorlagen entsprechen Ihrer Suche.",

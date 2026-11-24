@@ -6,8 +6,8 @@
     "description": "Beschrijving",
     "itemCount": "Posten",
     "type": "Type",
-    "hrs": "u",
-    "units": "eenh."
+    "hoursCount": "{hours, number} u",
+    "unitsCount": "{units, number} eenh."
   },
   "empty": {
     "noMatch": "Geen sjablonen komen overeen met uw zoekopdracht.",

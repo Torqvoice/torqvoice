@@ -5,6 +5,7 @@ import { interactiveRow } from '@/lib/interactive-row'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useFormatDate } from '@/lib/use-format-date'
 import {
   Plus,
   Copy,
@@ -96,6 +97,7 @@ export function StatusReportList({
 }: StatusReportListProps) {
   const t = useTranslations('statusReport.list')
   const router = useRouter()
+  const { formatDateTime: formatWorkshopDateTime } = useFormatDate()
   const [showCreate, setShowCreate] = useState(false)
   const tableNav = useTableKeyboardNav()
   const [sendReportId, setSendReportId] = useState<string | null>(null)
@@ -466,11 +468,9 @@ export function StatusReportList({
                     <div>
                       <p className="text-xs text-muted-foreground">{t('expires')}</p>
                       <p className="mt-0.5">
-                        {new Date(detailReport.expiresAt).toLocaleDateString(undefined, {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })}
+                        {/* On the workshop's clock, as the customer's page
+                            names the day: the browser's could be a day off. */}
+                        {formatWorkshopDateTime(detailReport.expiresAt)}
                       </p>
                     </div>
                   )}

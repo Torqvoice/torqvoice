@@ -36,6 +36,7 @@ import { TableContextMenuHint } from '@/components/table-context-menu-hint'
 import { useGlassModal } from '@/components/glass-modal'
 import { useConfirm } from '@/components/confirm-dialog'
 import { LaborPresetForm } from '@/features/labor-presets/Components/LaborPresetForm'
+import { presetTotals } from '@/features/labor-presets/Lib/presetTotals'
 import {
   deleteLaborPreset,
   getLaborPreset,
@@ -230,10 +231,7 @@ export function LaborPresetsClient({
           </div>
         ) : (
           data.presets.map((preset) => {
-            const hourlyItems = preset.items.filter((i) => i.pricingType !== 'service')
-            const serviceItems = preset.items.filter((i) => i.pricingType === 'service')
-            const totalHours = hourlyItems.reduce((sum, i) => sum + i.hours, 0)
-            const totalUnits = serviceItems.reduce((sum, i) => sum + i.hours, 0)
+            const { totalHours, totalUnits } = presetTotals(preset.items)
             return (
               <div key={preset.id} className="flex items-start gap-2 rounded-lg border bg-card p-3">
                 <button
@@ -253,12 +251,12 @@ export function LaborPresetsClient({
                     </span>
                     {totalHours > 0 && (
                       <span className="inline-flex items-center rounded-md border border-emerald-500/30 bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-medium text-emerald-600">
-                        {totalHours} {t('table.hrs')}
+                        {t('table.hoursCount', { hours: totalHours })}
                       </span>
                     )}
                     {totalUnits > 0 && (
                       <span className="inline-flex items-center rounded-md border border-blue-500/30 bg-blue-500/10 px-1.5 py-0.5 text-[10px] font-medium text-blue-600">
-                        {totalUnits} {t('table.units')}
+                        {t('table.unitsCount', { units: totalUnits })}
                       </span>
                     )}
                   </div>
@@ -350,24 +348,17 @@ export function LaborPresetsClient({
                       <TableCell>{preset._count.items}</TableCell>
                       <TableCell className="hidden md:table-cell">
                         {(() => {
-                          const hourlyItems = preset.items.filter(
-                            (i) => i.pricingType !== 'service'
-                          )
-                          const serviceItems = preset.items.filter(
-                            (i) => i.pricingType === 'service'
-                          )
-                          const totalHours = hourlyItems.reduce((sum, i) => sum + i.hours, 0)
-                          const totalUnits = serviceItems.reduce((sum, i) => sum + i.hours, 0)
+                          const { totalHours, totalUnits } = presetTotals(preset.items)
                           return (
                             <div className="flex gap-1.5">
                               {totalHours > 0 && (
                                 <span className="inline-flex items-center rounded-md border px-1.5 py-0.5 text-[10px] font-medium border-emerald-500/30 bg-emerald-500/10 text-emerald-600">
-                                  {totalHours} {t('table.hrs')}
+                                  {t('table.hoursCount', { hours: totalHours })}
                                 </span>
                               )}
                               {totalUnits > 0 && (
                                 <span className="inline-flex items-center rounded-md border px-1.5 py-0.5 text-[10px] font-medium border-blue-500/30 bg-blue-500/10 text-blue-600">
-                                  {totalUnits} {t('table.units')}
+                                  {t('table.unitsCount', { units: totalUnits })}
                                 </span>
                               )}
                             </div>

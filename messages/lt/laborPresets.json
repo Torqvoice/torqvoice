@@ -6,8 +6,8 @@
     "description": "Aprašymas",
     "itemCount": "Elementai",
     "type": "Tipas",
-    "hrs": "val.",
-    "units": "vnt."
+    "hoursCount": "{hours, number} val.",
+    "unitsCount": "{units, number} vnt."
   },
   "empty": {
     "noMatch": "Nėra šablonų, atitinkančių paiešką.",
@@ -43,7 +43,7 @@
     "itemDescriptionPlaceholder": "Aprašymas *",
     "addItem": "Pridėti elementą",
     "cancel": "Atšaukti",
-    "create": "Sukurti paketą",
+    "create": "Sukurti",
     "saveChanges": "Išsaugoti pakeitimus",
     "hourlyTag": "VAL",
     "serviceTag": "PSL",
