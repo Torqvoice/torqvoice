@@ -18,6 +18,8 @@ import { Check, CreditCard, Loader2, Plus, Trash2, X } from 'lucide-react'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { useFormatDate } from '@/lib/use-format-date'
+import { useDateSettings } from '@/components/date-settings-context'
+import { workshopTodayKey } from '@/lib/workshop-datetime'
 import { paymentStatusColors, paymentStatusLabels } from './types'
 import type { Payment } from './types'
 import { useModernWorkOrder } from '@/components/work-order-layout-context'
@@ -72,7 +74,10 @@ export function PaymentsSection({
   const modern = useModernWorkOrder()
   const [showForm, setShowForm] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState('other')
-  const [paymentDate, setPaymentDate] = useState(new Date().toISOString().split('T')[0])
+  const { timezone } = useDateSettings()
+  // The workshop's day: in Auckland at 05:00 the UTC day is still yesterday,
+  // and Collected in reports counts a payment on the day it is dated.
+  const [paymentDate, setPaymentDate] = useState(() => workshopTodayKey(timezone))
   const { formatDate } = useFormatDate()
   const formRef = useRef<HTMLDivElement>(null)
   const sectionRef = useRef<HTMLDivElement>(null)

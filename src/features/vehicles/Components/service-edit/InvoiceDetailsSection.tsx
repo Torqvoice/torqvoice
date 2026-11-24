@@ -1,5 +1,7 @@
 'use client'
 
+import { useDateSettings } from '@/components/date-settings-context'
+import { workshopTodayKey } from '@/lib/workshop-datetime'
 import { useEffect, useState } from 'react'
 import type { DesignAutoRule } from '@/features/invoice-designer/Lib/designRules'
 import { useTranslations } from 'next-intl'
@@ -76,6 +78,7 @@ export function InvoiceDetailsSection({
   part,
 }: InvoiceDetailsSectionProps) {
   const t = useTranslations('service.basicInfo')
+  const { timezone } = useDateSettings()
   const router = useRouter()
   // Saved on change rather than with the form: the choice is its own edit,
   // the way the schedule card's technician is, and must not wait for a save
@@ -151,7 +154,7 @@ export function InvoiceDetailsSection({
       <input
         type="hidden"
         name="serviceDate"
-        value={initialData.serviceDate || new Date().toISOString().split('T')[0]}
+        value={initialData.serviceDate || workshopTodayKey(timezone)}
       />
 
       <div
