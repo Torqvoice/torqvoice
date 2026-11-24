@@ -185,7 +185,8 @@
     "skipped": "{count, plural, one {# kode var allerede på denne jobben} other {# koder var allerede på denne jobben}}",
     "failed": "Kunne ikke legge til kodene",
     "descriptionOem": "Skriv eller lim inn koder fra skanneren, OBD-koder som P0420 eller BMW-koder som 2A82. Hver kode blir en observasjon på denne jobben, med betydningen lagret.",
-    "placeholderOem": "P0420, 2A82 lagret"
+    "placeholderOem": "P0420, 2A82 lagret",
+    "unrecognised": "{count, plural, one {Ikke en feilkode, utelatt: {codes}} other {Ikke feilkoder, utelatt: {codes}}}"
   },
   "finding": {
     "seenBefore": "Sett {date}",

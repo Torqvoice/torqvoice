@@ -328,5 +328,19 @@
     "irreversible": "Dette kan ikke angres.",
     "andMore": "og {count} til",
     "typeToConfirm": "Skriv <b>{text}</b> for å bekrefte"
+  },
+  "fieldErrors": {
+    "required": "Fyll ut dette feltet.",
+    "email": "Skriv inn en e-postadresse, for eksempel navn@eksempel.no.",
+    "tooShort": "Bruk minst {limit} tegn.",
+    "tooLong": "Bruk høyst {limit} tegn.",
+    "negative": "Kan ikke være negativ.",
+    "tooSmall": "Må være minst {limit}.",
+    "tooLarge": "Må være {limit} eller mindre.",
+    "notNumber": "Skriv inn et tall.",
+    "wholeNumber": "Skriv inn et heltall.",
+    "invalid": "Denne verdien er ikke gyldig.",
+    "notSaved": "Ikke lagret. Sjekk de merkede feltene.",
+    "withLabel": "{label}: {problem}"
   }
 }

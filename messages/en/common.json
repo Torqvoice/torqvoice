@@ -328,5 +328,19 @@
     "irreversible": "This cannot be undone.",
     "andMore": "and {count} more",
     "typeToConfirm": "Type <b>{text}</b> to confirm"
+  },
+  "fieldErrors": {
+    "required": "Fill this in.",
+    "email": "Enter an email address like name@example.com.",
+    "tooShort": "Use at least {limit} characters.",
+    "tooLong": "Use at most {limit} characters.",
+    "negative": "Can't be negative.",
+    "tooSmall": "Must be at least {limit}.",
+    "tooLarge": "Must be {limit} or less.",
+    "notNumber": "Enter a number.",
+    "wholeNumber": "Enter a whole number.",
+    "invalid": "This value isn't valid.",
+    "notSaved": "Not saved. Check the marked fields.",
+    "withLabel": "{label}: {problem}"
   }
 }
