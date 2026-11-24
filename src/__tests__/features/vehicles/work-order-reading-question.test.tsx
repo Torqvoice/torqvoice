@@ -86,6 +86,7 @@ function page(over: { confirmed?: number | null; saved?: number | null } = {}) {
     initialData: { id: 'job1', mileage: over.saved ?? null, lastReading: 148000 },
     confirmedReadingRef: { current: over.confirmed ?? null },
     acknowledgeSavedLines: vi.fn(),
+    sendingLinesRef: { current: null },
   }
   const hook = renderHook(() =>
     useServiceActions({
