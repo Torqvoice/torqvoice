@@ -11,6 +11,7 @@ import { normalizeStatus } from '../utils/job-colors'
 import { formatDuration } from './DurationSlider'
 import { isPromiseOverdue } from '@/features/vehicles/Lib/promise'
 import { useDateSettings } from '@/components/date-settings-context'
+import { formatDate } from '@/lib/format'
 import { toBoardDate } from '../utils/board-time'
 import { vehicleName } from '@/lib/vehicle-name'
 
@@ -52,7 +53,7 @@ export function JobTooltip({
 }) {
   const t = useTranslations('workBoard.job')
   const tStatus = useTranslations('workBoard.presenter.statusLabels')
-  const { timezone } = useDateSettings()
+  const { timezone, dateFormat } = useDateSettings()
 
   // The job as the board draws it, already on the workshop's clock.
   const { start, end } = getJobDateRange(job)
@@ -119,7 +120,7 @@ export function JobTooltip({
           {job.promisedAt && (
             <Row
               label={t('promised')}
-              value={formatPromised(job.promisedAt, timeFormat, timezone)}
+              value={formatPromised(job.promisedAt, timeFormat, timezone, dateFormat)}
               late={isPromiseOverdue(job.promisedAt, job.status)}
             />
           )}
@@ -141,10 +142,16 @@ export function JobTooltip({
  * real instant (the board only rewrites a job's start and end), so it is put
  * on the workshop's clock here.
  */
-function formatPromised(promisedAt: string, timeFormat: ClockFormat, timeZone: string): string {
+function formatPromised(
+  promisedAt: string,
+  timeFormat: ClockFormat,
+  timeZone: string,
+  dateFormat: string
+): string {
   const at = toBoardDate(new Date(promisedAt), timeZone)
   const time = formatClock(at.getHours() * 60 + at.getMinutes(), timeFormat)
-  return `${at.toLocaleDateString(undefined, { day: 'numeric', month: 'short' })} ${time}`
+  // `at` already carries the workshop's wall clock, so no zone here.
+  return `${formatDate(at, dateFormat)} ${time}`
 }
 
 function Row({

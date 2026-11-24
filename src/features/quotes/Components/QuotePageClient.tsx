@@ -61,7 +61,7 @@ import { QuoteNotesEditor } from './QuoteNotesEditor'
 import { QuoteRightColumn } from './QuoteRightColumn'
 import { QuoteCustomerResponse } from './QuoteCustomerResponse'
 import { VehicleCombobox } from './VehicleCombobox'
-import { lineTotal } from '@/features/inventory/Lib/partPricing'
+import { costFieldsForPrice, lineTotal } from '@/features/inventory/Lib/partPricing'
 import type { LaborGuideJob } from '@/features/vehicles/Components/labor-guide/LaborGuideDialog'
 import type { FluidPartLine } from '@/features/integrations/Lib/fluid-stock'
 import type { WarrantyTexts } from '@/lib/warranty'
@@ -190,8 +190,8 @@ export function QuotePageClient({
           quantity: part.quantity,
           unit: part.unit ?? null,
           category: part.category ?? null,
-          unitCost: 0,
-          markupPercent: 0,
+          // The cost of the linked stock item, so the quote's margin is real.
+          ...costFieldsForPrice(part.unitCost, part.unitPrice),
           unitPrice: part.unitPrice,
           total: lineTotal(part.quantity, part.unitPrice),
           excluded: false,

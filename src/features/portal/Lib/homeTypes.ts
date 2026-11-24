@@ -243,7 +243,7 @@ export interface PortalHomeData {
  */
 export interface PortalHomeFormat {
   money: (amount: number) => string
-  /** "3 Dec" or "3 Dec 2027" when the year is not this one. */
+  /** The day in the workshop's date format: "03/12/2026" for dd/MM/yyyy. */
   day: (iso: string) => string
   /** "Thursday 3 December". */
   dayLong: (iso: string) => string

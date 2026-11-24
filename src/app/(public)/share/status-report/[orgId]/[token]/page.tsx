@@ -9,7 +9,7 @@ import { StatusReportView } from './status-report-view'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { getFeatures } from '@/lib/features'
 import { formatReportDay } from '@/features/status-reports/Lib/reportDay'
-import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { workshopDateSettings } from '@/lib/workshop-timezone'
 import type { Metadata } from 'next'
 
 function toPublicFileUrl(fileUrl: string, token: string): string {
@@ -108,7 +108,7 @@ export default async function PublicStatusReportPage({
   }
 
   // Fetch workshop settings
-  const [settings, features, locale, timeZone] = await Promise.all([
+  const [settings, features, dates, locale] = await Promise.all([
     db.appSetting.findMany({
       where: {
         organizationId: orgId,
@@ -125,8 +125,9 @@ export default async function PublicStatusReportPage({
       },
     }),
     getFeatures(orgId),
+    workshopDateSettings(orgId),
+    // The page's language: the workshop's when it decides, else the customer's.
     getLocale(),
-    workshopTimeZone(orgId),
   ])
 
   const settingsMap: Record<string, string> = {}
@@ -144,7 +145,7 @@ export default async function PublicStatusReportPage({
         videoUrl,
         videoFileName: report.videoFileName,
         status: report.status,
-        createdDay: formatReportDay(report.createdAt, locale, timeZone),
+        createdDay: formatReportDay(report.createdAt, dates.dateFormat, dates.timeZone, locale),
         customerFeedback: report.customerFeedback,
         feedbackAt: report.feedbackAt?.toISOString() || null,
       }}

@@ -78,6 +78,7 @@ import {
 } from '@/features/reports/Actions/reportActions'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { useDateSettings } from '@/components/date-settings-context'
+import { useFormatDate } from '@/lib/use-format-date'
 import { dayKeyToLocalDate, workshopTodayKey } from '@/lib/workshop-datetime'
 import type {
   RevenueReport,
@@ -181,6 +182,8 @@ export default function ReportsClient({
   // The workshop's day, not the viewer's: a London viewer of an Auckland
   // workshop otherwise ends the range on a day the workshop has left behind.
   const { timezone } = useDateSettings()
+  // Days in the workshop's date format: the picked range and the day columns.
+  const { formatDay } = useFormatDate()
   const workshopToday = dayKeyToLocalDate(workshopTodayKey(timezone))
   const currentYear = workshopToday.getFullYear()
 
@@ -575,8 +578,8 @@ export default function ReportsClient({
   const handlePdfExport = async () => {
     setPdfLoading(true)
     try {
-      const from = dateRange.from ? format(dateRange.from, 'LLL dd, y') : ''
-      const to = dateRange.to ? format(dateRange.to, 'LLL dd, y') : ''
+      const from = dateRange.from ? formatDay(dateRange.from) : ''
+      const to = dateRange.to ? formatDay(dateRange.to) : ''
       const dateRangeStr = from && to ? `${from} – ${to}` : from || to
 
       const labels: Record<string, string> = {
@@ -695,7 +698,13 @@ export default function ReportsClient({
           pdfProps.taxData = taxData
           filename = 'tax-report'
         } else if (financialSubTab === 'past-due-invoices') {
-          pdfProps.pastDueData = pastDueData
+          pdfProps.pastDueData = pastDueData && {
+            ...pastDueData,
+            invoices: pastDueData.invoices.map((inv) => ({
+              ...inv,
+              dueDate: formatDay(inv.dueDate),
+            })),
+          }
           filename = 'past-due-invoices-report'
         }
       } else {
@@ -712,6 +721,15 @@ export default function ReportsClient({
         }
         const entry = dataMap[activeTab]
         if (entry) pdfProps[entry[0] as string] = entry[1]
+        if (activeTab === 'vehicles' && vehicleData) {
+          pdfProps.vehicleData = {
+            ...vehicleData,
+            serviceHistory: vehicleData.serviceHistory.map((row) => ({
+              ...row,
+              date: formatDay(row.date),
+            })),
+          }
+        }
       }
 
       const blob = await pdf(
@@ -877,10 +895,10 @@ export default function ReportsClient({
                   {dateRange.from ? (
                     dateRange.to ? (
                       <>
-                        {format(dateRange.from, 'LLL dd, y')} – {format(dateRange.to, 'LLL dd, y')}
+                        {formatDay(dateRange.from)} – {formatDay(dateRange.to)}
                       </>
                     ) : (
-                      format(dateRange.from, 'LLL dd, y')
+                      formatDay(dateRange.from)
                     )
                   ) : (
                     <span>{t('dateRange.pickDate')}</span>
@@ -1452,7 +1470,7 @@ export default function ReportsClient({
                                 {fmtCurrency(inv.amountPaid)}
                               </TableCell>
                               <TableCell className="text-right text-sm hidden md:table-cell">
-                                {inv.dueDate}
+                                {formatDay(inv.dueDate)}
                               </TableCell>
                               <TableCell className="text-right">
                                 <Badge
@@ -2671,7 +2689,7 @@ export default function ReportsClient({
                                 )}
                               >
                                 <TableCell className="text-sm text-muted-foreground">
-                                  {row.date}
+                                  {formatDay(row.date)}
                                 </TableCell>
                                 <TableCell className="text-sm font-medium">{row.title}</TableCell>
                                 <TableCell className="text-sm">

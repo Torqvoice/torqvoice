@@ -73,9 +73,15 @@ import { referenceMissing } from '@/features/customer-reference/Lib/reference'
 import { ModernHero as ModernHeroBase } from './modern/ModernHero'
 import { revealRequiredMeters } from '@/features/meters/Lib/requiredMetersReveal'
 import type { WorkOrderJobProps, WorkOrderSidebarProps } from './modern/details-props'
-import { lineTotal, resolvePartPrice } from '@/features/inventory/Lib/partPricing'
+import {
+  costFieldsForPrice,
+  isPriceOverridden,
+  lineTotal,
+  resolvePartPrice,
+} from '@/features/inventory/Lib/partPricing'
 import { vehicleName } from '@/lib/vehicle-name'
 import { useDateSettings } from '@/components/date-settings-context'
+import { useFormatDate } from '@/lib/use-format-date'
 import { addDaysToDayKey, dayKeyToLocalDate, workshopTodayKey } from '@/lib/workshop-datetime'
 
 export type { ServicePageClientProps, BoardTechnicianOption } from './service-page-types'
@@ -226,8 +232,8 @@ export function ServicePageClient({
   const [updatingDates, setUpdatingDates] = useState(false)
   const [customizingDates, setCustomizingDates] = useState(false)
 
-  const formatDate = (date: Date) =>
-    date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+  // The picked days, in the workshop's date format.
+  const { formatDay: formatDate } = useFormatDate()
   const toISODate = (date: Date) =>
     `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 
@@ -303,6 +309,11 @@ export function ServicePageClient({
             total: lineTotal(1, unitPrice),
             unitCost: part.unitCost,
             markupPercent,
+            priceOverridden: isPriceOverridden({
+              unitCost: part.unitCost,
+              markupPercent,
+              unitPrice,
+            }),
             inventoryPartId: part.id,
           },
           ...prev,
@@ -445,8 +456,8 @@ export function ServicePageClient({
         category: part.category ?? null,
         unitPrice: part.unitPrice,
         total: lineTotal(part.quantity, part.unitPrice),
-        unitCost: 0,
-        markupPercent: 0,
+        // The cost of the linked stock item, so the job's margin is real.
+        ...costFieldsForPrice(part.unitCost, part.unitPrice),
         inventoryPartId: part.inventoryPartId || '',
       }))
       formState.dirtySetPartItems((prev) => [...newParts, ...prev])

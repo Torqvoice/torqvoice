@@ -1,3 +1,4 @@
+import { DEFAULT_DATE_FORMAT, formatDate } from '@/lib/format'
 import {
   type PortalChatEvent,
   type PortalChatMessage,
@@ -149,10 +150,12 @@ function foldEvents(events: PortalChatEvent[], timeZone: string): Entry[] {
   return entries
 }
 
-/** How the workshop prints its times: its zone and its 12 or 24 hour clock. */
+/** How the workshop prints its times: its zone, its 12 or 24 hour clock and its date format. */
 export interface PortalChatClock {
   timeZone: string
   timeFormat: '12h' | '24h'
+  /** The workshop's date format (Settings, Localization); the default one when left out. */
+  dateFormat?: string
 }
 
 /** The four ways the thread prints a moment, in the portal's language on the workshop's clock. */
@@ -166,7 +169,7 @@ export type PortalChatStampKind = 'time' | 'day' | 'shortDay' | 'dayWithYear'
 export function portalChatFormats(
   locale: string,
   clock: PortalChatClock
-): Record<PortalChatStampKind, Intl.DateTimeFormat> {
+): Record<PortalChatStampKind, { format: (date: Date) => string }> {
   const zone = { timeZone: clock.timeZone }
   return {
     time: new Intl.DateTimeFormat(locale, {
@@ -181,8 +184,12 @@ export function portalChatFormats(
       day: 'numeric',
       month: 'long',
     }),
-    // The day alone, for an event that has no time of day.
-    shortDay: new Intl.DateTimeFormat(locale, { ...zone, day: 'numeric', month: 'short' }),
+    // The day alone, for an event that has no time of day (an invoice's
+    // date): written the way the workshop writes dates, as on the invoice.
+    shortDay: {
+      format: (date) =>
+        formatDate(date, clock.dateFormat || DEFAULT_DATE_FORMAT, clock.timeZone, locale),
+    },
     dayWithYear: new Intl.DateTimeFormat(locale, {
       ...zone,
       day: 'numeric',

@@ -147,8 +147,16 @@ vi.mock('@/lib/db', () => {
       }),
     },
     meterReading: {
-      // Every reading the job took, as the unlink asks which jobs it touches.
-      findMany: vi.fn(async () => [{ serviceRecordId: JOB.id }]),
+      // Every reading the job took, as the unlink asks which jobs it touches:
+      // typed a day before the job's date, which is the date it keeps.
+      findMany: vi.fn(async () => [
+        {
+          id: 'r-lift',
+          serviceRecordId: JOB.id,
+          readAt: new Date('2026-11-19T08:00:00Z'),
+          createdAt: new Date('2026-11-19T08:05:00Z'),
+        },
+      ]),
       updateMany: vi.fn(async (args: unknown) => {
         state.unlinked.push(args)
         return { count: 1 }
@@ -416,6 +424,7 @@ describe('setting what a job works on', () => {
           organizationId: 'org-1',
           vehicleMeter: { equipmentItemId: { in: ['lift'] } },
           serviceRecordId: JOB.id,
+          id: { in: ['r-lift'] },
         },
         // At the date it counts at now, so it stays where it was in the history.
         data: { serviceRecordId: null, readAt: new Date('2026-11-20T08:00:00Z') },

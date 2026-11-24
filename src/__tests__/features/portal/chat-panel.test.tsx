@@ -123,7 +123,7 @@ function panel(
         enabled={options.enabled ?? true}
         initialMessages={messages}
         initialEvents={options.events}
-        clock={{ timeZone: 'Europe/Oslo', timeFormat: '24h' }}
+        clock={{ timeZone: 'Europe/Oslo', timeFormat: '24h', dateFormat: 'dd/MM/yyyy' }}
         stamps={options.stamps}
       />
     </QueryClientProvider>
@@ -549,7 +549,7 @@ describe('when things happened', () => {
       ],
     })
     const line = thread().getByRole('link', { name: /Invoice INV-2041/ })
-    expect(within(line).getByText('Nov 11')).toBeInTheDocument()
+    expect(within(line).getByText('11/11/2026')).toBeInTheDocument()
     expect(line).not.toHaveTextContent('00:00')
   })
 

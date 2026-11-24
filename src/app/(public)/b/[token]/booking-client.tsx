@@ -1,11 +1,12 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { useFormatter, useTranslations } from 'next-intl'
+import { useFormatter, useLocale, useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { CalendarCheck, CalendarX, Loader2, Phone } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { formatDate } from '@/lib/format'
 import {
   type BookingPage,
   cancelBooking,
@@ -21,6 +22,7 @@ import {
 export function BookingClient({ token, initial }: { token: string; initial: BookingPage }) {
   const t = useTranslations('portal.booking')
   const format = useFormatter()
+  const locale = useLocale()
   const [page, setPage] = useState(initial)
   const [day, setDay] = useState<string | null>(null)
   const [start, setStart] = useState<string | null>(null)
@@ -104,10 +106,7 @@ export function BookingClient({ token, initial }: { token: string; initial: Book
       </p>
       <p className="text-muted-foreground">
         {t('due', {
-          date: format.dateTime(new Date(page.dueAt), {
-            dateStyle: 'long',
-            timeZone: page.timeZone,
-          }),
+          date: formatDate(page.dueAt, page.dateFormat, page.timeZone, locale),
         })}
       </p>
     </div>

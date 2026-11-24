@@ -145,6 +145,29 @@ export function markupFromCostAndPrice(cost: unknown, price: unknown): number {
 }
 
 /**
+ * The cost side of a line whose price is already settled, such as a part
+ * brought in by a labour preset: the preset fixes what the customer pays, and
+ * the cost is the linked stock item's (0 for a part with no stock link).
+ *
+ * The markup is the one the part row would show for that cost and price, and
+ * the price is marked as set by hand whenever the rounded markup cannot rebuild
+ * it exactly, so a later cost edit keeps the preset's price instead of
+ * repricing the line.
+ */
+export function costFieldsForPrice(
+  cost: unknown,
+  price: unknown
+): { unitCost: number; markupPercent: number; priceOverridden: boolean } {
+  const unitCost = parseNumber(cost)
+  const markupPercent = markupFromCostAndPrice(unitCost, price)
+  return {
+    unitCost,
+    markupPercent,
+    priceOverridden: isPriceOverridden({ unitCost, markupPercent, unitPrice: price }),
+  }
+}
+
+/**
  * What a line is worth. Rounded to the cent for the same reason every other
  * amount here is: this value is stored and then summed into a subtotal.
  */
@@ -185,7 +208,12 @@ export function resolvePartPrice(
   // Otherwise the part's own sell price wins. Falling back to cost matters:
   // a part with no sell price set would otherwise be billed at zero, which is
   // worse than billing at cost and far easier to miss.
-  return { unitPrice: sell > 0 ? sell : cost, markupPercent: 0 }
+  //
+  // The markup is the one that price implies over the cost, worked out the way
+  // the part row works it out. Reported as 0 it read as "sold at cost" beside a
+  // price twice the cost, and the job's margin lost the difference.
+  const unitPrice = sell > 0 ? sell : cost
+  return { unitPrice, markupPercent: markupFromCostAndPrice(cost, unitPrice) }
 }
 
 /**

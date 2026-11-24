@@ -9,7 +9,7 @@ import { Search } from 'lucide-react'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import type { ServicePartInput } from '@/features/vehicles/Schema/serviceSchema'
 import type { InventoryPartOption } from './form-types'
-import { resolvePartPrice } from '@/features/inventory/Lib/partPricing'
+import { isPriceOverridden, resolvePartPrice } from '@/features/inventory/Lib/partPricing'
 import {
   type FitVehicle,
   fittingTags,
@@ -128,6 +128,14 @@ export function InventoryPickerDialog({
                   total: price,
                   unitCost: ip.unitCost,
                   markupPercent,
+                  // The markup is held to one decimal, so a sell price can sit
+                  // a cent off cost plus markup. It is the part's own price,
+                  // and a later cost edit must keep it rather than reprice it.
+                  priceOverridden: isPriceOverridden({
+                    unitCost: ip.unitCost,
+                    markupPercent,
+                    unitPrice: price,
+                  }),
                   inventoryPartId: ip.id,
                 })
                 onOpenChange(false)

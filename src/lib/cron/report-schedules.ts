@@ -1,6 +1,7 @@
 import { resolveCurrencyCode, resolveCurrencyFormat } from '@/lib/currencies'
 import { CronJob } from 'cron'
 import { db } from '@/lib/db'
+import { DEFAULT_DATE_FORMAT, formatDate, formatDayKey } from '@/lib/format'
 import { renderToBuffer } from '@react-pdf/renderer'
 import { pdfFontsReady } from '@/features/vehicles/Components/invoice-pdf/fonts'
 import React from 'react'
@@ -110,14 +111,8 @@ function getDateRange(dateRange: string, now: Date, timeZone: string): { start: 
 }
 
 /** The period as the email reads it; `end` is exclusive, so the last day shown is the one before. */
-function formatDateRange(start: Date, end: Date, timeZone: string): string {
-  const fmt = (d: Date) =>
-    d.toLocaleDateString('en-US', {
-      timeZone,
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-    })
+function formatDateRange(start: Date, end: Date, timeZone: string, dateFormat: string): string {
+  const fmt = (d: Date) => formatDate(d, dateFormat, timeZone)
   return `${fmt(start)} – ${fmt(new Date(end.getTime() - 1))}`
 }
 
@@ -545,7 +540,6 @@ export async function processOneSchedule(
   const sections: string[] = JSON.parse(schedule.sections)
   const recipientIds: string[] = JSON.parse(schedule.recipients)
   const { start, end } = getDateRange(schedule.dateRange || 'last30d', now, timeZone)
-  const dateRangeStr = formatDateRange(start, end, timeZone)
 
   // Fetch org settings
   const settings = await db.appSetting.findMany({
@@ -556,6 +550,7 @@ export async function processOneSchedule(
           SETTING_KEYS.CURRENCY_CODE,
           SETTING_KEYS.CURRENCY_FORMAT,
           SETTING_KEYS.INVOICE_PRIMARY_COLOR,
+          SETTING_KEYS.DATE_FORMAT,
         ],
       },
     },
@@ -567,6 +562,9 @@ export async function processOneSchedule(
     settingsMap[SETTING_KEYS.CURRENCY_FORMAT]
   )
   const primaryColor = settingsMap[SETTING_KEYS.INVOICE_PRIMARY_COLOR] || '#d97706'
+  // The range and the days in the report read in the workshop's date format.
+  const dateFormat = settingsMap[SETTING_KEYS.DATE_FORMAT] || DEFAULT_DATE_FORMAT
+  const dateRangeStr = formatDateRange(start, end, timeZone, dateFormat)
 
   // Fetch report data for selected sections
   const [
@@ -608,7 +606,13 @@ export async function processOneSchedule(
     labels: {},
     revenueData,
     taxData,
-    pastDueData,
+    pastDueData: pastDueData && {
+      ...pastDueData,
+      invoices: pastDueData.invoices.map((inv) => ({
+        ...inv,
+        dueDate: formatDayKey(inv.dueDate, dateFormat),
+      })),
+    },
     serviceData,
     customerData,
     technicianData,

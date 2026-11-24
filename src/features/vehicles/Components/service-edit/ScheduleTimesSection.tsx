@@ -39,6 +39,7 @@ import { toast } from 'sonner'
 import { DateTimePicker } from '@/components/ui/datetime-picker'
 import { DEFAULT_PROMISE_TIME } from '@/features/workshop-calendar/Lib/calendar'
 import { useDateSettings } from '@/components/date-settings-context'
+import { useFormatDate } from '@/lib/use-format-date'
 import {
   addJobHelper,
   assignTechnician,
@@ -142,6 +143,7 @@ export function ScheduleTimesSection({
   // Booked times belong to the workshop's clock, not to the clock of whoever
   // happens to be looking at them.
   const { timezone } = useDateSettings()
+  const { formatDate, formatDateTime, formatTime } = useFormatDate()
   const [selectedTechId, setSelectedTechId] = useState(initialTechnicianId || '')
   // Who else is on the job. Only ever beside a technician: a job with nobody
   // leading it has no helpers either.
@@ -211,6 +213,14 @@ export function ScheduleTimesSection({
   const [endDateTime, setEndDateTime] = useState<Date | undefined>(
     initialEndDateTime ? new Date(initialEndDateTime) : new Date(Date.now() + 3600000)
   )
+  // Moved by the server, not here: completing a job ends a booked slot still
+  // ahead of it, and the page showed the old times until it was reloaded.
+  const startKey = initialStartDateTime ? new Date(initialStartDateTime).getTime() : null
+  const endKey = initialEndDateTime ? new Date(initialEndDateTime).getTime() : null
+  useEffect(() => {
+    if (startKey !== null) setStartDateTime(new Date(startKey))
+    if (endKey !== null) setEndDateTime(new Date(endKey))
+  }, [startKey, endKey])
 
   const [promisedAt, setPromisedAt] = useState<Date | undefined>(
     initialPromisedAt ? new Date(initialPromisedAt) : undefined
@@ -883,11 +893,7 @@ export function ScheduleTimesSection({
             {startDateTime && technicians.length > 0 && (
               <span className="text-[11px] text-muted-foreground" suppressHydrationWarning>
                 {t('loadOn', {
-                  date: startDateTime.toLocaleDateString(undefined, {
-                    day: 'numeric',
-                    month: 'short',
-                    timeZone: timezone || undefined,
-                  }),
+                  date: formatDate(startDateTime),
                 })}
               </span>
             )}
@@ -1004,7 +1010,6 @@ export function ScheduleTimesSection({
               granularity="minute"
               hourCycle={24}
               placeholder={t('startTime')}
-              displayFormat={{ hour24: 'PPP HH:mm' }}
             />
           ) : (
             <div className="h-9 rounded-md border" />
@@ -1024,7 +1029,6 @@ export function ScheduleTimesSection({
               granularity="minute"
               hourCycle={24}
               placeholder={t('endTime')}
-              displayFormat={{ hour24: 'PPP HH:mm' }}
             />
           ) : (
             <div className="h-9 rounded-md border" />
@@ -1105,24 +1109,13 @@ export function ScheduleTimesSection({
                               : c.label,
                           })}
                           {' · '}
-                          {awayWhen(c.start, c.end, timezone)}
+                          {awayWhen(c.start, c.end, timezone, formatDate, formatDateTime)}
                         </>
                       ) : (
                         <>
-                          {c.label || t('anotherJob')} ·{' '}
-                          {new Date(c.start).toLocaleString(undefined, {
-                            day: 'numeric',
-                            month: 'short',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            timeZone: timezone || undefined,
-                          })}
+                          {c.label || t('anotherJob')} · {formatDateTime(c.start)}
                           {' – '}
-                          {new Date(c.end).toLocaleTimeString(undefined, {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            timeZone: timezone || undefined,
-                          })}
+                          {formatTime(c.end)}
                           {' · '}
                           {c.onTechnician && c.onBay
                             ? t('clashBoth')
@@ -1193,7 +1186,6 @@ export function ScheduleTimesSection({
               granularity="minute"
               hourCycle={24}
               placeholder={t('promisedPlaceholder')}
-              displayFormat={{ hour24: 'PPP HH:mm' }}
             />
           ) : (
             <div className="h-9 rounded-md border" />
@@ -1205,23 +1197,19 @@ export function ScheduleTimesSection({
 }
 
 /**
- * When a technician is away, as days: "16 Nov – 17 Nov", or with a clock
- * only where the time off starts or ends inside a day. The end of a stretch
- * is the midnight after its last day, which reads as that last day.
+ * When a technician is away, as days in the workshop's date format
+ * ("16/11/2026 – 17/11/2026"), with a clock only where the time off starts or
+ * ends inside a day. The end of a stretch is the midnight after its last day,
+ * which reads as that last day.
  */
-function awayWhen(startIso: string, endIso: string, timeZone: string | null | undefined): string {
-  const zone = timeZone || undefined
-  const { start, end, startClock, endClock } = awayEdges(startIso, endIso, zone)
-  const day = (at: Date) =>
-    at.toLocaleDateString(undefined, { day: 'numeric', month: 'short', timeZone: zone })
-  const dayAndClock = (at: Date) =>
-    at.toLocaleString(undefined, {
-      day: 'numeric',
-      month: 'short',
-      hour: '2-digit',
-      minute: '2-digit',
-      timeZone: zone,
-    })
+function awayWhen(
+  startIso: string,
+  endIso: string,
+  timeZone: string | null | undefined,
+  day: (at: Date) => string,
+  dayAndClock: (at: Date) => string
+): string {
+  const { start, end, startClock, endClock } = awayEdges(startIso, endIso, timeZone || undefined)
   const from = startClock ? dayAndClock(start) : day(start)
   const to = endClock ? dayAndClock(end) : day(end)
   return from === to ? from : `${from} – ${to}`

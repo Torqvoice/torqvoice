@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { useDateSettings } from '@/components/date-settings-context'
 import { zonedDateInput, zonedTimeInput } from '@/lib/timezone'
-import { format } from 'date-fns'
+import { useFormatDate } from '@/lib/use-format-date'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -103,6 +103,7 @@ export function ReminderFormDialog({
   onSaved,
 }: ReminderFormDialogProps) {
   const t = useTranslations('reminders')
+  const { formatDay } = useFormatDate()
   const { timezone } = useDateSettings()
   const tv = useTranslations('vehicles.reminders')
   const tc = useTranslations('common.buttons')
@@ -441,7 +442,7 @@ export function ReminderFormDialog({
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {formDueDate ? format(formDueDate, 'PPP') : t('pickDate')}
+                    {formDueDate ? formatDay(formDueDate) : t('pickDate')}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">

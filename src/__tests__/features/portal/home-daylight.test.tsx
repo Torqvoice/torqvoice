@@ -164,7 +164,7 @@ describe('the car in the workshop', () => {
     })
     const other = section('Also booked or under way')
     expect(other.getByText('Wheel alignment')).toBeInTheDocument()
-    expect(other.getByText('Volvo V60 · Booked for 20 Nov at 09:00')).toBeInTheDocument()
+    expect(other.getByText('Volvo V60 · Booked for 20/11/2026 at 09:00')).toBeInTheDocument()
   })
 })
 
@@ -174,7 +174,7 @@ describe('what needs an answer', () => {
     const quote = section('Needs your answer')
     expect(quote.getByText('Front discs and pads')).toBeInTheDocument()
     expect(quote.getByText('4 850 kr')).toBeInTheDocument()
-    expect(quote.getByText('Valid until 29 Nov')).toBeInTheDocument()
+    expect(quote.getByText('Valid until 29/11/2026')).toBeInTheDocument()
     expect(quote.getByText('Quote Q-2041 · Volvo V60')).toBeInTheDocument()
     expect(quote.getByRole('link', { name: 'Read the quote' })).toHaveAttribute(
       'href',
@@ -229,8 +229,8 @@ describe('what there is to pay', () => {
     const pay = section('To pay')
     expect(pay.getByText('EU inspection and service')).toBeInTheDocument()
     expect(pay.getByText('4 280 kr')).toBeInTheDocument()
-    expect(pay.getByText('Due 28 Nov')).toBeInTheDocument()
-    expect(pay.getByText('Invoice 1042 · Toyota RAV4 · 9 Nov')).toBeInTheDocument()
+    expect(pay.getByText('Due 28/11/2026')).toBeInTheDocument()
+    expect(pay.getByText('Invoice 1042 · Toyota RAV4 · 09/11/2026')).toBeInTheDocument()
     expect(pay.getByRole('link', { name: 'Pay now' })).toHaveAttribute(
       'href',
       '/share/invoice/fjordside/tok-i1'
@@ -264,7 +264,7 @@ describe('what there is to pay', () => {
       toPayOverdueCount: 1,
     })
     const pay = section('To pay')
-    expect(pay.getByText('Overdue since 10 Nov')).toBeInTheDocument()
+    expect(pay.getByText('Overdue since 10/11/2026')).toBeInTheDocument()
     expect(pay.getByText('3 280 kr')).toBeInTheDocument()
     expect(pay.getByText(/1 000 kr of 4 280 kr paid/)).toBeInTheDocument()
     expect(pay.queryByRole('link', { name: /See all/ })).not.toBeInTheDocument()
@@ -290,7 +290,7 @@ describe('what there is to pay', () => {
     expect(pay.getByText('Most urgent')).toBeInTheDocument()
     expect(pay.getByText('EU inspection and service')).toBeInTheDocument()
     expect(pay.getByText('3 280 kr')).toBeInTheDocument()
-    expect(pay.getByText('Overdue since 10 Nov')).toBeInTheDocument()
+    expect(pay.getByText('Overdue since 10/11/2026')).toBeInTheDocument()
     expect(pay.getAllByRole('link', { name: 'Pay now' })).toHaveLength(1)
     expect(pay.getByRole('link', { name: 'See all 11 invoices' })).toHaveAttribute(
       'href',
@@ -308,7 +308,7 @@ describe('what there is to pay', () => {
     })
     const pay = section('To pay')
     expect(pay.getByText('Next to pay')).toBeInTheDocument()
-    expect(pay.getByText('Due 28 Nov')).toBeInTheDocument()
+    expect(pay.getByText('Due 28/11/2026')).toBeInTheDocument()
     expect(pay.queryByText(/overdue/i)).not.toBeInTheDocument()
   })
 })
@@ -348,7 +348,7 @@ describe('tyres stored with the workshop', () => {
     const tires = section('Tyre hotel')
     expect(tires.getByText('Summer tyres stored with us')).toBeInTheDocument()
     expect(tires.getByText(/Toyota RAV4 · Michelin Primacy 4/)).toBeInTheDocument()
-    expect(tires.getByText(/225\/60 R18 · stored since 21 Oct/)).toBeInTheDocument()
+    expect(tires.getByText(/225\/60 R18 · stored since 21\/10\/2026/)).toBeInTheDocument()
     expect(tires.getByText('5 mm')).toBeInTheDocument()
     expect(tires.getByText('tread left')).toBeInTheDocument()
   })
@@ -449,6 +449,6 @@ describe('a customer with nothing going on', () => {
     })
     const sent = section('Sent to the workshop')
     expect(sent.getByText('Winter tyres on, and a look at the wipers')).toBeInTheDocument()
-    expect(sent.getByText('Sent 12 Nov · Waiting for an answer')).toBeInTheDocument()
+    expect(sent.getByText('Sent 12/11/2026 · Waiting for an answer')).toBeInTheDocument()
   })
 })

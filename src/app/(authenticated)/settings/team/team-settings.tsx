@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useFormatDate } from '@/lib/use-format-date'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -146,6 +147,7 @@ export function TeamSettings({
 }) {
   const router = useRouter()
   const t = useTranslations('settings')
+  const { formatDate } = useFormatDate()
   const tPerm = useTranslations('permissions')
   const modal = useGlassModal()
   const confirm = useConfirm()
@@ -774,7 +776,7 @@ export function TeamSettings({
                     {t('team.invitedAs', { role: invitation.customRole?.name || invitation.role })}{' '}
                     &middot;{' '}
                     {t('team.expires', {
-                      date: new Date(invitation.expiresAt).toLocaleDateString(),
+                      date: formatDate(invitation.expiresAt),
                     })}
                   </p>
                 </div>
