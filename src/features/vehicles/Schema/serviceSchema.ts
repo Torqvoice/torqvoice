@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { roundMoney } from '@/lib/money'
 import {
+  checkLineAmounts,
   LABOR_HOURS_MAX,
   LINE_TOTAL_MAX,
   QUANTITY_MAX,
@@ -39,30 +40,42 @@ export const servicePartSchema = z
   // A priced part billed none of: a quantity of zero puts a price on the
   // line and nothing on the invoice. A free part (no price) may still be
   // listed at zero, as a note of what was used.
-  .refine((part) => !(part.unitPrice > 0 && part.quantity <= 0), {
-    message: 'A priced part needs a quantity above zero',
-    path: ['quantity'],
-  })
+  // Its quantity times its price is checked too, whatever total was sent.
+  .superRefine((part, ctx) =>
+    checkLineAmounts(
+      { count: part.quantity, price: part.unitPrice },
+      ctx,
+      { count: 'quantity', total: 'total' },
+      { pricedNeedsCount: true }
+    )
+  )
 
 /**
  * Hours may be zero: a line a technician has started and not yet clocked
  * time on (live labour from the phone), or work done for nothing, is a real
  * line. Only negatives and absurd figures are refused.
  */
-export const serviceLaborSchema = z.object({
-  description: z.string().min(1, 'Description is required'),
-  hours: z.coerce.number().min(0).max(LABOR_HOURS_MAX).default(0),
-  rate: z.coerce.number().min(0).max(UNIT_PRICE_MAX).default(0),
-  /** Held to the cent on save, whatever the page worked it out as. */
-  total: z.coerce.number().min(0).max(LINE_TOTAL_MAX).default(0).transform(roundMoney),
-  pricingType: z.enum(['hourly', 'service', 'shopFee']).default('hourly'),
-  /**
-   * Whether the document's tax is charged on this line. Left out by a caller
-   * that does not choose, and the server then takes the workshop's answer
-   * for this kind of line (Settings, Tax).
-   */
-  taxable: z.boolean().optional(),
-})
+export const serviceLaborSchema = z
+  .object({
+    description: z.string().min(1, 'Description is required'),
+    hours: z.coerce.number().min(0).max(LABOR_HOURS_MAX).default(0),
+    rate: z.coerce.number().min(0).max(UNIT_PRICE_MAX).default(0),
+    /** Held to the cent on save, whatever the page worked it out as. */
+    total: z.coerce.number().min(0).max(LINE_TOTAL_MAX).default(0).transform(roundMoney),
+    pricingType: z.enum(['hourly', 'service', 'shopFee']).default('hourly'),
+    /**
+     * Whether the document's tax is charged on this line. Left out by a caller
+     * that does not choose, and the server then takes the workshop's answer
+     * for this kind of line (Settings, Tax).
+     */
+    taxable: z.boolean().optional(),
+  })
+  .superRefine((labor, ctx) =>
+    checkLineAmounts({ count: labor.hours, price: labor.rate }, ctx, {
+      count: 'hours',
+      total: 'total',
+    })
+  )
 
 export const serviceAttachmentSchema = z.object({
   fileName: z.string(),

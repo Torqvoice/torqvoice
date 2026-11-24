@@ -34,6 +34,8 @@ import {
 } from '@/features/settings/Lib/warrantyDefaults'
 import { EMPTY_WARRANTY, normalizeWarranty } from '@/lib/warranty'
 import { parseTaxComponentDefinitions } from '@/lib/tax-components'
+import { restatedSubtotal, subtotalFromLines } from '@/features/vehicles/Lib/subtotalFromLines'
+import { documentTotals } from '@/features/settings/Lib/workshopTax'
 import { issueInvoice } from '@/features/invoices/Lib/issueInvoice'
 import { withAuth } from '@/lib/with-auth'
 import { parseSentFields, sentId } from '@/lib/parse-sent-fields'
@@ -490,6 +492,34 @@ export async function createServiceRecord(input: unknown) {
       // server's to state whenever the lines decide it (see savedDocumentTax).
       const taxedParts = withTaxableParts(data.partItems ?? [], workshopTax.applies)
       const taxedLabor = withTaxableLabor(data.laborItems ?? [], workshopTax.applies)
+      // The lines are stored to the cent, so the subtotal is what they add up
+      // to as stored, not the page's own sum (see subtotalFromLines).
+      const createdFromLines =
+        (data.partItems?.length ?? 0) + (data.laborItems?.length ?? 0) > 0
+          ? restatedSubtotal({
+              sentSubtotal: data.subtotal,
+              linesSubtotal: subtotalFromLines(data.partItems ?? [], data.laborItems ?? []),
+              discountType: data.discountType,
+              discountValue: data.discountValue,
+            })
+          : null
+      if (createdFromLines) {
+        data.subtotal = createdFromLines.subtotal
+        if (createdFromLines.discountAmount !== undefined) {
+          data.discountAmount = createdFromLines.discountAmount
+        }
+        const totals = documentTotals({
+          subtotal: data.subtotal,
+          discountAmount: data.discountAmount,
+          taxRate: data.taxRate,
+          taxInclusive,
+          taxComponents: null,
+          taxableSubtotal: null,
+        })
+        data.taxAmount = totals.taxAmount
+        data.totalAmount = totals.totalAmount
+        data.cost = totals.totalAmount
+      }
       const savedTax = savedDocumentTax({
         subtotal: data.subtotal,
         discountAmount: data.discountAmount,
@@ -800,6 +830,37 @@ export async function updateServiceRecord(input: unknown) {
         laborItems !== undefined && taxApplies
           ? withTaxableLabor(laborItems, taxApplies)
           : undefined
+      // Lines are stored to the cent (serviceSchema). The subtotal the page
+      // sent was added up from its own figures, so it is restated from the
+      // lines as stored, and the discount and tax with it, or the invoice's
+      // lines would not add up to its subtotal.
+      let fromLines: ReturnType<typeof restatedSubtotal> = null
+      if (linesSent && recordData.subtotal !== undefined) {
+        const linesSubtotal = subtotalFromLines(
+          partItems ??
+            (await db.servicePart.findMany({
+              where: { serviceRecordId: id },
+              select: { total: true },
+            })),
+          laborItems ??
+            (await db.serviceLabor.findMany({
+              where: { serviceRecordId: id },
+              select: { total: true },
+            }))
+        )
+        fromLines = restatedSubtotal({
+          sentSubtotal: recordData.subtotal,
+          linesSubtotal,
+          discountType: recordData.discountType ?? existing.discountType,
+          discountValue: recordData.discountValue ?? existing.discountValue,
+        })
+        if (fromLines) {
+          recordData.subtotal = fromLines.subtotal
+          if (fromLines.discountAmount !== undefined) {
+            recordData.discountAmount = fromLines.discountAmount
+          }
+        }
+      }
       const moneyTouched =
         linesSent ||
         recordData.subtotal !== undefined ||
@@ -840,6 +901,23 @@ export async function updateServiceRecord(input: unknown) {
         if (restated.taxComponents) recordData.taxRate = existing.taxRate
         recordData.taxAmount = restated.taxAmount
         recordData.totalAmount = restated.totalAmount
+      } else if (fromLines) {
+        // A plain job, every line taxed at one rate: its tax and total follow
+        // the restated subtotal too.
+        const totals = documentTotals({
+          subtotal: fromLines.subtotal,
+          discountAmount: recordData.discountAmount ?? existing.discountAmount,
+          taxRate: recordData.taxRate ?? existing.taxRate,
+          taxInclusive: recordData.taxInclusive ?? existing.taxInclusive,
+          taxComponents: existing.taxComponents,
+          taxableSubtotal: null,
+        })
+        recordData.taxAmount = totals.taxAmount
+        recordData.totalAmount = totals.totalAmount
+      }
+      if (fromLines && recordData.cost !== undefined && recordData.totalAmount !== undefined) {
+        // The page sends the job's cost as its total.
+        recordData.cost = recordData.totalAmount
       }
 
       // A null vehicleId from the client means "no vehicle" (counter sale) —

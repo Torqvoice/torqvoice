@@ -1,3 +1,4 @@
+import { roundMoney } from '@/lib/money'
 import type { ServicePartInput } from '@/features/vehicles/Schema/serviceSchema'
 
 /**
@@ -24,7 +25,9 @@ export function savedPartShape(part: ServicePartInput): ServicePartInput {
     partNumber: part.partNumber || '',
     quantity: Number(part.quantity) || 0,
     unitPrice: Number(part.unitPrice) || 0,
-    total: Number(part.total) || 0,
+    // Held to the cent, as the save stores it (serviceSchema), so a total the
+    // page worked out with float noise matches the one the refresh brings back.
+    total: roundMoney(part.total),
     inventoryPartId: part.inventoryPartId || undefined,
   }
 }

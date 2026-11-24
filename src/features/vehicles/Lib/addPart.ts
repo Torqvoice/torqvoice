@@ -6,6 +6,7 @@ import { loadTaxApplies } from '@/features/settings/Lib/loadTaxApplies'
 import { documentTotals } from '@/features/settings/Lib/workshopTax'
 import { reconcileInventoryForParts } from '@/features/inventory/Lib/reconcileStock'
 import { assertInvoiceEditable } from '@/lib/document-lock.server'
+import { servicePartSchema } from '../Schema/serviceSchema'
 
 /**
  * Adds a part line to a job, recalculates the job's money, and moves the stock.
@@ -48,7 +49,31 @@ export async function addPart(args: {
   userId: string
   input: AddPartInput
 }) {
-  const { organizationId, userId, input } = args
+  const { organizationId, userId, input: sent } = args
+
+  // The same rules as a line saved with the whole work order: no negatives,
+  // no priced part at a quantity of zero, nothing past the limits in
+  // lib/input-limits.ts, and the total held to the cent. Checked before
+  // anything is read, so a refused line moves no stock.
+  const line = servicePartSchema.parse({
+    partNumber: sent.partNumber ?? undefined,
+    name: sent.name,
+    quantity: sent.quantity,
+    unit: sent.unit,
+    category: sent.category,
+    unitPrice: sent.unitPrice,
+    total: sent.total,
+    unitCost: sent.unitCost,
+    inventoryPartId: sent.inventoryPartId ?? undefined,
+    taxable: sent.taxable,
+  })
+  const input: AddPartInput = {
+    ...sent,
+    quantity: line.quantity,
+    unitPrice: line.unitPrice,
+    total: line.total,
+    unitCost: line.unitCost,
+  }
 
   // Guarded here rather than at each caller: the server action and the
   // technician API both come through this function, and a lock enforced in

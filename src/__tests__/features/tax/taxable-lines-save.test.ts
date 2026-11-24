@@ -369,6 +369,31 @@ describe('saving an existing work order', () => {
     })
   })
 
+  it('adds the lines up as stored, to the cent, and restates the tax and total from them', async () => {
+    // Two lines of 2.5 h at 19.99: each is stored as 49.98, so the job is
+    // 99.96, not the 99.95 the page summed from 49.975 twice.
+    const line = { ...LABOR, hours: 2.5, rate: 19.99, total: 49.975 }
+    const tx = transaction()
+    const result = await updateServiceRecord({
+      id: 'sr-1',
+      partItems: [],
+      laborItems: [line, line],
+      subtotal: 99.95,
+      taxRate: 8,
+      taxAmount: 8,
+      totalAmount: 107.95,
+      cost: 107.95,
+    })
+    expect(result.success).toBe(true)
+    expect(tx.labor().map((l) => (l as { total?: number }).total)).toEqual([49.98, 49.98])
+    expect(tx.data()).toMatchObject({
+      subtotal: 99.96,
+      taxAmount: 8,
+      totalAmount: 107.96,
+      cost: 107.96,
+    })
+  })
+
   it('keeps a choice made on a line through a save', async () => {
     settings(PARTS_ONLY)
     const tx = transaction()

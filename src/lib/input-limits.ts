@@ -1,3 +1,5 @@
+import type { z } from 'zod'
+
 /**
  * The largest figures and the longest texts the forms take.
  *
@@ -23,6 +25,44 @@ export const LABOR_HOURS_MAX = 100_000
 export const LINE_TOTAL_MAX = 1_000_000_000
 /** An odometer or an hour meter, as the technician app already takes it. */
 export const READING_MAX = 10_000_000
+
+/**
+ * A priced line's own rules, for every schema that takes one (work orders,
+ * labour presets): its count times its price no more than LINE_TOTAL_MAX,
+ * whatever total the caller sent, and, with `pricedNeedsCount`, a priced line
+ * at a count of zero refused. Reported as zod's own size issues, so a form
+ * says them in words (src/lib/field-errors.ts).
+ */
+export function checkLineAmounts(
+  line: { count: number; price: number },
+  ctx: z.RefinementCtx,
+  /** Where each problem is reported: the count field, and the field the line total is said under. */
+  fields: { count: string; total: string },
+  options: { pricedNeedsCount?: boolean } = {}
+): void {
+  if (options.pricedNeedsCount && line.price > 0 && line.count <= 0) {
+    ctx.addIssue({
+      code: 'too_small',
+      origin: 'number',
+      minimum: 0,
+      inclusive: false,
+      path: [fields.count],
+      message: 'A priced line needs a quantity above zero',
+      input: line.count,
+    })
+  }
+  if (line.count * line.price > LINE_TOTAL_MAX) {
+    ctx.addIssue({
+      code: 'too_big',
+      origin: 'number',
+      maximum: LINE_TOTAL_MAX,
+      inclusive: true,
+      path: [fields.total],
+      message: `A line can come to at most ${LINE_TOTAL_MAX}`,
+      input: line.price,
+    })
+  }
+}
 
 /** A person's or a company's name, a make, a model. */
 export const NAME_MAX_LENGTH = 200
