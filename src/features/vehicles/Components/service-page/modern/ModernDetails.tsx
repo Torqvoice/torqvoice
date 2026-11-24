@@ -48,7 +48,7 @@ import { ActivityCard as ActivityCardBase } from './ActivityCard'
 import { FilesMediaCard as FilesMediaCardBase } from './FilesMediaCard'
 import { JobFactsCard as JobFactsCardBase } from './JobFactsCard'
 import { MoneyBar, MoneyLine } from './MoneyBar'
-import type { WorkOrderStatusOption } from '@/features/work-order-statuses/Lib/stages'
+import { isCancelled, type WorkOrderStatusOption } from '@/features/work-order-statuses/Lib/stages'
 import { StatusStepper as StatusStepperBase } from './StatusStepper'
 import { vehicleName } from '@/lib/vehicle-name'
 
@@ -412,14 +412,17 @@ export function ModernDetails(props: ModernDetailsProps) {
               name="serviceDate"
               value={formState.initialData.serviceDate || new Date().toISOString().split('T')[0]}
             />
-            {/* Outside the lock: a locked invoice still moves along. */}
-            <StatusStepper
-              status={formState.status}
-              customStatus={customStatus}
-              options={props.workOrderStatuses}
-              canAddStatus={props.canAddStatus}
-              onChange={onStepperChange}
-            />
+            {/* Outside the lock: a locked invoice still moves along. A
+                cancelled one does not move at all; the banner above says so. */}
+            {isCancelled(formState.status) ? null : (
+              <StatusStepper
+                status={formState.status}
+                customStatus={customStatus}
+                options={props.workOrderStatuses}
+                canAddStatus={props.canAddStatus}
+                onChange={onStepperChange}
+              />
+            )}
 
             {/* The side column gives way before the job does: the parts and labour
             editors turn into a table at 672px of their own, so two columns
@@ -639,6 +642,7 @@ export function ModernDetails(props: ModernDetailsProps) {
                       deletingPayment={actions.deletingPayment}
                       openFormSignal={props.paymentSignal}
                       extraAction={props.payCode}
+                      cancelled={isCancelled(formState.status)}
                     />
                   </div>
                 </AppCard>
@@ -714,6 +718,7 @@ export function ModernDetails(props: ModernDetailsProps) {
         currencyCode={currencyCode}
         onTakePayment={props.onTakePayment}
         payCode={props.payCode}
+        cancelled={isCancelled(formState.status)}
         onPreview={props.onPreviewInvoice}
         onSend={props.onSendToCustomer}
       />

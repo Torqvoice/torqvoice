@@ -74,7 +74,9 @@
     "findingSeverityNeedsWork": "Średni",
     "findingSeverityMonitor": "Niski",
     "tel": "Tel: {phone}",
-    "customFields": "Informacje dodatkowe"
+    "customFields": "Informacje dodatkowe",
+    "cancelledTitle": "Ta faktura została anulowana",
+    "cancelledBody": "Nic nie jest do zapłaty. W razie pytań skontaktuj się z warsztatem."
   },
   "quote": {
     "title": "Wycena",

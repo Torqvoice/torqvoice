@@ -48,6 +48,12 @@ interface PaymentsSectionProps {
   openFormSignal?: number
   /** One more way to be paid, drawn beside "Record payment": the pay code. */
   extraAction?: ReactNode
+  /**
+   * The invoice was cancelled: nothing is owed and nothing more is taken, so
+   * the balance and the ways to pay give way to a line that says so. What
+   * came in, and any refund, stay listed.
+   */
+  cancelled?: boolean
 }
 
 export function PaymentsSection({
@@ -65,6 +71,7 @@ export function PaymentsSection({
   deletingPayment,
   openFormSignal = 0,
   extraAction = null,
+  cancelled = false,
 }: PaymentsSectionProps) {
   const formatCurrency = useFormatCurrency()
   const t = useTranslations('service.payments')
@@ -197,23 +204,25 @@ export function PaymentsSection({
           <span className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
             {t('received')}
           </span>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            className="h-7 text-xs"
-            disabled={paymentLoading}
-            onClick={onTogglePaid}
-          >
-            {paymentLoading ? (
-              <Loader2 className="mr-1 h-3 w-3 animate-spin" />
-            ) : manuallyPaid ? (
-              <X className="mr-1 h-3 w-3" />
-            ) : (
-              <Check className="mr-1 h-3 w-3" />
-            )}
-            {manuallyPaid ? t('markUnpaid') : t('markPaid')}
-          </Button>
+          {!cancelled && (
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="h-7 text-xs"
+              disabled={paymentLoading}
+              onClick={onTogglePaid}
+            >
+              {paymentLoading ? (
+                <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+              ) : manuallyPaid ? (
+                <X className="mr-1 h-3 w-3" />
+              ) : (
+                <Check className="mr-1 h-3 w-3" />
+              )}
+              {manuallyPaid ? t('markUnpaid') : t('markPaid')}
+            </Button>
+          )}
         </div>
 
         {payments.length === 0 ? (
@@ -256,19 +265,28 @@ export function PaymentsSection({
           </ul>
         )}
 
-        <div className="flex items-baseline justify-between rounded-lg bg-foreground px-4 py-4 text-background">
-          <span className="text-xs font-medium uppercase tracking-wider opacity-70">
-            {t('balanceDue')}
-          </span>
-          <span
-            className="order-number text-3xl font-bold leading-none tabular-nums"
-            data-testid="balance-due"
+        {cancelled ? (
+          <p
+            className="rounded-lg border border-dashed px-4 py-3 text-sm text-muted-foreground"
+            data-testid="payments-cancelled"
           >
-            {formatCurrency(balanceDue, currencyCode)}
-          </span>
-        </div>
+            {t('cancelledNotice')}
+          </p>
+        ) : (
+          <div className="flex items-baseline justify-between rounded-lg bg-foreground px-4 py-4 text-background">
+            <span className="text-xs font-medium uppercase tracking-wider opacity-70">
+              {t('balanceDue')}
+            </span>
+            <span
+              className="order-number text-3xl font-bold leading-none tabular-nums"
+              data-testid="balance-due"
+            >
+              {formatCurrency(balanceDue, currencyCode)}
+            </span>
+          </div>
+        )}
 
-        {showForm ? (
+        {cancelled ? null : showForm ? (
           paymentForm
         ) : (
           <div className="flex flex-col gap-2">
@@ -299,7 +317,7 @@ export function PaymentsSection({
               {paymentStatusLabels[paymentStatus] || 'Unpaid'}
             </Badge>
           </div>
-          <div className="flex items-center gap-2">
+          <div className={cancelled ? 'hidden' : 'flex items-center gap-2'}>
             <Button
               type="button"
               variant="outline"

@@ -366,7 +366,8 @@
     "summaryDue": "Termin płatności",
     "summaryReference": "Państwa referencja / nr zamówienia",
     "summaryDate": "Data",
-    "fullInvoice": "Cała faktura"
+    "fullInvoice": "Cała faktura",
+    "cancelled": "Anulowana"
   },
   "quotes": {
     "title": "Wyceny",
@@ -643,7 +644,8 @@
       "scheduled": "Zaplanowane",
       "inProgress": "W toku",
       "waitingParts": "Czeka na części",
-      "completed": "Zakończone"
+      "completed": "Zakończone",
+      "cancelled": "Anulowane"
     },
     "request": {
       "pending": "Czeka na odpowiedź",

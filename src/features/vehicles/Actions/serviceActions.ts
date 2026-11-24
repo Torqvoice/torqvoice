@@ -35,11 +35,21 @@ import {
 import { EMPTY_WARRANTY, normalizeWarranty } from '@/lib/warranty'
 import { parseTaxComponentDefinitions } from '@/lib/tax-components'
 import { issueInvoice } from '@/features/invoices/Lib/issueInvoice'
+import { invoiceWentOut } from '@/features/invoices/Lib/issuedInvoice'
+import {
+  CANCELLED_JOB_REFUSAL,
+  issuedInvoiceDeleteRefusal,
+} from '@/features/invoices/Lib/cancelInvoice'
 import { withAuth } from '@/lib/with-auth'
 import { parseSentFields, sentId } from '@/lib/parse-sent-fields'
 import { createServiceSchema, updateServiceSchema } from '../Schema/serviceSchema'
 import { revalidatePath } from 'next/cache'
-import { isSystemStatus, statusColumns } from '@/features/work-order-statuses/Lib/stages'
+import {
+  CANCELLED,
+  isCancelled,
+  isSystemStatus,
+  statusColumns,
+} from '@/features/work-order-statuses/Lib/stages'
 import { onInventoryChanged } from '@/features/inventory/Lib/onInventoryChanged'
 import { randomUUID } from 'crypto'
 import { releaseFiles } from '@/lib/files/manager'
@@ -1168,6 +1178,8 @@ export async function updateServiceStatus(
         },
       })
       if (!record) throw new Error('Record not found')
+      // A cancelled invoice stays cancelled: its number is spent.
+      if (isCancelled(record.status)) throw new Error(CANCELLED_JOB_REFUSAL)
       if (status === 'completed' && record.status !== 'completed') {
         await assertRequiredMetersRead(organizationId, record.id, 'complete')
       }
@@ -1385,12 +1397,13 @@ export async function getWorkOrders(params: {
         const endOfToday = endOfWorkshopDay(zonedDayKey(new Date(), timeZone), timeZone)
         if (endOfToday) {
           where.promisedAt = { not: null, lte: endOfToday }
-          where.AND = [...(where.AND ?? []), { status: { not: 'completed' } }]
+          where.AND = [...(where.AND ?? []), { status: { notIn: ['completed', CANCELLED] } }]
         }
       }
 
       if (params.status === 'active') {
-        where.status = { not: 'completed' }
+        // A cancelled job is not work still to do.
+        where.status = { notIn: ['completed', CANCELLED] }
       } else if (params.status && params.status !== 'all') {
         where.status = params.status
       }
@@ -1506,8 +1519,13 @@ export async function deleteServiceRecord(recordId: string) {
       await assertInvoiceEditable(recordId, organizationId)
       const record = await db.serviceRecord.findFirst({
         where: { id: recordId, organizationId },
+        include: { payments: { select: { amount: true } } },
       })
       if (!record) throw new Error('Record not found')
+      // An invoice that went out keeps its number: deleting it would leave a
+      // gap in the numbering the books and the tax office read. It is
+      // cancelled instead (cancelServiceRecord); only a draft is deleted.
+      if (invoiceWentOut(record)) throw new Error(issuedInvoiceDeleteRefusal(record.invoiceNumber))
 
       // Its attachments and status report videos, read now and let go once
       // the record is gone. A tire set's photo on this job is shared with the

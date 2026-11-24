@@ -85,7 +85,9 @@
     "qtyOrHours": "Услуга / Часы",
     "customFieldsTitle": "Дополнительная информация",
     "telegramConnect": "Напишите нам в Telegram",
-    "taxRegistrationLabel": "№ {name}"
+    "taxRegistrationLabel": "№ {name}",
+    "cancelledTitle": "СЧЁТ (АННУЛИРОВАН)",
+    "cancelledNotice": "АННУЛИРОВАН"
   },
   "quote": {
     "title": "КОММЕРЧЕСКОЕ ПРЕДЛОЖЕНИЕ",

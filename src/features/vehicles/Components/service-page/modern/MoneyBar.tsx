@@ -17,6 +17,8 @@ interface MoneyBarProps {
   onSend: () => void
   /** The pay code button, when online payment is connected. */
   payCode?: ReactNode
+  /** The invoice was cancelled: nothing is owed, and no payment is offered. */
+  cancelled?: boolean
 }
 
 /**
@@ -40,6 +42,7 @@ export function MoneyBar({
   onPreview,
   onSend,
   payCode,
+  cancelled = false,
 }: MoneyBarProps) {
   const t = useTranslations('service.modern.moneyBar')
   const formatCurrency = useFormatCurrency()
@@ -67,33 +70,46 @@ export function MoneyBar({
               {formatCurrency(paid, currencyCode)}
             </dd>
           </div>
-          <div className="flex items-baseline gap-2">
-            <dt className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
-              {settled ? t('settled') : t('balance')}
-            </dt>
-            <dd
-              data-testid="money-balance"
-              className={cn(
-                'order-number text-xl font-bold leading-none tabular-nums',
-                settled && 'text-emerald-600 dark:text-emerald-400'
-              )}
-            >
-              {formatCurrency(balance, currencyCode)}
-            </dd>
-          </div>
+          {cancelled ? (
+            <div className="flex items-baseline gap-2" data-testid="money-cancelled">
+              <dt className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                {t('cancelled')}
+              </dt>
+              <dd className="text-sm text-muted-foreground">{t('nothingOwed')}</dd>
+            </div>
+          ) : (
+            <div className="flex items-baseline gap-2">
+              <dt className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                {settled ? t('settled') : t('balance')}
+              </dt>
+              <dd
+                data-testid="money-balance"
+                className={cn(
+                  'order-number text-xl font-bold leading-none tabular-nums',
+                  settled && 'text-emerald-600 dark:text-emerald-400'
+                )}
+              >
+                {formatCurrency(balance, currencyCode)}
+              </dd>
+            </div>
+          )}
         </dl>
 
         <div className="flex shrink-0 flex-wrap items-center gap-2">
-          <Button
-            type="button"
-            size="sm"
-            variant={settled ? 'outline' : 'default'}
-            onClick={onTakePayment}
-          >
-            <CreditCard className="mr-1.5 h-4 w-4" />
-            {t('takePayment')}
-          </Button>
-          {payCode}
+          {!cancelled && (
+            <>
+              <Button
+                type="button"
+                size="sm"
+                variant={settled ? 'outline' : 'default'}
+                onClick={onTakePayment}
+              >
+                <CreditCard className="mr-1.5 h-4 w-4" />
+                {t('takePayment')}
+              </Button>
+              {payCode}
+            </>
+          )}
           <Button type="button" size="sm" variant="outline" onClick={onPreview}>
             <Eye className="mr-1.5 h-4 w-4" />
             <span className="hidden sm:inline">{t('preview')}</span>

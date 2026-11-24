@@ -4,7 +4,7 @@
  * paid in full whatever payments are recorded.
  */
 
-export type PortalPaymentState = 'paid' | 'partial' | 'unpaid'
+export type PortalPaymentState = 'paid' | 'partial' | 'unpaid' | 'cancelled'
 
 export interface PortalPayment {
   state: PortalPaymentState
@@ -18,8 +18,13 @@ export function portalPayment(invoice: {
   totalAmount: number
   manuallyPaid: boolean
   payments: { amount: number }[]
+  /** The job's status: a cancelled invoice is owed nothing. */
+  status?: string
 }): PortalPayment {
   const recorded = invoice.payments.reduce((sum, p) => sum + p.amount, 0)
+  if (invoice.status === 'cancelled') {
+    return { state: 'cancelled', paid: Math.max(0, recorded), balance: 0 }
+  }
   if (invoice.manuallyPaid) {
     return { state: 'paid', paid: Math.max(recorded, invoice.totalAmount), balance: 0 }
   }

@@ -63,7 +63,8 @@
     "designRefreshConfirm": "Update the invoice",
     "designRefreshDone": "This invoice now prints with today's details",
     "designRefreshFailed": "Could not update the invoice",
-    "printWorkOrder": "Print work order"
+    "printWorkOrder": "Print work order",
+    "cancelInvoice": "Cancel invoice"
   },
   "basicInfo": {
     "title": "Basic Information",
@@ -101,7 +102,8 @@
       "pending": "Pending",
       "in_progress": "In Progress",
       "waiting_parts": "Waiting Parts",
-      "completed": "Completed"
+      "completed": "Completed",
+      "cancelled": "Cancelled"
     },
     "searchVehicles": "Search vehicles...",
     "noVehicleFound": "No vehicle found.",
@@ -373,7 +375,8 @@
     "failedPdf": "Failed to generate PDF invoice",
     "received": "Payments received",
     "noneYet": "Nothing paid yet.",
-    "balanceDue": "Balance due"
+    "balanceDue": "Balance due",
+    "cancelledNotice": "Cancelled: nothing is owed on this invoice. The payments and any refund stay listed above."
   },
   "attachments": {
     "deleteTitle": "Delete Attachment",
@@ -750,7 +753,9 @@
       "preview": "Preview invoice",
       "previewShort": "Preview",
       "send": "Send to customer",
-      "sendShort": "Send"
+      "sendShort": "Send",
+      "cancelled": "Cancelled",
+      "nothingOwed": "Nothing owed"
     },
     "vehicleInfo": {
       "more": "More info",
@@ -880,5 +885,28 @@
     "hint": "Stay to fix it, or leave and lose the changes made since the last save.",
     "stay": "Stay and fix",
     "leave": "Leave without saving"
+  },
+  "cancelInvoice": {
+    "title": "Cancel invoice {number}?",
+    "titleNoNumber": "Cancel this invoice?",
+    "description": "This invoice has gone out to the customer, so it cannot be deleted: most countries require invoice numbers without gaps.",
+    "pointKept": "The job is kept and marked cancelled. The invoice keeps its number and can no longer be changed.",
+    "pointShown": "The invoice, its shared link, the PDF and the customer portal show it as cancelled.",
+    "pointReports": "It no longer counts in revenue, tax or what is owed.",
+    "pointLedger": "A connected accounting system voids its copy where it can. A copy with payments on it is left for your bookkeeper to credit.",
+    "paidNotice": "The customer has paid {amount} on this invoice.",
+    "recordRefund": "Record a refund of money handed back to the customer",
+    "refundAmount": "Refund amount",
+    "refundMethod": "Refunded by",
+    "refundTooMuch": "A refund cannot be more than {amount}.",
+    "refundNote": "Refund on cancelled invoice",
+    "noRefundHint": "Without a refund the payments stay recorded as they are.",
+    "keep": "Keep invoice",
+    "confirm": "Cancel invoice",
+    "done": "Invoice cancelled",
+    "failed": "Could not cancel the invoice",
+    "bannerTitle": "Invoice {number} is cancelled",
+    "bannerTitleNoNumber": "This invoice is cancelled",
+    "bannerBody": "It keeps its number and can no longer be changed. The customer sees it marked as cancelled."
   }
 }

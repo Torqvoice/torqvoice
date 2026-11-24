@@ -74,7 +74,9 @@
     "findingSeverityNeedsWork": "Orta",
     "findingSeverityMonitor": "Düşük",
     "tel": "Tel: {phone}",
-    "customFields": "Ek bilgiler"
+    "customFields": "Ek bilgiler",
+    "cancelledTitle": "Bu fatura iptal edildi",
+    "cancelledBody": "Bu fatura için ödenecek bir şey yok. Sorularınız için atölyeyle iletişime geçin."
   },
   "quote": {
     "title": "Teklif",

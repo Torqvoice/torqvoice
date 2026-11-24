@@ -72,6 +72,11 @@ vi.mock('@/lib/db', () => {
   const method = (model: string, name: string) => async (args: unknown) => {
     calls.list.push({ key: `${model}.${name}`, args })
     if (name === 'findFirst' || name === 'findUnique') return rows.findFirst[model] ?? null
+    // The invoices that went out, asked before a vehicle is deleted: none
+    // unless a test says so.
+    if (name === 'findMany' && model === 'serviceRecord' && (args as any)?.where?.AND) {
+      return rows.findMany.wentOut ?? []
+    }
     if (name === 'findMany') return rows.findMany[model] ?? []
     if (name === 'count') return 0
     if (name.endsWith('Many')) return { count: 1 }
@@ -190,8 +195,11 @@ describe('deleting a vehicle, which takes its work orders with it', () => {
 
     expect(valueDeletes()).toEqual(expected)
     // Read while the work orders could still be found.
-    expect(index('serviceRecord.findMany')).toBeLessThan(index('vehicle.deleteMany'))
-    expect(calls.list[index('serviceRecord.findMany')].args).toEqual({
+    const read = calls.list.findIndex(
+      (call) => call.key === 'serviceRecord.findMany' && (call.args as any)?.select?.id
+    )
+    expect(read).toBeLessThan(index('vehicle.deleteMany'))
+    expect(calls.list[read].args).toEqual({
       where: { organizationId: 'org-a', vehicleId: { in: ['v-1'] } },
       select: { id: true },
     })

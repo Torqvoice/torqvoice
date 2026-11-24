@@ -63,7 +63,8 @@
     "designRefreshConfirm": "Zaktualizuj fakturę",
     "designRefreshDone": "Ta faktura jest teraz drukowana z bieżącymi danymi",
     "designRefreshFailed": "Nie udało się zaktualizować faktury",
-    "printWorkOrder": "Drukuj zlecenie"
+    "printWorkOrder": "Drukuj zlecenie",
+    "cancelInvoice": "Anuluj fakturę"
   },
   "basicInfo": {
     "title": "Informacje Podstawowe",
@@ -101,7 +102,8 @@
       "pending": "Oczekujące",
       "in_progress": "W Trakcie",
       "waiting_parts": "Oczekiwanie na Części",
-      "completed": "Ukończone"
+      "completed": "Ukończone",
+      "cancelled": "Anulowana"
     },
     "searchVehicles": "Szukaj pojazdów...",
     "noVehicleFound": "Pojazd nie znaleziony.",
@@ -373,7 +375,8 @@
     "failedPdf": "Nie udało się wygenerować faktury PDF",
     "received": "Otrzymane płatności",
     "noneYet": "Nic jeszcze nie zapłacono.",
-    "balanceDue": "Pozostało do zapłaty"
+    "balanceDue": "Pozostało do zapłaty",
+    "cancelledNotice": "Anulowana: nic nie jest do zapłaty z tej faktury. Płatności i zwroty pozostają na liście powyżej."
   },
   "attachments": {
     "deleteTitle": "Usuń Załącznik",
@@ -750,7 +753,9 @@
       "preview": "Podgląd faktury",
       "previewShort": "Podgląd",
       "send": "Wyślij klientowi",
-      "sendShort": "Wyślij"
+      "sendShort": "Wyślij",
+      "cancelled": "Anulowana",
+      "nothingOwed": "Nic do zapłaty"
     },
     "vehicleInfo": {
       "more": "Więcej informacji",
@@ -880,5 +885,28 @@
     "hint": "Zostań, aby to poprawić, albo wyjdź i strać zmiany wprowadzone od ostatniego zapisu.",
     "stay": "Zostań i popraw",
     "leave": "Wyjdź bez zapisywania"
+  },
+  "cancelInvoice": {
+    "title": "Anulować fakturę {number}?",
+    "titleNoNumber": "Anulować tę fakturę?",
+    "description": "Ta faktura trafiła już do klienta, więc nie można jej usunąć: w większości krajów numeracja faktur musi być ciągła.",
+    "pointKept": "Zlecenie zostaje zachowane i oznaczone jako anulowane. Faktura zachowuje numer i nie można jej już zmienić.",
+    "pointShown": "Faktura, udostępniony link, PDF i portal klienta pokazują ją jako anulowaną.",
+    "pointReports": "Nie jest już wliczana do przychodu, podatku ani należności.",
+    "pointLedger": "Połączony system księgowy anuluje swoją kopię, gdy to możliwe. Kopia z płatnościami zostaje dla księgowego do skorygowania.",
+    "paidNotice": "Klient zapłacił {amount} za tę fakturę.",
+    "recordRefund": "Zapisz zwrot pieniędzy oddanych klientowi",
+    "refundAmount": "Kwota zwrotu",
+    "refundMethod": "Zwrócono przez",
+    "refundTooMuch": "Zwrot nie może przekroczyć {amount}.",
+    "refundNote": "Zwrot za anulowaną fakturę",
+    "noRefundHint": "Bez zwrotu płatności pozostają zapisane bez zmian.",
+    "keep": "Zachowaj fakturę",
+    "confirm": "Anuluj fakturę",
+    "done": "Faktura anulowana",
+    "failed": "Nie udało się anulować faktury",
+    "bannerTitle": "Faktura {number} jest anulowana",
+    "bannerTitleNoNumber": "Ta faktura jest anulowana",
+    "bannerBody": "Zachowuje numer i nie można jej już zmienić. Klient widzi ją oznaczoną jako anulowaną."
   }
 }

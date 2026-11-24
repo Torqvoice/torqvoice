@@ -241,6 +241,10 @@ export async function withApiAuth(
     if (err instanceof DocumentLockedError) {
       return documentLockedResponse(err)
     }
+    // The job's invoice was cancelled: final, and said in the caller's terms.
+    if (err instanceof Error && err.name === 'CancelledInvoiceError') {
+      return apiError(409, 'conflict', err.message)
+    }
     if (err instanceof ZodError) {
       return apiError(
         400,

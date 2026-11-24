@@ -366,7 +366,8 @@
     "summaryDue": "Apmokėjimo terminas",
     "summaryReference": "Jūsų nuoroda / užsakymo nr.",
     "summaryDate": "Data",
-    "fullInvoice": "Visa sąskaita"
+    "fullInvoice": "Visa sąskaita",
+    "cancelled": "Atšaukta"
   },
   "quotes": {
     "title": "Pasiūlymai",
@@ -643,7 +644,8 @@
       "scheduled": "Suplanuota",
       "inProgress": "Vykdoma",
       "waitingParts": "Laukiama dalių",
-      "completed": "Baigta"
+      "completed": "Baigta",
+      "cancelled": "Atšauktas"
     },
     "request": {
       "pending": "Laukiama atsakymo",

@@ -85,7 +85,9 @@
     "qtyOrHours": "Unidad / Horas",
     "customFieldsTitle": "Información adicional",
     "telegramConnect": "Chatea con nosotros en Telegram",
-    "taxRegistrationLabel": "Núm. {name}"
+    "taxRegistrationLabel": "Núm. {name}",
+    "cancelledTitle": "FACTURA (ANULADA)",
+    "cancelledNotice": "ANULADA"
   },
   "quote": {
     "title": "PRESUPUESTO",

@@ -63,7 +63,8 @@
     "designRefreshConfirm": "Oppdater fakturaen",
     "designRefreshDone": "Denne fakturaen skrives nå ut med dagens opplysninger",
     "designRefreshFailed": "Kunne ikke oppdatere fakturaen",
-    "printWorkOrder": "Skriv ut arbeidsordre"
+    "printWorkOrder": "Skriv ut arbeidsordre",
+    "cancelInvoice": "Kanseller faktura"
   },
   "basicInfo": {
     "title": "Grunnleggende informasjon",
@@ -101,7 +102,8 @@
       "pending": "Avventende",
       "in_progress": "Pågår",
       "waiting_parts": "Venter på deler",
-      "completed": "Fullført"
+      "completed": "Fullført",
+      "cancelled": "Kansellert"
     },
     "searchVehicles": "Søk kjøretøyer...",
     "noVehicleFound": "Ingen kjøretøy funnet.",
@@ -373,7 +375,8 @@
     "failedPdf": "Kunne ikke generere PDF-faktura",
     "received": "Mottatte betalinger",
     "noneYet": "Ingenting betalt ennå.",
-    "balanceDue": "Utestående"
+    "balanceDue": "Utestående",
+    "cancelledNotice": "Kansellert: ingenting skal betales på denne fakturaen. Betalinger og refusjoner står fortsatt over."
   },
   "attachments": {
     "deleteTitle": "Slett vedlegg",
@@ -750,7 +753,9 @@
       "preview": "Forhåndsvis faktura",
       "previewShort": "Forhåndsvis",
       "send": "Send til kunden",
-      "sendShort": "Send"
+      "sendShort": "Send",
+      "cancelled": "Kansellert",
+      "nothingOwed": "Ingenting å betale"
     },
     "vehicleInfo": {
       "more": "Mer info",
@@ -880,5 +885,28 @@
     "hint": "Bli for å rette det, eller gå og mist endringene siden forrige lagring.",
     "stay": "Bli og rett opp",
     "leave": "Gå uten å lagre"
+  },
+  "cancelInvoice": {
+    "title": "Kansellere faktura {number}?",
+    "titleNoNumber": "Kansellere denne fakturaen?",
+    "description": "Denne fakturaen er sendt til kunden og kan derfor ikke slettes: de fleste land krever fakturanumre uten hull.",
+    "pointKept": "Jobben beholdes og merkes som kansellert. Fakturaen beholder nummeret sitt og kan ikke lenger endres.",
+    "pointShown": "Fakturaen, den delte lenken, PDF-en og kundeportalen viser den som kansellert.",
+    "pointReports": "Den teller ikke lenger med i omsetning, avgift eller utestående.",
+    "pointLedger": "Et tilkoblet regnskapssystem annullerer sin kopi der det kan. En kopi med betalinger blir stående til regnskapsføreren krediterer den.",
+    "paidNotice": "Kunden har betalt {amount} på denne fakturaen.",
+    "recordRefund": "Registrer en refusjon av penger tilbakebetalt til kunden",
+    "refundAmount": "Refusjonsbeløp",
+    "refundMethod": "Refundert med",
+    "refundTooMuch": "En refusjon kan ikke være mer enn {amount}.",
+    "refundNote": "Refusjon for kansellert faktura",
+    "noRefundHint": "Uten refusjon blir betalingene stående som de er.",
+    "keep": "Behold fakturaen",
+    "confirm": "Kanseller faktura",
+    "done": "Fakturaen er kansellert",
+    "failed": "Kunne ikke kansellere fakturaen",
+    "bannerTitle": "Faktura {number} er kansellert",
+    "bannerTitleNoNumber": "Denne fakturaen er kansellert",
+    "bannerBody": "Den beholder nummeret sitt og kan ikke lenger endres. Kunden ser den merket som kansellert."
   }
 }

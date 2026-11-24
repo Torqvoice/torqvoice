@@ -161,7 +161,7 @@ export function VehicleActivityFeed({
     // In the workshop and booked jobs in the order they happen; jobs with no
     // slot yet after them, the newest first.
     const openJobs = workOrders
-      .filter((wo) => wo.status !== 'completed')
+      .filter((wo) => wo.status !== 'completed' && wo.status !== 'cancelled')
       .sort((a, b) => {
         const rank = openRank(a.status) - openRank(b.status)
         if (rank !== 0) return rank
@@ -172,7 +172,9 @@ export function VehicleActivityFeed({
     const list: FeedEvent[] = []
     if (withJobs) {
       for (const wo of workOrders) {
-        if (wo.status === 'completed') list.push({ kind: 'wo', id: wo.id, date: visitDate(wo), wo })
+        // A cancelled job is history too, shown as cancelled.
+        if (wo.status === 'completed' || wo.status === 'cancelled')
+          list.push({ kind: 'wo', id: wo.id, date: visitDate(wo), wo })
       }
     }
     if (filter === 'all' || filter === 'quotes') {

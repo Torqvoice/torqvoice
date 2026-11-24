@@ -85,7 +85,9 @@
     "qtyOrHours": "Unité / Heures",
     "customFieldsTitle": "Informations complémentaires",
     "telegramConnect": "Discutez avec nous sur Telegram",
-    "taxRegistrationLabel": "N° {name}"
+    "taxRegistrationLabel": "N° {name}",
+    "cancelledTitle": "FACTURE (ANNULÉE)",
+    "cancelledNotice": "ANNULÉE"
   },
   "quote": {
     "title": "DEVIS",

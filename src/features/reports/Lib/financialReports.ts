@@ -23,6 +23,17 @@ function statusScope(options: FinancialReportOptions) {
   return options.completedOnly ? { status: 'completed' } : {}
 }
 
+/**
+ * The invoices that count as charged: never a cancelled one. Its number is
+ * kept, but nothing is owed on it and no tax was charged, so it is out of
+ * revenue, outstanding and tax. Money that moved on it still counts where it
+ * moved: a payment taken and a refund handed back on cancelling are both
+ * cash, each in its own month, and net to what the workshop kept.
+ */
+function chargedScope(options: FinancialReportOptions) {
+  return options.completedOnly ? { status: 'completed' } : { status: { not: 'cancelled' } }
+}
+
 const chargedTotal = (r: { totalAmount: number; cost: number }) =>
   r.totalAmount > 0 ? r.totalAmount : r.cost
 
@@ -54,7 +65,7 @@ export async function computeRevenue(
   const [records, payments, manuallyPaid] = await Promise.all([
     // Invoices dated in the window: what was charged.
     db.serviceRecord.findMany({
-      where: { organizationId, ...scope, AND: [documentDateIn(range)] },
+      where: { organizationId, ...chargedScope(options), AND: [documentDateIn(range)] },
       select: {
         serviceDate: true,
         startDateTime: true,
@@ -200,7 +211,7 @@ export async function computeTax(
   options: FinancialReportOptions = {}
 ) {
   const records = await db.serviceRecord.findMany({
-    where: { organizationId, ...statusScope(options), AND: [documentDateIn(range)] },
+    where: { organizationId, ...chargedScope(options), AND: [documentDateIn(range)] },
     select: {
       serviceDate: true,
       startDateTime: true,

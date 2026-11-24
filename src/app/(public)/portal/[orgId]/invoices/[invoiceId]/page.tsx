@@ -77,6 +77,7 @@ export default async function PortalInvoicePage({
     db.serviceRecord.findFirst({
       where: { id: invoice.id, organizationId: org.id },
       select: {
+        status: true,
         totalAmount: true,
         manuallyPaid: true,
         invoiceDate: true,

@@ -104,6 +104,9 @@ describe('the invoices in the portal', () => {
     await getPortalInvoices()
     const query = vi.mocked(db.serviceRecord.findMany).mock.calls[0][0]
     expect(query?.select).toMatchObject({ invoiceDate: true, invoiceDueDate: true })
-    expect(query?.where).toMatchObject({ organizationId: 'org1', status: 'completed' })
+    expect(query?.where).toMatchObject({
+      organizationId: 'org1',
+      status: { in: ['completed', 'cancelled'] },
+    })
   })
 })

@@ -17,6 +17,7 @@ const KEYS: Record<PortalStatusKind, Record<string, string>> = {
     'in-progress': 'inProgress',
     'waiting-parts': 'waitingParts',
     completed: 'completed',
+    cancelled: 'cancelled',
   },
   request: {
     pending: 'pending',

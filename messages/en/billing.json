@@ -9,6 +9,7 @@
     "statusPaid": "Paid",
     "statusPartial": "Partial",
     "statusUnpaid": "Unpaid",
+    "statusCancelled": "Cancelled",
     "searchPlaceholder": "Search invoices...",
     "search": "Search",
     "columnInvoice": "Invoice #",

@@ -21,7 +21,11 @@ vi.mock('@/lib/db', () => ({
 
 import { getCachedMembership, getCachedSession } from '@/lib/cached-session'
 import { db } from '@/lib/db'
-import { freezeOrganization, RESTORE_IN_PROGRESS_MESSAGE, unfreezeOrganization } from '@/lib/backup/freeze'
+import {
+  freezeOrganization,
+  RESTORE_IN_PROGRESS_MESSAGE,
+  unfreezeOrganization,
+} from '@/lib/backup/freeze'
 import { withAuth } from '@/lib/with-auth'
 
 const SESSION = { user: { id: 'user-1', email: 'user@example.com' } }

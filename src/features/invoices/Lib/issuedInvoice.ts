@@ -581,6 +581,22 @@ export function wasIssuedBeforeTracking(record: {
 }
 
 /**
+ * Whether the invoice has gone out: issued, or sent or paid before issuing
+ * tracked it. Its number is then the customer's and the books', and most
+ * countries want invoice numbers without gaps, so such a job is never
+ * deleted: it is cancelled instead, and keeps its number. A draft that never
+ * left the workshop can still be deleted.
+ */
+export function invoiceWentOut(record: {
+  issuedAt: Date | null
+  sentAt: Date | null
+  manuallyPaid: boolean
+  payments?: { amount: number }[]
+}): boolean {
+  return Boolean(record.issuedAt) || wasIssuedBeforeTracking(record)
+}
+
+/**
  * The invoice date an issue writes, and what it records as the app's own.
  *
  * An invoice is dated the day it is issued, not the day the job was opened:

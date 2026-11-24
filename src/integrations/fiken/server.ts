@@ -455,7 +455,8 @@ async function reverseSale(
 async function retireInvoice(
   ctx: ConnectorContext,
   slug: string,
-  serviceRecordId: string
+  serviceRecordId: string,
+  why: 'deleted' | 'cancelled' = 'deleted'
 ): Promise<JobOutcome> {
   const link = await linkFor(ctx, slug, INVOICE_ENTITY, serviceRecordId)
   if (!link) return { summary: 'nothing to do' }
@@ -469,12 +470,17 @@ async function retireInvoice(
     if (hasPayments(sale)) {
       await ctx.log(
         'warn',
-        `Invoice ${number} was deleted here but has payments in Fiken; the sale there is left as it is`
+        `Invoice ${number} was ${why} here but has payments in Fiken; the sale there is left as it is${why === 'cancelled' ? '. Book the credit note or refund there by hand' : ''}`
       )
       await ctx.links.remove(INVOICE_ENTITY, serviceRecordId)
       return { summary: 'left in Fiken, has payments' }
     }
-    await reverseSale(ctx, slug, link.remoteId, 'Deleted in Torqvoice')
+    await reverseSale(
+      ctx,
+      slug,
+      link.remoteId,
+      why === 'cancelled' ? 'Cancelled in Torqvoice' : 'Deleted in Torqvoice'
+    )
     await ctx.links.remove(INVOICE_ENTITY, serviceRecordId)
     return { summary: `sale ${number} reversed` }
   } catch (err) {
@@ -605,6 +611,8 @@ async function pushInvoice(ctx: ConnectorContext, serviceRecordId: string): Prom
   if (!slug) return { summary: NO_COMPANY }
   const inv = await loadInvoiceForAccounting(ctx.connection.organizationId, serviceRecordId)
   if (!inv) return retireInvoice(ctx, slug, serviceRecordId)
+  // Cancelled here: its number is kept, and the sale in Fiken is reversed.
+  if (inv.status === 'cancelled') return retireInvoice(ctx, slug, serviceRecordId, 'cancelled')
   const skip = whyNotEligible(inv, settings, ctx.timezone)
   if (skip) return { summary: skip }
 

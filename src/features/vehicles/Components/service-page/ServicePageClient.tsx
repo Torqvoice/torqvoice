@@ -55,6 +55,12 @@ import { LaborPresetPickerDialog } from '@/features/labor-presets/Components/Lab
 import type { LaborPresetOption } from './service-page-types'
 import { StatusReportList } from '@/features/status-reports/Components/StatusReportList'
 import { ServiceHeaderActions } from './ServiceHeaderActions'
+import { CancelInvoiceDialog, type CancelInvoiceRequest } from './CancelInvoiceDialog'
+import { CancelledInvoiceBanner } from './CancelledInvoiceBanner'
+import { cancelServiceRecord } from '@/features/vehicles/Actions/cancelServiceRecord'
+import { isCancelled } from '@/features/work-order-statuses/Lib/stages'
+import { invoiceWentOut } from '@/features/invoices/Lib/issuedInvoice'
+import { refundableAmount } from '@/features/invoices/Lib/cancelInvoice'
 
 import { useServiceFormState } from './useServiceFormState'
 import { useServiceActions } from './useServiceActions'
@@ -148,6 +154,19 @@ export function ServicePageClient({
   const t = useTranslations('service')
   const router = useRouter()
 
+  // An invoice that went out is cancelled rather than deleted, and a
+  // cancelled one is final: the page reads as locked and offers neither.
+  const cancelled = isCancelled(record.status)
+  const wentOut = invoiceWentOut({
+    issuedAt: record.issuedAt ? new Date(record.issuedAt) : null,
+    sentAt: record.sentAt ? new Date(record.sentAt) : null,
+    manuallyPaid: record.manuallyPaid,
+    payments: record.payments ?? [],
+  })
+  const removal: 'delete' | 'cancel' | 'none' = cancelled ? 'none' : wentOut ? 'cancel' : 'delete'
+  const pageLocked = lockState.locked || cancelled
+  const [showCancelDialog, setShowCancelDialog] = useState(false)
+
   // Counter sales carry the customer directly; vehicle jobs resolve it via the vehicle.
   const customer = record.customer ?? record.vehicle?.customer ?? null
 
@@ -238,7 +257,7 @@ export function ServicePageClient({
     defaultTaxRate,
     currentUserName,
     record,
-    locked: lockState.locked,
+    locked: pageLocked,
     shopFee,
     taxApplies: lineTax.applies,
   })
@@ -570,6 +589,18 @@ export function ServicePageClient({
     setShowWorkOrderPreview(true)
   })
   const onDelete = useStableCallback(actions.handleDelete)
+  const onCancelInvoice = useStableCallback(() => setShowCancelDialog(true))
+  const confirmCancel = async (request: CancelInvoiceRequest) => {
+    // A request that never reaches the server throws instead of answering.
+    const result = await cancelServiceRecord({ recordId: record.id, ...request }).catch(() => null)
+    if (result?.success) {
+      setShowCancelDialog(false)
+      toast.success(t('cancelInvoice.done'))
+      router.refresh()
+    } else {
+      toast.error(result?.error || t('cancelInvoice.failed'))
+    }
+  }
   const onShowEmail = useStableCallback(async () => {
     if (!checkReference()) return
     if (!(await checkDates())) return
@@ -599,12 +630,14 @@ export function ServicePageClient({
           onPreviewPDF={onPreviewPDF}
           onPrintWorkOrder={onPrintWorkOrder}
           onDelete={onDelete}
+          removal={removal}
+          onCancelInvoice={onCancelInvoice}
           onShowEmail={onShowEmail}
           onShowShare={onShowShare}
           onNotifyCustomer={onNotifyCustomer}
           hasCustomer={hasCustomer}
           designMenu={
-            canChangeIssuedDesign ? (
+            canChangeIssuedDesign && !cancelled ? (
               <InvoiceDesignMenu recordId={record.id} designFollowsName={designFollowsName} />
             ) : undefined
           }
@@ -622,11 +655,14 @@ export function ServicePageClient({
       onPreviewPDF,
       onPrintWorkOrder,
       onDelete,
+      removal,
+      onCancelInvoice,
       onShowEmail,
       onShowShare,
       onNotifyCustomer,
       hasCustomer,
       canChangeIssuedDesign,
+      cancelled,
       designFollowsName,
     ]
   )
@@ -707,7 +743,7 @@ export function ServicePageClient({
     openObservationsCount: otherObsCount,
     onShowExistingObservations,
     jobClock,
-    locked: lockState.locked,
+    locked: pageLocked,
     payCode,
     onReferenceChange,
   }
@@ -741,7 +777,7 @@ export function ServicePageClient({
     offer: taxOffer,
     kind: 'workOrder',
     id: record.id,
-    locked: lockState.locked,
+    locked: pageLocked,
     finished: formState.status === 'completed',
     taxRate: formState.taxRate,
     saveFirst: async () => {
@@ -783,9 +819,9 @@ export function ServicePageClient({
               onTitleChange={onTitleChange}
               type={record.vehicle ? formState.type : undefined}
               onTypeChange={formState.dirtySetType}
-              locked={lockState.locked}
+              locked={pageLocked}
               // Not on a locked invoice: the header offers nothing there.
-              onTakePayment={canTakePayment && !lockState.locked ? takePayment : undefined}
+              onTakePayment={canTakePayment && !pageLocked ? takePayment : undefined}
             />
 
             <LaborAddedBanner
@@ -797,6 +833,14 @@ export function ServicePageClient({
               }}
             />
 
+            <CancelInvoiceDialog
+              open={showCancelDialog}
+              onOpenChange={setShowCancelDialog}
+              invoiceNumber={record.invoiceNumber}
+              paid={refundableAmount({ ...record, payments: record.payments ?? [] })}
+              onConfirm={confirmCancel}
+            />
+
             <LeaveUnsavedDialog
               open={formState.blockedLeave !== null}
               reason={formState.blockedLeave?.reason ?? null}
@@ -804,7 +848,12 @@ export function ServicePageClient({
               onLeave={formState.leaveWithoutSaving}
             />
 
-            {(lockState.locked || lockState.unlockedAt) && (
+            {cancelled && (
+              <div className="shrink-0 px-4 pt-3">
+                <CancelledInvoiceBanner invoiceNumber={record.invoiceNumber} />
+              </div>
+            )}
+            {!cancelled && (lockState.locked || lockState.unlockedAt) && (
               <div className="shrink-0 px-4 pt-3">
                 <DocumentLockBanner
                   state={lockState}
@@ -820,7 +869,7 @@ export function ServicePageClient({
                 info={faultCodes}
                 vehicleId={vehicleId}
                 serviceRecordId={record.id}
-                locked={lockState.locked}
+                locked={pageLocked}
                 // Saved concerns only, as for findings.
                 concerns={savedConcerns}
               >
@@ -833,7 +882,7 @@ export function ServicePageClient({
                   paymentSignal={paymentSignal}
                   onTakePayment={takePayment}
                   onNotifyForStatus={handleNotifyForStatus}
-                  locked={lockState.locked}
+                  locked={pageLocked}
                   lockedLabel={t('invoice.lockedFieldsetLabel')}
                   form={{
                     id: 'service-record-form',

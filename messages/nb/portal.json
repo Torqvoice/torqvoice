@@ -366,7 +366,8 @@
     "summaryDue": "Forfallsdato",
     "summaryReference": "Deres referanse / bestillingsnr.",
     "summaryDate": "Dato",
-    "fullInvoice": "Hele fakturaen"
+    "fullInvoice": "Hele fakturaen",
+    "cancelled": "Kansellert"
   },
   "quotes": {
     "title": "Tilbud",
@@ -643,7 +644,8 @@
       "scheduled": "Planlagt",
       "inProgress": "Pågår",
       "waitingParts": "Venter på deler",
-      "completed": "Fullført"
+      "completed": "Fullført",
+      "cancelled": "Kansellert"
     },
     "request": {
       "pending": "Venter på svar",

@@ -42,6 +42,8 @@ async function getBillingSummary(organizationId: string): Promise<BillingSummary
         END AS paid
       FROM "public"."service_records" sr
       WHERE sr."organizationId" = ${organizationId}
+        -- A cancelled invoice was never charged: no revenue, nothing owed.
+        AND sr.status <> 'cancelled'
     ) sub
   `)
 
@@ -94,11 +96,11 @@ export async function getBillingHistory(params: {
 
         let statusCondition: Prisma.Sql
         if (params.status === 'paid') {
-          statusCondition = Prisma.sql`AND (manually_paid = true OR (paid_amount >= effective_total AND effective_total > 0))`
+          statusCondition = Prisma.sql`AND job_status <> 'cancelled' AND (manually_paid = true OR (paid_amount >= effective_total AND effective_total > 0))`
         } else if (params.status === 'partial') {
-          statusCondition = Prisma.sql`AND manually_paid = false AND paid_amount > 0 AND paid_amount < effective_total`
+          statusCondition = Prisma.sql`AND job_status <> 'cancelled' AND manually_paid = false AND paid_amount > 0 AND paid_amount < effective_total`
         } else if (params.status === 'unpaid') {
-          statusCondition = Prisma.sql`AND manually_paid = false AND paid_amount = 0`
+          statusCondition = Prisma.sql`AND job_status <> 'cancelled' AND manually_paid = false AND paid_amount = 0`
         } else {
           statusCondition = Prisma.empty
         }
@@ -126,7 +128,8 @@ export async function getBillingHistory(params: {
               ELSE COALESCE((SELECT SUM(p.amount) FROM "public"."payments" p WHERE p."serviceRecordId" = sr.id), 0)
             END AS paid_amount,
             sr."sentAt" AS sent_at,
-            sr."viewCount" AS view_count
+            sr."viewCount" AS view_count,
+            sr.status AS job_status
           FROM "public"."service_records" sr
           LEFT JOIN "public"."vehicles" v ON v.id = sr."vehicleId"
           WHERE sr."organizationId" = ${organizationId}
@@ -159,6 +162,7 @@ export async function getBillingHistory(params: {
             sent_at: Date | null
             view_count: number
             last_viewed_at: Date | null
+            job_status: string
           }[]
         >(Prisma.sql`
         SELECT
@@ -180,7 +184,8 @@ export async function getBillingHistory(params: {
           sub.customer_name,
           sub.sent_at,
           sub.view_count,
-          sub.last_viewed_at
+          sub.last_viewed_at,
+          sub.job_status
         FROM (
           SELECT
             sr.id,
@@ -204,7 +209,8 @@ export async function getBillingHistory(params: {
             c.name AS customer_name,
             sr."sentAt" AS sent_at,
             sr."viewCount" AS view_count,
-            sr."lastViewedAt" AS last_viewed_at
+            sr."lastViewedAt" AS last_viewed_at,
+            sr.status AS job_status
           FROM "public"."service_records" sr
           LEFT JOIN "public"."vehicles" v ON v.id = sr."vehicleId"
           LEFT JOIN "public"."customers" c ON c.id = COALESCE(sr."customerId", v."customerId")
@@ -249,12 +255,15 @@ export async function getBillingHistory(params: {
             const effectiveTotal = Number(r.effective_total)
             const paidAmount = Number(r.paid_amount)
             const manuallyPaid = r.manually_paid
+            // A cancelled invoice says so, whatever was paid on it.
             const paymentStatus =
-              manuallyPaid || (paidAmount >= effectiveTotal && effectiveTotal > 0)
-                ? 'paid'
-                : paidAmount > 0
-                  ? 'partial'
-                  : 'unpaid'
+              r.job_status === 'cancelled'
+                ? 'cancelled'
+                : manuallyPaid || (paidAmount >= effectiveTotal && effectiveTotal > 0)
+                  ? 'paid'
+                  : paidAmount > 0
+                    ? 'partial'
+                    : 'unpaid'
             return {
               id: r.id,
               title: r.title || '',

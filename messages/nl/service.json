@@ -63,7 +63,8 @@
     "designRefreshConfirm": "Factuur bijwerken",
     "designRefreshDone": "Deze factuur wordt nu afgedrukt met de huidige gegevens",
     "designRefreshFailed": "Kon de factuur niet bijwerken",
-    "printWorkOrder": "Werkorder afdrukken"
+    "printWorkOrder": "Werkorder afdrukken",
+    "cancelInvoice": "Factuur annuleren"
   },
   "basicInfo": {
     "title": "Basisinformatie",
@@ -101,7 +102,8 @@
       "pending": "In afwachting",
       "in_progress": "In uitvoering",
       "waiting_parts": "Wacht op onderdelen",
-      "completed": "Voltooid"
+      "completed": "Voltooid",
+      "cancelled": "Geannuleerd"
     },
     "searchVehicles": "Voertuigen zoeken...",
     "noVehicleFound": "Geen voertuig gevonden.",
@@ -373,7 +375,8 @@
     "failedPdf": "PDF-factuur genereren mislukt",
     "received": "Ontvangen betalingen",
     "noneYet": "Nog niets betaald.",
-    "balanceDue": "Verschuldigd bedrag"
+    "balanceDue": "Verschuldigd bedrag",
+    "cancelledNotice": "Geannuleerd: op deze factuur hoeft niets betaald te worden. Betalingen en terugbetalingen blijven hierboven staan."
   },
   "attachments": {
     "deleteTitle": "Bijlage verwijderen",
@@ -750,7 +753,9 @@
       "preview": "Voorbeeld factuur",
       "previewShort": "Voorbeeld",
       "send": "Naar klant sturen",
-      "sendShort": "Sturen"
+      "sendShort": "Sturen",
+      "cancelled": "Geannuleerd",
+      "nothingOwed": "Niets te betalen"
     },
     "vehicleInfo": {
       "more": "Meer info",
@@ -880,5 +885,28 @@
     "hint": "Blijf om het te herstellen, of ga weg en verlies de wijzigingen sinds de laatste keer opslaan.",
     "stay": "Blijven en herstellen",
     "leave": "Weggaan zonder opslaan"
+  },
+  "cancelInvoice": {
+    "title": "Factuur {number} annuleren?",
+    "titleNoNumber": "Deze factuur annuleren?",
+    "description": "Deze factuur is al naar de klant gegaan en kan daarom niet worden verwijderd: in de meeste landen moeten factuurnummers zonder gaten doorlopen.",
+    "pointKept": "De opdracht blijft bewaard en wordt als geannuleerd gemarkeerd. De factuur houdt haar nummer en kan niet meer worden gewijzigd.",
+    "pointShown": "De factuur, de gedeelde link, de pdf en het klantportaal tonen haar als geannuleerd.",
+    "pointReports": "Ze telt niet meer mee in omzet, belasting of openstaande bedragen.",
+    "pointLedger": "Een gekoppeld boekhoudpakket vervalt zijn kopie waar dat kan. Een kopie met betalingen blijft staan voor je boekhouder om te crediteren.",
+    "paidNotice": "De klant heeft {amount} op deze factuur betaald.",
+    "recordRefund": "Een terugbetaling aan de klant registreren",
+    "refundAmount": "Terugbetaald bedrag",
+    "refundMethod": "Terugbetaald via",
+    "refundTooMuch": "Een terugbetaling kan niet meer zijn dan {amount}.",
+    "refundNote": "Terugbetaling op geannuleerde factuur",
+    "noRefundHint": "Zonder terugbetaling blijven de betalingen staan zoals ze zijn.",
+    "keep": "Factuur behouden",
+    "confirm": "Factuur annuleren",
+    "done": "Factuur geannuleerd",
+    "failed": "Kon de factuur niet annuleren",
+    "bannerTitle": "Factuur {number} is geannuleerd",
+    "bannerTitleNoNumber": "Deze factuur is geannuleerd",
+    "bannerBody": "Ze houdt haar nummer en kan niet meer worden gewijzigd. De klant ziet haar als geannuleerd."
   }
 }

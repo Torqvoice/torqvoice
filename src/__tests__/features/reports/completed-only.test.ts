@@ -20,7 +20,11 @@ vi.mock('@/lib/db', () => ({
 
 import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
 import { db } from '@/lib/db'
-import { getRevenueReport, getServiceReport } from '@/features/reports/Actions/reportActions'
+import {
+  getRevenueReport,
+  getServiceReport,
+  getTaxReport,
+} from '@/features/reports/Actions/reportActions'
 import { parseCompletedOnlyCookie } from '@/lib/completed-only-preference'
 
 function setupAuth() {
@@ -44,9 +48,26 @@ beforeEach(() => {
 })
 
 describe('reports', () => {
-  it('count every job when the switch is off', async () => {
+  it('count every job but a cancelled one when the switch is off', async () => {
     await getRevenueReport({ startDate: '2026-01-01', endDate: '2026-01-31' })
-    expect(whereOf().status).toBeUndefined()
+    // A cancelled invoice keeps its number but was never charged.
+    expect(whereOf().status).toEqual({ not: 'cancelled' })
+  })
+
+  it('still count the money that moved on a cancelled invoice: a payment and its refund', async () => {
+    await getRevenueReport({ startDate: '2026-01-01', endDate: '2026-01-31' })
+    const paymentWhere = (vi.mocked(db.payment.findMany).mock.calls[0][0] as any).where
+    expect(paymentWhere.serviceRecord).toEqual({ organizationId: 'org-1' })
+  })
+
+  it('leave a cancelled invoice out of tax', async () => {
+    await getTaxReport({ startDate: '2026-01-01', endDate: '2026-01-31' })
+    expect(whereOf().status).toEqual({ not: 'cancelled' })
+  })
+
+  it('leave a cancelled job out of the service report', async () => {
+    await getServiceReport({ startDate: '2026-01-01', endDate: '2026-01-31' })
+    expect(whereOf().status).toEqual({ not: 'cancelled' })
   })
 
   it('count only payments on completed jobs, and jobs marked paid by hand, when the switch is on', async () => {

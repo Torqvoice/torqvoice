@@ -71,5 +71,6 @@ export const manifest: ConnectorManifest = {
     { event: 'service.update', job: 'conference.sync' },
     { event: 'service.status', job: 'conference.sync' },
     { event: 'service.delete', job: 'conference.sync' },
+    { event: 'service.cancel', job: 'conference.sync' },
   ],
 }

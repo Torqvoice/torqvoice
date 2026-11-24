@@ -1,4 +1,5 @@
-import { statusColumns } from '@/features/work-order-statuses/Lib/stages'
+import { isCancelled, statusColumns } from '@/features/work-order-statuses/Lib/stages'
+import { CANCELLED_JOB_REFUSAL } from '@/features/invoices/Lib/cancelInvoice'
 import { z } from 'zod'
 import { announceJobStatusChanged } from '@/features/vehicles/Lib/jobEvents'
 import { db } from '@/lib/db'
@@ -63,6 +64,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
         },
       })
       if (!job) return apiError(404, 'not_found', 'That job is not on your list.')
+      // Its invoice went out and was called off; nothing moves it on again.
+      if (isCancelled(job.status)) return apiError(409, 'conflict', CANCELLED_JOB_REFUSAL)
 
       // Before anything moves, the clocks included: the readings the
       // workshop requires, for a job being completed now.

@@ -12,6 +12,7 @@ import { useFormatDate } from '@/lib/use-format-date'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
+import { StatusBadge } from '@/components/status-badge'
 import { Card, CardContent } from '@/components/ui/card'
 import {
   Table,
@@ -258,6 +259,12 @@ export default function BillingClient({
             {t('history.statusUnpaid')}
           </Badge>
         )
+      case 'cancelled':
+        return (
+          <StatusBadge kind="workOrder" status="cancelled">
+            {t('history.statusCancelled')}
+          </StatusBadge>
+        )
       default:
         return <Badge variant="secondary">{status}</Badge>
     }
@@ -467,7 +474,9 @@ export default function BillingClient({
         {data.records.length === 0
           ? emptyState(false)
           : data.records.map((record) => {
-              const balance = record.totalAmount - record.totalPaid
+              // Nothing is owed on a cancelled invoice.
+              const balance =
+                record.status === 'cancelled' ? 0 : record.totalAmount - record.totalPaid
               return (
                 <button
                   key={record.id}
@@ -599,7 +608,9 @@ export default function BillingClient({
               </TableRow>
             ) : (
               data.records.map((record) => {
-                const balance = record.totalAmount - record.totalPaid
+                // Nothing is owed on a cancelled invoice.
+                const balance =
+                  record.status === 'cancelled' ? 0 : record.totalAmount - record.totalPaid
                 return (
                   <TableRow
                     key={record.id}

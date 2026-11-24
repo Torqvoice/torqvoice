@@ -85,7 +85,9 @@
     "org": "Įm. kodas: {org}",
     "customFieldsTitle": "Papildoma informacija",
     "telegramConnect": "Susisiekite su mumis per Telegram",
-    "taxRegistrationLabel": "{name} nr."
+    "taxRegistrationLabel": "{name} nr.",
+    "cancelledTitle": "SĄSKAITA (ATŠAUKTA)",
+    "cancelledNotice": "ATŠAUKTA"
   },
   "quote": {
     "title": "PASIŪLYMAS",

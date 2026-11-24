@@ -85,7 +85,9 @@
     "org": "Org: {org}",
     "customFieldsTitle": "Additional Information",
     "telegramConnect": "Chat with us on Telegram",
-    "taxRegistrationLabel": "{name} No."
+    "taxRegistrationLabel": "{name} No.",
+    "cancelledTitle": "INVOICE (CANCELLED)",
+    "cancelledNotice": "CANCELLED"
   },
   "quote": {
     "title": "QUOTE",
