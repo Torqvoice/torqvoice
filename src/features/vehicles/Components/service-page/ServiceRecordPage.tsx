@@ -60,6 +60,7 @@ import { PageHeader } from '@/components/page-header'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { zonedDayKey } from '@/lib/timezone'
+import { promiseTimesByWeekday } from '@/features/workshop-calendar/Lib/calendar'
 
 /**
  * Shared server component behind both service-record routes:
@@ -182,6 +183,19 @@ export async function ServiceRecordPage({
   const onlinePayments = organizationId
     ? (await offeredPaymentProviders(organizationId)).length > 0
     : false
+  // When a promise to the customer defaults to on the day picked: the
+  // workshop's closing time. Opening hours are public (the portal shows
+  // them), so they are read here rather than through the member allowlist.
+  const promisedDefaultTimes = promiseTimesByWeekday(
+    organizationId
+      ? (
+          await db.appSetting.findFirst({
+            where: { organizationId, key: SETTING_KEYS.OPENING_HOURS },
+            select: { value: true },
+          })
+        )?.value
+      : null
+  )
   const lockState = organizationId
     ? await getInvoiceLockState(serviceId, organizationId)
     : { locked: false, reason: null, unlockedAt: null }
@@ -524,6 +538,7 @@ export async function ServiceRecordPage({
           warnMargin: 1,
         }}
         defaultDueDays={defaultDueDays}
+        promisedDefaultTimes={promisedDefaultTimes}
         defaultMarkupPercent={defaultMarkupPercent}
         markupAppliesToInventory={markupAppliesToInventory}
         statusReports={(statusReportsResult.success && statusReportsResult.data

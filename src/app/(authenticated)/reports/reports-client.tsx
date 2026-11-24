@@ -60,6 +60,7 @@ import {
   Timer,
   Gauge,
   CheckCircle2,
+  Circle,
 } from 'lucide-react'
 import {
   getRevenueReport,
@@ -845,7 +846,13 @@ export default function ReportsClient({
               aria-pressed={completedOnly}
               title={t('completedOnlyHint')}
             >
-              <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" />
+              {/* A filled check only while it is on, an empty ring while off,
+                  so the button never reads as switched on when it is not. */}
+              {completedOnly ? (
+                <CheckCircle2 className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
+              ) : (
+                <Circle className="mr-1.5 h-3.5 w-3.5" aria-hidden="true" />
+              )}
               {t('completedOnly')}
             </Button>
           )}

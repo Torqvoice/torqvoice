@@ -203,15 +203,15 @@
     }
   },
   "tax": {
-    "totalTaxCollected": "Общо събран данък",
+    "totalTaxCollected": "Общо фактуриран данък",
     "taxableRevenue": "Облагаеми приходи",
     "invoicesWithTax": "Фактури с данък",
-    "monthlyTaxCollected": "Събран данък по месеци",
+    "monthlyTaxCollected": "Фактуриран данък по месеци",
     "taxByRate": "Данък по ставки",
     "monthlyBreakdown": "Разбивка по месеци",
     "tableHeaders": {
       "taxRate": "Данъчна ставка",
-      "taxCollected": "Събран данък",
+      "taxCollected": "Фактуриран данък",
       "invoices": "Фактури",
       "month": "Месец",
       "taxableAmount": "Данъчна основа"
@@ -254,7 +254,7 @@
     "totalSpent": "Общо похарчено",
     "jobs": "Работни поръчки",
     "visits": "Посещения",
-    "taxCollected": "Събран данък",
+    "taxCollected": "Фактуриран данък",
     "partsCost": "Доставна стойност на резервните части",
     "laborCost": "Стойност на труда"
   },
@@ -305,7 +305,7 @@
     "customer": "Клиент",
     "visits": "Посещения",
     "avgDaysBetweenVisits": "Средно дни между посещенията",
-    "taxCollected": "Събран данък",
+    "taxCollected": "Фактуриран данък",
     "taxableAmount": "Данъчна основа",
     "invoiceCount": "Брой фактури",
     "invoiceNumber": "Фактура №",
@@ -378,7 +378,7 @@
     "over30": "Над 30 дни",
     "over60": "Над 60 дни",
     "over90": "Над 90 дни",
-    "taxCollected": "Събран данък",
+    "taxCollected": "Фактуриран данък",
     "taxableAmount": "Данъчна основа",
     "taxRate": "Данъчна ставка",
     "invoiceCount": "Брой фактури",

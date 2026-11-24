@@ -90,6 +90,9 @@
     "invoiceDueDateOnIssuePlaceholder": "Iš sąlygų",
     "invoiceDateOnIssueHint": "Palikus tuščią, sąskaita datuojama jos išsiuntimo diena, o apmokėjimo terminas skaičiuojamas pagal jūsų mokėjimo sąlygas.",
     "invoiceDueDateOnIssueHint": "Palikus tuščią, apmokėjimo terminas nustatomas pagal jūsų mokėjimo sąlygas, kai sąskaita išsiunčiama.",
+    "noPaymentTerms": "Mokėjimo sąlygos nenustatytos, todėl apmokėjimo termino nėra.",
+    "setPaymentTerms": "Nustatyti mokėjimo sąlygas",
+    "noDueDatePlaceholder": "Be termino",
     "typeOptions": {
       "maintenance": "Priežiūra",
       "repair": "Remontas",
@@ -514,6 +517,7 @@
     "slotPicked": "Priskirta artimiausiam laisvam laikui",
     "noSlotFound": "Artimiausiomis savaitėmis laisvo laiko nerasta",
     "assignedTitle": "Priskirtas technikas",
+    "notAssigned": "Dar nepriskirta. Pasirinkite, kas atliks šį darbą.",
     "boardLink": "Darbų lenta",
     "someoneElse": "Kitas žmogus",
     "loadOf": "{booked} / {capacity} val.",

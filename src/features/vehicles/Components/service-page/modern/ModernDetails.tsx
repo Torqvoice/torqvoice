@@ -558,6 +558,7 @@ export function ModernDetails(props: ModernDetailsProps) {
                   initialPromisedAt={
                     record.promisedAt ? new Date(record.promisedAt).toISOString() : null
                   }
+                  promisedDefaultTimes={props.promisedDefaultTimes}
                   onSaved={formState.flashSaved}
                 />
 
@@ -601,6 +602,8 @@ export function ModernDetails(props: ModernDetailsProps) {
                         designId={record.designId ?? null}
                         designFollowsName={props.designFollowsName}
                         designFollowsRule={props.designFollowsRule}
+                        paymentTermsDays={props.paymentTermsDays}
+                        canEditSettings={props.canAddStatus}
                       />
                     </div>
                     <div className="border-b border-card-edge/60 p-5">

@@ -203,15 +203,15 @@
     }
   },
   "tax": {
-    "totalTaxCollected": "Total Taxes Perçues",
+    "totalTaxCollected": "Total Taxes Facturées",
     "taxableRevenue": "Revenus Taxables",
     "invoicesWithTax": "Factures avec Taxe",
-    "monthlyTaxCollected": "Taxes Mensuelles Perçues",
+    "monthlyTaxCollected": "Taxes Facturées par Mois",
     "taxByRate": "Taxe par Taux",
     "monthlyBreakdown": "Répartition Mensuelle",
     "tableHeaders": {
       "taxRate": "Taux de Taxe",
-      "taxCollected": "Taxe Perçue",
+      "taxCollected": "Taxe Facturée",
       "invoices": "Factures",
       "month": "Mois",
       "taxableAmount": "Montant Taxable"
@@ -254,7 +254,7 @@
     "totalSpent": "Total Dépensé",
     "jobs": "Travaux",
     "visits": "Visites",
-    "taxCollected": "Taxe Perçue",
+    "taxCollected": "Taxe Facturée",
     "partsCost": "Coût des Pièces",
     "laborCost": "Coût de Main-d'œuvre"
   },
@@ -305,7 +305,7 @@
     "customer": "Client",
     "visits": "Visites",
     "avgDaysBetweenVisits": "Moy. Jours Entre Visites",
-    "taxCollected": "Taxe Perçue",
+    "taxCollected": "Taxe Facturée",
     "taxableAmount": "Montant Taxable",
     "invoiceCount": "Nombre de Factures",
     "invoiceNumber": "N° Facture",
@@ -378,7 +378,7 @@
     "over30": "Plus de 30 Jours",
     "over60": "Plus de 60 Jours",
     "over90": "Plus de 90 Jours",
-    "taxCollected": "Taxe Perçue",
+    "taxCollected": "Taxe Facturée",
     "taxableAmount": "Montant Taxable",
     "taxRate": "Taux de Taxe",
     "invoiceCount": "Nombre de Factures",

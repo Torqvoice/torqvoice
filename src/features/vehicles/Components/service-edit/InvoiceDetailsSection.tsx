@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/select'
 import { SearchableSelect } from '@/components/ui/searchable-select'
 import { Check, Loader2 } from 'lucide-react'
+import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
@@ -58,6 +59,13 @@ interface InvoiceDetailsSectionProps {
    * frame. The classic page leaves this unset and gets the whole section.
    */
   part?: 'invoice'
+  /**
+   * The workshop's payment terms in days. 0 means none are set, so no due
+   * date follows from them and the field says why. Left out, nothing is said.
+   */
+  paymentTermsDays?: number
+  /** The viewer may change settings, so the no-terms note links to them. */
+  canEditSettings?: boolean
 }
 
 export function InvoiceDetailsSection({
@@ -76,6 +84,8 @@ export function InvoiceDetailsSection({
   designFollowsName = null,
   designFollowsRule = null,
   part,
+  paymentTermsDays,
+  canEditSettings = false,
 }: InvoiceDetailsSectionProps) {
   const t = useTranslations('service.basicInfo')
   const { timezone } = useDateSettings()
@@ -118,8 +128,12 @@ export function InvoiceDetailsSection({
   // A draft's empty invoice date is filled the day it is sent; the hint says
   // so while nobody has typed a date of their own.
   const datedOnIssue = Boolean(initialData.invoiceDatedOnIssue) && !invoiceDate
+  // With no payment terms an empty due date stays empty, issued or not, and
+  // the field said nothing about it. Told only to somebody who can set them.
+  const noTerms = paymentTermsDays === 0 && !invoiceDueDate
   // Likewise its empty due date, set from the payment terms at the issue.
-  const dueOnIssue = Boolean(initialData.invoiceDueDatedOnIssue) && !invoiceDueDate
+  const dueOnIssue =
+    Boolean(initialData.invoiceDueDatedOnIssue) && !invoiceDueDate && paymentTermsDays !== 0
   const hintId = datedOnIssue || dueOnIssue ? 'invoiceDateOnIssueHint' : undefined
 
   // On the overhauled page the status is the stepper under the title, so the
@@ -232,8 +246,17 @@ export function InvoiceDetailsSection({
               setInvoiceDueDate(v)
               onDirty?.()
             }}
-            placeholder={dueOnIssue ? t('invoiceDueDateOnIssuePlaceholder') : undefined}
-            aria-describedby={dueOnIssue ? hintId : undefined}
+            // Not today's date as the example: with no terms there is no due date.
+            placeholder={
+              dueOnIssue
+                ? t('invoiceDueDateOnIssuePlaceholder')
+                : noTerms
+                  ? t('noDueDatePlaceholder')
+                  : undefined
+            }
+            aria-describedby={
+              dueOnIssue ? hintId : noTerms && canEditSettings ? 'invoiceNoTermsHint' : undefined
+            }
             className="h-9 text-sm"
           />
         </div>
@@ -241,6 +264,17 @@ export function InvoiceDetailsSection({
       {hintId && (
         <p id={hintId} className="text-xs text-muted-foreground">
           {datedOnIssue ? t('invoiceDateOnIssueHint') : t('invoiceDueDateOnIssueHint')}
+        </p>
+      )}
+      {noTerms && canEditSettings && (
+        <p id="invoiceNoTermsHint" className="text-xs text-muted-foreground">
+          {t('noPaymentTerms')}{' '}
+          <Link
+            href="/settings/invoice#dueDays"
+            className="font-medium text-foreground underline underline-offset-2 hover:text-primary"
+          >
+            {t('setPaymentTerms')}
+          </Link>
         </p>
       )}
 

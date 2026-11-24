@@ -203,15 +203,15 @@
     }
   },
   "tax": {
-    "totalTaxCollected": "Всего собрано налогов",
+    "totalTaxCollected": "Всего налога по счетам",
     "taxableRevenue": "Налогооблагаемый доход",
     "invoicesWithTax": "Счета с налогом",
-    "monthlyTaxCollected": "Ежемесячные налоги",
+    "monthlyTaxCollected": "Налог по счетам по месяцам",
     "taxByRate": "Налог по ставкам",
     "monthlyBreakdown": "Помесячная разбивка",
     "tableHeaders": {
       "taxRate": "Ставка налога",
-      "taxCollected": "Собрано налога",
+      "taxCollected": "Налог по счетам",
       "invoices": "Счета",
       "month": "Месяц",
       "taxableAmount": "Налогооблагаемая сумма"
@@ -254,7 +254,7 @@
     "totalSpent": "Всего потрачено",
     "jobs": "Работы",
     "visits": "Визиты",
-    "taxCollected": "Собрано налога",
+    "taxCollected": "Налог по счетам",
     "partsCost": "Стоимость запчастей",
     "laborCost": "Стоимость работ"
   },
@@ -305,7 +305,7 @@
     "customer": "Клиент",
     "visits": "Визиты",
     "avgDaysBetweenVisits": "Средний интервал между визитами (дни)",
-    "taxCollected": "Собрано налога",
+    "taxCollected": "Налог по счетам",
     "taxableAmount": "Налогооблагаемая сумма",
     "invoiceCount": "Количество счетов",
     "invoiceNumber": "№ Счёта",
@@ -378,7 +378,7 @@
     "over30": "Более 30 дней",
     "over60": "Более 60 дней",
     "over90": "Более 90 дней",
-    "taxCollected": "Налог собран",
+    "taxCollected": "Налог по счетам",
     "taxableAmount": "Налогооблагаемая сумма",
     "taxRate": "Налоговая ставка",
     "invoiceCount": "Количество счетов",

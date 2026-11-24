@@ -63,6 +63,9 @@ test('Record on a desk computer opens the recorder, and the take becomes the rep
   await report.getByLabel('Title').fill(`E2E recorded ${stamp}`)
   await report.getByRole('button', { name: 'Create', exact: true }).click()
   await expect(page.getByText('Status report created')).toBeVisible()
+  // In the job's list straight away, without a reload.
+  await expect(page.getByText(`E2E recorded ${stamp}`).first()).toBeVisible()
+  await expect(page.getByText('No status reports yet')).toHaveCount(0)
 })
 
 test('Take photo is not offered on a desk computer, where it would only open the file picker', async ({

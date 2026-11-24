@@ -90,6 +90,9 @@
     "invoiceDueDateOnIssuePlaceholder": "Wg terminu",
     "invoiceDateOnIssueHint": "Jeśli pole pozostanie puste, faktura otrzyma datę dnia wysłania, a termin płatności wynika z Twoich warunków płatności.",
     "invoiceDueDateOnIssueHint": "Jeśli pole pozostanie puste, termin płatności zostanie ustalony według Twoich warunków płatności przy wysyłce faktury.",
+    "noPaymentTerms": "Nie ustawiono warunków płatności, więc nie ma terminu płatności.",
+    "setPaymentTerms": "Ustaw warunki płatności",
+    "noDueDatePlaceholder": "Brak terminu",
     "typeOptions": {
       "maintenance": "Konserwacja",
       "repair": "Naprawa",
@@ -514,6 +517,7 @@
     "slotPicked": "Zaplanowano na najbliższy wolny termin",
     "noSlotFound": "Nie znaleziono wolnego terminu w najbliższych tygodniach",
     "assignedTitle": "Przypisany technik",
+    "notAssigned": "Jeszcze nie przypisano. Wybierz, kto wykona to zlecenie.",
     "boardLink": "Tablica zleceń",
     "someoneElse": "Ktoś inny",
     "loadOf": "{booked} / {capacity} h",

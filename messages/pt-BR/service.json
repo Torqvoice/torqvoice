@@ -90,6 +90,9 @@
     "invoiceDueDateOnIssuePlaceholder": "Pelo prazo",
     "invoiceDateOnIssueHint": "Se ficar em branco, a fatura recebe a data do dia em que for enviada e vence conforme suas condições de pagamento.",
     "invoiceDueDateOnIssueHint": "Se ficar em branco, o vencimento é definido pelas suas condições de pagamento quando a fatura for enviada.",
+    "noPaymentTerms": "Nenhuma condição de pagamento definida, então não há vencimento.",
+    "setPaymentTerms": "Definir condições de pagamento",
+    "noDueDatePlaceholder": "Sem vencimento",
     "typeOptions": {
       "maintenance": "Manutenção",
       "repair": "Reparo",
@@ -514,6 +517,7 @@
     "slotPicked": "Agendado no próximo horário livre",
     "noSlotFound": "Nenhum horário livre encontrado nas próximas semanas",
     "assignedTitle": "Técnico responsável",
+    "notAssigned": "Ainda não atribuído. Escolha quem fará este serviço.",
     "boardLink": "Quadro de Trabalho",
     "someoneElse": "Outra pessoa",
     "loadOf": "{booked} / {capacity} h",

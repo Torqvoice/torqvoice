@@ -203,15 +203,15 @@
     }
   },
   "tax": {
-    "totalTaxCollected": "Total de IVA cobrado",
+    "totalTaxCollected": "Total de IVA faturado",
     "taxableRevenue": "Receita tributável",
     "invoicesWithTax": "Faturas com IVA",
-    "monthlyTaxCollected": "IVA cobrado por mês",
+    "monthlyTaxCollected": "IVA faturado por mês",
     "taxByRate": "IVA por taxa",
     "monthlyBreakdown": "Detalhe mensal",
     "tableHeaders": {
       "taxRate": "Taxa de IVA",
-      "taxCollected": "IVA cobrado",
+      "taxCollected": "IVA faturado",
       "invoices": "Faturas",
       "month": "Mês",
       "taxableAmount": "Base tributável"
@@ -254,7 +254,7 @@
     "totalSpent": "Total gasto",
     "jobs": "Trabalhos",
     "visits": "Visitas",
-    "taxCollected": "IVA cobrado",
+    "taxCollected": "IVA faturado",
     "partsCost": "Custo das peças",
     "laborCost": "Custo de mão de obra"
   },
@@ -305,7 +305,7 @@
     "customer": "Cliente",
     "visits": "Visitas",
     "avgDaysBetweenVisits": "Média de dias entre visitas",
-    "taxCollected": "IVA cobrado",
+    "taxCollected": "IVA faturado",
     "taxableAmount": "Base tributável",
     "invoiceCount": "N.º de faturas",
     "invoiceNumber": "N.º da fatura",
@@ -378,7 +378,7 @@
     "over30": "Mais de 30 dias",
     "over60": "Mais de 60 dias",
     "over90": "Mais de 90 dias",
-    "taxCollected": "IVA cobrado",
+    "taxCollected": "IVA faturado",
     "taxableAmount": "Base tributável",
     "taxRate": "Taxa de IVA",
     "invoiceCount": "N.º de faturas",

@@ -133,6 +133,7 @@ export function ServicePageClient({
   aiTranscription = false,
   dictationMode = 'choice',
   defaultDueDays = 0,
+  promisedDefaultTimes,
   defaultMarkupPercent = 0,
   markupAppliesToInventory = false,
   statusReports = [],
@@ -740,6 +741,8 @@ export function ServicePageClient({
     designOptions,
     designFollowsName,
     designFollowsRule,
+    paymentTermsDays: defaultDueDays,
+    promisedDefaultTimes,
   }
 
   const tTaxOffer = useTranslations('service.taxOffer')

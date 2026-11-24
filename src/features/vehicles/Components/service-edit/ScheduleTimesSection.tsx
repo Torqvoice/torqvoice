@@ -4,7 +4,7 @@ import { SectionFrame } from '@/components/section-frame'
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { useModernWorkOrder } from '@/components/work-order-layout-context'
 import { useRouter } from 'next/navigation'
-import { AddPersonDialog } from '@/features/team/Components/AddPersonDialog'
+import { type AddedTechnician, AddPersonDialog } from '@/features/team/Components/AddPersonDialog'
 import { useFormatter, useTranslations } from 'next-intl'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -37,6 +37,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { DateTimePicker } from '@/components/ui/datetime-picker'
+import { DEFAULT_PROMISE_TIME } from '@/features/workshop-calendar/Lib/calendar'
 import { useDateSettings } from '@/components/date-settings-context'
 import {
   addJobHelper,
@@ -111,6 +112,11 @@ interface ScheduleTimesSectionProps {
   initialWorkBayId?: string | null
   /** When the customer was told the vehicle would be ready, ISO. */
   initialPromisedAt?: string | null
+  /**
+   * The time a promise defaults to on each weekday, Sunday first, "HH:mm" on
+   * the workshop's clock. Picking a day used to promise midnight.
+   */
+  promisedDefaultTimes?: string[]
   onSaved?: () => void
 }
 
@@ -125,6 +131,7 @@ export function ScheduleTimesSection({
   initialHelperIds,
   initialWorkBayId,
   initialPromisedAt,
+  promisedDefaultTimes,
   onSaved,
 }: ScheduleTimesSectionProps) {
   const t = useTranslations('service.schedule')
@@ -150,6 +157,15 @@ export function ScheduleTimesSection({
   const [selectedBayId, setSelectedBayId] = useState(initialWorkBayId || NO_BAY)
   const [techOpen, setTechOpen] = useState(false)
   const [technicians, setTechnicians] = useState<Technician[]>(initialTechnicians)
+  // The server's list, whenever the page reads it again: somebody added on the
+  // team page, or through "Add someone new" here, belongs in the cards without
+  // a reload. Keyed on what the cards show, as the array is new every render.
+  const techniciansKey = initialTechnicians
+    .map((tech) => `${tech.id}:${tech.name}:${tech.userId ?? ''}:${tech.dailyCapacity ?? ''}`)
+    .join('|')
+  useEffect(() => {
+    setTechnicians(initialTechnicians)
+  }, [techniciansKey])
   const [techSearch, setTechSearch] = useState('')
   const [creating, setCreating] = useState(false)
   const [addingPerson, setAddingPerson] = useState(false)
@@ -486,6 +502,24 @@ export function ScheduleTimesSection({
     }
   }
 
+  /**
+   * Somebody added from "Add someone new". The desk opened the dialog from this
+   * job to give it to them, so a new technician is in the cards and leads the
+   * job at once; an invited colleague has no board record yet and only
+   * refreshes the page.
+   */
+  const handlePersonAdded = async (added?: AddedTechnician) => {
+    if (added) {
+      setTechnicians((prev) =>
+        prev.some((tech) => tech.id === added.technicianId)
+          ? prev
+          : [...prev, { id: added.technicianId, name: added.name, userId: added.userId }]
+      )
+      await handleTechSelect(added.technicianId)
+    }
+    router.refresh()
+  }
+
   const handleBaySelect = async (bayId: string) => {
     const previous = selectedBayId
     setSelectedBayId(bayId)
@@ -665,6 +699,14 @@ export function ScheduleTimesSection({
     >
       {modern ? (
         <div className="space-y-2">
+          {/* The cards are everybody on the board, there to choose from. With
+              nobody chosen the section says so, or a list of names under
+              "Assigned technician" reads as if they all had the job. */}
+          {!selectedTechId && (
+            <p className="text-xs text-muted-foreground" data-testid="tech-unassigned">
+              {t('notAssigned')}
+            </p>
+          )}
           <div role="radiogroup" aria-label={t('technician')} className="space-y-1.5">
             {technicians.map((tech) => {
               const selected = tech.id === selectedTechId
@@ -918,7 +960,7 @@ export function ScheduleTimesSection({
       <AddPersonDialog
         open={addingPerson}
         onOpenChange={setAddingPerson}
-        onChanged={() => router.refresh()}
+        onChanged={(added) => void handlePersonAdded(added)}
       />
 
       {workBays.length > 0 && (
@@ -1142,6 +1184,11 @@ export function ScheduleTimesSection({
               onChange={(d) => {
                 if (d) void savePromisedAt(d)
               }}
+              // Browsing to another month is not a promise; only a picked day is.
+              onMonthChange={() => undefined}
+              // The picker hands the day on the workshop's wall clock, so its
+              // weekday is the workshop's.
+              defaultTimeOf={(day) => promisedDefaultTimes?.[day.getDay()] ?? DEFAULT_PROMISE_TIME}
               timeZone={timezone}
               granularity="minute"
               hourCycle={24}

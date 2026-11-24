@@ -33,6 +33,7 @@ import {
   ArrowUp,
   ArrowUpDown,
   CheckCircle2,
+  Circle,
   EyeOff,
   Receipt,
   Plus,
@@ -425,7 +426,11 @@ export default function BillingClient({
             aria-pressed={completedOnly}
             title={t('history.filterCompletedHint')}
           >
-            <CheckCircle2 className="mr-1 h-3.5 w-3.5" />
+            {completedOnly ? (
+              <CheckCircle2 className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
+            ) : (
+              <Circle className="mr-1 h-3.5 w-3.5" aria-hidden="true" />
+            )}
             {t('history.filterCompleted')}
           </Button>
         </div>

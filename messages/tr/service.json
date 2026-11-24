@@ -90,6 +90,9 @@
     "invoiceDueDateOnIssuePlaceholder": "Vadeye göre",
     "invoiceDateOnIssueHint": "Boş bırakılırsa fatura gönderildiği günün tarihini alır ve vadesi ödeme koşullarınıza göre belirlenir.",
     "invoiceDueDateOnIssueHint": "Boş bırakılırsa vade tarihi, fatura gönderildiğinde ödeme koşullarınıza göre belirlenir.",
+    "noPaymentTerms": "Ödeme koşulu ayarlanmadığı için vade tarihi yok.",
+    "setPaymentTerms": "Ödeme koşullarını ayarla",
+    "noDueDatePlaceholder": "Vade yok",
     "typeOptions": {
       "maintenance": "Bakım",
       "repair": "Onarım",
@@ -514,6 +517,7 @@
     "slotPicked": "Sıradaki boş saate alındı",
     "noSlotFound": "Önümüzdeki haftalarda boş saat bulunamadı",
     "assignedTitle": "Atanan teknisyen",
+    "notAssigned": "Henüz atanmadı. Bu işi kimin yapacağını seçin.",
     "boardLink": "İş panosu",
     "someoneElse": "Başka biri",
     "loadOf": "{booked} / {capacity} sa",

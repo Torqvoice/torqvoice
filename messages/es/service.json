@@ -90,6 +90,9 @@
     "invoiceDueDateOnIssuePlaceholder": "Por plazo",
     "invoiceDateOnIssueHint": "Si se deja vacío, la factura lleva la fecha del día en que se envía y vence según sus condiciones de pago.",
     "invoiceDueDateOnIssueHint": "Si se deja vacío, la fecha de vencimiento se fija según sus condiciones de pago al enviar la factura.",
+    "noPaymentTerms": "No hay condiciones de pago, así que no hay fecha de vencimiento.",
+    "setPaymentTerms": "Definir condiciones de pago",
+    "noDueDatePlaceholder": "Sin vencimiento",
     "typeOptions": {
       "maintenance": "Mantenimiento",
       "repair": "Reparación",
@@ -514,6 +517,7 @@
     "slotPicked": "Reservado en la siguiente franja libre",
     "noSlotFound": "No se encontró ninguna franja libre en las próximas semanas",
     "assignedTitle": "Técnico asignado",
+    "notAssigned": "Aún sin asignar. Elija quién hará este trabajo.",
     "boardLink": "Tablero de trabajo",
     "someoneElse": "Otra persona",
     "loadOf": "{booked} / {capacity} h",

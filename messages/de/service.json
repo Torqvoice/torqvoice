@@ -90,6 +90,9 @@
     "invoiceDueDateOnIssuePlaceholder": "Laut Frist",
     "invoiceDateOnIssueHint": "Leer gelassen, erhält die Rechnung das Datum des Versandtags und wird nach Ihren Zahlungsbedingungen fällig.",
     "invoiceDueDateOnIssueHint": "Leer gelassen, wird das Fälligkeitsdatum beim Versand der Rechnung aus Ihren Zahlungsbedingungen gesetzt.",
+    "noPaymentTerms": "Keine Zahlungsbedingungen festgelegt, daher kein Fälligkeitsdatum.",
+    "setPaymentTerms": "Zahlungsbedingungen festlegen",
+    "noDueDatePlaceholder": "Kein Fälligkeitsdatum",
     "typeOptions": {
       "maintenance": "Wartung",
       "repair": "Reparatur",
@@ -514,6 +517,7 @@
     "slotPicked": "Auf den nächsten freien Termin gelegt",
     "noSlotFound": "In den nächsten Wochen kein freier Termin gefunden",
     "assignedTitle": "Zugewiesener Techniker",
+    "notAssigned": "Noch nicht zugewiesen. Wählen Sie, wer den Auftrag übernimmt.",
     "boardLink": "Auftragsboard",
     "someoneElse": "Jemand anderes",
     "loadOf": "{booked} / {capacity} h",

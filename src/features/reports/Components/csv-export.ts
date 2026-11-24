@@ -322,7 +322,7 @@ export function exportTaxCsv(
   currencyCode: string,
   headers: [string, string, string, string] = [
     'Month',
-    'Tax Collected',
+    'Tax Invoiced',
     'Taxable Amount',
     'Invoice Count',
   ]

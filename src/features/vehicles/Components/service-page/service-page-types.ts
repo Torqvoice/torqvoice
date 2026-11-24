@@ -141,6 +141,8 @@ export interface ServicePageClientProps {
   /** The workshop's tread limits, so a set checked in here grades correctly. */
   tireThresholds?: { summerReplace: number; winterReplace: number; warnMargin: number }
   defaultDueDays?: number
+  /** What a promise to the customer defaults to on each weekday; see WorkOrderSidebarProps. */
+  promisedDefaultTimes?: string[]
   defaultMarkupPercent?: number
   markupAppliesToInventory?: boolean
   statusReports?: {

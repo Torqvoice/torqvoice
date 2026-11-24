@@ -532,9 +532,12 @@ export function StatusReportList({
         smsEnabled={smsEnabled}
         emailEnabled={emailEnabled}
         telegramEnabled={telegramEnabled}
+        // Every new report is read back at once, so the list and the tab's
+        // count show it; it used to wait for the send dialog to close, and a
+        // plain "Create" never refreshed at all.
+        onSaved={() => router.refresh()}
         onCreated={(reportId) => {
           if (customer) setSendReportId(reportId)
-          else router.refresh()
         }}
       />
 
