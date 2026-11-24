@@ -25,6 +25,7 @@ import { createCustomer } from '@/features/customers/Actions/customerActions'
 import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
 import { handleGated } from '@/components/upgrade-gate'
+import { useFieldErrorText } from '@/components/field-errors'
 import { useServiceType } from '@/components/service-type-context'
 import { vehicleName } from '@/lib/vehicle-name'
 
@@ -64,6 +65,7 @@ export function VehiclePickerDialog({
   const go = useGuardedPush()
   const t = useTranslations('workOrders.vehiclePicker')
   const tc = useTranslations('common.buttons')
+  const fieldErrorText = useFieldErrorText()
   const isMarine = useServiceType() === 'marine'
   // Every caller's own title speaks of vehicles, so a marine workshop gets the
   // picker's vessel title whatever was passed.
@@ -170,7 +172,11 @@ export function VehiclePickerDialog({
         })
         if (!customerResult.success || !customerResult.data) {
           if (!handleGated(customerResult)) {
-            toast.error(customerResult.error || t('failedCreateCustomer'))
+            // A phone number that is not one, said in the person's words.
+            const refused = customerResult.fieldErrors?.[0]
+            toast.error(
+              refused ? fieldErrorText(refused) : customerResult.error || t('failedCreateCustomer')
+            )
           }
           setCreating(false)
           return

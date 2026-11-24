@@ -1,10 +1,19 @@
 import { z } from 'zod'
+import { isPhoneNumber } from '../Lib/phoneNumber'
 
 export const createCustomerSchema = z.object({
   customerNumber: z.string().max(20).optional(),
   name: z.string().min(1, 'Name is required'),
   email: z.string().email('Invalid email').optional().or(z.literal('')),
-  phone: z.string().optional(),
+  // Digits and the marks a number is written with; anything else was not a
+  // phone number. Said under the field as `phone` (src/lib/field-errors.ts).
+  phone: z
+    .string()
+    .refine(isPhoneNumber, {
+      message: 'Enter a phone number: digits, spaces and + - ( ) .',
+      params: { fieldIssue: 'phone' },
+    })
+    .optional(),
   address: z.string().optional(),
   company: z.string().optional(),
   taxId: z.string().optional(),

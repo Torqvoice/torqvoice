@@ -339,6 +339,7 @@
     "tooLarge": "Må være {limit} eller mindre.",
     "notNumber": "Skriv inn et tall.",
     "wholeNumber": "Skriv inn et heltall.",
+    "phone": "Skriv et telefonnummer: bare sifre, mellomrom og + - ( ) .",
     "invalid": "Denne verdien er ikke gyldig.",
     "notSaved": "Ikke lagret. Sjekk de merkede feltene.",
     "withLabel": "{label}: {problem}"

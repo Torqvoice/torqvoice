@@ -339,6 +339,7 @@
     "tooLarge": "{limit} veya daha az olmalı.",
     "notNumber": "Bir sayı girin.",
     "wholeNumber": "Tam sayı girin.",
+    "phone": "Bir telefon numarası girin: yalnızca rakam, boşluk ve + - ( ) .",
     "invalid": "Bu değer geçerli değil.",
     "notSaved": "Kaydedilmedi. İşaretli alanları kontrol edin.",
     "withLabel": "{label}: {problem}"

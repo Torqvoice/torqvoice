@@ -339,6 +339,7 @@
     "tooLarge": "Moet {limit} of minder zijn.",
     "notNumber": "Vul een getal in.",
     "wholeNumber": "Vul een heel getal in.",
+    "phone": "Vul een telefoonnummer in: alleen cijfers, spaties en + - ( ) .",
     "invalid": "Deze waarde is niet geldig.",
     "notSaved": "Niet opgeslagen. Controleer de gemarkeerde velden.",
     "withLabel": "{label}: {problem}"

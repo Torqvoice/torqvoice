@@ -339,6 +339,7 @@
     "tooLarge": "Debe ser {limit} o menos.",
     "notNumber": "Introduce un número.",
     "wholeNumber": "Introduce un número entero.",
+    "phone": "Escribe un número de teléfono: solo dígitos, espacios y + - ( ) .",
     "invalid": "Este valor no es válido.",
     "notSaved": "No se ha guardado. Revisa los campos marcados.",
     "withLabel": "{label}: {problem}"

@@ -66,6 +66,9 @@ import { PhotoHandoffButton } from './service-page/PhotoHandoffButton'
 import { ReadingNotice, useReadingNotice } from './ReadingNotice'
 import { ReadingConfirmDialog } from './ReadingConfirmDialog'
 import { readingNeedsAnswer } from '../Lib/vehicleReading'
+import { looksLikeVin, plateMatchKey, VIN_LENGTH } from '../Lib/vehicleIdentifiers'
+import { findVehiclesWithPlate, type PlateDuplicate } from '../Actions/findVehiclesWithPlate'
+import { DuplicateWarning, FieldNotice } from '@/components/duplicate-warning'
 
 /**
  * How alike two names must read before the scanned keeper is offered as an
@@ -258,6 +261,15 @@ export function VehicleForm({
   const mileageBeforeEdit = useRef('')
   const [inspectionDraft, setInspectionDraft] = useState(openedInspectionDue)
   const [vinDraft, setVinDraft] = useState(vehicle?.vin ?? '')
+  // A VIN that is not seventeen letters and digits is said once the field
+  // is left, never refused: older vehicles have shorter numbers.
+  const [vinLeft, setVinLeft] = useState(false)
+  // Other vehicles of the workshop with this plate: said under the field
+  // with a link, never refused. Asked when the field is left and before a
+  // save; a save that finds some stops once to show them.
+  const [plateDuplicates, setPlateDuplicates] = useState<PlateDuplicate[]>([])
+  const plateCheck = useRef<{ key: string; answer: Promise<PlateDuplicate[]> } | null>(null)
+  const plateShownFor = useRef<string | null>(null)
   const [colorDraft, setColorDraft] = useState(vehicle?.color ?? '')
   // Mileage is not read back here: both places that edit it set it directly,
   // and reading the field during an edit in the header would undo the edit.
@@ -275,7 +287,49 @@ export function VehicleForm({
     setReadingToConfirm(null)
     setInspectionDraft(openedInspectionDue)
     setVinDraft(vehicle?.vin ?? '')
+    setVinLeft(false)
+    setPlateDuplicates([])
+    plateCheck.current = null
+    plateShownFor.current = null
     setColorDraft(vehicle?.color ?? '')
+  }
+
+  /**
+   * Asks which other vehicles carry the plate in the field. A plate an edit
+   * did not change is not asked about, and a slow or failed answer is
+   * taken as none: the check never holds the form up.
+   */
+  const checkPlate = (): { key: string; answer: Promise<PlateDuplicate[]> } => {
+    const key = plateMatchKey(fieldValue('licensePlate'))
+    const asked = plateCheck.current
+    if (asked?.key === key) {
+      // Back to a plate already asked about: its answer is shown again.
+      asked.answer.then((found) => {
+        if (plateCheck.current === asked) setPlateDuplicates(found)
+      })
+      return asked
+    }
+    const unchanged = Boolean(vehicle) && key === plateMatchKey(vehicle?.licensePlate)
+    const answer: Promise<PlateDuplicate[]> =
+      key.length < 2 || unchanged
+        ? Promise.resolve([])
+        : Promise.race([
+            findVehiclesWithPlate({ plate: key, excludeId: vehicle?.id }).then((result) =>
+              result.success && result.data ? result.data : []
+            ),
+            new Promise<PlateDuplicate[]>((resolve) =>
+              setTimeout(() => resolve([]), PLATE_CHECK_TIMEOUT_MS)
+            ),
+          ]).catch(() => [])
+    const check = { key, answer }
+    plateCheck.current = check
+    answer.then((found) => {
+      // Only the newest question's answer is shown.
+      if (plateCheck.current !== check) return
+      setPlateDuplicates(found)
+      if (found.length > 0) plateShownFor.current = key
+    })
+    return check
   }
 
   // Sync state when vehicle prop changes (e.g. opening edit for a different vehicle)
@@ -570,6 +624,23 @@ export function VehicleForm({
       return
     }
     const formData = new FormData(e.currentTarget)
+    // Said, not refused: a VIN that does not look like one.
+    setVinLeft(true)
+
+    // A plate another vehicle already has, not shown yet, is shown first;
+    // saving again keeps it.
+    const plate = checkPlate()
+    if (plateShownFor.current !== plate.key) {
+      setLoading(true)
+      const found = await plate.answer
+      setLoading(false)
+      if (found.length > 0) {
+        plateShownFor.current = plate.key
+        toast.warning(isMarine ? t('plateDuplicateFoundMarine') : t('plateDuplicateFound'))
+        document.getElementById('licensePlate')?.focus()
+        return
+      }
+    }
 
     // Caught here rather than by the server, which could only answer in English.
     if (showTypeKey) {
@@ -811,6 +882,8 @@ export function VehicleForm({
     vehicle.inspectionStatus.source !== 'manual' &&
     inspectionDraft === openedInspectionDue
   const vinLength = vinDraft.trim().length
+  // Boats carry a hull number, older vehicles shorter numbers: neither is warned about.
+  const vinUnusual = !isMarine && vinLeft && !looksLikeVin(vinDraft)
   const addTitle = isMarine ? t('addTitleMarine') : t('addTitle')
   const swatch = cssColor(colorDraft)
 
@@ -879,7 +952,12 @@ export function VehicleForm({
             onSubmit={handleSubmit}
             onInput={readDrafts}
             // A refused field's mark goes as soon as it is changed.
-            onChange={(e) => fieldErrors.clear((e.target as Element).getAttribute('name') ?? '')}
+            onChange={(e) => {
+              const name = (e.target as Element).getAttribute('name') ?? ''
+              fieldErrors.clear(name)
+              // The vehicles found were for the plate as it was before.
+              if (name === 'licensePlate') setPlateDuplicates((prev) => (prev.length ? [] : prev))
+            }}
             className="flex min-h-0 flex-1 flex-col"
           >
             <DialogBody className="space-y-4">
@@ -1156,10 +1234,14 @@ export function VehicleForm({
                       <Input
                         id="licensePlate"
                         name="licensePlate"
-                        {...fieldErrors.invalidProps('licensePlate')}
+                        {...fieldErrors.invalidProps(
+                          'licensePlate',
+                          plateDuplicates.length > 0 ? 'duplicate-licensePlate' : undefined
+                        )}
                         placeholder="ABC-1234"
                         defaultValue={vehicle?.licensePlate ?? ''}
                         className="flex-1"
+                        onBlur={() => checkPlate()}
                         // Enter in the plate asks the registry, where one is
                         // connected, instead of trying to save half a form.
                         onKeyDown={(e) => {
@@ -1189,6 +1271,17 @@ export function VehicleForm({
                       )}
                     </div>
                     {fieldErrors.message('licensePlate')}
+                    <DuplicateWarning
+                      id="duplicate-licensePlate"
+                      message={isMarine ? t('plateDuplicateMarine') : t('plateDuplicate')}
+                      records={plateDuplicates.map((other) => ({
+                        id: other.id,
+                        href: `/vehicles/${other.id}`,
+                        label: `${[other.year, other.make, other.model].filter(Boolean).join(' ')} (${
+                          other.customer?.name ?? t('duplicateNoOwner')
+                        })`,
+                      }))}
+                    />
                   </div>
 
                   <div className="space-y-2">
@@ -1220,9 +1313,10 @@ export function VehicleForm({
                       <Input
                         id="vin"
                         name="vin"
-                        {...fieldErrors.invalidProps('vin')}
+                        {...fieldErrors.invalidProps('vin', vinUnusual ? 'vin-notice' : undefined)}
                         placeholder="1HGCM82633A004352"
                         defaultValue={vehicle?.vin ?? ''}
+                        onBlur={() => setVinLeft(true)}
                         autoComplete="off"
                         spellCheck={false}
                         className="flex-1 font-mono"
@@ -1238,6 +1332,7 @@ export function VehicleForm({
                       )}
                     </div>
                     {fieldErrors.message('vin')}
+                    {vinUnusual && <FieldNotice id="vin-notice" message={t('vinUnusual')} />}
                   </div>
 
                   {/* Under both fields, since either button may have answered */}
@@ -1635,7 +1730,8 @@ function EngineSizeInput({ defaultValue }: { defaultValue: string }) {
   )
 }
 
-const VIN_LENGTH = 17
+/** How long the plate check may take before the form goes on without it. */
+const PLATE_CHECK_TIMEOUT_MS = 4000
 
 /** The options, and the stored value too when it is none of them, so it still shows as chosen. */
 function withCurrent(options: string[], current: string): string[] {

@@ -339,6 +339,7 @@
     "tooLarge": "Turi būti {limit} arba mažiau.",
     "notNumber": "Įveskite skaičių.",
     "wholeNumber": "Įveskite sveikąjį skaičių.",
+    "phone": "Įveskite telefono numerį: tik skaitmenys, tarpai ir + - ( ) .",
     "invalid": "Ši reikšmė netinkama.",
     "notSaved": "Neišsaugota. Patikrinkite pažymėtus laukus.",
     "withLabel": "{label}: {problem}"
