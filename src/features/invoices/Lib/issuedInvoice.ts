@@ -618,8 +618,9 @@ export function invoiceDateAtIssue(opts: {
  * an issued invoice carries one: the invoice date it ends up with plus the
  * payment terms, on the workshop's calendar. The same rules as the invoice
  * date: a due date somebody set is kept, and the update to today's details
- * moves only one the app wrote and nobody has changed since. No terms, no
- * due date written.
+ * moves only one the app wrote and nobody has changed since, and clears it
+ * when the terms are now none. No terms at the first issue, no due date.
+ * `write` undefined leaves the row's due date as it is; null clears it.
  */
 export function dueDateAtIssue(opts: {
   current: Date | null | undefined
@@ -629,7 +630,7 @@ export function dueDateAtIssue(opts: {
   dueDays: number
   timeZone: string
   redate: boolean
-}): { write?: Date; auto: string | null } {
+}): { write?: Date | null; auto: string | null } {
   const { current, previousAuto, invoiceDate, dueDays, timeZone, redate } = opts
   const fromTerms = () =>
     invoiceDate && dueDays > 0 ? addZonedDays(new Date(invoiceDate), dueDays, timeZone) : null
@@ -641,6 +642,35 @@ export function dueDateAtIssue(opts: {
     !!previousAuto && new Date(previousAuto).getTime() === new Date(current).getTime()
   if (!untouched) return { auto: null }
   if (!redate) return { auto: previousAuto }
+  // The app's due date follows the terms as they are now; terms since set
+  // to none take it away rather than leave a date nobody chose.
   const due = fromTerms()
-  return due ? { write: due, auto: due.toISOString() } : { auto: previousAuto }
+  return due ? { write: due, auto: due.toISOString() } : { write: null, auto: null }
+}
+
+/**
+ * Whether an invoice being issued now had already gone out before issuing
+ * tracked it: sent, or paid, on a date the customer already holds. Such an
+ * invoice is frozen as it is and its dates are left alone; only one that is
+ * issued for the first time on this occasion is dated by it.
+ *
+ * Differs from wasIssuedBeforeTracking only in what this occasion did itself:
+ * a payment issues the invoice after it is written, so the payment (or the
+ * paid mark) that triggered this issue is not evidence of an earlier one.
+ * Sending issues before it stamps, so a sentAt is always an earlier send.
+ */
+export function wentOutBeforeIssue(
+  record: {
+    issuedAt: Date | null
+    sentAt: Date | null
+    manuallyPaid: boolean
+    payments?: { id?: string }[]
+  },
+  reason: IssueReason
+): boolean {
+  if (record.issuedAt) return false
+  if (record.sentAt) return true
+  const payments = record.payments?.length ?? 0
+  if (reason === 'paid') return payments > 1 || (payments > 0 && record.manuallyPaid)
+  return record.manuallyPaid || payments > 0
 }

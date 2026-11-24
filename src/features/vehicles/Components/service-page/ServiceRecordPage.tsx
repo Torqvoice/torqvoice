@@ -53,12 +53,13 @@ import { canTakePayments } from '@/lib/billing-access'
 import { ServicePageClient } from '@/features/vehicles/Components/service-page/ServicePageClient'
 import { listDesignOptions } from '@/features/invoice-designer/Actions/documentDesignActions'
 import { rendersFromIssue } from '@/features/invoices/Lib/issuedInvoice'
+import { invoiceDateFields } from '@/features/vehicles/Lib/invoiceDateFields'
 import { offeredPaymentProviders } from '@/features/integrations/Lib/payments'
 import { listWorkOrderStatuses } from '@/features/work-order-statuses/Actions/workOrderStatusActions'
 import { PageHeader } from '@/components/page-header'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
-import { addZonedDays, zonedDayKey } from '@/lib/timezone'
+import { zonedDayKey } from '@/lib/timezone'
 
 /**
  * Shared server component behind both service-record routes:
@@ -253,12 +254,8 @@ export async function ServiceRecordPage({
   // fallback date, not crash the page on toISOString().
   const isRenderable = (d: Date | null | undefined): d is Date =>
     !!d && !isNaN(new Date(d).getTime())
-  const effectiveInvoiceDate =
-    [record.invoiceDate, record.startDateTime, record.serviceDate].find(isRenderable) ?? new Date()
   // The date inputs show the workshop's calendar day, not the server's.
   const timeZone = organizationId ? await workshopTimeZone(organizationId) : 'UTC'
-  // A draft with no invoice date of its own is dated when it is issued.
-  const datesFollowIssue = !record.issuedAt && !isRenderable(record.invoiceDate)
 
   // What the reading field warns against going below (vehicleReading.ts).
   const lastReading =
@@ -314,18 +311,8 @@ export async function ServiceRecordPage({
     diagnosticNotes: record.diagnosticNotes || '',
     invoiceNotes: record.invoiceNotes || '',
     invoiceNumber: record.invoiceNumber || '',
-    // A draft without a date of its own shows none: it is dated the day it
-    // is issued (invoiceDateAtIssue), and a date shown here would be saved
-    // with the form as if somebody had chosen it. Its due date follows from
-    // that day and the payment terms in the same way. An issued invoice
-    // shows the dates it went out with.
-    invoiceDate: datesFollowIssue ? '' : zonedDayKey(effectiveInvoiceDate, timeZone),
-    invoiceDueDate: isRenderable(record.invoiceDueDate)
-      ? zonedDayKey(record.invoiceDueDate, timeZone)
-      : !datesFollowIssue && defaultDueDays > 0
-        ? zonedDayKey(addZonedDays(effectiveInvoiceDate, defaultDueDays, timeZone), timeZone)
-        : '',
-    invoiceDatedOnIssue: datesFollowIssue,
+    // A draft shows only the dates somebody set; see invoiceDateFields.
+    ...invoiceDateFields(record, { timeZone, dueDays: defaultDueDays }),
     concerns: record.concerns.map((c) => ({
       id: c.id,
       description: c.description,

@@ -89,6 +89,7 @@
     "invoiceDateOnIssuePlaceholder": "Beim Versand",
     "invoiceDueDateOnIssuePlaceholder": "Laut Zahlungsbedingungen",
     "invoiceDateOnIssueHint": "Leer gelassen, erhält die Rechnung das Datum des Versandtags und wird nach Ihren Zahlungsbedingungen fällig.",
+    "invoiceDueDateOnIssueHint": "Leer gelassen, wird das Fälligkeitsdatum beim Versand der Rechnung aus Ihren Zahlungsbedingungen gesetzt.",
     "typeOptions": {
       "maintenance": "Wartung",
       "repair": "Reparatur",

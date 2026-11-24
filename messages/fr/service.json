@@ -89,6 +89,7 @@
     "invoiceDateOnIssuePlaceholder": "À l'envoi",
     "invoiceDueDateOnIssuePlaceholder": "Selon les conditions de paiement",
     "invoiceDateOnIssueHint": "Laissée vide, la facture est datée du jour de son envoi et son échéance suit vos conditions de paiement.",
+    "invoiceDueDateOnIssueHint": "Laissée vide, l'échéance est fixée selon vos conditions de paiement à l'envoi de la facture.",
     "typeOptions": {
       "maintenance": "Maintenance",
       "repair": "Réparation",

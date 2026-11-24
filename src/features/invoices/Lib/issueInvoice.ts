@@ -17,6 +17,7 @@ import {
   ISSUED_INVOICE_VERSION,
   readIssuedInvoiceData,
   shouldIssue,
+  wentOutBeforeIssue,
   type IssueReason,
   type IssuedInvoiceData,
 } from './issuedInvoice'
@@ -185,7 +186,7 @@ async function captureIssue(
     data: {
       issuedAt,
       ...(dated.write ? { invoiceDate: dated.write } : {}),
-      ...(due.write ? { invoiceDueDate: due.write } : {}),
+      ...(due.write !== undefined ? { invoiceDueDate: due.write } : {}),
       issuedDesignSnapshotId,
       issuedLogoSnapshotId,
       issuedSignatureSnapshotId,
@@ -239,16 +240,20 @@ export async function issueInvoice(
       invoiceDate: true,
       invoiceDueDate: true,
       issuedData: true,
+      manuallyPaid: true,
+      payments: { select: { id: true } },
     },
   })
   if (!record) return false
   if (!shouldIssue(record, reason)) return false
 
   // A backfilled invoice is dated to when it was sent, which is the
-  // nearest thing to when it was issued that the record knows. Its invoice
-  // date is the one the customer already holds, and stays.
+  // nearest thing to when it was issued that the record knows. Its dates
+  // are the ones the customer already holds, and stay; so do those of any
+  // invoice sent or paid before issuing tracked it.
   const issuedAt = reason === 'backfill' ? (record.sentAt ?? new Date()) : new Date()
-  return captureIssue(record, organizationId, issuedAt, reason === 'backfill' ? 'keep' : 'ifUnset')
+  const dating = reason === 'backfill' || wentOutBeforeIssue(record, reason) ? 'keep' : 'ifUnset'
+  return captureIssue(record, organizationId, issuedAt, dating)
 }
 
 /**

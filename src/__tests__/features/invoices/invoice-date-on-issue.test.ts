@@ -325,6 +325,115 @@ describe('the stored due date', () => {
     expect(data).not.toHaveProperty('invoiceDueDate')
     expect(data.issuedData.autoInvoiceDueDate).toBeNull()
   })
+
+  it("clears the app's due date when the terms are now none", async () => {
+    withTerms(0)
+    serviceRecord.findFirst.mockResolvedValue({
+      id: 'rec-1',
+      issuedAt: new Date('2026-11-01T01:00:00Z'),
+      invoiceDate: new Date('2026-10-31T11:00:00Z'),
+      invoiceDueDate: new Date('2026-11-14T11:00:00Z'),
+      issuedData: {
+        version: 1,
+        autoInvoiceDate: '2026-10-31T11:00:00.000Z',
+        autoInvoiceDueDate: '2026-11-14T11:00:00.000Z',
+      },
+    })
+
+    await reissueInvoice('rec-1', 'org-1')
+
+    const data = updateData()
+    expect(data).toHaveProperty('invoiceDueDate', null)
+    expect(data.issuedData.autoInvoiceDueDate).toBeNull()
+  })
+
+  it('keeps a hand-set due date when the terms are now none', async () => {
+    withTerms(0)
+    serviceRecord.findFirst.mockResolvedValue({
+      id: 'rec-1',
+      issuedAt: new Date('2026-11-01T01:00:00Z'),
+      invoiceDate: new Date('2026-10-31T11:00:00Z'),
+      invoiceDueDate: new Date('2026-12-24T11:00:00Z'),
+      issuedData: {
+        version: 1,
+        autoInvoiceDate: '2026-10-31T11:00:00.000Z',
+        autoInvoiceDueDate: '2026-11-14T11:00:00.000Z',
+      },
+    })
+
+    await reissueInvoice('rec-1', 'org-1')
+
+    expect(updateData()).not.toHaveProperty('invoiceDueDate')
+  })
+})
+
+describe('an invoice sent or paid before issuing tracked it', () => {
+  // No issue stamp, no snapshot, no invoice date of its own: the customer
+  // holds a copy dated by the job, and a re-send must not redate it.
+  const legacy = (over: Record<string, unknown>) => ({
+    id: 'rec-1',
+    issuedAt: null,
+    editUnlockedAt: null,
+    sentAt: null,
+    manuallyPaid: false,
+    payments: [],
+    invoiceDate: null,
+    invoiceDueDate: null,
+    serviceDate: SEPT_OPENED,
+    issuedData: null,
+    ...over,
+  })
+
+  beforeEach(() => {
+    assembleInvoicePrint.mockResolvedValue({ ...assembly, invoiceSettings: { dueDays: 14 } })
+  })
+
+  it('is frozen with its dates left alone when sent again', async () => {
+    serviceRecord.findFirst.mockResolvedValue(legacy({ sentAt: new Date('2026-09-20T01:00:00Z') }))
+
+    expect(await issueInvoice('rec-1', 'org-1', 'sent')).toBe(true)
+
+    const data = updateData()
+    expect(data).not.toHaveProperty('invoiceDate')
+    expect(data).not.toHaveProperty('invoiceDueDate')
+    expect(data.issuedData.autoInvoiceDate).toBeNull()
+    expect(data.issuedData.autoInvoiceDueDate).toBeNull()
+  })
+
+  it('is left alone when marked paid before and sent now', async () => {
+    serviceRecord.findFirst.mockResolvedValue(legacy({ manuallyPaid: true }))
+
+    await issueInvoice('rec-1', 'org-1', 'sent')
+
+    expect(updateData()).not.toHaveProperty('invoiceDate')
+  })
+
+  it('is left alone when a second payment arrives', async () => {
+    serviceRecord.findFirst.mockResolvedValue(legacy({ payments: [{ id: 'p-1' }, { id: 'p-2' }] }))
+
+    await issueInvoice('rec-1', 'org-1', 'paid')
+
+    expect(updateData()).not.toHaveProperty('invoiceDate')
+  })
+
+  it('is not mistaken for the payment that issues a draft now', async () => {
+    // The payment is written before the issue it triggers.
+    serviceRecord.findFirst.mockResolvedValue(legacy({ payments: [{ id: 'p-1' }] }))
+
+    await issueInvoice('rec-1', 'org-1', 'paid')
+
+    const data = updateData()
+    expect(data.invoiceDate).toEqual(AUCKLAND_NOV_18)
+    expect(data.invoiceDueDate).toEqual(new Date('2026-12-01T11:00:00Z'))
+  })
+
+  it('is not mistaken for the paid mark that issues a draft now', async () => {
+    serviceRecord.findFirst.mockResolvedValue(legacy({ manuallyPaid: true }))
+
+    await issueInvoice('rec-1', 'org-1', 'paid')
+
+    expect(updateData().invoiceDate).toEqual(AUCKLAND_NOV_18)
+  })
 })
 
 describe('the due date', () => {

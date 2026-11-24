@@ -76,6 +76,7 @@ import {
   thawInspectionResults,
   type InvoiceConditionMap,
   type IssuedInvoiceData,
+  wasIssuedBeforeTracking,
 } from './issuedInvoice'
 import { gateTypeKey, typeKeyEnabledIn } from '@/features/vehicles/Lib/typeKeySetting'
 import {
@@ -561,9 +562,11 @@ async function assembleLive(
     ...record,
     // A draft is dated the day it is issued (invoiceDateAtIssue), so until
     // then it prints the workshop's today: the date it would go out with.
+    // An invoice sent or paid before issuing tracked it is no draft: it
+    // keeps printing the date it went out with.
     invoiceDate:
       record.invoiceDate ??
-      (record.issuedAt
+      (record.issuedAt || wasIssuedBeforeTracking(record)
         ? null
         : startOfZonedDay(
             new Date(),

@@ -89,6 +89,7 @@
     "invoiceDateOnIssuePlaceholder": "Ao enviar",
     "invoiceDueDateOnIssuePlaceholder": "Conforme condições de pagamento",
     "invoiceDateOnIssueHint": "Se ficar em branco, a fatura recebe a data do dia em que for enviada e vence conforme suas condições de pagamento.",
+    "invoiceDueDateOnIssueHint": "Se ficar em branco, o vencimento é definido pelas suas condições de pagamento quando a fatura for enviada.",
     "typeOptions": {
       "maintenance": "Manutenção",
       "repair": "Reparo",

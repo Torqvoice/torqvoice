@@ -115,6 +115,9 @@ export function InvoiceDetailsSection({
   // A draft's empty invoice date is filled the day it is sent; the hint says
   // so while nobody has typed a date of their own.
   const datedOnIssue = Boolean(initialData.invoiceDatedOnIssue) && !invoiceDate
+  // Likewise its empty due date, set from the payment terms at the issue.
+  const dueOnIssue = Boolean(initialData.invoiceDueDatedOnIssue) && !invoiceDueDate
+  const hintId = datedOnIssue || dueOnIssue ? 'invoiceDateOnIssueHint' : undefined
 
   // On the overhauled page the status is the stepper under the title, so the
   // select is not drawn a second time.
@@ -210,7 +213,7 @@ export function InvoiceDetailsSection({
               onDirty?.()
             }}
             placeholder={datedOnIssue ? t('invoiceDateOnIssuePlaceholder') : undefined}
-            aria-describedby={datedOnIssue ? 'invoiceDateOnIssueHint' : undefined}
+            aria-describedby={datedOnIssue ? hintId : undefined}
             className="h-9 text-sm"
           />
         </div>
@@ -226,16 +229,15 @@ export function InvoiceDetailsSection({
               setInvoiceDueDate(v)
               onDirty?.()
             }}
-            placeholder={
-              datedOnIssue && !invoiceDueDate ? t('invoiceDueDateOnIssuePlaceholder') : undefined
-            }
+            placeholder={dueOnIssue ? t('invoiceDueDateOnIssuePlaceholder') : undefined}
+            aria-describedby={dueOnIssue ? hintId : undefined}
             className="h-9 text-sm"
           />
         </div>
       </div>
-      {datedOnIssue && (
-        <p id="invoiceDateOnIssueHint" className="text-xs text-muted-foreground">
-          {t('invoiceDateOnIssueHint')}
+      {hintId && (
+        <p id={hintId} className="text-xs text-muted-foreground">
+          {datedOnIssue ? t('invoiceDateOnIssueHint') : t('invoiceDueDateOnIssueHint')}
         </p>
       )}
 

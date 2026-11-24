@@ -89,6 +89,7 @@
     "invoiceDateOnIssuePlaceholder": "Przy wysyłce",
     "invoiceDueDateOnIssuePlaceholder": "Wg warunków płatności",
     "invoiceDateOnIssueHint": "Jeśli pole pozostanie puste, faktura otrzyma datę dnia wysłania, a termin płatności wynika z Twoich warunków płatności.",
+    "invoiceDueDateOnIssueHint": "Jeśli pole pozostanie puste, termin płatności zostanie ustalony według Twoich warunków płatności przy wysyłce faktury.",
     "typeOptions": {
       "maintenance": "Konserwacja",
       "repair": "Naprawa",
