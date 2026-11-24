@@ -376,7 +376,8 @@
     "failedPdf": "PDF fatura oluşturulamadı",
     "received": "Alınan ödemeler",
     "noneYet": "Henüz ödeme yapılmadı.",
-    "balanceDue": "Kalan bakiye"
+    "balanceDue": "Kalan bakiye",
+    "refund": "İade"
   },
   "attachments": {
     "deleteTitle": "Eki Sil",

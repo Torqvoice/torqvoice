@@ -376,7 +376,8 @@
     "failedPdf": "Impossibile generare PDF fattura",
     "received": "Pagamenti ricevuti",
     "noneYet": "Ancora nessun pagamento.",
-    "balanceDue": "Importo dovuto"
+    "balanceDue": "Importo dovuto",
+    "refund": "Rimborso"
   },
   "attachments": {
     "deleteTitle": "Elimina Allegato",

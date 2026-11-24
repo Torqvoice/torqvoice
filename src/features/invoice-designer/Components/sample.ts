@@ -410,8 +410,13 @@ export function buildSampleData(
       ...(docType === 'invoice'
         ? [
             {
-              label: `${sample.date} (Visa)`,
-              value: `-${tax.total}`,
+              label: L('paymentsReceived', 'Payments Received'),
+              value: tax.total,
+              kind: 'line' as const,
+            },
+            {
+              label: `${sample.date} (${L('paymentMethodCard', 'Card')})`,
+              value: tax.total,
               kind: 'payment' as const,
             },
             { label: L('paidInFull', 'PAID IN FULL'), value: '', kind: 'paid' as const },

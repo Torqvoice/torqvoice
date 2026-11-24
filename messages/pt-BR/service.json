@@ -376,7 +376,8 @@
     "failedPdf": "Falha ao gerar PDF da fatura",
     "received": "Pagamentos recebidos",
     "noneYet": "Nada pago ainda.",
-    "balanceDue": "Saldo devedor"
+    "balanceDue": "Saldo devedor",
+    "refund": "Reembolso"
   },
   "attachments": {
     "deleteTitle": "Deletar Anexo",

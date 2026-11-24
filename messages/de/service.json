@@ -376,7 +376,8 @@
     "failedPdf": "PDF-Rechnung konnte nicht erstellt werden",
     "received": "Erhaltene Zahlungen",
     "noneYet": "Noch nichts bezahlt.",
-    "balanceDue": "Ausstehend"
+    "balanceDue": "Ausstehend",
+    "refund": "Erstattung"
   },
   "attachments": {
     "deleteTitle": "Anlage löschen",

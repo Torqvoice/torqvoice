@@ -376,7 +376,8 @@
     "failedPdf": "Не удалось сгенерировать PDF-счёт",
     "received": "Полученные платежи",
     "noneYet": "Оплат пока нет.",
-    "balanceDue": "К оплате"
+    "balanceDue": "К оплате",
+    "refund": "Возврат"
   },
   "attachments": {
     "deleteTitle": "Удалить вложение",

@@ -376,7 +376,8 @@
     "failedPdf": "Failed to generate PDF invoice",
     "received": "Payments received",
     "noneYet": "Nothing paid yet.",
-    "balanceDue": "Balance due"
+    "balanceDue": "Balance due",
+    "refund": "Refund"
   },
   "attachments": {
     "deleteTitle": "Delete Attachment",
