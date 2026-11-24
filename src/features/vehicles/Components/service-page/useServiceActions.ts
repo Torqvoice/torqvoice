@@ -298,6 +298,10 @@ export function useServiceActions({
     } else if (result.success) {
       commitLaborAddedElsewhere()
       commitPartsAddedElsewhere()
+      // The same on every save: a preset or an edit made while it ran, or
+      // before the refresh below comes back, leaves the page unsaved when the
+      // saved lines arrive, and they must not read as added elsewhere.
+      acknowledgeSavedLines({ parts: payload.partItems, labor: payload.laborItems })
       markSaved(revision)
       flashSaved()
       if (selectedVehicleId && selectedVehicleId !== vehicleId) {

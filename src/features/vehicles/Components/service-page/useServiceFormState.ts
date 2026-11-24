@@ -224,10 +224,12 @@ export function useServiceFormState({
   }, [savedPartsKey])
 
   /**
-   * A save went through while the page stays unsaved (a reading held back for
-   * its question): the lines it sent are the server's now. Without this the
-   * refresh after it brought them back as lines added elsewhere, and the next
-   * save sent them twice.
+   * A save went through: the lines it sent are the server's now. The page can
+   * be unsaved again when the refresh after it arrives (a reading held back
+   * for its question, or a preset applied while the save ran). Without this
+   * that refresh was compared with the lines from before the save, the line
+   * just edited read as one added elsewhere, it showed twice, and the next
+   * save sent it twice.
    */
   const acknowledgeSavedLines = useCallback(
     (lines: { parts: ServicePartInput[]; labor: ServiceLaborInput[] }) => {
