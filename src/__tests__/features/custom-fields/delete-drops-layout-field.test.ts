@@ -33,6 +33,9 @@ vi.mock('@/lib/features', () => ({
 
 vi.mock('@/lib/db', () => {
   const tx = {
+    // The row locks; what they guard is tested on a real database in
+    // src/__tests__/db/custom-field-delete-race.db.test.ts.
+    $queryRaw: async () => [],
     user: { findUnique: async () => ({ isSuperAdmin: false }) },
     customFieldDefinition: {
       findFirst: async ({ where }: { where: { id: string; organizationId: string } }) =>

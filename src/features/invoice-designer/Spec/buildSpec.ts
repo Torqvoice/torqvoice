@@ -2280,29 +2280,7 @@ function footer(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
         style: { color: look.muted, fontSize: scale(size, 0.78), align: 'center' },
       })
     }
-    children.push({
-      kind: 'row',
-      gap: 4,
-      justify: 'center',
-      align: 'center',
-      children: [
-        {
-          node: {
-            kind: 'text',
-            text: label(data, 'poweredBy', 'Powered by'),
-            style: { color: look.muted, fontSize: scale(size, 0.9) },
-          },
-        },
-        { node: { kind: 'image', src: data.branding.logoDataUri, maxWidth: 22, maxHeight: 22 } },
-        {
-          node: {
-            kind: 'text',
-            text: 'Torqvoice',
-            style: { color: theme.primary, fontSize: scale(size, 1.35), bold: true },
-          },
-        },
-      ],
-    })
+    children.push(brandingMarkRow(data.branding.logoDataUri, data, look.muted, theme.primary, size))
   } else if (note) {
     children.push({
       kind: 'text',
@@ -2403,25 +2381,64 @@ function blockFor(
   }
 }
 
-type BrandingHome = 'footer' | 'header' | 'totals' | null
+/** The "Powered by Torqvoice" line as the foot of a sheet prints it. */
+function brandingMarkRow(
+  logoDataUri: string,
+  data: DocumentData,
+  muted: string | undefined,
+  primary: string,
+  size: number
+): Node {
+  return {
+    kind: 'row',
+    gap: 4,
+    justify: 'center',
+    align: 'center',
+    children: [
+      {
+        node: {
+          kind: 'text',
+          text: label(data, 'poweredBy', 'Powered by'),
+          style: { color: muted, fontSize: scale(size, 0.9) },
+        },
+      },
+      { node: { kind: 'image', src: logoDataUri, maxWidth: 22, maxHeight: 22 } },
+      {
+        node: {
+          kind: 'text',
+          text: 'Torqvoice',
+          style: { color: primary, fontSize: scale(size, 1.35), bold: true },
+        },
+      },
+    ],
+  }
+}
+
+/** The id of the block that carries the mark when the footer cannot. */
+export const BRANDING_BLOCK_ID = 'branding'
+
+type BrandingHome = 'footer' | typeof BRANDING_BLOCK_ID | null
 
 /**
- * The one section that prints the "Powered by Torqvoice" mark.
+ * Where the "Powered by Torqvoice" mark prints: once on every sheet.
  *
  * The header, the totals and the footer each used to print it, so page one
- * of an invoice carried it three times. The footer is the place: it is
- * pinned to the foot of every sheet, so the mark sits once on each page in
- * the same spot. A layout that hides its footer puts it under the
- * letterhead instead, and one with neither under the totals, so hiding a
- * section never removes the mark. Whether a sheet carries it at all is
- * decided before this, by whoever passes `branding` (licensing).
+ * of an invoice carried it three times. The footer is the place when it
+ * repeats: shown, and pinned to the foot of every sheet. A footer the layout
+ * hides, or one placed by hand on one page, does not repeat, and nor do the
+ * header and the totals; the mark then gets a block of its own at the foot
+ * of every sheet, and the workshop's own sections stay where they were put.
+ * Whether a sheet carries the mark at all is decided before this, by
+ * whoever passes `branding` (licensing).
  */
-export function brandingHome(sections: InvoiceSection[], data: DocumentData): BrandingHome {
+export function brandingHome(
+  sections: InvoiceSection[],
+  data: DocumentData,
+  anchors: Record<string, unknown> = {}
+): BrandingHome {
   if (!data.branding) return null
-  for (const id of ['footer', 'header', 'totals'] as const) {
-    if (sections.some((s) => s.id === id && s.visible)) return id
-  }
-  return null
+  const footerRepeats = sections.some((s) => s.id === 'footer' && s.visible) && !anchors.footer
+  return footerRepeats ? 'footer' : BRANDING_BLOCK_ID
 }
 
 /** The data a section is built from: the mark only for the section that prints it. */
@@ -2452,7 +2469,7 @@ export function buildDocumentSpec(
   // Only the default placement rides the band; a letterhead somebody dragged
   // elsewhere leaves the band at its usual height.
   const headerSection = ordered.find((s) => s.id === 'header' && s.visible)
-  const home = brandingHome(ordered, data)
+  const home = brandingHome(ordered, data, anchors)
   const bandHeight =
     framed && headerSection && !anchors.header
       ? framedBandHeight(headerSection, theme, dataFor('header', data, home))
@@ -2536,6 +2553,29 @@ export function buildDocumentSpec(
       continue
     }
     push(section)
+  }
+
+  if (home === BRANDING_BLOCK_ID && data.branding) {
+    blocks.push({
+      id: BRANDING_BLOCK_ID,
+      label: 'branding',
+      synthetic: true,
+      placement: { mode: 'pinned', edge: 'bottom' },
+      text: { color: theme.text, fontFamily: theme.fontFamily, fontSize: theme.fontSize },
+      content: {
+        kind: 'stack',
+        id: BRANDING_BLOCK_ID,
+        children: [
+          brandingMarkRow(
+            data.branding.logoDataUri,
+            data,
+            theme.muted,
+            theme.primary,
+            theme.fontSize
+          ),
+        ],
+      },
+    })
   }
 
   return {

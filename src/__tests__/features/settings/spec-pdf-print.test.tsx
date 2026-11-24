@@ -18,6 +18,7 @@ import { estimateBlockHeights } from '@/features/invoice-designer/Pdf/estimateHe
 import { lineCount } from '@/features/invoice-designer/Pdf/measure'
 import { InvoicePDF } from '@/features/vehicles/Components/invoice-pdf/InvoicePDF'
 import { QuotePDF } from '@/features/quotes/Components/QuotePDF'
+import { extractText } from 'unpdf'
 import {
   DESIGNER_LAYOUT_VERSION,
   getDefaultInvoiceLayout,
@@ -247,29 +248,6 @@ describe('the printed invoice follows the designed layout', () => {
     }
   })
 
-  it("keeps each classic letterhead's own place for the Torqvoice mark", () => {
-    // The retired sheets did not agree on this: standard set the mark under
-    // the company block, compact right-aligned it below the rule, and the
-    // banner centred it. Flattening them moved it on a free workshop's
-    // invoice without anything failing.
-    const markAlign = (headerStyle: string) => {
-      const spec = buildInvoicePrintSpec({
-        data: invoice,
-        workshop,
-        invoiceSettings: settings,
-        // The letterhead carries the mark once the layout has no footer.
-        template: { headerStyle, layoutConfig: withoutSection('footer') },
-        torqvoiceLogoDataUri: 'data:image/png;base64,AAAA',
-      })
-      const header = JSON.stringify(spec.blocks.find((b) => b.id === 'header'))
-      const row = header.slice(header.indexOf('"header.branding"'))
-      return row.slice(0, row.indexOf('children')).match(/"justify":"(\w+)"/)?.[1]
-    }
-    expect(markAlign('standard')).toBe('start')
-    expect(markAlign('compact')).toBe('end')
-    expect(markAlign('modern')).toBe('center')
-  })
-
   it('prints the Torqvoice mark once, in the footer that repeats on every page', () => {
     // The header, the totals and the footer each printed it, so page one of
     // an invoice said "Powered by Torqvoice" three times.
@@ -292,24 +270,70 @@ describe('the printed invoice follows the designed layout', () => {
     }
   })
 
-  it('moves the mark rather than dropping it when its section is hidden', () => {
-    const marked = (layoutConfig: ReturnType<typeof getDefaultInvoiceLayout>) =>
-      blocksWithMark(
-        buildInvoicePrintSpec({
-          data: invoice,
-          workshop,
-          invoiceSettings: settings,
-          template: { layoutConfig },
-          torqvoiceLogoDataUri: 'data:image/png;base64,AAAA',
-        })
-      )
-    expect(marked(withoutSection('footer'))).toEqual([{ id: 'header', count: 1 }])
-    const neither = withoutSection('footer')
-    neither.sections = neither.sections.map((s) =>
-      s.id === 'header' ? { ...s, visible: false } : s
-    )
-    expect(marked(neither)).toEqual([{ id: 'totals', count: 1 }])
+  it('gives the mark a repeating block of its own when the footer does not repeat', () => {
+    // A hidden footer, or one placed by hand on one page, is not on every
+    // sheet, and nor are the letterhead and the totals. The mark then stands
+    // at the foot of each sheet on its own; no section of the workshop's moves.
+    const anchoredFooter = getDefaultInvoiceLayout()
+    anchoredFooter.anchors = { footer: { x: 40, y: 700, width: 300, page: 1 } }
+    for (const layoutConfig of [withoutSection('footer'), anchoredFooter]) {
+      const spec = buildInvoicePrintSpec({
+        data: invoice,
+        workshop,
+        invoiceSettings: settings,
+        template: { layoutConfig: { ...layoutConfig, version: DESIGNER_LAYOUT_VERSION } },
+        torqvoiceLogoDataUri: MARK,
+      })
+      expect(blocksWithMark(spec)).toEqual([{ id: 'branding', count: 1 }])
+      expect(spec.blocks.find((b) => b.id === 'branding')?.placement.mode).toBe('pinned')
+      const footer = spec.blocks.find((b) => b.id === 'footer')
+      if (footer) expect(footer.placement.mode).toBe('anchored')
+    }
   })
+
+  it('prints the mark once on every page of a long invoice, photo pages included', async () => {
+    const pixel =
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8DwHwAFBQIAX8jx0gAAAABJRU5ErkJggg=='
+    const long: InvoiceData = {
+      ...invoice,
+      partItems: Array.from({ length: 70 }, (_, i) => ({
+        partNumber: `P-${i}`,
+        name: `Part line ${i}`,
+        quantity: 1,
+        unitPrice: 10,
+        total: 10,
+      })),
+    }
+    const anchoredFooter = getDefaultInvoiceLayout()
+    anchoredFooter.anchors = { footer: { x: 40, y: 700, width: 300, page: 1 } }
+    const layouts = {
+      default: getDefaultInvoiceLayout(),
+      footerHidden: withoutSection('footer'),
+      footerAnchored: anchoredFooter,
+    }
+    for (const [name, layout] of Object.entries(layouts)) {
+      const buffer = await renderToBuffer(
+        (
+          <InvoicePDF
+            data={long}
+            workshop={workshop}
+            invoiceSettings={settings}
+            torqvoiceLogoDataUri={pixel}
+            template={{ layoutConfig: { ...layout, version: DESIGNER_LAYOUT_VERSION } }}
+            imageAttachments={[{ dataUri: pixel, fileName: 'disc.png' }]}
+          />
+        ) as React.ReactElement<DocumentProps>
+      )
+      const { totalPages, text } = await extractText(new Uint8Array(buffer), {
+        mergePages: false,
+      })
+      expect(totalPages, name).toBeGreaterThanOrEqual(3)
+      for (const [i, page] of text.entries()) {
+        expect(page.split('Powered by').length - 1, `${name}, page ${i + 1}`).toBe(1)
+      }
+    }
+    // Three multi-page PDFs: about two seconds alone, far more on a busy runner.
+  }, 60_000)
 
   it('prints no mark at all for a sheet without branding', () => {
     const spec = buildInvoicePrintSpec({ data: invoice, workshop, invoiceSettings: settings })

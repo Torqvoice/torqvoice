@@ -1,5 +1,5 @@
 import type { TxClient } from '@/lib/db'
-import type { Prisma } from '@/generated/prisma/client'
+import { Prisma } from '@/generated/prisma/client'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { toCustomFieldId } from '@/features/settings/Schema/invoiceLayoutSchema'
 
@@ -56,6 +56,25 @@ export async function dropFieldFromLayouts(
   organizationId: string,
   definitionId: string
 ): Promise<void> {
+  // Two fields deleted at the same moment would each read the same layout,
+  // and the later write would put back the field the earlier one took out.
+  // The rows are locked before they are read, always in the same order
+  // (settings, then designs), so the second delete waits for the first and
+  // reads what it wrote.
+  await tx.$queryRaw(Prisma.sql`
+    SELECT count(*) FROM (
+      SELECT 1 FROM "public"."app_settings"
+      WHERE "organizationId" = ${organizationId} AND "key" IN (${Prisma.join(LAYOUT_KEYS)})
+      ORDER BY "id" FOR UPDATE
+    ) locked
+  `)
+  await tx.$queryRaw(Prisma.sql`
+    SELECT count(*) FROM (
+      SELECT 1 FROM "public"."document_designs"
+      WHERE "organizationId" = ${organizationId}
+      ORDER BY "id" FOR UPDATE
+    ) locked
+  `)
   const settings = await tx.appSetting.findMany({
     where: { organizationId, key: { in: LAYOUT_KEYS } },
     select: { id: true, value: true },
