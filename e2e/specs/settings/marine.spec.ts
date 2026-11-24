@@ -31,6 +31,8 @@ import { newWorkOrder, saveWorkOrder, seededVehicleUrl } from '../../support/wor
 test.describe.configure({ mode: 'serial', timeout: 180_000 })
 
 const stamp = Date.now()
+// Its own each run: a plate another vessel has is asked about before saving.
+const VESSEL_PLATE = `NB-${String(stamp).slice(-4)}-E`
 const EMAIL = `e2e-marine-${stamp}@example.com`
 const STATE = `e2e/.auth/marine-${stamp}.json`
 const SERVICE_TYPE = 'workshop.serviceType'
@@ -190,7 +192,7 @@ test.describe('a workshop that picks Marine', () => {
     await dialog.locator('#year').fill(VESSEL.year)
     await dialog.locator('#mileage').fill(VESSEL.hours)
     await dialog.locator('#vin').fill(`BWC${stamp}`.slice(0, 12))
-    await dialog.locator('#licensePlate').fill('NB-4521-E')
+    await dialog.locator('#licensePlate').fill(VESSEL_PLATE)
     await dialog.getByRole('button', { name: 'Add New Vessel' }).click()
     await expect(page.getByText('Vehicle added')).toBeVisible({ timeout: 30_000 })
   })
@@ -215,7 +217,7 @@ test.describe('a workshop that picks Marine', () => {
     expect(pdf.flat).not.toContain('Mileage')
     // The vessel's own numbers under a vessel's names.
     expect(pdf.flat).toContain(`HIN: ${`BWC${stamp}`.slice(0, 12)}`)
-    expect(pdf.flat).toContain('Registration: NB-4521-E')
+    expect(pdf.flat).toContain(`Registration: ${VESSEL_PLATE}`)
     expect(pdf.flat).not.toMatch(/\bVIN:|\bPlate:/)
   })
 

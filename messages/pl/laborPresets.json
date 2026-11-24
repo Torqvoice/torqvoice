@@ -6,8 +6,8 @@
     "description": "Opis",
     "itemCount": "Pozycje",
     "type": "Typ",
-    "hrs": "godz.",
-    "units": "szt."
+    "hoursCount": "{hours, number} godz.",
+    "unitsCount": "{units, number} szt."
   },
   "empty": {
     "noMatch": "Żadne szablony nie pasują do wyszukiwania.",

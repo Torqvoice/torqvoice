@@ -118,7 +118,7 @@ export function ServiceForm({ vehicleId, open, onOpenChange }: ServiceFormProps)
               </div>
               <div className="space-y-2">
                 <Label htmlFor="mileage">Mileage</Label>
-                <Input id="mileage" name="mileage" type="number" placeholder="50000" />
+                <Input id="mileage" name="mileage" type="number" />
               </div>
             </div>
 

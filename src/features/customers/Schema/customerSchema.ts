@@ -7,11 +7,22 @@ import {
   SHORT_TEXT_MAX_LENGTH,
 } from '@/lib/input-limits'
 
+import { isPhoneNumber } from '../Lib/phoneNumber'
+
 export const createCustomerSchema = z.object({
   customerNumber: z.string().max(20).optional(),
   name: z.string().min(1, 'Name is required').max(NAME_MAX_LENGTH),
   email: z.string().max(EMAIL_MAX_LENGTH).email('Invalid email').optional().or(z.literal('')),
-  phone: z.string().max(SHORT_TEXT_MAX_LENGTH).optional(),
+  // Digits and the marks a number is written with; anything else was not a
+  // phone number. Said under the field as `phone` (src/lib/field-errors.ts).
+  phone: z
+    .string()
+    .max(SHORT_TEXT_MAX_LENGTH)
+    .refine(isPhoneNumber, {
+      message: 'Enter a phone number: digits, spaces and + - ( ) .',
+      params: { fieldIssue: 'phone' },
+    })
+    .optional(),
   address: z.string().max(ADDRESS_MAX_LENGTH).optional(),
   company: z.string().max(NAME_MAX_LENGTH).optional(),
   taxId: z.string().max(SHORT_TEXT_MAX_LENGTH).optional(),

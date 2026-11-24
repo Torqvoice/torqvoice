@@ -48,6 +48,19 @@ import {
 import { customFieldsRefusal } from '@/features/custom-fields/Lib/customFieldsRefusal'
 import type { CustomFieldError } from '@/features/custom-fields/Lib/customFieldValueRules'
 import { useFieldErrors } from '@/components/field-errors'
+import { DuplicateWarning } from '@/components/duplicate-warning'
+import { type CustomerDuplicates, findCustomerDuplicates } from '../Actions/findCustomerDuplicates'
+import { isPhoneNumber } from '../Lib/phoneNumber'
+
+/** The fields another customer may already have. */
+type DuplicateField = keyof CustomerDuplicates
+const DUPLICATE_FIELDS: DuplicateField[] = ['email', 'phone', 'name']
+const NO_DUPLICATES: CustomerDuplicates = { email: [], phone: [], name: [] }
+/** How long the check may take before the form goes on without it. */
+const DUPLICATE_CHECK_TIMEOUT_MS = 4000
+
+const hasDuplicates = (found: CustomerDuplicates) =>
+  DUPLICATE_FIELDS.some((field) => found[field].length > 0)
 
 interface CustomerFormProps {
   open: boolean
@@ -137,6 +150,94 @@ export function CustomerForm({
     if (open) setPoRequired(openCustomerPoRequired)
   }, [open, openCustomerId, openCustomerPoRequired])
   const formRef = useRef<HTMLFormElement>(null)
+
+  // Another customer of the workshop with this email, phone number or name:
+  // said under the field with a link, never refused. Asked when a field is
+  // left, and before saving values not yet asked about; a save that finds
+  // some stops once to show them, and the next save goes ahead.
+  const [duplicates, setDuplicates] = useState<CustomerDuplicates>(NO_DUPLICATES)
+  const duplicateCheck = useRef<{ key: string; answer: Promise<CustomerDuplicates> } | null>(null)
+  const duplicatesShownFor = useRef<string | null>(null)
+  useEffect(() => {
+    if (open) return
+    setDuplicates(NO_DUPLICATES)
+    duplicateCheck.current = null
+    duplicatesShownFor.current = null
+  }, [open])
+  /**
+   * What to ask about: the three fields as typed, leaving out any an edit
+   * did not change, so a customer who already shares a name with another is
+   * not warned about it on every save.
+   */
+  const duplicateQuery = () => {
+    const form = formRef.current
+    const value = (name: DuplicateField) =>
+      ((form?.elements.namedItem(name) as HTMLInputElement | null)?.value ?? '').trim()
+    const changed = (name: DuplicateField) => {
+      const typed = value(name)
+      const saved = (customer?.[name] ?? '').trim()
+      return !customer || typed.toLowerCase() !== saved.toLowerCase() ? typed : ''
+    }
+    const query = {
+      name: changed('name'),
+      email: changed('email'),
+      // A number that is not one is refused anyway; nothing to compare.
+      phone: isPhoneNumber(value('phone')) ? changed('phone') : '',
+      excludeId: customer?.id,
+    }
+    return { query, key: JSON.stringify(query) }
+  }
+  const checkDuplicates = (): { key: string; answer: Promise<CustomerDuplicates> } => {
+    const { query, key } = duplicateQuery()
+    const asked = duplicateCheck.current
+    if (asked?.key === key) {
+      // Back to values already asked about: their answer is shown again.
+      asked.answer.then((found) => {
+        if (isCurrentCheck(asked)) setDuplicates(found)
+      })
+      return asked
+    }
+    const answer =
+      query.name || query.email || query.phone
+        ? Promise.race([
+            findCustomerDuplicates(query).then((result) =>
+              result.success && result.data ? result.data : NO_DUPLICATES
+            ),
+            // A slow or failed check never holds the form up.
+            new Promise<CustomerDuplicates>((resolve) =>
+              setTimeout(() => resolve(NO_DUPLICATES), DUPLICATE_CHECK_TIMEOUT_MS)
+            ),
+          ]).catch(() => NO_DUPLICATES)
+        : Promise.resolve(NO_DUPLICATES)
+    const check = { key, answer }
+    duplicateCheck.current = check
+    answer.then((found) => {
+      // Only the answer about what the fields hold now is shown: one that
+      // arrives after a field was changed again is about other values.
+      if (!isCurrentCheck(check)) return
+      setDuplicates(found)
+      if (hasDuplicates(found)) duplicatesShownFor.current = key
+    })
+    return check
+  }
+  /** Whether a check is still the newest one and about what the fields hold now. */
+  const isCurrentCheck = (check: { key: string }) =>
+    duplicateCheck.current === check && duplicateQuery().key === check.key
+  const duplicateId = (field: DuplicateField) => `duplicate-${field}`
+  const duplicateWarning = (field: DuplicateField, message: string) => (
+    <DuplicateWarning
+      id={duplicateId(field)}
+      message={message}
+      records={duplicates[field].map((other) => ({
+        id: other.id,
+        href: `/customers/${other.id}`,
+        label: other.company ? `${other.name} (${other.company})` : other.name,
+      }))}
+    />
+  )
+  const duplicateDescribedBy = (field: DuplicateField) =>
+    duplicates[field].length > 0 ? duplicateId(field) : undefined
+
   /** Vehicle details from a scanned document, offered once the customer exists. */
   const [scannedVehicle, setScannedVehicle] = useState<VehicleDocumentScan | null>(null)
   const [addVehicle, setAddVehicle] = useState(true)
@@ -167,6 +268,33 @@ export function CustomerForm({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const formData = new FormData(e.currentTarget)
+
+    // A phone number with letters in it is said under the field here, in
+    // the person's language, before anything is sent.
+    if (!isPhoneNumber(String(formData.get('phone') ?? ''))) {
+      fieldErrors.report(formRef.current, [{ field: 'phone', issue: 'phone' }])
+      toast.error(tc('fieldErrors.notSaved'))
+      return
+    }
+
+    // Values that match another customer and have not been shown yet are
+    // shown first; saving again keeps them.
+    const check = checkDuplicates()
+    if (duplicatesShownFor.current !== check.key) {
+      setLoading(true)
+      const found = await check.answer
+      setLoading(false)
+      // Changed while the check was out: nothing is saved on an answer
+      // about other values; the next save asks about these.
+      if (!isCurrentCheck(check)) return
+      if (hasDuplicates(found)) {
+        duplicatesShownFor.current = check.key
+        toast.warning(t('duplicateFound'))
+        const first = DUPLICATE_FIELDS.find((field) => found[field].length > 0)
+        if (first) (formRef.current?.elements.namedItem(first) as HTMLElement | null)?.focus()
+        return
+      }
+    }
 
     // The workshop's own fields first: one left empty that must not be stops
     // the save here, marked and named on the form. The values then go with
@@ -308,7 +436,20 @@ export function CustomerForm({
           ref={formRef}
           onSubmit={handleSubmit}
           // A refused field's mark goes as soon as it is changed.
-          onChange={(e) => fieldErrors.clear((e.target as Element).getAttribute('name') ?? '')}
+          onChange={(e) => {
+            const name = (e.target as Element).getAttribute('name') ?? ''
+            fieldErrors.clear(name)
+            // What another customer has was about what was typed before,
+            // and so is a check still on its way: it is dropped, so its
+            // answer cannot put an old warning under the new value.
+            if ((DUPLICATE_FIELDS as string[]).includes(name)) {
+              duplicateCheck.current = null
+              duplicatesShownFor.current = null
+              setDuplicates((prev) =>
+                prev[name as DuplicateField].length ? { ...prev, [name]: [] } : prev
+              )
+            }
+          }}
           className="flex min-h-0 flex-1 flex-col"
         >
           <DialogBody className="grid content-start gap-x-8 gap-y-4 md:grid-cols-2">
@@ -342,12 +483,14 @@ export function CustomerForm({
                     id="name"
                     name="name"
                     maxLength={NAME_MAX_LENGTH}
-                    {...fieldErrors.invalidProps('name')}
+                    {...fieldErrors.invalidProps('name', duplicateDescribedBy('name'))}
                     placeholder={t('namePlaceholder')}
                     defaultValue={customer?.name ?? defaults?.name ?? ''}
+                    onBlur={() => checkDuplicates()}
                     required
                   />
                   {fieldErrors.message('name')}
+                  {duplicateWarning('name', t('duplicateName'))}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="customerNumber">{t('customerNumber')}</Label>
@@ -370,12 +513,14 @@ export function CustomerForm({
                     id="email"
                     name="email"
                     maxLength={EMAIL_MAX_LENGTH}
-                    {...fieldErrors.invalidProps('email')}
+                    {...fieldErrors.invalidProps('email', duplicateDescribedBy('email'))}
                     type="email"
                     placeholder={t('emailPlaceholder')}
                     defaultValue={customer?.email ?? ''}
+                    onBlur={() => checkDuplicates()}
                   />
                   {fieldErrors.message('email')}
+                  {duplicateWarning('email', t('duplicateEmail'))}
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">{tc('form.phone')}</Label>
@@ -383,11 +528,15 @@ export function CustomerForm({
                     id="phone"
                     name="phone"
                     maxLength={SHORT_TEXT_MAX_LENGTH}
-                    {...fieldErrors.invalidProps('phone')}
+                    {...fieldErrors.invalidProps('phone', duplicateDescribedBy('phone'))}
+                    type="tel"
+                    inputMode="tel"
                     placeholder={t('phonePlaceholder')}
                     defaultValue={customer?.phone ?? ''}
+                    onBlur={() => checkDuplicates()}
                   />
                   {fieldErrors.message('phone')}
+                  {duplicateWarning('phone', t('duplicatePhone'))}
                 </div>
               </div>
 

@@ -6,8 +6,8 @@
     "description": "Описание",
     "itemCount": "Позиции",
     "type": "Тип",
-    "hrs": "ч.",
-    "units": "усл."
+    "hoursCount": "{hours, number} ч.",
+    "unitsCount": "{units, number} усл."
   },
   "empty": {
     "noMatch": "Шаблоны не найдены.",
