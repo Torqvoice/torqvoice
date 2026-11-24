@@ -24,6 +24,8 @@ export interface LaborPresetOption {
     unit: string | null
     category?: string | null
     unitPrice: number
+    /** The linked stock item's cost; 0 or absent for a part with no stock link. */
+    unitCost?: number
     inventoryPartId: string | null
     sortOrder: number
   }[]

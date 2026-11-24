@@ -253,7 +253,7 @@ export async function deleteLaborPreset(presetId: string) {
 export async function getLaborPresetsList() {
   return withAuth(
     async ({ userId, organizationId }) => {
-      return db.laborPreset.findMany({
+      const presets = await db.laborPreset.findMany({
         where: { organizationId, isArchived: false },
         select: {
           id: true,
@@ -285,6 +285,30 @@ export async function getLaborPresetsList() {
         },
         orderBy: { name: 'asc' },
       })
+
+      // A preset part keeps no cost of its own. One linked to stock carries
+      // that item's current cost onto the line, so applying the preset does not
+      // book the part as free and wipe its profit off the job.
+      const stockIds = [
+        ...new Set(
+          presets.flatMap((p) => p.parts.map((part) => part.inventoryPartId).filter(Boolean))
+        ),
+      ] as string[]
+      const stock = stockIds.length
+        ? await db.inventoryPart.findMany({
+            where: { id: { in: stockIds }, organizationId },
+            select: { id: true, unitCost: true },
+          })
+        : []
+      const costOf = new Map(stock.map((s) => [s.id, s.unitCost]))
+
+      return presets.map((preset) => ({
+        ...preset,
+        parts: preset.parts.map((part) => ({
+          ...part,
+          unitCost: (part.inventoryPartId && costOf.get(part.inventoryPartId)) || 0,
+        })),
+      }))
     },
     {
       requiredPermissions: [
