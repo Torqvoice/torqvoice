@@ -89,7 +89,7 @@ export async function computeRevenue(
         manuallyPaidAt: true,
         totalAmount: true,
         cost: true,
-        payments: { select: { amount: true } },
+        payments: { select: { amount: true, date: true } },
       },
     }),
   ])
@@ -158,7 +158,12 @@ export async function computeRevenue(
 
   for (const r of manuallyPaid) {
     if (!r.manuallyPaid) continue
-    const remainder = Math.max(0, chargedTotal(r) - sumPayments(r.payments))
+    // What the payments had covered when it was marked. A payment or refund
+    // after that counts in its own month, so a closed month never changes.
+    // Marked before that day was recorded: every payment, as there is no cut-off.
+    const markedAt = r.manuallyPaidAt
+    const coveredBefore = markedAt ? r.payments.filter((p) => p.date <= markedAt) : r.payments
+    const remainder = Math.max(0, chargedTotal(r) - sumPayments(coveredBefore))
     if (remainder === 0) continue
     month(r.manuallyPaidAt ?? documentDateOf(r)).collected += remainder
     totalCollected += remainder

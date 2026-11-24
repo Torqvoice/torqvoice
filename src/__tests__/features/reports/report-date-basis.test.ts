@@ -206,7 +206,7 @@ describe('jobs marked paid by hand', () => {
           invoiceDate: SEP_15,
           manuallyPaid: true,
           manuallyPaidAt: NOV_1,
-          payments: [{ amount: 50 }],
+          payments: [{ amount: 50, date: SEP_15 }],
         }),
       ],
       payments: [{ amount: 50, date: SEP_15 }],
@@ -219,6 +219,66 @@ describe('jobs marked paid by hand', () => {
       { month: '2026-11', revenue: 0, collected: 150 },
     ])
     expect(data?.summary.totalCollected).toBe(200)
+  })
+
+  /** 1000 marked paid on 15 September, then `later` arrives on 1 November. */
+  const markedInSeptember = (later: number) => {
+    const payment = { amount: later, date: NOV_1 }
+    seed({
+      manual: [
+        job({
+          invoiceDate: SEP_15,
+          manuallyPaid: true,
+          manuallyPaidAt: SEP_15,
+          payments: [payment],
+        }),
+      ],
+      payments: [payment],
+    })
+  }
+
+  it('keep September as it was when a refund arrives after the job was marked paid', async () => {
+    markedInSeptember(-100)
+
+    const { data } = await getRevenueReport(WINDOW)
+
+    expect(months(data)).toEqual([
+      { month: '2026-09', revenue: 0, collected: 1000 },
+      { month: '2026-11', revenue: 0, collected: -100 },
+    ])
+  })
+
+  it('keep September as it was when a payment arrives after the job was marked paid', async () => {
+    markedInSeptember(300)
+
+    const { data } = await getRevenueReport(WINDOW)
+
+    expect(months(data)).toEqual([
+      { month: '2026-09', revenue: 0, collected: 1000 },
+      { month: '2026-11', revenue: 0, collected: 300 },
+    ])
+  })
+
+  it('take every payment off when the day it was marked was not recorded', async () => {
+    const payment = { amount: 300, date: NOV_1 }
+    seed({
+      manual: [
+        job({
+          invoiceDate: SEP_15,
+          manuallyPaid: true,
+          manuallyPaidAt: null,
+          payments: [payment],
+        }),
+      ],
+      payments: [payment],
+    })
+
+    const { data } = await getRevenueReport(WINDOW)
+
+    expect(months(data)).toEqual([
+      { month: '2026-09', revenue: 0, collected: 700 },
+      { month: '2026-11', revenue: 0, collected: 300 },
+    ])
   })
 
   it('ask for jobs marked in the window, or unmarked-date jobs dated in it', async () => {
