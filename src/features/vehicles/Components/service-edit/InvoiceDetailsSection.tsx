@@ -35,6 +35,11 @@ const FOLLOW_DEFAULT = '__default__'
 
 interface InvoiceDetailsSectionProps {
   initialData: InitialData
+  /** Dates saved elsewhere that the page has taken; see useServiceFormState. */
+  adopted?: {
+    invoiceDate?: { value: unknown }
+    invoiceDueDate?: { value: unknown }
+  }
   type: string
   setType: (type: string) => void
   /** Counter sales (no vehicle) have no meaningful service type; hide the field. */
@@ -70,6 +75,7 @@ interface InvoiceDetailsSectionProps {
 
 export function InvoiceDetailsSection({
   initialData,
+  adopted,
   type,
   setType,
   showType = true,
@@ -117,13 +123,18 @@ export function InvoiceDetailsSection({
   const [invoiceDate, setInvoiceDate] = useState(initialData.invoiceDate || '')
   const [invoiceDueDate, setInvoiceDueDate] = useState(initialData.invoiceDueDate || '')
 
+  // A date saved elsewhere, taken when nothing was typed in it here (see
+  // useServiceFormState). Following every saved date instead put the other
+  // tab's date over one being typed, and the next save sent it back.
+  const adoptedDate = adopted?.invoiceDate
+  const adoptedDueDate = adopted?.invoiceDueDate
   useEffect(() => {
-    setInvoiceDate(initialData.invoiceDate || '')
-  }, [initialData.invoiceDate])
+    if (adoptedDate) setInvoiceDate(String(adoptedDate.value ?? ''))
+  }, [adoptedDate])
 
   useEffect(() => {
-    setInvoiceDueDate(initialData.invoiceDueDate || '')
-  }, [initialData.invoiceDueDate])
+    if (adoptedDueDate) setInvoiceDueDate(String(adoptedDueDate.value ?? ''))
+  }, [adoptedDueDate])
 
   // A draft's empty invoice date is filled the day it is sent; the hint says
   // so while nobody has typed a date of their own.

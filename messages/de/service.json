@@ -275,6 +275,30 @@
     "body": "Sie bleibt beim Bearbeiten aus der Liste. Beim nächsten Speichern wird sie ohnehin übernommen.",
     "show": "Anzeigen"
   },
+  "changedElsewhere": {
+    "keptTitle": "Woanders geändert, während Sie bearbeitet haben: {fields}.",
+    "keptBody": "Diese Seite speichert Ihre Version darüber.",
+    "replacedTitle": "Woanders geändert: {fields}.",
+    "replacedBody": "Eine spätere Speicherung hat Ihre Änderung ersetzt. Diese Seite zeigt jetzt die neuere Version.",
+    "dismiss": "OK",
+    "fields": {
+      "title": "Titel",
+      "type": "Typ",
+      "status": "Status",
+      "mileage": "Kilometerstand",
+      "mileageMarine": "Motorstunden",
+      "description": "Beschreibung",
+      "diagnosticNotes": "Interne Notizen",
+      "invoiceNotes": "Kundennotizen",
+      "invoiceNumber": "Rechnungsnummer",
+      "invoiceDate": "Rechnungsdatum",
+      "invoiceDueDate": "Fälligkeitsdatum",
+      "taxRate": "Steuersatz",
+      "discount": "Rabatt",
+      "warranty": "Garantie",
+      "concerns": "Anliegen"
+    }
+  },
   "totals": {
     "title": "Summen",
     "parts": "Teile",

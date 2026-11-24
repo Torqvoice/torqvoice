@@ -19,9 +19,11 @@ vi.mock('@/components/confirm-dialog', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/components/confirm-dialog')>()),
   useConfirm: () => vi.fn(async () => true),
 }))
-const updateServiceRecord = vi.fn()
+const saveServiceRecordChanges = vi.fn()
+vi.mock('@/features/vehicles/Actions/saveServiceRecordChanges', () => ({
+  saveServiceRecordChanges: (input: unknown) => saveServiceRecordChanges(input),
+}))
 vi.mock('@/features/vehicles/Actions/serviceActions', () => ({
-  updateServiceRecord: (input: unknown) => updateServiceRecord(input),
   deleteServiceRecord: vi.fn(),
   deleteServiceAttachment: vi.fn(),
   toggleManuallyPaid: vi.fn(),
@@ -34,11 +36,36 @@ vi.mock('@/features/sms/Actions/smsActions', () => ({ getSmsTemplates: vi.fn() }
 
 import { useServiceActions } from '@/features/vehicles/Components/service-page/useServiceActions'
 import {
+  changedWorkOrderFields,
+  savedWorkOrderFields,
+  type WorkOrderFieldValues,
+} from '@/features/vehicles/Lib/workOrderFields'
+import {
   onRevealRequiredMeters,
   type RevealOptions,
 } from '@/features/meters/Lib/requiredMetersReveal'
 
 type Options = Parameters<typeof useServiceActions>[0]
+
+/**
+ * What the page changed, worked out as the real form state does it
+ * (workOrderFields): the form's title and reading, and the stage, against the
+ * job as saved.
+ */
+function fieldChanges(form: { status: string; initialData: object }) {
+  const value = (name: string) =>
+    document.querySelector<HTMLInputElement>(`form input[name="${name}"]`)?.value
+  const current: Partial<WorkOrderFieldValues> = { status: form.status }
+  const title = value('title')
+  if (title !== undefined) current.title = title
+  const mileage = value('mileage')
+  if (mileage !== undefined) current.mileage = mileage === '' ? null : Number(mileage)
+  const saved = savedWorkOrderFields(
+    form.initialData as Parameters<typeof savedWorkOrderFields>[0],
+    0
+  )
+  return { current, changed: changedWorkOrderFields(saved, current) }
+}
 
 const PTO = { vehicleMeterId: 'vm-pto', meterTypeId: 't-pto', name: 'PTO hours', item: null }
 const REFUSED = {
@@ -59,7 +86,7 @@ afterEach(() => {
 beforeEach(() => {
   reveals.length = 0
   stopListening = onRevealRequiredMeters('job1', (ids, options) => reveals.push({ ids, options }))
-  updateServiceRecord.mockReset().mockResolvedValue(REFUSED)
+  saveServiceRecordChanges.mockReset().mockResolvedValue(REFUSED)
 })
 
 /** The page with a stage picked: `status` sent, `saved` the stage the job is at. */
@@ -106,6 +133,18 @@ function page(status: string, saved: string) {
     confirmedReadingRef: { current: null },
     acknowledgeSavedLines: vi.fn(),
     sendingLinesRef: { current: null },
+    partsAddedElsewhere: [],
+    laborAddedElsewhere: [],
+    fieldChanges: () => fieldChanges(form),
+    acknowledgeSavedFields: vi.fn(),
+    beginFieldSave: vi.fn(),
+    lineEditsForSave: () => ({
+      parts: false,
+      labor: false,
+      partsRevision: 0,
+      laborRevision: 0,
+    }),
+    settleLineEdits: vi.fn(),
   }
   const hook = renderHook(() =>
     useServiceActions({
@@ -143,7 +182,7 @@ describe('a completion refused for readings', () => {
 
   it('keeps a stage picked while the save was on its way', async () => {
     const { form, save, stage } = page('completed', 'in-progress')
-    updateServiceRecord.mockImplementationOnce(async () => {
+    saveServiceRecordChanges.mockImplementationOnce(async () => {
       // The person picks "Waiting for parts" while the save runs.
       stage.current = 'waiting-parts'
       form.editRevisionRef.current += 1
@@ -174,7 +213,7 @@ describe('a completion refused for readings', () => {
 
 describe('a completed job moved to a vehicle whose readings are missing', () => {
   it('is refused without queueing a save that could only be refused again', async () => {
-    updateServiceRecord.mockResolvedValue({ ...REFUSED, error: 'Not moved.' })
+    saveServiceRecordChanges.mockResolvedValue({ ...REFUSED, error: 'Not moved.' })
     const { form, save, stage } = page('completed', 'completed')
     await save({ autosave: true })
     expect(stage.current).toBe('completed')

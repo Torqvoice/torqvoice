@@ -70,6 +70,7 @@ import type { ServicePageClientProps, ServiceTab } from './service-page-types'
 import { WorkOrderLayoutProvider } from '@/components/work-order-layout-context'
 import { track } from '@/lib/analytics'
 import { LaborAddedBanner } from './LaborAddedBanner'
+import { ChangedElsewhereBanner } from './ChangedElsewhereBanner'
 import { LeaveUnsavedDialog } from './LeaveUnsavedDialog'
 import { useLiveRecord } from '@/features/realtime/hooks'
 import { PresenceChips } from '@/features/realtime/Components/PresenceChips'
@@ -213,16 +214,14 @@ export function ServicePageClient({
   const [requestedTab, setRequestedTab] = useState<ServiceTab>(resolvedInitialTab)
 
   // The overhauled page edits the title in its header, outside the form, so
-  // the page holds it and the form carries it as a hidden field. It follows
-  // the record again after every save.
+  // the page holds it and the form carries it as a hidden field. It follows a
+  // title saved elsewhere only when the form state takes it (adoptedFields):
+  // a rename the server refused is still this page's, waiting to be saved.
   const [title, setTitle] = useState(record.title)
   // Bumped by "Take payment" in the money bar and by "Unpaid" in the header:
   // the payments form opens and scrolls into view.
   const [paymentSignal, setPaymentSignal] = useState(0)
   const takePayment = useCallback(() => setPaymentSignal((n) => n + 1), [])
-  useEffect(() => {
-    setTitle(record.title)
-  }, [record.title])
 
   // One view per work order opened.
   useEffect(() => {
@@ -278,6 +277,11 @@ export function ServicePageClient({
     shopFee,
     taxApplies: lineTax.applies,
   })
+
+  const adoptedTitle = formState.adoptedFields.title
+  useEffect(() => {
+    if (adoptedTitle) setTitle(String(adoptedTitle.value ?? ''))
+  }, [adoptedTitle])
 
   // Anything that happens to this job somewhere else: a technician billing
   // their time from the app, marking it complete in the bay, or the person at
@@ -700,6 +704,8 @@ export function ServicePageClient({
     // marks the form dirty, so the ordinary path can try again.
     void updateServiceRecordTitle(record.id, next).then((result) => {
       if (result.success) {
+        // The server's title now: a later rename elsewhere replaces it.
+        formState.acknowledgeSavedFields({ title: next })
         formState.flashSaved()
       } else {
         toast.error(result.error || t('page.failedUpdate'))
@@ -860,6 +866,12 @@ export function ServicePageClient({
                 formState.applyLaborAddedElsewhere()
                 formState.applyPartsAddedElsewhere()
               }}
+            />
+
+            <ChangedElsewhereBanner
+              kept={formState.changedElsewhere.kept}
+              replaced={formState.changedElsewhere.replaced}
+              onDismiss={formState.dismissChangedElsewhere}
             />
 
             <CancelInvoiceDialog

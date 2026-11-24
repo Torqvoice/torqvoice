@@ -5,8 +5,8 @@ import { toast } from 'sonner'
 import { useGlassModal } from '@/components/glass-modal'
 import { useConfirm } from '@/components/confirm-dialog'
 import { useFormatter, useTranslations } from 'next-intl'
+import { saveServiceRecordChanges } from '@/features/vehicles/Actions/saveServiceRecordChanges'
 import {
-  updateServiceRecord,
   deleteServiceRecord,
   deleteServiceAttachment,
   toggleManuallyPaid,
@@ -18,13 +18,13 @@ import { SMS_TEMPLATE_DEFAULTS, interpolateSmsTemplate } from '@/lib/sms-templat
 import { formatCurrency } from '@/lib/format'
 import { findServiceFormProblem } from '@/features/vehicles/Lib/validateServiceForm'
 import { LINE_TOTAL_MAX, QUANTITY_MAX, READING_MAX, UNIT_PRICE_MAX } from '@/lib/input-limits'
-import { WARRANTY_NONE } from '@/lib/warranty'
 import { useServiceType } from '@/components/service-type-context'
 import { useFieldErrorText } from '@/components/field-errors'
 import type { FieldError } from '@/lib/field-errors'
 import { readingNeedsAnswer } from '@/features/vehicles/Lib/vehicleReading'
 import { revealRequiredMeters } from '@/features/meters/Lib/requiredMetersReveal'
 import type { ServiceDetail } from '../service-detail/types'
+import type { WorkOrderFieldValues } from '@/features/vehicles/Lib/workOrderFields'
 import type { useServiceFormState } from './useServiceFormState'
 
 type FormState = ReturnType<typeof useServiceFormState>
@@ -98,24 +98,16 @@ export function useServiceActions({
     partItems,
     laborItems,
     laborItemsForSave,
+    laborAddedElsewhere,
     commitLaborAddedElsewhere,
     partItemsForSave,
+    partsAddedElsewhere,
     commitPartsAddedElsewhere,
-    subtotal,
-    taxRate,
-    taxInclusive,
-    taxAmount,
-    totalAmount,
-    discountType,
-    discountValue,
-    discountAmount,
-    warranty,
     isSavingRef,
     autosaveTimer,
     setLoading,
     setHasUnsavedChanges,
     flashSaved,
-    notesRef,
     initialData,
     customFieldsSaveRef,
     lastSaveErrorRef,
@@ -127,6 +119,11 @@ export function useServiceActions({
     confirmedReadingRef,
     acknowledgeSavedLines,
     sendingLinesRef,
+    fieldChanges,
+    beginFieldSave,
+    acknowledgeSavedFields,
+    lineEditsForSave,
+    settleLineEdits,
   } = formState
 
   /**
@@ -225,17 +222,11 @@ export function useServiceActions({
 
     setLoading(true)
 
-    // A field the layout does not render at all is left alone; an emptied one
-    // is sent so the update action clears it ('' for text, null for mileage).
-    const optionalText = (name: string): string | undefined => getVisible(name) ?? undefined
-    const rawMileage = getVisible('mileage') as string | null | undefined
-    const mileageNumber = rawMileage == null ? undefined : Number(rawMileage)
-    const parsedMileage =
-      rawMileage == null || Number.isNaN(mileageNumber)
-        ? undefined
-        : rawMileage.trim() === ''
-          ? null
-          : mileageNumber
+    // Only the fields this page changed (fieldChanges): a field it did not
+    // touch may have been saved in another tab since this one read it, and
+    // sending this page's old copy back would throw that away. An emptied
+    // field is a change, and is sent so the action clears it.
+    const { current, changed } = fieldChanges()
     // A reading far above the last one waits for the person's answer under
     // the field (ReadingQuestion). Only the reading: the rest of the work
     // order saves, and the page stays unsaved until it is answered. The last
@@ -243,84 +234,57 @@ export function useServiceActions({
     // one is not asked about.
     const holdReading =
       selectedVehicleId === vehicleId &&
+      changed.includes('mileage') &&
       readingNeedsAnswer({
-        value: parsedMileage,
+        value: current.mileage,
         saved: initialData.mileage,
         last: initialData.lastReading,
         kind: readingKind,
         confirmed: confirmedReadingRef.current,
       })
-    // The editor reports an emptied box as one empty paragraph.
-    const richText = (html: string) => (html === '<p></p>' ? '' : html)
-
+    const sentFields: Partial<WorkOrderFieldValues> = {}
+    for (const field of changed) {
+      // Left out, the job keeps the reading it has.
+      if (field === 'mileage' && holdReading) continue
+      Object.assign(sentFields, { [field]: current[field] })
+    }
+    const { discount, warranty, ...plainFields } = sentFields
+    // Parts and labour only when this page changed them, and then the whole
+    // list: lines a technician added while this page was open go with it
+    // even if the offer to show them was never taken, since the save
+    // replaces every line and one left out of it is deleted.
+    const lines = lineEditsForSave({
+      parts: partsAddedElsewhere.length,
+      labor: laborAddedElsewhere.length,
+    })
     const payload = {
       id: initialData.id,
-      vehicleId: selectedVehicleId,
-      title: getVisible('title'),
-      description: richText(notesRef.current.description),
-      // What the customer said at drop-off. Typed at intake beside the vehicle,
-      // not in the notes section, so it is read from the form rather than from
-      // the notes state.
-      type,
-      status,
-      cost: totalAmount,
-      // Left out, the job keeps the reading it has.
-      mileage: holdReading ? undefined : parsedMileage,
-      serviceDate: getVisible('serviceDate') || new Date().toISOString(),
-      // techName intentionally omitted: it has no UI in the form (read-only),
-      // and the Schedule card writes it directly via assignTechnician. Sending
-      // the form-state value here would clobber a tech change made via the
-      // Schedule card with a stale name from initial load.
-      diagnosticNotes: richText(notesRef.current.diagnosticNotes),
-      invoiceNotes: richText(notesRef.current.invoiceNotes),
-      invoiceNumber: optionalText('invoiceNumber'),
-      invoiceDate: optionalText('invoiceDate'),
-      invoiceDueDate: optionalText('invoiceDueDate'),
-      // Blank rows are somebody halfway through typing, not a concern.
-      // Only the saved fields: the stamp of who confirmed is the server's.
-      concerns: concerns
-        .filter((c) => c.description.trim())
-        .map((c, index) => ({
-          id: c.id,
-          description: c.description.trim(),
-          sortOrder: index,
-          cause: c.cause ?? null,
-          correction: c.correction ?? null,
-          confirmation: c.confirmation ?? null,
-          confirmed: c.confirmed ?? false,
-        })),
-      // Parts and labour a technician added while this page was open go with
-      // the save even if the offer to show them was never taken: this action
-      // replaces every line, so one left out of the payload is deleted.
-      partItems: partItemsForSave.filter((p) => p.name),
-      // A line a technician added while this page was open goes with the save
-      // even if the offer to show it was never taken: this action replaces
-      // every labour line, so one left out of the payload is deleted.
-      laborItems: laborItemsForSave.filter((l) => l.description),
-      subtotal,
-      taxRate,
-      taxInclusive,
-      taxAmount,
-      totalAmount,
-      discountType: discountType === 'none' ? 'none' : discountType,
-      discountValue: discountType === 'none' ? 0 : discountValue,
-      discountAmount: discountType === 'none' ? 0 : discountAmount,
-      // Cleared fields go as 'none', 0 and '' so the action clears them;
-      // undefined would leave the old value in place.
-      warrantyStatus: warranty.warrantyStatus ?? WARRANTY_NONE,
-      warrantyMonths: warranty.warrantyMonths ?? 0,
-      warrantyMileage: warranty.warrantyMileage ?? 0,
-      warrantyNotes: warranty.warrantyNotes ?? '',
+      // Moving the job to another vehicle; null (a counter sale) is no change.
+      ...(selectedVehicleId && selectedVehicleId !== vehicleId
+        ? { vehicleId: selectedVehicleId }
+        : {}),
+      ...plainFields,
+      ...(discount ?? {}),
+      ...(warranty ?? {}),
+      ...(lines.parts ? { partItems: partItemsForSave.filter((p) => p.name) } : {}),
+      ...(lines.labor ? { laborItems: laborItemsForSave.filter((l) => l.description) } : {}),
+      // No money: the server totals the job from what it stores.
     }
 
-    let result: Awaited<ReturnType<typeof updateServiceRecord>>
+    let result: Awaited<ReturnType<typeof saveServiceRecordChanges>>
     // A refresh that lands while this runs must not take these lines, the
     // page's own, for ones added elsewhere.
-    sendingLinesRef.current = { parts: payload.partItems, labor: payload.laborItems }
+    const sentLines = {
+      parts: payload.partItems ?? partItemsForSave,
+      labor: payload.laborItems ?? laborItemsForSave,
+    }
+    sendingLinesRef.current = sentLines
+    beginFieldSave(sentFields)
     try {
-      result = await updateServiceRecord(payload)
+      result = await saveServiceRecordChanges(payload)
     } catch (err) {
       sendingLinesRef.current = null
+      beginFieldSave(null)
       // The request never came back (the connection dropped). Saving has to
       // end here, or the next save, and a link waiting on this one, waits
       // forever.
@@ -330,10 +294,19 @@ export function useServiceActions({
     }
     sendingLinesRef.current = null
 
+    if (result.success) acknowledgeSavedFields(sentFields)
+    beginFieldSave(null)
+    if (result.success) {
+      settleLineEdits(lines)
+      if (lines.labor) commitLaborAddedElsewhere()
+      if (lines.parts) commitPartsAddedElsewhere()
+      // The same on every save: a preset or an edit made while it ran, or
+      // before the refresh after it comes back, leaves the page unsaved when
+      // the saved lines arrive, and they must not read as added elsewhere.
+      if (lines.parts || lines.labor) acknowledgeSavedLines(sentLines)
+    }
+
     if (result.success && holdReading) {
-      commitLaborAddedElsewhere()
-      commitPartsAddedElsewhere()
-      acknowledgeSavedLines({ parts: payload.partItems, labor: payload.laborItems })
       // Saved but for the reading: the page stays unsaved, without another
       // autosave unless something else is edited, and a link waiting on this
       // save asks the person to stay and answer.
@@ -346,12 +319,6 @@ export function useServiceActions({
         question?.querySelector<HTMLButtonElement>('[data-reading-confirm]')?.focus()
       }
     } else if (result.success) {
-      commitLaborAddedElsewhere()
-      commitPartsAddedElsewhere()
-      // The same on every save: a preset or an edit made while it ran, or
-      // before the refresh below comes back, leaves the page unsaved when the
-      // saved lines arrive, and they must not read as added elsewhere.
-      acknowledgeSavedLines({ parts: payload.partItems, labor: payload.laborItems })
       markSaved(revision)
       flashSaved()
       if (selectedVehicleId && selectedVehicleId !== vehicleId) {
@@ -366,12 +333,16 @@ export function useServiceActions({
       // whose boxes are marked. Only if the stage is still the one this save
       // sent: one picked while it ran is newer, and is what the next save
       // sends.
-      setStatus((current) => (current === payload.status ? initialData.status : current))
+      setStatus((now) => (now === payload.status ? initialData.status : now))
       // The next save is queued only when it can go through: with the stage
       // put back. A completed job moved to another vehicle stays refused
       // until the person moves it back or reopens it, and a save every five
       // seconds would only say so again.
-      if (editRevisionRef.current === revision && payload.status !== initialData.status) {
+      if (
+        editRevisionRef.current === revision &&
+        payload.status !== undefined &&
+        payload.status !== initialData.status
+      ) {
         markDirty()
       }
       refuse(result.error || t('page.failedUpdate'))

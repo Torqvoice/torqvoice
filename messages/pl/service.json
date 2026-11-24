@@ -275,6 +275,30 @@
     "body": "Pozostaje poza listą podczas edycji. Następny zapis i tak ją uwzględni.",
     "show": "Pokaż"
   },
+  "changedElsewhere": {
+    "keptTitle": "Zmieniono gdzie indziej podczas Twojej edycji: {fields}.",
+    "keptBody": "Ta strona zapisze Twoją wersję w jej miejsce.",
+    "replacedTitle": "Zmieniono gdzie indziej: {fields}.",
+    "replacedBody": "Późniejszy zapis zastąpił Twoją zmianę. Ta strona pokazuje teraz nowszą wersję.",
+    "dismiss": "OK",
+    "fields": {
+      "title": "Tytuł",
+      "type": "Typ",
+      "status": "Status",
+      "mileage": "Przebieg",
+      "mileageMarine": "Motogodziny",
+      "description": "Opis",
+      "diagnosticNotes": "Notatki wewnętrzne",
+      "invoiceNotes": "Notatki dla klienta",
+      "invoiceNumber": "Numer faktury",
+      "invoiceDate": "Data faktury",
+      "invoiceDueDate": "Termin płatności",
+      "taxRate": "Stawka podatku",
+      "discount": "Rabat",
+      "warranty": "Gwarancja",
+      "concerns": "Usterki"
+    }
+  },
   "totals": {
     "title": "Razem",
     "parts": "Części",
