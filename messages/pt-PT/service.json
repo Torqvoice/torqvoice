@@ -376,7 +376,8 @@
     "received": "Pagamentos recebidos",
     "noneYet": "Ainda nada pago.",
     "balanceDue": "Valor em dívida",
-    "cancelledNotice": "Anulada: nada é devido nesta fatura. Os pagamentos e reembolsos continuam listados acima."
+    "cancelledNotice": "Anulada: nada é devido nesta fatura. Os pagamentos e reembolsos continuam listados acima.",
+    "refund": "Reembolso"
   },
   "attachments": {
     "deleteTitle": "Eliminar anexo",

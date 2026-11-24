@@ -376,7 +376,8 @@
     "received": "Mottatte betalinger",
     "noneYet": "Ingenting betalt ennå.",
     "balanceDue": "Utestående",
-    "cancelledNotice": "Kansellert: ingenting skal betales på denne fakturaen. Betalinger og refusjoner står fortsatt over."
+    "cancelledNotice": "Kansellert: ingenting skal betales på denne fakturaen. Betalinger og refusjoner står fortsatt over.",
+    "refund": "Refusjon"
   },
   "attachments": {
     "deleteTitle": "Slett vedlegg",

@@ -376,7 +376,8 @@
     "received": "Otrzymane płatności",
     "noneYet": "Nic jeszcze nie zapłacono.",
     "balanceDue": "Pozostało do zapłaty",
-    "cancelledNotice": "Anulowana: nic nie jest do zapłaty z tej faktury. Płatności i zwroty pozostają na liście powyżej."
+    "cancelledNotice": "Anulowana: nic nie jest do zapłaty z tej faktury. Płatności i zwroty pozostają na liście powyżej.",
+    "refund": "Zwrot"
   },
   "attachments": {
     "deleteTitle": "Usuń Załącznik",

@@ -376,7 +376,8 @@
     "received": "Gauti mokėjimai",
     "noneYet": "Dar nieko nesumokėta.",
     "balanceDue": "Mokėtina suma",
-    "cancelledNotice": "Atšaukta: pagal šią sąskaitą nieko nemokėti. Mokėjimai ir grąžinimai lieka sąraše aukščiau."
+    "cancelledNotice": "Atšaukta: pagal šią sąskaitą nieko nemokėti. Mokėjimai ir grąžinimai lieka sąraše aukščiau.",
+    "refund": "Grąžinimas"
   },
   "attachments": {
     "deleteTitle": "Ištrinti priedą",

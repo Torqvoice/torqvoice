@@ -376,7 +376,8 @@
     "received": "Alınan ödemeler",
     "noneYet": "Henüz ödeme yapılmadı.",
     "balanceDue": "Kalan bakiye",
-    "cancelledNotice": "İptal edildi: bu fatura için ödenecek bir şey yok. Ödemeler ve iadeler yukarıda listelenmeye devam eder."
+    "cancelledNotice": "İptal edildi: bu fatura için ödenecek bir şey yok. Ödemeler ve iadeler yukarıda listelenmeye devam eder.",
+    "refund": "İade"
   },
   "attachments": {
     "deleteTitle": "Eki Sil",

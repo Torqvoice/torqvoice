@@ -1,5 +1,7 @@
 'use client'
 
+import { useDateSettings } from '@/components/date-settings-context'
+import { workshopTodayKey } from '@/lib/workshop-datetime'
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -153,6 +155,7 @@ export default function RecurringInvoicesClient({
   const t = useTranslations('billing')
   const tcm = useTranslations('common.contextMenu')
   const { formatDate } = useFormatDate()
+  const { timezone } = useDateSettings()
   const [isPending, startTransition] = useTransition()
   const [showCreate, setShowCreate] = useState(false)
 
@@ -170,7 +173,7 @@ export default function RecurringInvoicesClient({
   const [frequency, setFrequency] = useState<
     'weekly' | 'biweekly' | 'monthly' | 'quarterly' | 'yearly'
   >('monthly')
-  const [nextRunDate, setNextRunDate] = useState(new Date().toISOString().split('T')[0])
+  const [nextRunDate, setNextRunDate] = useState(() => workshopTodayKey(timezone))
   const [endDate, setEndDate] = useState('')
   const [vehicleId, setVehicleId] = useState('')
   const [serviceType, setServiceType] = useState('maintenance')
@@ -185,7 +188,7 @@ export default function RecurringInvoicesClient({
     setTitle('')
     setDescription('')
     setFrequency('monthly')
-    setNextRunDate(new Date().toISOString().split('T')[0])
+    setNextRunDate(workshopTodayKey(timezone))
     setEndDate('')
     setVehicleId('')
     setServiceType('maintenance')

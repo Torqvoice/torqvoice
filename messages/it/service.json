@@ -376,7 +376,8 @@
     "received": "Pagamenti ricevuti",
     "noneYet": "Ancora nessun pagamento.",
     "balanceDue": "Importo dovuto",
-    "cancelledNotice": "Annullata: non è dovuto nulla su questa fattura. Pagamenti e rimborsi restano elencati sopra."
+    "cancelledNotice": "Annullata: non è dovuto nulla su questa fattura. Pagamenti e rimborsi restano elencati sopra.",
+    "refund": "Rimborso"
   },
   "attachments": {
     "deleteTitle": "Elimina Allegato",

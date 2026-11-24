@@ -376,7 +376,8 @@
     "received": "Paiements reçus",
     "noneYet": "Rien de payé pour l'instant.",
     "balanceDue": "Solde dû",
-    "cancelledNotice": "Annulée : rien n’est dû sur cette facture. Les paiements et remboursements restent listés ci-dessus."
+    "cancelledNotice": "Annulée : rien n’est dû sur cette facture. Les paiements et remboursements restent listés ci-dessus.",
+    "refund": "Remboursement"
   },
   "attachments": {
     "deleteTitle": "Supprimer la Pièce Jointe",

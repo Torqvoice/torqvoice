@@ -376,7 +376,8 @@
     "received": "Ontvangen betalingen",
     "noneYet": "Nog niets betaald.",
     "balanceDue": "Verschuldigd bedrag",
-    "cancelledNotice": "Geannuleerd: op deze factuur hoeft niets betaald te worden. Betalingen en terugbetalingen blijven hierboven staan."
+    "cancelledNotice": "Geannuleerd: op deze factuur hoeft niets betaald te worden. Betalingen en terugbetalingen blijven hierboven staan.",
+    "refund": "Terugbetaling"
   },
   "attachments": {
     "deleteTitle": "Bijlage verwijderen",

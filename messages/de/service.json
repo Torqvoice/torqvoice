@@ -376,7 +376,8 @@
     "received": "Erhaltene Zahlungen",
     "noneYet": "Noch nichts bezahlt.",
     "balanceDue": "Ausstehend",
-    "cancelledNotice": "Storniert: Auf diese Rechnung ist nichts zu zahlen. Zahlungen und Erstattungen bleiben oben aufgeführt."
+    "cancelledNotice": "Storniert: Auf diese Rechnung ist nichts zu zahlen. Zahlungen und Erstattungen bleiben oben aufgeführt.",
+    "refund": "Erstattung"
   },
   "attachments": {
     "deleteTitle": "Anlage löschen",

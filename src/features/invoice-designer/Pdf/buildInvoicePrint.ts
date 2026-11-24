@@ -47,6 +47,19 @@ import {
   inspectionResultsForPrint,
 } from '@/features/inspections/Lib/inspectionResults'
 import { vehicleName as vehicleNameOf } from '@/lib/vehicle-name'
+import {
+  isRefund,
+  type PaymentMethod,
+  paymentMethodLabel,
+} from '@/features/payments/Lib/paymentMethod'
+
+/** Each method's label key in `pdf.json`, with the English it falls back to. */
+const PAYMENT_METHOD_LABELS: Record<PaymentMethod, [string, string]> = {
+  cash: ['paymentMethodCash', 'Cash'],
+  card: ['paymentMethodCard', 'Card'],
+  transfer: ['paymentMethodTransfer', 'Bank transfer'],
+  other: ['paymentMethodOther', 'Other'],
+}
 
 /**
  * A real job, expressed as the document the designer edits.
@@ -419,28 +432,36 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
   // that nothing is owed on it: the payments and any refund are listed, and
   // in place of what is due, the word itself.
   const cancelled = data.status === 'cancelled'
-  if (cancelled) {
-    for (const payment of paymentSummary?.payments ?? []) {
-      totals.push({
-        label: `${payment.date} (${payment.method})`,
-        value: money(-payment.amount),
-        kind: 'payment',
-      })
-    }
-    totals.push({ label: L('cancelledNotice', 'CANCELLED'), value: '', kind: 'due' })
-  } else if (paymentSummary && paymentSummary.payments.length > 0) {
+  if (paymentSummary && paymentSummary.payments.length > 0) {
+    // Money in reads as money in: what came in all told, under the total,
+    // then each payment as the amount the customer paid, so Total less
+    // Payments received is the Amount Due below. Money handed back is named
+    // a refund and is the one figure with a minus.
+    const methodName = (method: string) =>
+      paymentMethodLabel(method, (m) => L(...PAYMENT_METHOD_LABELS[m]))
+    totals.push({
+      label: L('paymentsReceived', 'Payments Received'),
+      value: money(paymentSummary.payments.reduce((sum, p) => sum + p.amount, 0)),
+      kind: 'line',
+    })
     for (const payment of paymentSummary.payments) {
+      const refund = isRefund(payment.amount)
+      const when = `${payment.date} (${methodName(payment.method)})`
       totals.push({
-        label: `${payment.date} (${payment.method})`,
-        value: money(-payment.amount),
-        kind: 'payment',
+        label: refund ? `${L('refund', 'Refund')} ${when}` : when,
+        value: money(payment.amount),
+        kind: refund ? 'refund' : 'payment',
       })
     }
     totals.push(
-      isPaidInFull
-        ? { label: L('paidInFull', 'PAID IN FULL'), value: '', kind: 'paid' }
-        : { label: L('amountDue', 'Amount Due'), value: money(balanceDue), kind: 'due' }
+      cancelled
+        ? { label: L('cancelledNotice', 'CANCELLED'), value: '', kind: 'due' }
+        : isPaidInFull
+          ? { label: L('paidInFull', 'PAID IN FULL'), value: '', kind: 'paid' }
+          : { label: L('amountDue', 'Amount Due'), value: money(balanceDue), kind: 'due' }
     )
+  } else if (cancelled) {
+    totals.push({ label: L('cancelledNotice', 'CANCELLED'), value: '', kind: 'due' })
   }
 
   // -------------------------------------------------------------------------
