@@ -8,6 +8,10 @@ import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { createPaymentSchema } from '../Schema/paymentSchema'
 import { revalidatePath } from 'next/cache'
+import { getTranslations } from 'next-intl/server'
+import { roundMoney } from '@/lib/money'
+import { workshopMoneyFormatter } from '@/lib/workshop-currency'
+import { paymentBalanceDue } from '../Lib/balanceDue'
 import { getDocumentLockSettings } from '@/lib/document-lock.server'
 import { DocumentLockedError, invoiceLockState } from '@/lib/document-lock'
 
@@ -23,15 +27,51 @@ export async function createPayment(input: unknown) {
       })
       if (!serviceRecord) throw new Error('Service record not found')
 
-      const payment = await db.payment.create({
-        data: {
-          serviceRecordId: data.serviceRecordId,
-          amount: data.amount,
-          date: toSafeWorkshopDate(data.date, await workshopTimeZone(organizationId)) ?? new Date(),
-          method: data.method,
-          note: data.note || null,
-        },
+      const date =
+        toSafeWorkshopDate(data.date, await workshopTimeZone(organizationId)) ?? new Date()
+      const amount = roundMoney(data.amount)
+
+      // A payment taken at the desk may settle the balance, never pass it:
+      // £1000 against £552.74 left the invoice reading "PAID IN FULL -£447.26".
+      // The balance is read under the job's row lock, so two people taking the
+      // last payment at once take turns instead of both getting through.
+      // Money a provider has already taken (Stripe, Vipps, PayPal, Paystack)
+      // and ledger syncs are booked by recordVendorPayment, never through here,
+      // so a real payment is never refused for being more than was owed.
+      const outcome = await db.$transaction(async (tx) => {
+        const locked = await tx.$queryRaw<{ totalAmount: number; cost: number }[]>`
+          SELECT "totalAmount", "cost" FROM "public"."service_records"
+          WHERE "id" = ${serviceRecord.id} AND "organizationId" = ${organizationId}
+          FOR UPDATE`
+        const job = locked[0]
+        if (!job) throw new Error('Service record not found')
+        const paid = await tx.payment.aggregate({
+          where: { serviceRecordId: serviceRecord.id },
+          _sum: { amount: true },
+        })
+        const balanceDue = paymentBalanceDue(job, paid._sum.amount ?? 0)
+        if (amount > balanceDue) return { refused: true as const, balanceDue }
+        const payment = await tx.payment.create({
+          data: {
+            serviceRecordId: data.serviceRecordId,
+            amount,
+            date,
+            method: data.method,
+            note: data.note || null,
+          },
+        })
+        return { refused: false as const, payment }
       })
+      if (outcome.refused) {
+        const t = await getTranslations('service.payments')
+        const format = await workshopMoneyFormatter(organizationId)
+        throw new Error(
+          outcome.balanceDue > 0
+            ? t('aboveBalance', { amount: format(outcome.balanceDue) })
+            : t('nothingDue')
+        )
+      }
+      const { payment } = outcome
       // Money against it makes the invoice the customer's document, even one
       // handed over on paper and never sent through the app.
       await issueInvoice(data.serviceRecordId, organizationId, 'paid')
@@ -44,7 +84,7 @@ export async function createPayment(input: unknown) {
       return {
         ...payment,
         serviceRecordId: data.serviceRecordId,
-        amount: data.amount,
+        amount,
         method: data.method,
       }
     },

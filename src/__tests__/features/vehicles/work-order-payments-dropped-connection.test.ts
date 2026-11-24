@@ -52,6 +52,8 @@ function renderActions() {
     autosaveTimer: { current: null },
     setHasUnsavedChanges: vi.fn(),
     setLocalManuallyPaid: vi.fn(),
+    isDirty: () => false,
+    saveNow: vi.fn(),
   }
   const hook = renderHook(() =>
     useServiceActions({
@@ -104,6 +106,23 @@ describe('work order payments on a dropped connection', () => {
     expect(modalMessage()).toBe('Failed to record payment')
     expect(hook.result.current.paymentLoading).toBe(false)
     expect(router.refresh).not.toHaveBeenCalled()
+  })
+
+  it('says a payment was not recorded when saving the job first fails, and frees the buttons', async () => {
+    const { form, hook } = renderActions()
+    // Unsaved edits are saved before the payment is sent; that save throws.
+    form.isDirty = () => true
+    form.saveNow.mockImplementation(offline)
+
+    let recorded: boolean | undefined
+    await act(async () => {
+      recorded = await hook.result.current.handleCreatePayment(PAYMENT)
+    })
+
+    expect(recorded).toBe(false)
+    expect(createPayment).not.toHaveBeenCalled()
+    expect(modalMessage()).toBe('Failed to record payment')
+    expect(hook.result.current.paymentLoading).toBe(false)
   })
 
   it('offers the payment message in the default wording when the saved texts cannot be read', async () => {
