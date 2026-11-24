@@ -185,7 +185,8 @@
     "skipped": "{count, plural, one {# code was already on this job} other {# codes were already on this job}}",
     "failed": "Could not add the codes",
     "descriptionOem": "Type or paste codes from the scan tool, OBD codes like P0420 or BMW codes like 2A82. Each one becomes an observation on this job, with its meaning saved.",
-    "placeholderOem": "P0420, 2A82 stored"
+    "placeholderOem": "P0420, 2A82 stored",
+    "unrecognised": "{count, plural, one {Not a fault code, left out: {codes}} other {Not fault codes, left out: {codes}}}"
   },
   "finding": {
     "seenBefore": "Seen {date}",

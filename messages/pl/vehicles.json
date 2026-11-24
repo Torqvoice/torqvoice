@@ -749,6 +749,7 @@
     "added": "Dodano {name}",
     "itemTitle": "Liczniki",
     "noItemMeters": "Brak liczników na tym elemencie.",
-    "addItemMeterHint": "Licznik pozostaje z tym elementem, gdziekolwiek jest zamontowany."
+    "addItemMeterHint": "Licznik pozostaje z tym elementem, gdziekolwiek jest zamontowany.",
+    "negativeReading": "Odczyt nie może być ujemny."
   }
 }

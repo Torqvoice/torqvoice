@@ -11,6 +11,7 @@ import {
   lastMeterValueBefore,
   meterLine,
   meterState,
+  meterValueProblem,
   parseMeterValue,
 } from '@/features/meters/Lib/meterValue'
 import { documentNumbers } from '@/lib/document-numbers'
@@ -154,5 +155,24 @@ describe('a lower reading', () => {
     expect(isLowerMeterValue('', 4000)).toBe(false)
     expect(isLowerMeterValue('abc', 4000)).toBe(false)
     expect(isLowerMeterValue('1', null)).toBe(false)
+  })
+})
+
+describe('why a reading was refused', () => {
+  it('says a minus in front of a good reading is a negative one', () => {
+    expect(meterValueProblem('-5')).toBe('negative')
+    expect(meterValueProblem('- 4,256.7')).toBe('negative')
+    expect(meterValueProblem(-5)).toBe('negative')
+  })
+
+  it('says anything else that does not read is not a reading', () => {
+    expect(meterValueProblem('12.345')).toBe('invalid')
+    expect(meterValueProblem('abc')).toBe('invalid')
+    expect(meterValueProblem('-abc')).toBe('invalid')
+  })
+
+  it('has nothing to say about a good one', () => {
+    expect(meterValueProblem('4256.7')).toBeNull()
+    expect(meterValueProblem(0)).toBeNull()
   })
 })

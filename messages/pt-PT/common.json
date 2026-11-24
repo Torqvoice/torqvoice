@@ -328,5 +328,19 @@
     "irreversible": "Esta ação não pode ser anulada.",
     "andMore": "e mais {count}",
     "typeToConfirm": "Escreva <b>{text}</b> para confirmar"
+  },
+  "fieldErrors": {
+    "required": "Preencha este campo.",
+    "email": "Introduza um email como nome@exemplo.pt.",
+    "tooShort": "Use pelo menos {limit} caracteres.",
+    "tooLong": "Use no máximo {limit} caracteres.",
+    "negative": "Não pode ser negativo.",
+    "tooSmall": "Tem de ser pelo menos {limit}.",
+    "tooLarge": "Tem de ser {limit} ou menos.",
+    "notNumber": "Introduza um número.",
+    "wholeNumber": "Introduza um número inteiro.",
+    "invalid": "Este valor não é válido.",
+    "notSaved": "Não guardado. Verifique os campos assinalados.",
+    "withLabel": "{label}: {problem}"
   }
 }

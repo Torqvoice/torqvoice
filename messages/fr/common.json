@@ -328,5 +328,19 @@
     "irreversible": "Cette action est irréversible.",
     "andMore": "et {count} de plus",
     "typeToConfirm": "Saisissez <b>{text}</b> pour confirmer"
+  },
+  "fieldErrors": {
+    "required": "Remplissez ce champ.",
+    "email": "Saisissez une adresse e-mail comme nom@exemple.fr.",
+    "tooShort": "Utilisez au moins {limit} caractères.",
+    "tooLong": "Utilisez au plus {limit} caractères.",
+    "negative": "Ne peut pas être négatif.",
+    "tooSmall": "Doit être au moins {limit}.",
+    "tooLarge": "Doit être {limit} ou moins.",
+    "notNumber": "Saisissez un nombre.",
+    "wholeNumber": "Saisissez un nombre entier.",
+    "invalid": "Cette valeur n'est pas valide.",
+    "notSaved": "Non enregistré. Vérifiez les champs signalés.",
+    "withLabel": "{label} : {problem}"
   }
 }

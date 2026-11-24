@@ -13,6 +13,7 @@ import {
   normalizeMakeCode,
   normalizeOemCode,
   oemSourceFor,
+  unrecognisedCodeWords,
   vehicleCarriesMake,
 } from '@/features/fault-codes/Lib/codes'
 import { visiblePageCommands } from '@/features/search/Lib/commands'
@@ -243,5 +244,23 @@ describe("which cars carry a make's codes", () => {
     expect(vehicleCarriesMake('bmw', 'Rolls Royce')).toBe(true)
     expect(vehicleCarriesMake('ford', 'Mazda')).toBe(false)
     expect(vehicleCarriesMake('ford', null)).toBe(false)
+  })
+})
+
+describe('words that look like a code and are not one', () => {
+  it('names them, so a pasted code is not left out without a word', () => {
+    expect(unrecognisedCodeWords('P0401 p0300, XYZ123')).toEqual(['XYZ123'])
+    expect(unrecognisedCodeWords('P04011 and P041, P0420')).toEqual(['P04011', 'P041'])
+  })
+
+  it('leaves out words, years, mileages and codes with their failure byte', () => {
+    expect(
+      unrecognisedCodeWords('P0420-1F stored since 2015, 120000 km. Customer says (P0171)')
+    ).toEqual([])
+  })
+
+  it('reads a manufacturer code as one when the car has its own codes', () => {
+    expect(unrecognisedCodeWords('CD87 2A82', { oem: true })).toEqual([])
+    expect(unrecognisedCodeWords('CD87')).toEqual(['CD87'])
   })
 })

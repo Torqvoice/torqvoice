@@ -328,5 +328,19 @@
     "irreversible": "Это действие необратимо.",
     "andMore": "и ещё {count}",
     "typeToConfirm": "Введите <b>{text}</b> для подтверждения"
+  },
+  "fieldErrors": {
+    "required": "Заполните это поле.",
+    "email": "Введите адрес эл. почты, например name@example.com.",
+    "tooShort": "Не менее {limit} символов.",
+    "tooLong": "Не более {limit} символов.",
+    "negative": "Не может быть отрицательным.",
+    "tooSmall": "Должно быть не меньше {limit}.",
+    "tooLarge": "Должно быть не больше {limit}.",
+    "notNumber": "Введите число.",
+    "wholeNumber": "Введите целое число.",
+    "invalid": "Недопустимое значение.",
+    "notSaved": "Не сохранено. Проверьте отмеченные поля.",
+    "withLabel": "{label}: {problem}"
   }
 }

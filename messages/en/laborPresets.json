@@ -71,6 +71,6 @@
     "saveFailed": "Failed to save labor package",
     "deleteFailed": "Failed to delete labor package",
     "loadFailed": "Failed to load labor package",
-    "noItems": "At least one item is required"
+    "itemNameMissing": "Give this item a name."
   }
 }

@@ -749,6 +749,7 @@
     "added": "{name} lagt til",
     "itemTitle": "Målere",
     "noItemMeters": "Ingen målere på denne enheten.",
-    "addItemMeterHint": "Måleren følger denne enheten uansett hvor den er montert."
+    "addItemMeterHint": "Måleren følger denne enheten uansett hvor den er montert.",
+    "negativeReading": "En avlesning kan ikke være negativ."
   }
 }

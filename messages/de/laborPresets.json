@@ -71,6 +71,6 @@
     "saveFailed": "Arbeitsvorlage konnte nicht gespeichert werden",
     "deleteFailed": "Arbeitsvorlage konnte nicht gelöscht werden",
     "loadFailed": "Arbeitsvorlage konnte nicht geladen werden",
-    "noItems": "Mindestens eine Position ist erforderlich"
+    "itemNameMissing": "Geben Sie diesem Eintrag einen Namen."
   }
 }
