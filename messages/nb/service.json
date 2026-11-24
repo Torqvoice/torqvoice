@@ -373,7 +373,9 @@
     "failedPdf": "Kunne ikke generere PDF-faktura",
     "received": "Mottatte betalinger",
     "noneYet": "Ingenting betalt ennå.",
-    "balanceDue": "Utestående"
+    "balanceDue": "Utestående",
+    "aboveBalance": "Utestående er {amount}. En betaling kan ikke være høyere enn det.",
+    "nothingDue": "Det er ingenting utestående på denne fakturaen."
   },
   "attachments": {
     "deleteTitle": "Slett vedlegg",

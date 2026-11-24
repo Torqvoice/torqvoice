@@ -373,7 +373,9 @@
     "failedPdf": "PDF-factuur genereren mislukt",
     "received": "Ontvangen betalingen",
     "noneYet": "Nog niets betaald.",
-    "balanceDue": "Verschuldigd bedrag"
+    "balanceDue": "Verschuldigd bedrag",
+    "aboveBalance": "Het verschuldigde bedrag is {amount}. Een betaling kan niet hoger zijn.",
+    "nothingDue": "Er staat niets meer open op deze factuur."
   },
   "attachments": {
     "deleteTitle": "Bijlage verwijderen",

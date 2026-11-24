@@ -373,7 +373,9 @@
     "failedPdf": "PDF-Rechnung konnte nicht erstellt werden",
     "received": "Erhaltene Zahlungen",
     "noneYet": "Noch nichts bezahlt.",
-    "balanceDue": "Ausstehend"
+    "balanceDue": "Ausstehend",
+    "aboveBalance": "Offen sind {amount}. Eine Zahlung darf nicht höher sein.",
+    "nothingDue": "Auf dieser Rechnung ist nichts mehr offen."
   },
   "attachments": {
     "deleteTitle": "Anlage löschen",

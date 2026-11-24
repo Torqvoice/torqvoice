@@ -373,7 +373,9 @@
     "failedPdf": "Não foi possível gerar o PDF da fatura",
     "received": "Pagamentos recebidos",
     "noneYet": "Ainda nada pago.",
-    "balanceDue": "Valor em dívida"
+    "balanceDue": "Valor em dívida",
+    "aboveBalance": "O valor em dívida é {amount}. Um pagamento não pode ser superior.",
+    "nothingDue": "Não há nada em dívida nesta fatura."
   },
   "attachments": {
     "deleteTitle": "Eliminar anexo",

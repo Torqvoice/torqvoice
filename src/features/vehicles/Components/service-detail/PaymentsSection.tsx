@@ -21,6 +21,8 @@ import { useFormatDate } from '@/lib/use-format-date'
 import { paymentStatusColors, paymentStatusLabels } from './types'
 import type { Payment } from './types'
 import { useModernWorkOrder } from '@/components/work-order-layout-context'
+import { paymentBalanceDue } from '@/features/payments/Lib/balanceDue'
+import { roundMoney } from '@/lib/money'
 
 interface PaymentsSectionProps {
   payments: Payment[]
@@ -76,6 +78,13 @@ export function PaymentsSection({
   const { formatDate } = useFormatDate()
   const formRef = useRef<HTMLDivElement>(null)
   const sectionRef = useRef<HTMLDivElement>(null)
+  const [amountError, setAmountError] = useState<string | null>(null)
+  // What may still be paid, counted the way createPayment counts it: recorded
+  // payments only, since "Mark as paid" is a status and not money.
+  const payable = paymentBalanceDue(
+    { totalAmount: displayTotal, cost: 0 },
+    payments.reduce((sum, p) => sum + p.amount, 0)
+  )
 
   useEffect(() => {
     if (openFormSignal === 0) return
@@ -103,6 +112,16 @@ export function PaymentsSection({
     const date = formRef.current.querySelector<HTMLInputElement>('[name="paymentDate"]')
     const note = formRef.current.querySelector<HTMLInputElement>('[name="paymentNote"]')
     if (!amount?.value || Number(amount.value) <= 0) return
+    // Never more than is owed; createPayment refuses it too.
+    if (roundMoney(amount.value) > payable) {
+      setAmountError(
+        payable > 0
+          ? t('aboveBalance', { amount: formatCurrency(payable, currencyCode) })
+          : t('nothingDue')
+      )
+      amount.focus()
+      return
+    }
     const success = await onCreatePayment({
       amount: Number(amount.value),
       date: date?.value || new Date().toISOString(),
@@ -139,9 +158,17 @@ export function PaymentsSection({
             type="number"
             step="0.01"
             min="0.01"
-            defaultValue={balanceDue > 0 ? balanceDue.toFixed(2) : ''}
+            defaultValue={payable > 0 ? payable.toFixed(2) : ''}
             required
+            aria-invalid={amountError ? true : undefined}
+            aria-describedby={amountError ? 'paymentAmountError' : undefined}
+            onChange={() => setAmountError(null)}
           />
+          {amountError && (
+            <p id="paymentAmountError" role="alert" className="text-xs text-destructive">
+              {amountError}
+            </p>
+          )}
         </div>
         <div className="space-y-1">
           <Label htmlFor="paymentDate" className="text-xs">
@@ -180,7 +207,15 @@ export function PaymentsSection({
           {paymentLoading && <Loader2 className="mr-1 h-3.5 w-3.5 animate-spin" />}
           {t('savePayment')}
         </Button>
-        <Button type="button" variant="ghost" size="sm" onClick={() => setShowForm(false)}>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          onClick={() => {
+            setShowForm(false)
+            setAmountError(null)
+          }}
+        >
           {tc('cancel')}
         </Button>
       </div>
@@ -322,7 +357,10 @@ export function PaymentsSection({
               variant="outline"
               size="sm"
               className="h-7 text-xs"
-              onClick={() => setShowForm(!showForm)}
+              onClick={() => {
+                setShowForm(!showForm)
+                setAmountError(null)
+              }}
             >
               <Plus className="mr-1 h-3 w-3" />
               {t('recordPayment')}

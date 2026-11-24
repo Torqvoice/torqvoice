@@ -373,7 +373,9 @@
     "failedPdf": "PDF fatura oluşturulamadı",
     "received": "Alınan ödemeler",
     "noneYet": "Henüz ödeme yapılmadı.",
-    "balanceDue": "Kalan bakiye"
+    "balanceDue": "Kalan bakiye",
+    "aboveBalance": "Kalan bakiye {amount}. Ödeme bundan fazla olamaz.",
+    "nothingDue": "Bu faturada ödenecek bir şey kalmadı."
   },
   "attachments": {
     "deleteTitle": "Eki Sil",

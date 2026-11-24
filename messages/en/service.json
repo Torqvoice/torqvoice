@@ -373,7 +373,9 @@
     "failedPdf": "Failed to generate PDF invoice",
     "received": "Payments received",
     "noneYet": "Nothing paid yet.",
-    "balanceDue": "Balance due"
+    "balanceDue": "Balance due",
+    "aboveBalance": "The balance due is {amount}. A payment cannot be more than that.",
+    "nothingDue": "Nothing is due on this invoice."
   },
   "attachments": {
     "deleteTitle": "Delete Attachment",

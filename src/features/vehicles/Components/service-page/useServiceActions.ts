@@ -434,6 +434,10 @@ export function useServiceActions({
     note?: string
   }) => {
     setPaymentLoading(true)
+    // The server takes payments up to the saved total, and the form offers
+    // the total on screen: a line added in the last few seconds is saved
+    // first, so the two agree.
+    if (formState.isDirty()) await formState.saveNow()
     const result = await createPayment({ serviceRecordId: record.id, ...data }).catch(() => null)
     setPaymentLoading(false)
     if (result?.success) {

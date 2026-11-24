@@ -52,6 +52,8 @@ function renderActions() {
     autosaveTimer: { current: null },
     setHasUnsavedChanges: vi.fn(),
     setLocalManuallyPaid: vi.fn(),
+    isDirty: () => false,
+    saveNow: vi.fn(),
   }
   const hook = renderHook(() =>
     useServiceActions({
