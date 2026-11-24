@@ -47,7 +47,7 @@ import {
 } from '@/features/condition-map/Lib/loadMarks.server'
 import { invoiceDesignPrintsConditionMap } from '@/features/invoices/Lib/assembleInvoicePrint'
 import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
-import { canEditSettings } from '@/lib/settings-access'
+import { canOpenAndEditSettings } from '@/lib/settings-access'
 import { canEditVehicles } from '@/lib/vehicle-access'
 import { canTakePayments } from '@/lib/billing-access'
 import { ServicePageClient } from '@/features/vehicles/Components/service-page/ServicePageClient'
@@ -191,8 +191,10 @@ export async function ServiceRecordPage({
   const membership = session?.user?.id ? await getCachedMembership(session.user.id) : null
   const orgId = membership?.organizationId
   // Whether the status menus offer the way to add a status. Somebody who
-  // cannot change settings is better off not seeing a link that turns them away.
-  const canAddStatus = await canEditSettings(session?.user?.id ?? '', membership?.role)
+  // cannot change settings is better off not seeing a link that turns them
+  // away, and so is somebody who may change them but not open the page (the
+  // settings layout needs READ as well as UPDATE).
+  const canAddStatus = await canOpenAndEditSettings(session?.user?.id ?? '', membership?.role)
   // Whether a job whose vehicle has no owner offers to add one.
   const canSetCustomer = await canEditVehicles(authContext)
   // Whether the header's "Unpaid" opens the payment form.

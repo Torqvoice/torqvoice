@@ -275,7 +275,7 @@
     "note_delete": "Notitie {id} verwijderd",
     "organization_create": "Organisatie \"{name}\" aangemaakt",
     "organization_sampleDataRemove": "Voorbeeldgegevens uit de installatie verwijderd",
-    "payment_create": "Betaling {amount} geregistreerd voor opdracht {serviceRecordId}",
+    "payment_create": "Betaling {amount} geregistreerd voor opdracht {ref}",
     "payment_delete": "Betaling {id} verwijderd",
     "quoteRequest_update": "Status van offerteaanvraag gewijzigd naar {status, select, pending {in behandeling} approved {goedgekeurd} rejected {afgewezen} completed {afgerond} other {{status}}}",
     "quote_convert": "Offerte {ref} omgezet naar opdracht {serviceRecordId}",

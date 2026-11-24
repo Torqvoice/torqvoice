@@ -275,7 +275,7 @@
     "note_delete": "Nota {id} eliminada",
     "organization_create": "Organização \"{name}\" criada",
     "organization_sampleDataRemove": "Dados de exemplo da configuração inicial removidos",
-    "payment_create": "Pagamento de {amount} registado no serviço {serviceRecordId}",
+    "payment_create": "Pagamento de {amount} registado no serviço {ref}",
     "payment_delete": "Pagamento {id} eliminado",
     "quoteRequest_update": "Estado do pedido de orçamento alterado para {status, select, pending {pendente} approved {aprovado} rejected {recusado} completed {concluído} other {{status}}}",
     "quote_convert": "Orçamento {ref} convertido no registo de serviço {serviceRecordId}",

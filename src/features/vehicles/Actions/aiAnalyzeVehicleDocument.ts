@@ -2,7 +2,7 @@
 
 import { withAuth } from '@/lib/with-auth'
 import { getFeatures } from '@/lib/features'
-import { canEditSettings } from '@/lib/settings-access'
+import { canOpenAndEditSettings } from '@/lib/settings-access'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { isAiConfigured } from '@/features/integrations/Lib/ai'
 import { visionCompletion } from '@/lib/ai'
@@ -63,7 +63,7 @@ export interface VehicleScanAvailability {
 export async function getVehicleScanAvailability() {
   return withAuth(
     async ({ organizationId, userId, role }): Promise<VehicleScanAvailability> => {
-      const editor = await canEditSettings(userId, role)
+      const editor = await canOpenAndEditSettings(userId, role)
       if (await isAiConfigured(organizationId))
         return { available: true, reason: null, canEditSettings: editor }
       // A provider can only be connected on a plan with AI, so without one

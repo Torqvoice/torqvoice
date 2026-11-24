@@ -65,8 +65,11 @@ function Row({
       className={cn('col-span-3 grid grid-cols-subgrid items-center text-sm', className)}
     >
       <span className="min-w-0 text-muted-foreground">{label}</span>
-      <span className="flex items-center justify-end gap-1.5">{control}</span>
-      <span className="text-right tabular-nums">{amount}</span>
+      <span className="flex min-w-0 flex-wrap items-center justify-end gap-1.5">{control}</span>
+      {/* An absurd figure (a billion parts at a hundred million) wraps inside
+          the card instead of running out of it: the amount and the control
+          columns share what the labels leave, each up to its full width. */}
+      <span className="min-w-0 text-right tabular-nums [overflow-wrap:anywhere]">{amount}</span>
     </div>
   )
 }
@@ -149,7 +152,7 @@ export function TotalsSection({
 
   const rows = (
     <div className="space-y-2" data-testid="totals">
-      <div className="grid grid-cols-[minmax(0,1fr)_auto_auto] gap-x-3 gap-y-2">
+      <div className="grid grid-cols-[minmax(min-content,1fr)_minmax(0,auto)_minmax(0,auto)] gap-x-3 gap-y-2">
         <Row label={t('parts')} amount={formatCurrency(displayPartsSubtotal, currencyCode)} />
         {partsCostSubtotal > 0 && (
           <Row
@@ -254,10 +257,12 @@ export function TotalsSection({
 
       <div
         data-totals-row
-        className="flex items-center justify-between border-t pt-2 text-lg font-bold tabular-nums"
+        className="flex items-center justify-between gap-3 border-t pt-2 text-lg font-bold tabular-nums"
       >
-        <span>{t('total')}</span>
-        <span>{formatCurrency(totalAmount, currencyCode)}</span>
+        <span className="shrink-0">{t('total')}</span>
+        <span className="min-w-0 text-right [overflow-wrap:anywhere]">
+          {formatCurrency(totalAmount, currencyCode)}
+        </span>
       </div>
       {taxInclusive && (
         <p className="text-xs text-muted-foreground italic">{t('inclusiveModeHint')}</p>

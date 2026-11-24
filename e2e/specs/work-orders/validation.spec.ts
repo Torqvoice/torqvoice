@@ -133,7 +133,24 @@ test.describe('a work order that cannot be saved says why', () => {
       await expect(quantity).toHaveValue('0', { timeout: 2_000 })
     }).toPass({ timeout: 30_000 })
 
+    // Marked where it was typed, and where the refused save leaves the cursor.
+    await expect(quantity).toHaveAccessibleDescription('Must be more than 0.')
     await expectRefused(page, /needs a quantity above zero/i)
+    await expect(quantity).toBeFocused()
+  })
+
+  test('a billion parts at a hundred million each is marked under the field', async ({ page }) => {
+    await page.goto(jobUrl)
+    const row = partRowOf(partRows(page).first())
+    const quantity = row.locator('input[type="number"]').first()
+    await expect(async () => {
+      await quantity.fill('1000000000')
+      await expect(quantity).toHaveValue('1000000000', { timeout: 2_000 })
+    }).toPass({ timeout: 30_000 })
+
+    await expect(quantity).toHaveAccessibleDescription('Must be 100,000 or less.')
+    await expectRefused(page, /figure is too large/i)
+    await expect(quantity).toBeFocused()
   })
 
   test('a negative reading is refused in words', async ({ page }) => {

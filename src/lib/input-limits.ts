@@ -64,6 +64,80 @@ export function checkLineAmounts(
   }
 }
 
+/**
+ * What is wrong with one figure on a line, in the terms of
+ * src/lib/field-errors.ts, so a line editor can say it under the field.
+ */
+export interface LineFigureIssue {
+  issue: 'negative' | 'positive' | 'tooLarge'
+  limit?: number
+}
+
+/** A figure as typed: an empty box or letters count as nothing, as the save reads them. */
+function figure(value: unknown): number {
+  const parsed = Number(value ?? 0)
+  return Number.isFinite(parsed) ? parsed : 0
+}
+
+function bounded(value: number, max: number): LineFigureIssue | undefined {
+  if (value < 0) return { issue: 'negative' }
+  if (value > max) return { issue: 'tooLarge', limit: max }
+  return undefined
+}
+
+export type PartLineIssues = Partial<
+  Record<'quantity' | 'unitPrice' | 'unitCost' | 'total', LineFigureIssue>
+>
+export type LaborLineIssues = Partial<Record<'hours' | 'rate' | 'total', LineFigureIssue>>
+
+/**
+ * The figures on a part line the save would refuse, by field: the rules of
+ * servicePartSchema and quotePartSchema, worked out as the line is typed so
+ * the field is marked before anybody presses Save. The line's quantity times
+ * its price is reported as "total", said under the line's total.
+ */
+export function partLineIssues(part: {
+  name?: string | null
+  quantity: unknown
+  unitPrice: unknown
+  unitCost?: unknown
+}): PartLineIssues {
+  const quantity = figure(part.quantity)
+  const unitPrice = figure(part.unitPrice)
+  const issues: PartLineIssues = {}
+  const quantityIssue = bounded(quantity, QUANTITY_MAX)
+  if (quantityIssue) issues.quantity = quantityIssue
+  // Priced and billed nothing. A free part may sit at zero as a note of what
+  // was used, and a row with no name yet is still being typed.
+  else if (part.name?.trim() && unitPrice > 0 && quantity <= 0) {
+    issues.quantity = { issue: 'positive' }
+  }
+  const priceIssue = bounded(unitPrice, UNIT_PRICE_MAX)
+  if (priceIssue) issues.unitPrice = priceIssue
+  const costIssue = bounded(figure(part.unitCost), UNIT_PRICE_MAX)
+  if (costIssue) issues.unitCost = costIssue
+  if (quantity * unitPrice > LINE_TOTAL_MAX) {
+    issues.total = { issue: 'tooLarge', limit: LINE_TOTAL_MAX }
+  }
+  return issues
+}
+
+/**
+ * The figures on a labour line the save would refuse, by field. Hours may be
+ * zero: a line started and not yet clocked, or work done for nothing.
+ */
+export function laborLineIssues(labor: { hours: unknown; rate: unknown }): LaborLineIssues {
+  const hours = figure(labor.hours)
+  const rate = figure(labor.rate)
+  const issues: LaborLineIssues = {}
+  const hoursIssue = bounded(hours, LABOR_HOURS_MAX)
+  if (hoursIssue) issues.hours = hoursIssue
+  const rateIssue = bounded(rate, UNIT_PRICE_MAX)
+  if (rateIssue) issues.rate = rateIssue
+  if (hours * rate > LINE_TOTAL_MAX) issues.total = { issue: 'tooLarge', limit: LINE_TOTAL_MAX }
+  return issues
+}
+
 /** A person's or a company's name, a make, a model. */
 export const NAME_MAX_LENGTH = 200
 /** A postal address, street to country. */

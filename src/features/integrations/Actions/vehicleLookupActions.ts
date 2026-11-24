@@ -3,7 +3,7 @@
 import { db } from '@/lib/db'
 import { getFeatures } from '@/lib/features'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
-import { canEditSettings } from '@/lib/settings-access'
+import { canOpenAndEditSettings } from '@/lib/settings-access'
 import { withAuth } from '@/lib/with-auth'
 import { lookupAppliesTo } from '@/features/vehicles/Lib/registryLookup'
 import { recordRegistryAnswer } from '../Lib/inspection-sync'
@@ -72,7 +72,7 @@ export async function getVehicleLookupAvailability() {
   return withAuth(
     async ({ organizationId, userId, role }): Promise<VehicleLookupAvailability> => {
       const features = await getFeatures(organizationId)
-      const editor = await canEditSettings(userId, role)
+      const editor = await canOpenAndEditSettings(userId, role)
       if (!features.integrations)
         return { plate: false, vin: false, reason: 'notInPlan', canEditSettings: editor }
       const [plate, vin] = await Promise.all([

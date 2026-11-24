@@ -54,27 +54,39 @@ export function MoneyBar({
       className="hidden shrink-0 border-t bg-background/95 backdrop-blur lg:block"
     >
       <div className="mx-auto flex w-full max-w-[1800px] flex-wrap items-center gap-x-6 gap-y-2 px-4 py-2">
+        {/* Each figure keeps to its share of the bar: an absurd total is cut
+            short (in full on hover) rather than pushing the buttons off. */}
         <dl className="flex min-w-0 flex-1 items-baseline gap-x-5 gap-y-1">
-          <div className="hidden items-baseline gap-1.5 sm:flex">
-            <dt className="text-xs text-muted-foreground">{t('total')}</dt>
-            <dd className="font-mono text-sm tabular-nums" data-testid="money-total">
+          <div className="hidden min-w-0 items-baseline gap-1.5 sm:flex">
+            <dt className="shrink-0 text-xs text-muted-foreground">{t('total')}</dt>
+            <dd
+              className="min-w-0 truncate font-mono text-sm tabular-nums"
+              data-testid="money-total"
+              title={formatCurrency(total, currencyCode)}
+            >
               {formatCurrency(total, currencyCode)}
             </dd>
           </div>
-          <div className="hidden items-baseline gap-1.5 sm:flex">
-            <dt className="text-xs text-muted-foreground">{t('paid')}</dt>
-            <dd className="font-mono text-sm tabular-nums" data-testid="money-paid">
+          {/* Gives way last: what was paid is never more than the total. */}
+          <div className="hidden shrink-0 items-baseline gap-1.5 sm:flex">
+            <dt className="shrink-0 text-xs text-muted-foreground">{t('paid')}</dt>
+            <dd
+              className="min-w-0 truncate font-mono text-sm tabular-nums"
+              data-testid="money-paid"
+              title={formatCurrency(paid, currencyCode)}
+            >
               {formatCurrency(paid, currencyCode)}
             </dd>
           </div>
-          <div className="flex items-baseline gap-2">
-            <dt className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+          <div className="flex min-w-0 items-baseline gap-2">
+            <dt className="shrink-0 text-xs font-medium uppercase tracking-wider text-muted-foreground">
               {settled ? t('settled') : t('balance')}
             </dt>
             <dd
               data-testid="money-balance"
+              title={formatCurrency(balance, currencyCode)}
               className={cn(
-                'order-number text-xl font-bold leading-none tabular-nums',
+                'order-number min-w-0 truncate text-xl font-bold leading-none tabular-nums',
                 settled && 'text-emerald-600 dark:text-emerald-400'
               )}
             >
@@ -133,23 +145,27 @@ export function MoneyLine({
       data-testid="money-line"
       className="flex flex-wrap items-baseline justify-end gap-x-5 gap-y-1 rounded-lg border border-card-edge bg-card px-5 py-3 lg:hidden"
     >
-      <div className="flex items-baseline gap-1.5">
-        <dt className="text-xs text-muted-foreground">{t('total')}</dt>
-        <dd className="font-mono text-sm tabular-nums">{formatCurrency(total, currencyCode)}</dd>
+      <div className="flex min-w-0 items-baseline gap-1.5">
+        <dt className="shrink-0 text-xs text-muted-foreground">{t('total')}</dt>
+        <dd className="min-w-0 font-mono text-sm tabular-nums [overflow-wrap:anywhere]">
+          {formatCurrency(total, currencyCode)}
+        </dd>
       </div>
       {paid > 0 && (
-        <div className="flex items-baseline gap-1.5">
-          <dt className="text-xs text-muted-foreground">{t('paid')}</dt>
-          <dd className="font-mono text-sm tabular-nums">{formatCurrency(paid, currencyCode)}</dd>
+        <div className="flex min-w-0 items-baseline gap-1.5">
+          <dt className="shrink-0 text-xs text-muted-foreground">{t('paid')}</dt>
+          <dd className="min-w-0 font-mono text-sm tabular-nums [overflow-wrap:anywhere]">
+            {formatCurrency(paid, currencyCode)}
+          </dd>
         </div>
       )}
-      <div className="flex items-baseline gap-2">
-        <dt className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+      <div className="flex min-w-0 items-baseline gap-2">
+        <dt className="shrink-0 text-xs font-medium uppercase tracking-wider text-muted-foreground">
           {settled ? t('settled') : t('balance')}
         </dt>
         <dd
           className={cn(
-            'order-number text-lg font-bold leading-none tabular-nums',
+            'order-number min-w-0 text-lg font-bold leading-none tabular-nums [overflow-wrap:anywhere]',
             settled && 'text-emerald-600 dark:text-emerald-400'
           )}
         >

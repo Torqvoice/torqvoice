@@ -5,6 +5,11 @@ import { useState, useCallback, useEffect, useRef, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { arrayMove } from '@dnd-kit/sortable'
 import { toast } from 'sonner'
+import { useFormatter, useTranslations } from 'next-intl'
+import { roundMoney } from '@/lib/money'
+import { LINE_TOTAL_MAX, QUANTITY_MAX, READING_MAX, UNIT_PRICE_MAX } from '@/lib/input-limits'
+import { LINE_ERROR_SELECTOR, useFieldErrorText } from '@/components/field-errors'
+import { findQuoteLineProblem } from '@/features/quotes/Lib/validateQuoteLines'
 import { useSaveBeforeLeaving } from '@/hooks/use-save-before-leaving'
 import { useGlassModal } from '@/components/glass-modal'
 import { useConfirm } from '@/components/confirm-dialog'
@@ -96,6 +101,11 @@ export function useQuoteFormState({
   const router = useRouter()
   const modal = useGlassModal()
   const confirm = useConfirm()
+  // A line's figures are refused in the work order's own words.
+  const tService = useTranslations('service')
+  const { number: formatNumber } = useFormatter()
+  const tCommon = useTranslations('common')
+  const fieldErrorText = useFieldErrorText()
 
   // Tab state
   const [activeTab, setActiveTab] = useState<'details' | 'images' | 'documents'>('details')
@@ -326,12 +336,16 @@ export function useQuoteFormState({
   }, [hasUnsavedChanges])
 
   // Calculations
+  // Each line to the cent first, as the save stores it (quoteSchema), so the
+  // subtotal is what the stored lines add up to, as on a work order.
   const partsSubtotal = useMemo(
-    () => partItems.reduce((sum, p) => (p.excluded ? sum : sum + p.total), 0),
+    () =>
+      roundMoney(partItems.reduce((sum, p) => (p.excluded ? sum : sum + roundMoney(p.total)), 0)),
     [partItems]
   )
   const laborSubtotal = useMemo(
-    () => laborItems.reduce((sum, l) => (l.excluded ? sum : sum + l.total), 0),
+    () =>
+      roundMoney(laborItems.reduce((sum, l) => (l.excluded ? sum : sum + roundMoney(l.total)), 0)),
     [laborItems]
   )
   // A percentage shop fee follows the lines the customer is being quoted for.
@@ -344,7 +358,7 @@ export function useQuoteFormState({
     markDirty()
   }, [laborItems, partsSubtotal, shopFee, locked, markDirty])
 
-  const subtotal = partsSubtotal + laborSubtotal
+  const subtotal = roundMoney(partsSubtotal + laborSubtotal)
   const discountAmount = discountAmountFor(subtotal, discountType, discountValue)
   // The tax is charged on the taxable lines the customer kept. A line says
   // whether it is taxed, and one that has not been asked follows the
@@ -434,7 +448,7 @@ export function useQuoteFormState({
         const updated = [...prev]
         const labor = { ...updated[index], [field]: value }
         if (field === 'hours' || field === 'rate')
-          labor.total = Number(labor.hours) * Number(labor.rate)
+          labor.total = roundMoney(Number(labor.hours) * Number(labor.rate))
         updated[index] = labor
         return updated
       })
@@ -560,6 +574,23 @@ export function useQuoteFormState({
       }
     }
 
+    // A figure the server would refuse is said now, in the work order's words,
+    // and the cursor put on the first marked field (see partLineIssues),
+    // unless this is an autosave and the person is typing somewhere.
+    const lineProblem = locked ? null : findQuoteLineProblem(partItems, laborItems)
+    if (lineProblem) {
+      isSavingRef.current = false
+      const message = tService(`page.problems.${lineProblem}`, {
+        quantity: formatNumber(QUANTITY_MAX),
+        price: formatNumber(UNIT_PRICE_MAX),
+        total: formatNumber(LINE_TOTAL_MAX),
+        reading: formatNumber(READING_MAX),
+      })
+      failed(message, () => toast.error(message))
+      if (!autosave) form.querySelector<HTMLElement>(LINE_ERROR_SELECTOR)?.focus()
+      return
+    }
+
     setSaving(true)
     try {
       const formData = new FormData(form)
@@ -603,7 +634,23 @@ export function useQuoteFormState({
         savedTimerRef.current = setTimeout(() => setShowSaved(false), 2000)
         router.refresh()
       } else {
-        const message = result.error || t('page.failedSave')
+        // What the schema refused, in the person's language and named by the
+        // section it is in ("Parts: Must be 100,000 or less."), not zod's English.
+        const message = result.fieldErrors?.length
+          ? result.fieldErrors
+              .map((error) => {
+                const problem = fieldErrorText(error)
+                const [head] = error.field.split('.')
+                const label =
+                  head === 'partItems'
+                    ? tService('parts.title')
+                    : head === 'laborItems'
+                      ? tService('labor.title')
+                      : null
+                return label ? tCommon('fieldErrors.withLabel', { label, problem }) : problem
+              })
+              .join(' ')
+          : result.error || t('page.failedSave')
         failed(message, () => modal.open('error', 'Error', message))
       }
     } catch (err) {

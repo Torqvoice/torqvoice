@@ -10,7 +10,7 @@ import { createPaymentSchema } from '../Schema/paymentSchema'
 import { revalidatePath } from 'next/cache'
 import { getTranslations } from 'next-intl/server'
 import { roundMoney } from '@/lib/money'
-import { workshopMoneyFormatter } from '@/lib/workshop-currency'
+import { workshopCurrencySettings, workshopMoneyFormatter } from '@/lib/workshop-currency'
 import { paymentBalanceDue } from '../Lib/balanceDue'
 import { getDocumentLockSettings } from '@/lib/document-lock.server'
 import { DocumentLockedError, invoiceLockState } from '@/lib/document-lock'
@@ -23,7 +23,8 @@ export async function createPayment(input: unknown) {
       // Verify ownership: serviceRecord -> vehicle -> organizationId
       const serviceRecord = await db.serviceRecord.findFirst({
         where: { id: data.serviceRecordId, organizationId },
-        select: { id: true, vehicleId: true },
+        // The invoice number or the title name the job in the audit log.
+        select: { id: true, vehicleId: true, invoiceNumber: true, title: true },
       })
       if (!serviceRecord) throw new Error('Service record not found')
 
@@ -81,11 +82,16 @@ export async function createPayment(input: unknown) {
           ? `/vehicles/${serviceRecord.vehicleId}/service/${data.serviceRecordId}`
           : `/sales/${data.serviceRecordId}`
       )
+      // The log names the job as people know it, and the amount in the
+      // workshop's currency, as service_update does with its ref.
+      const { currencyCode } = await workshopCurrencySettings(organizationId)
       return {
         ...payment,
         serviceRecordId: data.serviceRecordId,
         amount,
         method: data.method,
+        jobRef: serviceRecord.invoiceNumber || serviceRecord.title || serviceRecord.id,
+        currencyCode,
       }
     },
     {
@@ -98,7 +104,7 @@ export async function createPayment(input: unknown) {
         entityId: result.id,
         details: {
           key: 'payment_create',
-          params: { amount: result.amount, serviceRecordId: result.serviceRecordId },
+          params: { amount: result.amount, currency: result.currencyCode, ref: result.jobRef },
         },
         metadata: {
           paymentId: result.id,

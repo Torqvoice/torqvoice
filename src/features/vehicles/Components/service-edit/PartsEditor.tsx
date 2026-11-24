@@ -15,6 +15,8 @@ import { useFormatCurrency } from '@/components/currency-settings-context'
 import { useTranslations } from 'next-intl'
 import type { ServicePartInput } from '@/features/vehicles/Schema/serviceSchema'
 import { partRowHasContent } from '@/features/vehicles/Lib/validateServiceForm'
+import { partLineIssues } from '@/lib/input-limits'
+import { LineFieldError, lineFieldInvalidProps } from '@/components/field-errors'
 import { emptyPart } from './form-types'
 import { LineTaxToggle } from '@/features/settings/Components/LineTaxToggle'
 import { useLineTax } from '@/features/settings/Components/LineTaxContext'
@@ -136,6 +138,10 @@ const SortablePartRow = memo(function SortablePartRow({
   // Same rule the save refuses on, so the red border and the refusal can
   // never disagree about which rows are a problem.
   const nameMissing = partRowHasContent(part) && !part.name.trim()
+  // The figures the save would refuse (a quantity of a billion, a priced part
+  // at zero), each marked and said under its own field as it is typed.
+  const issues = partLineIssues(part)
+  const errorId = (field: string) => `${id}-${field}-error`
   const { applies } = useLineTax()
 
   return (
@@ -207,35 +213,45 @@ const SortablePartRow = memo(function SortablePartRow({
         <FieldRow label={t('qty')}>
           {/* The unit is a property of the stocked part, snapshotted at pick
               time, so it renders as a suffix rather than an editable field. */}
-          <div className="relative w-full self-start">
-            <Input
-              type="number"
-              min="0"
-              step="any"
-              value={part.quantity}
-              onChange={(e) => updatePart(index, 'quantity', e.target.value)}
-              className={cn(part.unit && 'pr-9')}
-            />
-            {part.unit && (
-              <span className="pointer-events-none absolute right-2 top-1/2 max-w-8 -translate-y-1/2 truncate text-xs text-muted-foreground">
-                {part.unit}
-              </span>
-            )}
+          <div className="flex w-full min-w-0 flex-col gap-1 self-start">
+            <div className="relative w-full">
+              <Input
+                type="number"
+                min="0"
+                step="any"
+                value={part.quantity}
+                onChange={(e) => updatePart(index, 'quantity', e.target.value)}
+                className={cn(part.unit && 'pr-9')}
+                {...lineFieldInvalidProps(errorId('quantity'), issues.quantity)}
+                // A line total past the limit has no box of its own to put the cursor in.
+                data-line-total-error={issues.total ? '' : undefined}
+              />
+              {part.unit && (
+                <span className="pointer-events-none absolute right-2 top-1/2 max-w-8 -translate-y-1/2 truncate text-xs text-muted-foreground">
+                  {part.unit}
+                </span>
+              )}
+            </div>
+            <LineFieldError id={errorId('quantity')} error={issues.quantity} />
           </div>
         </FieldRow>
         <FieldRow label={t('unitCost')} hint={t('unitCostHint')}>
-          <Input
-            type="number"
-            min="0"
-            step="0.01"
-            placeholder={t('unitCost')}
-            title={t('unitCostHint')}
-            value={part.unitCost ?? 0}
-            onChange={(e) => updatePart(index, 'unitCost', e.target.value)}
-            // The margin is restated here rather than on each keystroke: a
-            // cost still being typed is not a cost anyone meant.
-            onBlur={(e) => updatePart(index, 'unitCost', e.target.value, { commit: true })}
-          />
+          <div className="flex w-full min-w-0 flex-col gap-1 self-start">
+            <Input
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder={t('unitCost')}
+              title={t('unitCostHint')}
+              value={part.unitCost ?? 0}
+              onChange={(e) => updatePart(index, 'unitCost', e.target.value)}
+              // The margin is restated here rather than on each keystroke: a
+              // cost still being typed is not a cost anyone meant.
+              onBlur={(e) => updatePart(index, 'unitCost', e.target.value, { commit: true })}
+              {...lineFieldInvalidProps(errorId('unitCost'), issues.unitCost)}
+            />
+            <LineFieldError id={errorId('unitCost')} error={issues.unitCost} />
+          </div>
         </FieldRow>
         <FieldRow label={t('markupPercent')} hint={t('markupPercentHint')}>
           <div className="relative w-full self-start">
@@ -255,20 +271,36 @@ const SortablePartRow = memo(function SortablePartRow({
           </div>
         </FieldRow>
         <FieldRow label={t('unitPrice')}>
-          <Input
-            type="number"
-            min="0"
-            step="0.01"
-            value={part.unitPrice}
-            onChange={(e) => updatePart(index, 'unitPrice', e.target.value)}
-          />
+          <div className="flex w-full min-w-0 flex-col gap-1 self-start">
+            <Input
+              type="number"
+              min="0"
+              step="0.01"
+              value={part.unitPrice}
+              onChange={(e) => updatePart(index, 'unitPrice', e.target.value)}
+              {...lineFieldInvalidProps(errorId('unitPrice'), issues.unitPrice)}
+            />
+            <LineFieldError id={errorId('unitPrice')} error={issues.unitPrice} />
+          </div>
         </FieldRow>
         <div className="flex items-center gap-2 @2xl:contents">
           <span className="w-24 shrink-0 text-xs text-muted-foreground @2xl:hidden">
             {t('total')}
           </span>
-          <div className="flex h-9 flex-1 items-center rounded-md bg-muted/50 px-3 text-sm font-medium">
-            {formatCurrency(part.total, currencyCode)}
+          <div className="flex min-w-0 flex-1 flex-col gap-1 self-start">
+            {/* A figure past every limit is still drawn in full on hover,
+                but kept inside its cell rather than across the next one. */}
+            <div
+              className={cn(
+                'flex h-9 min-w-0 items-center rounded-md bg-muted/50 px-3 text-sm font-medium',
+                issues.total && 'text-destructive ring-1 ring-destructive'
+              )}
+              title={formatCurrency(part.total, currencyCode)}
+              aria-describedby={issues.total ? errorId('total') : undefined}
+            >
+              <span className="truncate">{formatCurrency(part.total, currencyCode)}</span>
+            </div>
+            <LineFieldError id={errorId('total')} error={issues.total} />
           </div>
           <Button
             type="button"

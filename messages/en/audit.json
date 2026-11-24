@@ -275,7 +275,7 @@
     "note_delete": "Deleted note {id}",
     "organization_create": "Created organization \"{name}\"",
     "organization_sampleDataRemove": "Removed onboarding sample data",
-    "payment_create": "Recorded payment {amount} for service {serviceRecordId}",
+    "payment_create": "Recorded payment {amount} for service {ref}",
     "payment_delete": "Deleted payment {id}",
     "quoteRequest_update": "Updated quote request status to {status, select, pending {pending} approved {approved} rejected {rejected} completed {completed} other {{status}}}",
     "quote_convert": "Converted quote {ref} to service record {serviceRecordId}",

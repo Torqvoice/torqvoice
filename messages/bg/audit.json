@@ -275,7 +275,7 @@
     "note_delete": "Изтрита бележка {id}",
     "organization_create": "Създадена организация „{name}“",
     "organization_sampleDataRemove": "Премахнати примерните данни за първоначално запознаване",
-    "payment_create": "Записано плащане {amount} за сервизен запис {serviceRecordId}",
+    "payment_create": "Записано плащане {amount} за сервизен запис {ref}",
     "payment_delete": "Изтрито плащане {id}",
     "quoteRequest_update": "Променен статус на заявката за оферта на {status, select, pending {изчакваща} approved {одобрена} rejected {отхвърлена} completed {завършена} other {{status}}}",
     "quote_convert": "Преобразувана оферта {ref} в сервизен запис {serviceRecordId}",

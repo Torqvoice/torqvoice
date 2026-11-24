@@ -275,7 +275,7 @@
     "note_delete": "Note {id} supprimée",
     "organization_create": "Organisation « {name} » créée",
     "organization_sampleDataRemove": "Données d'exemple de la mise en route supprimées",
-    "payment_create": "Paiement {amount} enregistré pour l'intervention {serviceRecordId}",
+    "payment_create": "Paiement {amount} enregistré pour l'intervention {ref}",
     "payment_delete": "Paiement {id} supprimé",
     "quoteRequest_update": "Statut de la demande de devis passé à {status, select, pending {en attente} approved {approuvée} rejected {refusée} completed {terminée} other {{status}}}",
     "quote_convert": "Devis {ref} converti en intervention {serviceRecordId}",

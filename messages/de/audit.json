@@ -275,7 +275,7 @@
     "note_delete": "Notiz {id} gelöscht",
     "organization_create": "Organisation „{name}“ angelegt",
     "organization_sampleDataRemove": "Beispieldaten aus der Einrichtung entfernt",
-    "payment_create": "Zahlung {amount} zum Auftrag {serviceRecordId} erfasst",
+    "payment_create": "Zahlung {amount} zum Auftrag {ref} erfasst",
     "payment_delete": "Zahlung {id} gelöscht",
     "quoteRequest_update": "Status der Angebotsanfrage geändert auf {status, select, pending {offen} approved {genehmigt} rejected {abgelehnt} completed {abgeschlossen} other {{status}}}",
     "quote_convert": "Angebot {ref} in Auftrag {serviceRecordId} umgewandelt",
