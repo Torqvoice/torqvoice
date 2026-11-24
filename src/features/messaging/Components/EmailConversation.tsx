@@ -3,6 +3,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useFormatDate } from '@/lib/use-format-date'
+import { useDateSettings } from '@/components/date-settings-context'
+import { zonedDayKey } from '@/lib/timezone'
 import { toast } from 'sonner'
 import {
   AlertCircle,
@@ -326,12 +329,19 @@ function formatSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`
 }
 
-/** Today's mail shows the time; older mail needs the day too. */
-function formatWhen(value: string | Date): string {
-  const date = new Date(value)
-  const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-  if (date.toDateString() === new Date().toDateString()) return time
-  return `${date.toLocaleDateString([], { day: 'numeric', month: 'short' })} ${time}`
+/**
+ * Today's mail shows the time; older mail needs the day too. Both on the
+ * workshop's clock and the day in its date format.
+ */
+function useFormatWhen(): (value: string | Date) => string {
+  const { timezone } = useDateSettings()
+  const { formatDateTime, formatTime } = useFormatDate()
+  return (value) => {
+    const date = new Date(value)
+    const zone = timezone || Intl.DateTimeFormat().resolvedOptions().timeZone
+    if (zonedDayKey(date, zone) === zonedDayKey(new Date(), zone)) return formatTime(date)
+    return formatDateTime(date)
+  }
 }
 
 /**
@@ -349,6 +359,7 @@ function EmailMessageItem({
   mounted: boolean
 }) {
   const t = useTranslations('messaging.email')
+  const formatWhen = useFormatWhen()
   const [showQuoted, setShowQuoted] = useState(false)
   const isOutbound = message.direction === 'outbound'
   const failed = message.status === 'failed'

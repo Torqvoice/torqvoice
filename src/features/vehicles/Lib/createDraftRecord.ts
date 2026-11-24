@@ -189,12 +189,14 @@ export async function createDraftRecord(
   // no slot to find and nothing to search past. Only work on a vehicle is
   // scheduled around what the shop already has booked.
   const isShopWork = opts.shopWork ?? !!opts.vehicleId
+  // A day the job was asked for: a customer's preferred date, still ahead.
+  const askedFrom = opts.bookFrom && opts.bookFrom.getTime() > now.getTime() ? opts.bookFrom : null
   if (opts.startDateTime || !isShopWork) {
     defaultStart =
       opts.startDateTime ??
       atZonedTime(now, settingsMap['workboard.workDayStart'] || '07:00', timeZone)
   } else {
-    const from = opts.bookFrom && opts.bookFrom.getTime() > now.getTime() ? opts.bookFrom : now
+    const from = askedFrom ?? now
     const { bookings, hours } = await loadBookingContext(organizationId, from)
     const slot = nextAvailableSlot({
       from,
@@ -216,8 +218,15 @@ export async function createDraftRecord(
       defaultStart = atZonedTime(from, hours.start || '07:00', timeZone)
     }
   }
-  // serviceDate should be date-only (start of the workshop's day)
-  const serviceDate = startOfZonedDay(defaultStart, timeZone)
+  // The job is dated the day it is opened, on the workshop's calendar, even
+  // when the first free slot is tomorrow: a car taken in after closing time
+  // was otherwise dated the next morning. A time or a day somebody chose (a
+  // booking, the board, a customer's preferred date) still dates it. The
+  // slot itself stays where it was found. Date-only: the workshop's midnight.
+  const serviceDate = startOfZonedDay(
+    opts.startDateTime || askedFrom ? defaultStart : now,
+    timeZone
+  )
 
   // Named from the template once everything it can mention is known: the
   // number just allocated, the car, its owner, the technician and the day.

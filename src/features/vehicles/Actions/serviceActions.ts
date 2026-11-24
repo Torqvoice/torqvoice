@@ -34,7 +34,11 @@ import { withAuth } from '@/lib/with-auth'
 import { parseSentFields, sentId } from '@/lib/parse-sent-fields'
 import { createServiceSchema, updateServiceSchema } from '../Schema/serviceSchema'
 import { revalidatePath } from 'next/cache'
-import { isSystemStatus, statusColumns } from '@/features/work-order-statuses/Lib/stages'
+import {
+  isSystemStatus,
+  slotOnCompletion,
+  statusColumns,
+} from '@/features/work-order-statuses/Lib/stages'
 import { onInventoryChanged } from '@/features/inventory/Lib/onInventoryChanged'
 import { randomUUID } from 'crypto'
 import { releaseFiles } from '@/lib/files/manager'
@@ -755,7 +759,8 @@ export async function updateServiceStatus(
 
       await db.serviceRecord.update({
         where: { id: recordId },
-        data: statusColumns(status, custom),
+        // A finished job lets go of booked time still ahead of it.
+        data: { ...statusColumns(status, custom), ...slotOnCompletion(record, status) },
       })
 
       notificationBus.emit('workboard', {

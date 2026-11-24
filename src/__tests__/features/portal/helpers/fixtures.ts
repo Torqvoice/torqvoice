@@ -29,6 +29,7 @@ export const format: PortalHomeFormat = buildPortalFormat({
   locale: 'en-GB',
   timeZone: 'Europe/Oslo',
   timeFormat: '24h',
+  dateFormat: 'dd/MM/yyyy',
   money: (amount) => `${new Intl.NumberFormat('en-GB').format(amount).replace(/,/g, ' ')} kr`,
   today: 'today',
   tomorrow: 'tomorrow',

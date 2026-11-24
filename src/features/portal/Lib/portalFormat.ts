@@ -3,14 +3,16 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { MM_PER_32ND } from '@/features/tire-hotel/Lib/tireConstants'
 import { addDays } from '@/features/workshop-calendar/Lib/calendar'
 import { db } from '@/lib/db'
+import { DEFAULT_DATE_FORMAT, formatDate } from '@/lib/format'
 import { zonedDayKey } from '@/lib/timezone'
 import { workshopMoneyFormatter } from '@/lib/workshop-currency'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import type { PortalHomeFormat } from './homeTypes'
 
 /**
- * Dates, times and money as the portal prints them: on the workshop's clock
- * and in its currency, in the language the portal is being read in.
+ * Dates, times and money as the portal prints them: on the workshop's clock,
+ * in its date format and its currency, in the language the portal is being
+ * read in.
  *
  * The portal's language is already the workshop's when it forces one for its
  * customers, and the customer's browser language otherwise (see
@@ -23,7 +25,12 @@ export async function portalFormat(organizationId: string): Promise<PortalHomeFo
     workshopTimeZone(organizationId),
     workshopMoneyFormatter(organizationId),
     db.appSetting.findMany({
-      where: { organizationId, key: { in: [SETTING_KEYS.TIME_FORMAT, SETTING_KEYS.UNIT_SYSTEM] } },
+      where: {
+        organizationId,
+        key: {
+          in: [SETTING_KEYS.TIME_FORMAT, SETTING_KEYS.DATE_FORMAT, SETTING_KEYS.UNIT_SYSTEM],
+        },
+      },
       select: { key: true, value: true },
     }),
     getTranslations('portal.format'),
@@ -34,6 +41,7 @@ export async function portalFormat(organizationId: string): Promise<PortalHomeFo
     locale,
     timeZone,
     timeFormat,
+    dateFormat: value(SETTING_KEYS.DATE_FORMAT) || DEFAULT_DATE_FORMAT,
     imperial: value(SETTING_KEYS.UNIT_SYSTEM) === 'imperial',
     money,
     today: t('today'),
@@ -46,6 +54,8 @@ export function buildPortalFormat(options: {
   locale: string
   timeZone: string
   timeFormat: '12h' | '24h'
+  /** The workshop's date format (Settings, Localization), such as "dd/MM/yyyy". */
+  dateFormat: string
   money: (amount: number) => string
   today: string
   tomorrow: string
@@ -54,15 +64,8 @@ export function buildPortalFormat(options: {
   /** The moment "today" is judged from; now when left out. */
   now?: Date
 }): PortalHomeFormat {
-  const { locale, timeZone, timeFormat, money } = options
+  const { locale, timeZone, timeFormat, dateFormat, money } = options
   const todayKey = () => zonedDayKey(options.now ?? new Date(), timeZone)
-  const withYear = new Intl.DateTimeFormat(locale, {
-    timeZone,
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  })
-  const withoutYear = new Intl.DateTimeFormat(locale, { timeZone, day: 'numeric', month: 'short' })
   const long = new Intl.DateTimeFormat(locale, {
     timeZone,
     weekday: 'long',
@@ -80,11 +83,10 @@ export function buildPortalFormat(options: {
   // A bare "HH:mm" is already on the workshop's clock, so it is printed as
   // that moment in UTC to keep it from being shifted.
   const wallTime = new Intl.DateTimeFormat(locale, { timeZone: 'UTC', ...timeOptions })
-  const day = (iso: string) => {
-    const date = new Date(iso)
-    const sameYear = zonedDayKey(date, timeZone).slice(0, 4) === todayKey().slice(0, 4)
-    return (sameYear ? withoutYear : withYear).format(date)
-  }
+  // A calendar day is written the way the workshop writes it on its invoices
+  // and share pages, year included: "24/11/2026", never the language's own
+  // "24 Nov" beside a "24/11/2026" on the invoice it opens.
+  const day = (iso: string) => formatDate(new Date(iso), dateFormat, timeZone, locale)
   return {
     money,
     day,

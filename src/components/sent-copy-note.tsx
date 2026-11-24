@@ -7,7 +7,7 @@ import {
   ConfirmFrameCancel,
   ConfirmFrameText,
 } from '@/components/confirm-dialog'
-import { useDayFormatter } from '@/features/calendar/Components/useDayFormatter'
+import { useFormatDate } from '@/lib/use-format-date'
 import { cn } from '@/lib/utils'
 
 /**
@@ -28,9 +28,10 @@ export function SentCopyNote({
   className?: string
 }) {
   const t = useTranslations('common.sentCopy')
-  const format = useDayFormatter()
+  // The day it was issued, in the workshop's date format and on its clock.
+  const { formatDate } = useFormatDate()
   if (!sentAt) return null
-  const date = format.dateTime(new Date(sentAt), { dateStyle: 'medium' })
+  const date = formatDate(new Date(sentAt))
   return (
     <p data-testid="sent-copy-note" className={cn('text-xs text-muted-foreground', className)}>
       {t('note', { date })}

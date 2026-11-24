@@ -21,6 +21,7 @@ import {
   jobReadingDate,
   lockJobReading,
 } from '@/features/vehicles/Lib/vehicleReading'
+import { slotOnCompletion } from '@/features/work-order-statuses/Lib/stages'
 import { retotalServiceRecord } from '@/features/vehicles/Lib/retotalServiceRecord'
 import type { UpdateServiceInput } from '../Schema/serviceSchema'
 
@@ -229,6 +230,8 @@ export async function writeServiceRecordUpdate(
         ...(recordData.status !== undefined && recordData.status !== existing.status
           ? { customStatusId: null, customStatusSince: null }
           : {}),
+        // Completed by this save: booked time still ahead is let go.
+        ...(recordData.status !== undefined ? slotOnCompletion(existing, recordData.status) : {}),
         taxComponents: restated?.taxComponents,
         ...(savedTax ? { taxableSubtotal: savedTax.taxableSubtotal } : {}),
         // Attaching a vehicle to a counter sale: the direct customer link is

@@ -4,8 +4,14 @@
  * work order's words. The row itself is the way into the job to fix it.
  */
 
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { render, screen, within } from '@testing-library/react'
+
+vi.mock('@/features/settings/Actions/timezoneActions', () => ({
+  adoptDetectedTimezone: vi.fn(async () => undefined),
+}))
+
+import { DateSettingsProvider } from '@/components/date-settings-context'
 import { TooltipProvider } from '@/components/ui/tooltip'
 import {
   type FeedWorkOrder,
@@ -70,22 +76,24 @@ function renderFeed(
   owed: Record<string, 'unpaid' | 'partial'> = {}
 ) {
   return render(
-    <TooltipProvider>
-      <VehicleActivityFeed
-        vehicleId="veh-1"
-        filter="all"
-        search=""
-        workOrders={workOrders}
-        quotes={[]}
-        inspections={[]}
-        distUnit="km"
-        readingLabel="Mileage"
-        currencyCode="NOK"
-        vehicleMileage={0}
-        jobWarnings={jobWarnings}
-        owed={owed}
-      />
-    </TooltipProvider>
+    <DateSettingsProvider dateFormat="dd/MM/yyyy" timeFormat="24h">
+      <TooltipProvider>
+        <VehicleActivityFeed
+          vehicleId="veh-1"
+          filter="all"
+          search=""
+          workOrders={workOrders}
+          quotes={[]}
+          inspections={[]}
+          distUnit="km"
+          readingLabel="Mileage"
+          currencyCode="NOK"
+          vehicleMileage={0}
+          jobWarnings={jobWarnings}
+          owed={owed}
+        />
+      </TooltipProvider>
+    </DateSettingsProvider>
   )
 }
 
@@ -94,6 +102,12 @@ const rowOf = (title: string) =>
   screen.getByRole('link', { name: title }).closest('li') as HTMLElement
 
 describe('the jobs table on the vehicle page', () => {
+  it("dates each job in the workshop's date format", () => {
+    renderFeed([])
+    expect(within(rowOf('Brake service')).getByText('16/11/2026')).toBeInTheDocument()
+    expect(within(rowOf('Oil change')).getByText('02/11/2026')).toBeInTheDocument()
+  })
+
   it('says what is wrong on the row of the job in the workshop', () => {
     renderFeed([
       warning({
@@ -112,7 +126,7 @@ describe('the jobs table on the vehicle page', () => {
 
     const row = rowOf('Brake service')
     expect(
-      within(row).getByText('Ola Nordmann: Away (On leave) · Nov 16 – Nov 17')
+      within(row).getByText('Ola Nordmann: Away (On leave) · 16/11/2026 – 17/11/2026')
     ).toBeInTheDocument()
     expect(within(row).getByText(/This booking needs attention/)).toBeInTheDocument()
     expect(within(row).getByRole('link', { name: 'Brake service' })).toHaveAttribute(

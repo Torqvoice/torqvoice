@@ -203,7 +203,6 @@ export function JobDetailPopover({
               granularity="minute"
               hourCycle={24}
               placeholder={t('startTime')}
-              displayFormat={{ hour24: 'PPP HH:mm' }}
             />
           </div>
 
@@ -219,7 +218,6 @@ export function JobDetailPopover({
               granularity="minute"
               hourCycle={24}
               placeholder={t('endTime')}
-              displayFormat={{ hour24: 'PPP HH:mm' }}
             />
           </div>
 

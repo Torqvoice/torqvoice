@@ -85,8 +85,15 @@ export interface WorkingHours {
   calendar?: WorkshopCalendar
 }
 
-/** Two half-open intervals overlap when each starts before the other ends. */
+/**
+ * Two half-open intervals overlap when each starts before the other ends. One
+ * that holds no time at all overlaps nothing: a job completed before its
+ * booked slot ends at the moment it was finished, start and end the same,
+ * and it held the technician and the bay against whatever was booked around
+ * that moment.
+ */
 export function overlaps(aStart: Date, aEnd: Date, bStart: Date, bEnd: Date): boolean {
+  if (aStart.getTime() >= aEnd.getTime() || bStart.getTime() >= bEnd.getTime()) return false
   return aStart.getTime() < bEnd.getTime() && aEnd.getTime() > bStart.getTime()
 }
 
