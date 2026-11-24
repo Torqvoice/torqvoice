@@ -759,7 +759,11 @@ function hasMoney(inv: XeroInvoice): boolean {
 }
 
 /** The record is gone here: void or delete Xero's copy unless money was taken against it. */
-async function retireInvoice(ctx: ConnectorContext, serviceRecordId: string): Promise<JobOutcome> {
+async function retireInvoice(
+  ctx: ConnectorContext,
+  serviceRecordId: string,
+  why: 'deleted' | 'cancelled' = 'deleted'
+): Promise<JobOutcome> {
   const settings = settingsOf(ctx)
   const link = await linkFor(ctx, INVOICE_ENTITY, serviceRecordId)
   if (!link) return { summary: 'nothing to do' }
@@ -777,7 +781,7 @@ async function retireInvoice(ctx: ConnectorContext, serviceRecordId: string): Pr
     if (hasMoney(current)) {
       await ctx.log(
         'warn',
-        `Invoice ${label} was deleted here but has payments in Xero; left as is`
+        `Invoice ${label} was ${why} here but has payments in Xero; left as is${why === 'cancelled' ? '. Book the credit note or refund there by hand' : ''}`
       )
       await ctx.links.remove(INVOICE_ENTITY, serviceRecordId)
       return { summary: 'left in Xero, has payments' }
@@ -985,6 +989,8 @@ async function pushInvoice(ctx: ConnectorContext, serviceRecordId: string): Prom
   if (!settings.tenantId) return { summary: NO_TENANT }
   const inv = await loadInvoiceForAccounting(ctx.connection.organizationId, serviceRecordId)
   if (!inv) return retireInvoice(ctx, serviceRecordId)
+  // Cancelled here: its number is kept, and Xero's copy is voided like a deleted one.
+  if (inv.status === 'cancelled') return retireInvoice(ctx, serviceRecordId, 'cancelled')
   const skip = whyNotEligible(inv, settings, ctx.timezone)
   if (skip) return { summary: skip }
 

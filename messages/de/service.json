@@ -23,7 +23,10 @@
       "negative": "Mengen, Stunden, Preise und Kosten dürfen nicht negativ sein.",
       "partName": "Jedes Teil mit Preis braucht einen Namen.",
       "laborDescription": "Jede Arbeitszeile mit Stunden oder Satz braucht eine Beschreibung.",
-      "concernCondition": "Ein Anliegen mit Ursache, Behebung oder Kontrolle braucht eine ausgefüllte Beanstandung."
+      "concernCondition": "Ein Anliegen mit Ursache, Behebung oder Kontrolle braucht eine ausgefüllte Beanstandung.",
+      "negativeReading": "Der Zählerstand darf nicht negativ sein.",
+      "tooLarge": "Ein Wert ist zu groß. Eine Menge darf höchstens {quantity} sein, ein Preis {price}, eine Zeilensumme {total} und ein Zählerstand {reading}.",
+      "zeroQuantity": "Ein Teil mit Preis braucht eine Menge über null."
     }
   },
   "header": {
@@ -63,7 +66,8 @@
     "designRefreshConfirm": "Rechnung aktualisieren",
     "designRefreshDone": "Diese Rechnung wird jetzt mit den aktuellen Angaben gedruckt",
     "designRefreshFailed": "Rechnung konnte nicht aktualisiert werden",
-    "printWorkOrder": "Arbeitsauftrag drucken"
+    "printWorkOrder": "Arbeitsauftrag drucken",
+    "cancelInvoice": "Rechnung stornieren"
   },
   "basicInfo": {
     "title": "Grundlegende Informationen",
@@ -90,6 +94,9 @@
     "invoiceDueDateOnIssuePlaceholder": "Laut Frist",
     "invoiceDateOnIssueHint": "Leer gelassen, erhält die Rechnung das Datum des Versandtags und wird nach Ihren Zahlungsbedingungen fällig.",
     "invoiceDueDateOnIssueHint": "Leer gelassen, wird das Fälligkeitsdatum beim Versand der Rechnung aus Ihren Zahlungsbedingungen gesetzt.",
+    "noPaymentTerms": "Keine Zahlungsbedingungen festgelegt, daher kein Fälligkeitsdatum.",
+    "setPaymentTerms": "Zahlungsbedingungen festlegen",
+    "noDueDatePlaceholder": "Kein Fälligkeitsdatum",
     "typeOptions": {
       "maintenance": "Wartung",
       "repair": "Reparatur",
@@ -101,7 +108,8 @@
       "pending": "Ausstehend",
       "in_progress": "In Bearbeitung",
       "waiting_parts": "Warten auf Teile",
-      "completed": "Abgeschlossen"
+      "completed": "Abgeschlossen",
+      "cancelled": "Storniert"
     },
     "searchVehicles": "Fahrzeuge durchsuchen...",
     "noVehicleFound": "Kein Fahrzeug gefunden.",
@@ -374,6 +382,7 @@
     "received": "Erhaltene Zahlungen",
     "noneYet": "Noch nichts bezahlt.",
     "balanceDue": "Ausstehend",
+    "cancelledNotice": "Storniert: Auf diese Rechnung ist nichts zu zahlen. Zahlungen und Erstattungen bleiben oben aufgeführt.",
     "aboveBalance": "Offen sind {amount}. Eine Zahlung darf nicht höher sein.",
     "nothingDue": "Auf dieser Rechnung ist nichts mehr offen.",
     "refund": "Erstattung"
@@ -516,6 +525,7 @@
     "slotPicked": "Auf den nächsten freien Termin gelegt",
     "noSlotFound": "In den nächsten Wochen kein freier Termin gefunden",
     "assignedTitle": "Zugewiesener Techniker",
+    "notAssigned": "Noch nicht zugewiesen. Wählen Sie, wer den Auftrag übernimmt.",
     "boardLink": "Auftragsboard",
     "someoneElse": "Jemand anderes",
     "loadOf": "{booked} / {capacity} h",
@@ -753,7 +763,9 @@
       "preview": "Rechnungsvorschau",
       "previewShort": "Vorschau",
       "send": "An Kunden senden",
-      "sendShort": "Senden"
+      "sendShort": "Senden",
+      "cancelled": "Storniert",
+      "nothingOwed": "Nichts offen"
     },
     "vehicleInfo": {
       "more": "Mehr Infos",
@@ -883,5 +895,28 @@
     "hint": "Bleiben Sie, um es zu korrigieren, oder verlassen Sie die Seite und verlieren Sie die Änderungen seit dem letzten Speichern.",
     "stay": "Bleiben und korrigieren",
     "leave": "Ohne Speichern verlassen"
+  },
+  "cancelInvoice": {
+    "title": "Rechnung {number} stornieren?",
+    "titleNoNumber": "Diese Rechnung stornieren?",
+    "description": "Diese Rechnung ist beim Kunden angekommen und kann daher nicht gelöscht werden: In den meisten Ländern müssen Rechnungsnummern lückenlos sein.",
+    "pointKept": "Der Auftrag bleibt erhalten und wird als storniert markiert. Die Rechnung behält ihre Nummer und kann nicht mehr geändert werden.",
+    "pointShown": "Rechnung, geteilter Link, PDF und Kundenportal zeigen sie als storniert an.",
+    "pointReports": "Sie zählt nicht mehr zu Umsatz, Steuer oder offenen Beträgen.",
+    "pointLedger": "Ein verbundenes Buchhaltungssystem storniert seine Kopie, wo es möglich ist. Eine Kopie mit Zahlungen bleibt für eine Gutschrift durch die Buchhaltung stehen.",
+    "paidNotice": "Der Kunde hat {amount} auf diese Rechnung bezahlt.",
+    "recordRefund": "Erstattung des an den Kunden zurückgezahlten Betrags erfassen",
+    "refundAmount": "Erstattungsbetrag",
+    "refundMethod": "Erstattet per",
+    "refundTooMuch": "Eine Erstattung kann nicht höher als {amount} sein.",
+    "refundNote": "Erstattung zur stornierten Rechnung",
+    "noRefundHint": "Ohne Erstattung bleiben die Zahlungen so erfasst, wie sie sind.",
+    "keep": "Rechnung behalten",
+    "confirm": "Rechnung stornieren",
+    "done": "Rechnung storniert",
+    "failed": "Die Rechnung konnte nicht storniert werden",
+    "bannerTitle": "Rechnung {number} ist storniert",
+    "bannerTitleNoNumber": "Diese Rechnung ist storniert",
+    "bannerBody": "Sie behält ihre Nummer und kann nicht mehr geändert werden. Der Kunde sieht sie als storniert."
   }
 }

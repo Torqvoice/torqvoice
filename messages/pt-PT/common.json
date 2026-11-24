@@ -341,6 +341,7 @@
     "wholeNumber": "Introduza um número inteiro.",
     "invalid": "Este valor não é válido.",
     "notSaved": "Não guardado. Verifique os campos assinalados.",
-    "withLabel": "{label}: {problem}"
+    "withLabel": "{label}: {problem}",
+    "positive": "Tem de ser maior que 0."
   }
 }

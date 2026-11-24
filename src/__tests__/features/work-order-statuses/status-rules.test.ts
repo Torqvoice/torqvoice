@@ -10,7 +10,7 @@
 
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 
-const serviceRecord = { findFirst: vi.fn(), update: vi.fn() }
+const serviceRecord = { findFirst: vi.fn(), update: vi.fn(), updateMany: vi.fn() }
 const workOrderStatus = { findFirst: vi.fn() }
 // No meter of the workshop's is required: completing asks nothing more.
 const meterType = { findFirst: vi.fn(async () => null) }
@@ -42,6 +42,7 @@ beforeEach(() => {
   vi.clearAllMocks()
   serviceRecord.findFirst.mockResolvedValue({ id: 'rec-1', title: 'Job', vehicleId: 'veh-1' })
   serviceRecord.update.mockResolvedValue({})
+  serviceRecord.updateMany.mockResolvedValue({ count: 1 })
   workOrderStatus.findFirst.mockResolvedValue(READY)
 })
 
@@ -76,8 +77,10 @@ describe('updateServiceStatus', () => {
 
     expect(result.success).toBe(true)
     expect(workOrderStatus.findFirst).not.toHaveBeenCalled()
-    expect(serviceRecord.update).toHaveBeenCalledWith({
-      where: { id: 'rec-1' },
+    // Written only while the job is not cancelled, so an in-flight move
+    // cannot undo a cancel.
+    expect(serviceRecord.updateMany).toHaveBeenCalledWith({
+      where: { id: 'rec-1', organizationId: 'org-1', status: { not: 'cancelled' } },
       data: { status: 'completed', customStatusId: null, customStatusSince: null },
     })
   })
@@ -88,14 +91,14 @@ describe('updateServiceStatus', () => {
     }
     const stray = await updateServiceStatus('rec-1', 'ready-for-pickup')
     expect(stray.success).toBe(false)
-    expect(serviceRecord.update).toHaveBeenCalledTimes(SYSTEM_STATUSES.length)
+    expect(serviceRecord.updateMany).toHaveBeenCalledTimes(SYSTEM_STATUSES.length)
   })
 
   it('sets the stage and the workshop status together, with when', async () => {
     const result = await updateServiceStatus('rec-1', 'completed', 'st-ready')
 
     expect(result.success).toBe(true)
-    const data = serviceRecord.update.mock.calls[0][0].data
+    const data = serviceRecord.updateMany.mock.calls[0][0].data
     expect(data).toMatchObject({ status: 'completed', customStatusId: 'st-ready' })
     expect(data.customStatusSince).toBeInstanceOf(Date)
   })
@@ -114,7 +117,7 @@ describe('updateServiceStatus', () => {
     const result = await updateServiceStatus('rec-1', 'in-progress', 'st-ready')
 
     expect(result.success).toBe(false)
-    expect(serviceRecord.update).not.toHaveBeenCalled()
+    expect(serviceRecord.updateMany).not.toHaveBeenCalled()
   })
 
   it('refuses one that does not exist, or belongs to somebody else', async () => {
@@ -123,6 +126,6 @@ describe('updateServiceStatus', () => {
     const result = await updateServiceStatus('rec-1', 'completed', 'st-other-workshop')
 
     expect(result.success).toBe(false)
-    expect(serviceRecord.update).not.toHaveBeenCalled()
+    expect(serviceRecord.updateMany).not.toHaveBeenCalled()
   })
 })

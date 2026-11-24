@@ -135,8 +135,22 @@ describe('restoreFromDisk', () => {
           // Above the year column's signed 32-bit maximum: a hand-edited
           // backup must restore the vehicle as unknown, not roll the
           // restore back when the insert rejects the value.
-          { id: 'v5', make: 'Ford', model: 'S-Max', year: 2147483648, createdAt: at, updatedAt: at },
-          { id: 'v6', make: 'Skoda', model: 'Octavia', year: '3000000000', createdAt: at, updatedAt: at },
+          {
+            id: 'v5',
+            make: 'Ford',
+            model: 'S-Max',
+            year: 2147483648,
+            createdAt: at,
+            updatedAt: at,
+          },
+          {
+            id: 'v6',
+            make: 'Skoda',
+            model: 'Octavia',
+            year: '3000000000',
+            createdAt: at,
+            updatedAt: at,
+          },
         ],
       },
     })

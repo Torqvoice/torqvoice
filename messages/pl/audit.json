@@ -232,7 +232,8 @@
     "equipment_delete": "Usunięto wyposażenie",
     "platform_deleteUser": "Usunięto użytkownika",
     "platform_grantSuperAdmin": "Nadano superadmina",
-    "platform_revokeSuperAdmin": "Odebrano superadmina"
+    "platform_revokeSuperAdmin": "Odebrano superadmina",
+    "service_cancel": "Anulowano fakturę"
   },
   "summary": {
     "auth_twoFactorEnabled": "Włączono logowanie dwuskładnikowe",
@@ -424,6 +425,8 @@
     "equipment_meter": "Dodano licznik {meter} do {name} w {vehicle}",
     "platform_deleteUser": "Usunięto użytkownika {name} ({email})",
     "platform_grantSuperAdmin": "Nadano uprawnienia superadmina: {name} ({email})",
-    "platform_revokeSuperAdmin": "Odebrano uprawnienia superadmina: {name} ({email})"
+    "platform_revokeSuperAdmin": "Odebrano uprawnienia superadmina: {name} ({email})",
+    "service_cancel": "Anulowano fakturę {ref}",
+    "service_cancelRefund": "Anulowano fakturę {ref} i zapisano zwrot {amount}"
   }
 }

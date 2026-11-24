@@ -203,15 +203,15 @@
     }
   },
   "tax": {
-    "totalTaxCollected": "Total Tax Collected",
+    "totalTaxCollected": "Total Tax",
     "taxableRevenue": "Taxable Revenue",
     "invoicesWithTax": "Invoices with Tax",
-    "monthlyTaxCollected": "Monthly Tax Collected",
+    "monthlyTaxCollected": "Monthly Tax",
     "taxByRate": "Tax by Rate",
     "monthlyBreakdown": "Monthly Breakdown",
     "tableHeaders": {
       "taxRate": "Tax Rate",
-      "taxCollected": "Tax Collected",
+      "taxCollected": "Tax",
       "invoices": "Invoices",
       "month": "Month",
       "taxableAmount": "Taxable Amount"
@@ -254,7 +254,7 @@
     "totalSpent": "Total Spent",
     "jobs": "Jobs",
     "visits": "Visits",
-    "taxCollected": "Tax Collected",
+    "taxCollected": "Tax",
     "partsCost": "Parts Cost",
     "laborCost": "Labor Cost"
   },
@@ -305,7 +305,7 @@
     "customer": "Customer",
     "visits": "Visits",
     "avgDaysBetweenVisits": "Avg Days Between Visits",
-    "taxCollected": "Tax Collected",
+    "taxCollected": "Tax",
     "taxableAmount": "Taxable Amount",
     "invoiceCount": "Invoice Count",
     "invoiceNumber": "Invoice #",
@@ -378,7 +378,7 @@
     "over30": "Over 30 Days",
     "over60": "Over 60 Days",
     "over90": "Over 90 Days",
-    "taxCollected": "Tax Collected",
+    "taxCollected": "Tax",
     "taxableAmount": "Taxable Amount",
     "taxRate": "Tax Rate",
     "invoiceCount": "Invoice Count",

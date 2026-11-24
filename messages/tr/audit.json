@@ -232,7 +232,8 @@
     "equipment_delete": "Ekipman Silindi",
     "platform_deleteUser": "Kullanıcı silindi",
     "platform_grantSuperAdmin": "Süper yönetici yetkisi verildi",
-    "platform_revokeSuperAdmin": "Süper yönetici yetkisi kaldırıldı"
+    "platform_revokeSuperAdmin": "Süper yönetici yetkisi kaldırıldı",
+    "service_cancel": "Fatura iptal edildi"
   },
   "summary": {
     "auth_twoFactorEnabled": "İki adımlı giriş açıldı",
@@ -424,6 +425,8 @@
     "equipment_meter": "{vehicle} üzerindeki {name} için {meter} sayacı eklendi",
     "platform_deleteUser": "{name} ({email}) kullanıcısı silindi",
     "platform_grantSuperAdmin": "{name} ({email}) süper yönetici yapıldı",
-    "platform_revokeSuperAdmin": "{name} ({email}) kullanıcısının süper yöneticiliği kaldırıldı"
+    "platform_revokeSuperAdmin": "{name} ({email}) kullanıcısının süper yöneticiliği kaldırıldı",
+    "service_cancel": "{ref} numaralı fatura iptal edildi",
+    "service_cancelRefund": "{ref} numaralı fatura iptal edildi ve {amount} iade kaydedildi"
   }
 }

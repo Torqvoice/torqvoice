@@ -22,6 +22,7 @@ export const WEBHOOK_EVENTS = [
   'service.update',
   'service.delete',
   'service.status',
+  'service.cancel',
   // Quote
   'quote.create',
   'quote.update',
@@ -93,7 +94,13 @@ export const WEBHOOK_EVENT_GROUPS: Array<{ key: string; events: readonly Webhook
   },
   {
     key: 'services',
-    events: ['service.create', 'service.update', 'service.status', 'service.delete'],
+    events: [
+      'service.create',
+      'service.update',
+      'service.status',
+      'service.cancel',
+      'service.delete',
+    ],
   },
   {
     key: 'quotes',

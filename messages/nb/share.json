@@ -74,7 +74,9 @@
     "findingSeverityNeedsWork": "Middels",
     "findingSeverityMonitor": "Lav",
     "tel": "Tlf: {phone}",
-    "customFields": "Tilleggsinformasjon"
+    "customFields": "Tilleggsinformasjon",
+    "cancelledTitle": "Denne fakturaen er kansellert",
+    "cancelledBody": "Ingenting skal betales. Kontakt verkstedet hvis du har spørsmål."
   },
   "quote": {
     "title": "Tilbud",

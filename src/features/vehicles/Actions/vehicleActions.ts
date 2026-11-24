@@ -25,6 +25,7 @@ import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { assertOwnUploads } from '@/lib/upload-url'
 import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
 import { db } from '@/lib/db'
+import { assertNoInvoicesWentOut } from '@/features/invoices/Lib/wentOutInvoices.server'
 import { unlinkMeterReadingsOfDeletedJobs } from '@/features/meters/Lib/jobMeterReading.server'
 import { assertOwnedCustomer } from '@/lib/owned-records'
 import { withAuth } from '@/lib/with-auth'
@@ -125,7 +126,12 @@ export async function getVehicle(vehicleId: string) {
       // above holds only the ten most recent, and the page used to add those
       // up, so a car with a longer history showed less than it had spent.
       const spend = await db.serviceRecord.findMany({
-        where: { vehicleId: vehicle.id, vehicle: { organizationId } },
+        // A cancelled invoice was never charged.
+        where: {
+          vehicleId: vehicle.id,
+          vehicle: { organizationId },
+          status: { not: 'cancelled' },
+        },
         select: { totalAmount: true, cost: true },
       })
       const lifetimeSpend = spend.reduce(
@@ -538,6 +544,8 @@ export async function deleteVehicle(vehicleId: string) {
         select: { year: true, make: true, model: true, licensePlate: true },
       })
       if (!vehicle) throw new Error('Vehicle not found')
+      // Its jobs go with it, and an invoice that went out keeps its number.
+      await assertNoInvoicesWentOut(organizationId, [vehicleId])
 
       // Everything the delete cascades to, read while it still exists, and
       // let go once the rows are gone.

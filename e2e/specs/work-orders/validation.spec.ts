@@ -123,6 +123,30 @@ test.describe('a work order that cannot be saved says why', () => {
     await expectRefused(page, /cannot be negative/i)
   })
 
+  test('a priced part with a quantity of zero is refused, not billed as nothing', async ({
+    page,
+  }) => {
+    await page.goto(jobUrl)
+    const quantity = partRowOf(partRows(page).first()).locator('input[type="number"]').first()
+    await expect(async () => {
+      await quantity.fill('0')
+      await expect(quantity).toHaveValue('0', { timeout: 2_000 })
+    }).toPass({ timeout: 30_000 })
+
+    await expectRefused(page, /needs a quantity above zero/i)
+  })
+
+  test('a negative reading is refused in words', async ({ page }) => {
+    await page.goto(jobUrl)
+    const reading = page.locator('input[name="mileage"]').filter({ visible: true })
+    await expect(async () => {
+      await reading.fill('-5')
+      await expect(reading).toHaveValue('-5', { timeout: 2_000 })
+    }).toPass({ timeout: 30_000 })
+
+    await expectRefused(page, /reading can't be negative/i)
+  })
+
   test('the job is left as it was found, saved and correct', async ({ page }) => {
     await page.goto(jobUrl)
     await expect(totalsRow(page, 'Parts')).toContainText('$1,100.00')

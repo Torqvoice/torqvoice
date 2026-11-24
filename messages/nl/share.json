@@ -74,7 +74,9 @@
     "findingSeverityNeedsWork": "Gemiddeld",
     "findingSeverityMonitor": "Laag",
     "tel": "Tel: {phone}",
-    "customFields": "Aanvullende informatie"
+    "customFields": "Aanvullende informatie",
+    "cancelledTitle": "Deze factuur is geannuleerd",
+    "cancelledBody": "Hierop hoeft niets betaald te worden. Neem contact op met de werkplaats als je vragen hebt."
   },
   "quote": {
     "title": "Offerte",

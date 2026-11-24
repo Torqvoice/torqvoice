@@ -539,7 +539,11 @@ function whyNotEligible(
 }
 
 /** The record is gone: void the ledger's copy unless money was taken against it. */
-async function retireInvoice(ctx: ConnectorContext, serviceRecordId: string): Promise<JobOutcome> {
+async function retireInvoice(
+  ctx: ConnectorContext,
+  serviceRecordId: string,
+  why: 'deleted' | 'cancelled' = 'deleted'
+): Promise<JobOutcome> {
   const link = await ctx.links.get(INVOICE_ENTITY, serviceRecordId)
   if (!link) return { summary: 'nothing to do' }
   try {
@@ -548,7 +552,7 @@ async function retireInvoice(ctx: ConnectorContext, serviceRecordId: string): Pr
     if ((inv.Balance ?? 0) < (inv.TotalAmt ?? 0)) {
       await ctx.log(
         'warn',
-        `Invoice ${inv.DocNumber ?? inv.Id} was deleted here but has payments in QuickBooks; left as is`
+        `Invoice ${inv.DocNumber ?? inv.Id} was ${why} here but has payments in QuickBooks; left as is${why === 'cancelled' ? '. Book the credit note or refund there by hand' : ''}`
       )
       await ctx.links.remove(INVOICE_ENTITY, serviceRecordId)
       return { summary: 'left in QuickBooks, has payments' }
@@ -602,6 +606,8 @@ async function pushInvoice(ctx: ConnectorContext, serviceRecordId: string): Prom
   const state = stateOf(ctx)
   const inv = await loadInvoiceForAccounting(ctx.connection.organizationId, serviceRecordId)
   if (!inv) return retireInvoice(ctx, serviceRecordId)
+  // Cancelled here: its number is kept, and the QuickBooks copy is voided.
+  if (inv.status === 'cancelled') return retireInvoice(ctx, serviceRecordId, 'cancelled')
   const skip = whyNotEligible(inv, settings, ctx.timezone)
   if (skip) return { summary: skip }
 

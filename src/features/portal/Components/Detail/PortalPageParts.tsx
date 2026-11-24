@@ -88,7 +88,7 @@ export function PortalStatus({
 }
 
 /** Where an invoice stands, as the customer reads it. */
-export type PortalPaymentMark = 'paid' | 'partial' | 'unpaid' | 'overdue'
+export type PortalPaymentMark = 'paid' | 'partial' | 'unpaid' | 'overdue' | 'cancelled'
 
 /**
  * Whether an invoice is paid, as a status and never as a button: nothing here
@@ -109,7 +109,9 @@ export function PortalPaymentBadge({
       ? 'p-badge p-badge--danger'
       : state === 'partial'
         ? 'p-badge p-badge--outline'
-        : 'p-badge'
+        : state === 'cancelled'
+          ? 'p-badge p-badge--outline border-dashed p-muted'
+          : 'p-badge'
   return (
     <span data-payment={state} className={look}>
       {state === 'paid' && (
