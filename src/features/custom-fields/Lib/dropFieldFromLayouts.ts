@@ -1,3 +1,4 @@
+import type { TxClient } from '@/lib/db'
 import type { Prisma } from '@/generated/prisma/client'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { toCustomFieldId } from '@/features/settings/Schema/invoiceLayoutSchema'
@@ -51,7 +52,7 @@ const LAYOUT_KEYS = [
  * paper a customer already holds does not change.
  */
 export async function dropFieldFromLayouts(
-  tx: Prisma.TransactionClient,
+  tx: TxClient,
   organizationId: string,
   definitionId: string
 ): Promise<void> {
