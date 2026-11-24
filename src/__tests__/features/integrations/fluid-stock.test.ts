@@ -9,6 +9,7 @@ import {
   type StockPart,
   volumeUnitOf,
 } from '@/features/integrations/Lib/fluid-stock'
+import { repricePartRow } from '@/features/inventory/Lib/partPricing'
 
 function part(id: string, name: string, extra: Partial<StockPart> = {}): StockPart {
   return {
@@ -168,6 +169,20 @@ describe('fluidPartLine', () => {
       unitPrice: 189,
       total: 1077.3,
       inventoryPartId: 'a',
+      priceOverridden: false,
+    })
+  })
+
+  it('keeps a stocked price the rounded markup cannot rebuild as set by hand', () => {
+    // 133.37 over 100 shows as 33.4%, which would make it 133.40 the moment
+    // the cost box is left, so the line must keep the item's own price.
+    const line = fluidPartLine(OIL, {
+      units: 'both',
+      part: part('a', 'Motorolje 0W-20', { sellPrice: 133.37 }),
+    })
+    expect(line).toMatchObject({ unitPrice: 133.37, markupPercent: 33.4, priceOverridden: true })
+    expect(repricePartRow({ ...line, unitCost: 100 }, 'unitCost', { commit: true })).toMatchObject({
+      unitPrice: 133.37,
     })
   })
 
@@ -201,6 +216,7 @@ describe('fluidPartLine', () => {
       unitPrice: 0,
       total: 0,
       inventoryPartId: null,
+      priceOverridden: false,
     })
     expect(fluidPartLine(OIL, { units: 'us' })).toMatchObject({ quantity: 6.02, unit: 'qt' })
   })
