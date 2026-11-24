@@ -53,6 +53,7 @@ vi.mock('@/features/portal/Lib/portalFormat', async (importOriginal) => {
         locale: 'en-NZ',
         timeZone: 'Pacific/Auckland',
         timeFormat: '24h',
+        dateFormat: 'dd/MM/yyyy',
         money: (amount) => `NZ$${amount.toFixed(2)}`,
         today: 'Today',
         tomorrow: 'Tomorrow',
@@ -84,7 +85,7 @@ describe('a quote in the customer portal', () => {
     expect(screen.getByRole('heading', { name: 'Brake overhaul' })).toBeInTheDocument()
     expect(screen.getByText('NZ$4200.00')).toBeInTheDocument()
     expect(screen.getByText('Sent')).toBeInTheDocument()
-    expect(screen.getByText('1 Dec')).toBeInTheDocument()
+    expect(screen.getByText('01/12/2026')).toBeInTheDocument()
     expect(screen.getByTestId('sheet')).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /Back to quotes/ })).toHaveAttribute(
       'href',

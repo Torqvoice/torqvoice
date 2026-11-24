@@ -147,3 +147,26 @@ export function statusColumns(
     customStatusSince: custom ? now : null,
   }
 }
+
+/**
+ * What a job's booked time becomes when it is completed: a slot that has not
+ * ended yet ends now, and one that has not started yet starts now too, so a
+ * finished job stops holding calendar time it no longer needs (a job opened
+ * after closing time was booked into the next morning and kept that morning
+ * after it was done). A slot already over is left as it is, and so is a job
+ * that was completed already.
+ */
+export function slotOnCompletion(
+  job: { status: string; startDateTime: Date | null; endDateTime: Date | null },
+  nextStatus: string,
+  now = new Date()
+): { startDateTime?: Date; endDateTime?: Date } {
+  if (nextStatus !== 'completed' || job.status === 'completed') return {}
+  if (!job.endDateTime || job.endDateTime.getTime() <= now.getTime()) return {}
+  return {
+    endDateTime: now,
+    ...(job.startDateTime && job.startDateTime.getTime() > now.getTime()
+      ? { startDateTime: now }
+      : {}),
+  }
+}

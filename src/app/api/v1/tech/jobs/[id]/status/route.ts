@@ -1,4 +1,9 @@
-import { CANCELLED, isCancelled, statusColumns } from '@/features/work-order-statuses/Lib/stages'
+import {
+  CANCELLED,
+  isCancelled,
+  slotOnCompletion,
+  statusColumns,
+} from '@/features/work-order-statuses/Lib/stages'
 import { CANCELLED_JOB_REFUSAL } from '@/features/invoices/Lib/cancelInvoice'
 import { z } from 'zod'
 import { announceJobStatusChanged } from '@/features/vehicles/Lib/jobEvents'
@@ -55,6 +60,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
           id: true,
           status: true,
           title: true,
+          startDateTime: true,
+          endDateTime: true,
           vehicleId: true,
           // Enough for the board to draw the card if this puts the job back
           // in its unassigned list.
@@ -83,8 +90,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       const moved = await db.serviceRecord.updateMany({
         where: { id: job.id, organizationId: ctx.organizationId, status: { not: CANCELLED } },
         // The phone moves the stage; a status of the workshop's own belonged
-        // to the stage it left.
-        data: statusColumns(status),
+        // to the stage it left, and a finished job lets go of booked time
+        // still ahead of it.
+        data: { ...statusColumns(status), ...slotOnCompletion(job, status) },
       })
       if (moved.count === 0) return apiError(409, 'conflict', CANCELLED_JOB_REFUSAL)
       const updated = { id: job.id, status }

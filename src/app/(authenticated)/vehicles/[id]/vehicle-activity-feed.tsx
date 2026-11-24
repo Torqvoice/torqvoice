@@ -1,5 +1,6 @@
 'use client'
 
+import { formatDate } from '@/lib/format'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import { useFormatter, useTranslations } from 'next-intl'
@@ -144,7 +145,8 @@ export function VehicleActivityFeed({
   // Days and years are the workshop's, on the server and in the browser
   // alike: a job at half past midnight Oslo time is on that day whichever
   // machine draws the row, and the two never disagree about it.
-  const timeZone = safeTimeZone(useDateSettings().timezone)
+  const { timezone, dateFormat } = useDateSettings()
+  const timeZone = safeTimeZone(timezone)
   const [showAll, setShowAll] = useState(false)
   const [showAllOpen, setShowAllOpen] = useState(false)
   const warningFor = useMemo(
@@ -221,8 +223,8 @@ export function VehicleActivityFeed({
     else groups.push({ year, items: [event] })
   }
 
-  const dayMonth = (date: Date) =>
-    numberFormat.dateTime(date, { day: 'numeric', month: 'short', timeZone })
+  // In the workshop's date format, like the next booking beside the table.
+  const dayMonth = (date: Date) => formatDate(date, dateFormat, timeZone)
   const reading = (km: number | null) => (km ? `${numberFormat.number(km)} ${distUnit}` : null)
   const money = (amount: number) => (amount > 0 ? formatCurrency(amount, currencyCode) : null)
 

@@ -3,6 +3,7 @@
 import { useState, useTransition } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useFormatDate } from '@/lib/use-format-date'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -378,6 +379,7 @@ function ScheduleCard({
   onEdit: () => void
 }) {
   const t = useTranslations('settings.reportSchedule')
+  const { formatDate, formatDateTime } = useFormatDate()
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
   const [deleting, setDeleting] = useState(false)
@@ -499,13 +501,7 @@ function ScheduleCard({
           {schedule.isActive && (
             <span className="flex items-center gap-1">
               <Clock className="h-3 w-3" />
-              {t('nextRun')}:{' '}
-              {new Date(schedule.nextRunDate).toLocaleDateString(undefined, {
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-              })}
+              {t('nextRun')}: {formatDateTime(schedule.nextRunDate)}
             </span>
           )}
           {schedule.runCount > 0 && (
@@ -517,11 +513,7 @@ function ScheduleCard({
           {schedule.lastRunAt && (
             <span className="flex items-center gap-1">
               <CalendarClock className="h-3 w-3" />
-              {t('lastRun')}:{' '}
-              {new Date(schedule.lastRunAt).toLocaleDateString(undefined, {
-                month: 'short',
-                day: 'numeric',
-              })}
+              {t('lastRun')}: {formatDate(schedule.lastRunAt)}
             </span>
           )}
         </div>

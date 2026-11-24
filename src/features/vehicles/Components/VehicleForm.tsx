@@ -43,6 +43,7 @@ import {
 } from '@/features/customers/Actions/customerActions'
 import { CustomerCombobox } from '@/features/quotes/Components/CustomerCombobox'
 import { useFormatter, useTranslations } from 'next-intl'
+import { useFormatDate } from '@/lib/use-format-date'
 import { useServiceType } from '@/components/service-type-context'
 import type { CreateVehicleInput } from '../Schema/vehicleSchema'
 import { clearableInput } from '@/lib/clearable'
@@ -189,6 +190,7 @@ export function VehicleForm({
   const tc = useTranslations('common.buttons')
   const tCommon = useTranslations('common')
   const format = useFormatter()
+  const { formatDay } = useFormatDate()
   const [loading, setLoading] = useState(false)
   // What the server refused, said under each field it was about.
   const fieldErrors = useFieldErrors()
@@ -797,11 +799,8 @@ export function VehicleForm({
   const mileageInputRef = useRef<HTMLInputElement>(null)
   const inspectionShown = inspectionDraft
     ? {
-        // A date key, read at noon UTC so it names the same day everywhere.
-        text: format.dateTime(new Date(`${inspectionDraft}T12:00:00Z`), {
-          dateStyle: 'medium',
-          timeZone: 'UTC',
-        }),
+        // A date key: the same day everywhere, in the workshop's date format.
+        text: formatDay(inspectionDraft),
         tone: inspectionTone(inspectionDraft),
       }
     : null
@@ -1247,9 +1246,7 @@ export function VehicleForm({
                       {lookupNote.inspectionDue
                         ? t('lookupInspectionDue', {
                             source: lookupNote.source,
-                            date: format.dateTime(new Date(lookupNote.inspectionDue), {
-                              dateStyle: 'medium',
-                            }),
+                            date: formatDay(lookupNote.inspectionDue),
                           })
                         : t('lookupSource', { source: lookupNote.source })}
                     </p>

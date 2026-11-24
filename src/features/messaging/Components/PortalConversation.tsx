@@ -3,6 +3,7 @@
 import { ChevronUp, ImagePlus, Loader2, Paperclip, Send, X } from 'lucide-react'
 import Link from 'next/link'
 import { useTranslations } from 'next-intl'
+import { useFormatDate } from '@/lib/use-format-date'
 import { useCallback, useEffect, useRef, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 import { z } from 'zod'
@@ -84,6 +85,8 @@ export function PortalConversation({
   className?: string
 }) {
   const t = useTranslations('messaging.portal')
+  // On the workshop's clock, the day in its date format.
+  const { formatDateTime } = useFormatDate()
   const [messages, setMessages] = useState<PortalInboxMessage[]>([])
   const [nextCursor, setNextCursor] = useState<string | null>(null)
   const [canReply, setCanReply] = useState(true)
@@ -304,15 +307,7 @@ export function PortalConversation({
     })
   }
 
-  const when = (iso: string) =>
-    mounted
-      ? new Date(iso).toLocaleString([], {
-          day: 'numeric',
-          month: 'short',
-          hour: '2-digit',
-          minute: '2-digit',
-        })
-      : ''
+  const when = (iso: string) => (mounted ? formatDateTime(iso) : '')
 
   return (
     <div className={cn('flex h-[500px] flex-col', className)}>

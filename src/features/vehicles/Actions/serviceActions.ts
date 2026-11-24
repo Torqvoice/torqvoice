@@ -49,6 +49,7 @@ import {
   CANCELLED,
   isCancelled,
   isSystemStatus,
+  slotOnCompletion,
   statusColumns,
 } from '@/features/work-order-statuses/Lib/stages'
 import { onInventoryChanged } from '@/features/inventory/Lib/onInventoryChanged'
@@ -896,6 +897,10 @@ export async function updateServiceRecord(input: unknown) {
             ...(recordData.status !== undefined && recordData.status !== existing.status
               ? { customStatusId: null, customStatusSince: null }
               : {}),
+            // Completed by this save: booked time still ahead is let go.
+            ...(recordData.status !== undefined
+              ? slotOnCompletion(existing, recordData.status)
+              : {}),
             taxComponents: restated?.taxComponents,
             ...(savedTax ? { taxableSubtotal: savedTax.taxableSubtotal } : {}),
             // Attaching a vehicle to a counter sale: the direct customer link is
@@ -1186,10 +1191,11 @@ export async function updateServiceStatus(
       }
 
       // Conditional on the job not having been cancelled since it was read:
-      // a status change already on its way must not undo a cancel.
+      // a status change already on its way must not undo a cancel. A
+      // finished job lets go of booked time still ahead of it.
       const moved = await db.serviceRecord.updateMany({
         where: { id: recordId, organizationId, status: { not: CANCELLED } },
-        data: statusColumns(status, custom),
+        data: { ...statusColumns(status, custom), ...slotOnCompletion(record, status) },
       })
       if (moved.count === 0) throw new Error(CANCELLED_JOB_REFUSAL)
 

@@ -25,6 +25,10 @@ export interface InspectionReminderSettings {
   timeZone: string
   /** True when the zone came from the browser's detection rather than a choice. */
   timeZoneDetected: boolean
+  /** How the workshop writes a date (Settings, Localization); the default when left out. */
+  dateFormat?: string
+  /** The workshop's 12 or 24 hour clock; 12 hour when left out. */
+  timeFormat?: '12h' | '24h'
 }
 
 /** A link stays open at least this long, whatever the workshop typed. */
@@ -57,6 +61,8 @@ export async function loadInspectionReminderSettings(
     'workboard.showWeekends',
     SETTING_KEYS.TIMEZONE,
     SETTING_KEYS.TIMEZONE_DETECTED,
+    SETTING_KEYS.DATE_FORMAT,
+    SETTING_KEYS.TIME_FORMAT,
   ]
   const [rows, org] = await Promise.all([
     db.appSetting.findMany({
@@ -75,6 +81,8 @@ export async function loadInspectionReminderSettings(
   return {
     timeZone,
     timeZoneDetected: !get(SETTING_KEYS.TIMEZONE)?.trim(),
+    dateFormat: get(SETTING_KEYS.DATE_FORMAT) || undefined,
+    timeFormat: get(SETTING_KEYS.TIME_FORMAT) === '24h' ? '24h' : '12h',
     durationMinutes: int(
       get(SETTING_KEYS.INSPECTION_DURATION_MINUTES),
       DEFAULT_DURATION_MINUTES,

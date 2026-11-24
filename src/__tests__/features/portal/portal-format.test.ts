@@ -10,11 +10,12 @@ import { buildPortalFormat } from '@/features/portal/Lib/portalFormat'
 // 18 Nov 2026, 11:00 in Auckland; still 17 Nov in UTC.
 const now = new Date('2026-11-17T22:00:00Z')
 
-const make = (locale: string, timeFormat: '12h' | '24h') =>
+const make = (locale: string, timeFormat: '12h' | '24h', dateFormat = 'dd/MM/yyyy') =>
   buildPortalFormat({
     locale,
     timeZone: 'Pacific/Auckland',
     timeFormat,
+    dateFormat,
     money: (amount) => `${amount} kr`,
     today: locale === 'nb' ? 'i dag' : 'today',
     tomorrow: locale === 'nb' ? 'i morgen' : 'tomorrow',
@@ -34,9 +35,17 @@ describe('portal dates and times, en-GB', () => {
   const f24 = make('en-GB', '24h')
   const f12 = make('en-GB', '12h')
 
-  it('prints the day on the workshop calendar, with the year only when it is not this one', () => {
-    expect(f24.day(later)).toBe('3 Dec')
-    expect(f24.day(nextYear)).toBe('4 Feb 2027')
+  it("prints the day on the workshop calendar in the workshop's date format", () => {
+    expect(f24.day(later)).toBe('03/12/2026')
+    expect(f24.day(nextYear)).toBe('04/02/2027')
+    // Still 17 Nov in UTC, already 18 Nov in Auckland.
+    expect(f24.day(morning)).toBe('18/11/2026')
+  })
+
+  it('follows another date format the workshop chose', () => {
+    const us = make('en-GB', '24h', 'MM/dd/yyyy')
+    expect(us.day(later)).toBe('12/03/2026')
+    expect(us.relativeDay(later)).toBe('12/03/2026')
   })
 
   it('prints the long day with its weekday', () => {
@@ -56,7 +65,7 @@ describe('portal dates and times, en-GB', () => {
   it('names today and tomorrow on the workshop calendar, and any other day by date', () => {
     expect(f24.relativeDay(morning)).toBe('today')
     expect(f24.relativeDay(tomorrowAfternoon)).toBe('tomorrow')
-    expect(f24.relativeDay(later)).toBe('3 Dec')
+    expect(f24.relativeDay(later)).toBe('03/12/2026')
   })
 
   it('prints a bare opening time as it stands, in either clock', () => {
@@ -70,9 +79,8 @@ describe('portal dates and times, en-GB', () => {
 describe('portal dates and times, Norwegian', () => {
   const f24 = make('nb', '24h')
 
-  it('prints the day in Norwegian', () => {
-    expect(f24.day(later)).toBe('3. des.')
-    expect(f24.day(nextYear)).toBe('4. feb. 2027')
+  it('prints the long day in Norwegian and the day in the workshop format', () => {
+    expect(f24.day(later)).toBe('03/12/2026')
     expect(f24.dayLong(later)).toBe('torsdag 3. desember')
   })
 
@@ -84,7 +92,7 @@ describe('portal dates and times, Norwegian', () => {
   it('names today and tomorrow in the portal language', () => {
     expect(f24.relativeDay(morning)).toBe('i dag')
     expect(f24.relativeDay(tomorrowAfternoon)).toBe('i morgen')
-    expect(f24.relativeDay(later)).toBe('3. des.')
+    expect(f24.relativeDay(later)).toBe('03/12/2026')
   })
 })
 
@@ -92,6 +100,7 @@ describe('tread depth', () => {
   const base = {
     timeZone: 'Pacific/Auckland',
     timeFormat: '24h' as const,
+    dateFormat: 'dd/MM/yyyy',
     money: (amount: number) => `${amount} kr`,
     today: 'today',
     tomorrow: 'tomorrow',
