@@ -276,7 +276,7 @@
     "note_delete": "Usunięto notatkę {id}",
     "organization_create": "Utworzono organizację „{name}”",
     "organization_sampleDataRemove": "Usunięto dane przykładowe z konfiguracji startowej",
-    "payment_create": "Zarejestrowano płatność {amount} do zlecenia {serviceRecordId}",
+    "payment_create": "Zarejestrowano płatność {amount} do zlecenia {ref}",
     "payment_delete": "Usunięto płatność {id}",
     "quoteRequest_update": "Zmieniono status zapytania o wycenę na {status, select, pending {oczekujące} approved {zatwierdzone} rejected {odrzucone} completed {zakończone} other {{status}}}",
     "quote_convert": "Przekształcono wycenę {ref} w zlecenie {serviceRecordId}",

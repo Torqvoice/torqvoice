@@ -276,7 +276,7 @@
     "note_delete": "Slettet notat {id}",
     "organization_create": "Opprettet organisasjon «{name}»",
     "organization_sampleDataRemove": "Fjernet eksempeldata fra oppstarten",
-    "payment_create": "Registrerte betaling {amount} for jobb {serviceRecordId}",
+    "payment_create": "Registrerte betaling {amount} for jobb {ref}",
     "payment_delete": "Slettet betaling {id}",
     "quoteRequest_update": "Endret status på tilbudsforespørsel til {status, select, pending {venter} approved {godkjent} rejected {avslått} completed {fullført} other {{status}}}",
     "quote_convert": "Gjorde tilbud {ref} om til jobb {serviceRecordId}",

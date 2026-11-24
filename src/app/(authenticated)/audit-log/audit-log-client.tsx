@@ -32,6 +32,8 @@ import {
 import { DataTablePagination } from '@/components/data-table-pagination'
 import { TableContextMenuHint } from '@/components/table-context-menu-hint'
 import { useFormatDate } from '@/lib/use-format-date'
+import { useFormatCurrency } from '@/components/currency-settings-context'
+import { auditSummaryParams } from '@/features/audit/Lib/summaryParams'
 import { cn } from '@/lib/utils'
 import { ExternalLink, Search, Loader2 } from 'lucide-react'
 
@@ -89,6 +91,7 @@ export function AuditLogClient({
   const tableNav = useTableKeyboardNav()
   const [selectedLog, setSelectedLog] = useState<AuditLogData['logs'][number] | null>(null)
   const { formatDateTime } = useFormatDate()
+  const formatCurrency = useFormatCurrency()
   const t = useTranslations('audit')
   const ti = useTranslations('integrations')
 
@@ -114,13 +117,14 @@ export function AuditLogClient({
       | undefined
     if (details?.key) {
       const key = `summary.${details.key}`
-      // An integration named by id gets the reader's name for it; the
-      // English name the row was written with stands in for the vendors.
-      const params = { ...details.params }
-      const connectorId = params.connectorId
-      if (typeof connectorId === 'string' && ti.has(`connectors.${connectorId}.name`)) {
-        params.name = ti(`connectors.${connectorId}.name`)
-      }
+      // An integration named by id gets the reader's name for it (the
+      // English name the row was written with stands in for the vendors),
+      // and an amount stored with its currency reads as money.
+      const params = auditSummaryParams(details.params, {
+        connectorName: (id) =>
+          ti.has(`connectors.${id}.name`) ? ti(`connectors.${id}.name`) : null,
+        formatCurrency,
+      })
       if (t.has(key)) return t(key, params)
     }
     return log.message

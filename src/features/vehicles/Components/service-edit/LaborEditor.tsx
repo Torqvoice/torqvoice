@@ -24,6 +24,8 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { getCurrencySymbol } from '@/lib/format'
 import { laborRowHasContent } from '@/features/vehicles/Lib/validateServiceForm'
+import { laborLineIssues } from '@/lib/input-limits'
+import { LineFieldError, lineFieldInvalidProps } from '@/components/field-errors'
 import { useFormatCurrency, useCurrencySettings } from '@/components/currency-settings-context'
 import { useTranslations } from 'next-intl'
 import type { ServiceLaborInput } from '@/features/vehicles/Schema/serviceSchema'
@@ -117,6 +119,9 @@ const SortableLaborRow = memo(function SortableLaborRow({
   // Hours or a rate with nothing said about them: the row is meant, and until
   // it is described the job cannot be saved.
   const descriptionMissing = laborRowHasContent(labor) && !labor.description.trim()
+  // Hours, a rate or a line total the save would refuse, said under the field.
+  const issues = laborLineIssues(labor)
+  const errorId = (field: string) => `${id}-${field}-error`
 
   const style = dragEnabled
     ? {
@@ -180,32 +185,53 @@ const SortableLaborRow = memo(function SortableLaborRow({
           />
         </div>
         <FieldRow label={isService || isFee ? t('qty') : t('hours')}>
-          <Input
-            type="number"
-            min="0"
-            step={isService || isFee ? '1' : 'any'}
-            placeholder={isService || isFee ? t('qty') : t('hours')}
-            value={labor.hours}
-            disabled={isFee}
-            onChange={(e) => updateLabor(index, 'hours', e.target.value)}
-          />
+          <div className="flex w-full min-w-0 flex-col gap-1 self-start">
+            <Input
+              type="number"
+              min="0"
+              step={isService || isFee ? '1' : 'any'}
+              placeholder={isService || isFee ? t('qty') : t('hours')}
+              value={labor.hours}
+              disabled={isFee}
+              onChange={(e) => updateLabor(index, 'hours', e.target.value)}
+              {...lineFieldInvalidProps(errorId('hours'), issues.hours)}
+              // A line total past the limit has no box of its own to put the cursor in.
+              data-line-total-error={issues.total ? '' : undefined}
+            />
+            <LineFieldError id={errorId('hours')} error={issues.hours} />
+          </div>
         </FieldRow>
         <FieldRow label={rateLabel}>
-          <Input
-            type="number"
-            min="0"
-            step="0.01"
-            value={labor.rate}
-            disabled={isFee && feeLocked}
-            onChange={(e) => updateLabor(index, 'rate', e.target.value)}
-          />
+          <div className="flex w-full min-w-0 flex-col gap-1 self-start">
+            <Input
+              type="number"
+              min="0"
+              step="0.01"
+              value={labor.rate}
+              disabled={isFee && feeLocked}
+              onChange={(e) => updateLabor(index, 'rate', e.target.value)}
+              {...lineFieldInvalidProps(errorId('rate'), issues.rate)}
+            />
+            <LineFieldError id={errorId('rate')} error={issues.rate} />
+          </div>
         </FieldRow>
         <div className="flex items-center gap-2 @2xl:contents">
           <span className="w-24 shrink-0 text-xs text-muted-foreground @2xl:hidden">
             {t('total')}
           </span>
-          <div className="flex h-9 flex-1 items-center rounded-md bg-muted/50 px-3 text-sm font-medium">
-            {formatCurrency(labor.total, currencyCode)}
+          <div className="flex min-w-0 flex-1 flex-col gap-1 self-start">
+            {/* Kept inside its cell however long the figure, in full on hover. */}
+            <div
+              className={cn(
+                'flex h-9 min-w-0 items-center rounded-md bg-muted/50 px-3 text-sm font-medium',
+                issues.total && 'text-destructive ring-1 ring-destructive'
+              )}
+              title={formatCurrency(labor.total, currencyCode)}
+              aria-describedby={issues.total ? errorId('total') : undefined}
+            >
+              <span className="truncate">{formatCurrency(labor.total, currencyCode)}</span>
+            </div>
+            <LineFieldError id={errorId('total')} error={issues.total} />
           </div>
           <Button
             type="button"

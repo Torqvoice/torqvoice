@@ -2,7 +2,7 @@ import { resolveCurrencyCode } from '@/lib/currencies'
 import { notFound } from 'next/navigation'
 import { db } from '@/lib/db'
 import { getCachedMembership, getCachedSession } from '@/lib/cached-session'
-import { canEditSettings } from '@/lib/settings-access'
+import { canOpenAndEditSettings } from '@/lib/settings-access'
 import { getTireHotelSettings } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { getTireSet } from '@/features/tire-hotel/Actions/tireSetActions'
 import { getLocationOptions } from '@/features/tire-hotel/Actions/storageActions'
@@ -28,7 +28,7 @@ export default async function TireSetPage({ params }: { params: Promise<{ id: st
 
   // Decides whether the prices and limits on this page offer a way to change
   // them. Someone who cannot is better off not seeing the link at all.
-  const canChangeSettings = await canEditSettings(session?.user?.id ?? '', membership?.role)
+  const canChangeSettings = await canOpenAndEditSettings(session?.user?.id ?? '', membership?.role)
 
   const { id } = await params
 

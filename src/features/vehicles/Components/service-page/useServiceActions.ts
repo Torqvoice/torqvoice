@@ -19,7 +19,7 @@ import { formatCurrency } from '@/lib/format'
 import { findServiceFormProblem } from '@/features/vehicles/Lib/validateServiceForm'
 import { LINE_TOTAL_MAX, QUANTITY_MAX, READING_MAX, UNIT_PRICE_MAX } from '@/lib/input-limits'
 import { useServiceType } from '@/components/service-type-context'
-import { useFieldErrorText } from '@/components/field-errors'
+import { LINE_ERROR_SELECTOR, useFieldErrorText } from '@/components/field-errors'
 import type { FieldError } from '@/lib/field-errors'
 import { readingNeedsAnswer } from '@/features/vehicles/Lib/vehicleReading'
 import { revealRequiredMeters } from '@/features/meters/Lib/requiredMetersReveal'
@@ -215,8 +215,16 @@ export function useServiceActions({
           reading: formatNumber(READING_MAX),
         })
       )
-      if (problem === 'negativeReading')
+      // The cursor goes to the figure at fault: the reading, or the first
+      // line figure the editors have marked (see partLineIssues). Not on an
+      // autosave, which would pull the cursor out of whatever is being typed.
+      const lineField = form.querySelector<HTMLElement>(LINE_ERROR_SELECTOR)
+      if (autosave) {
+        // Said, and the cursor left where it is.
+      } else if (problem === 'negativeReading' || (problem === 'tooLarge' && !lineField))
         form.querySelector<HTMLInputElement>('input[name="mileage"]')?.focus()
+      else if (problem === 'negative' || problem === 'tooLarge' || problem === 'zeroQuantity')
+        lineField?.focus()
       return
     }
 

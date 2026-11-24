@@ -1,6 +1,6 @@
 'use client'
 
-import { memo } from 'react'
+import { memo, useId } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -14,6 +14,9 @@ import { ShopFeeTag, useShopFeeLocked } from '@/features/settings/Components/Sho
 import { LineTaxToggle } from '@/features/settings/Components/LineTaxToggle'
 import { useLineTax } from '@/features/settings/Components/LineTaxContext'
 import { laborTaxable } from '@/lib/taxable-lines'
+import { laborLineIssues } from '@/lib/input-limits'
+import { cn } from '@/lib/utils'
+import { LineFieldError, lineFieldInvalidProps } from '@/components/field-errors'
 import { LaborGuideButton } from '@/features/vehicles/Components/labor-guide/LaborGuideButton'
 import type { LaborGuideJob } from '@/features/vehicles/Components/labor-guide/LaborGuideDialog'
 import type { LaborGuideStock } from '@/features/vehicles/Components/labor-guide/FluidPartButton'
@@ -56,6 +59,10 @@ const QuoteLaborRow = memo(function QuoteLaborRow({
   const feeLocked = useShopFeeLocked()
   const formatCurrency = useFormatCurrency()
   const { applies } = useLineTax()
+  // Hours, a rate or a line total the save would refuse, said under the field.
+  const issues = laborLineIssues(labor)
+  const rowId = useId()
+  const errorId = (field: string) => `${rowId}-${field}-error`
   return (
     <div
       className={`grid grid-cols-2 gap-2 sm:grid-cols-[2fr_1fr_1fr_1fr_auto] ${labor.excluded ? 'line-through opacity-50' : ''}`}
@@ -85,25 +92,46 @@ const QuoteLaborRow = memo(function QuoteLaborRow({
           </button>
         )}
       </div>
-      <Input
-        type="number"
-        min="0"
-        step={isService || isFee ? '1' : '0.1'}
-        placeholder={isService || isFee ? tQty : tHours}
-        value={labor.hours}
-        disabled={isFee}
-        onChange={(e) => onUpdate(index, 'hours', e.target.value)}
-      />
-      <Input
-        type="number"
-        min="0"
-        step="0.01"
-        value={labor.rate}
-        disabled={isFee && feeLocked}
-        onChange={(e) => onUpdate(index, 'rate', e.target.value)}
-      />
-      <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">
-        {formatCurrency(labor.total, currencyCode)}
+      <div className="flex min-w-0 flex-col gap-1">
+        <Input
+          type="number"
+          min="0"
+          step={isService || isFee ? '1' : '0.1'}
+          placeholder={isService || isFee ? tQty : tHours}
+          value={labor.hours}
+          disabled={isFee}
+          onChange={(e) => onUpdate(index, 'hours', e.target.value)}
+          {...lineFieldInvalidProps(errorId('hours'), issues.hours)}
+          // A line total past the limit has no box of its own to put the cursor in.
+          data-line-total-error={issues.total ? '' : undefined}
+        />
+        <LineFieldError id={errorId('hours')} error={issues.hours} />
+      </div>
+      <div className="flex min-w-0 flex-col gap-1">
+        <Input
+          type="number"
+          min="0"
+          step="0.01"
+          value={labor.rate}
+          disabled={isFee && feeLocked}
+          onChange={(e) => onUpdate(index, 'rate', e.target.value)}
+          {...lineFieldInvalidProps(errorId('rate'), issues.rate)}
+        />
+        <LineFieldError id={errorId('rate')} error={issues.rate} />
+      </div>
+      <div className="flex min-w-0 flex-col gap-1">
+        {/* Kept inside its cell however long the figure, in full on hover. */}
+        <div
+          className={cn(
+            'flex h-9 min-w-0 items-center rounded-md bg-muted/50 px-3 text-sm font-medium',
+            issues.total && 'text-destructive ring-1 ring-destructive'
+          )}
+          title={formatCurrency(labor.total, currencyCode)}
+          aria-describedby={issues.total ? errorId('total') : undefined}
+        >
+          <span className="truncate">{formatCurrency(labor.total, currencyCode)}</span>
+        </div>
+        <LineFieldError id={errorId('total')} error={issues.total} />
       </div>
       <div className="flex items-center gap-1">
         <LineTaxToggle

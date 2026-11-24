@@ -162,8 +162,9 @@ export function QuotePageClient({
   // the next autosave to be refused.
   const handleQuoteSent = useCallback(() => router.refresh(), [router])
 
-  useSaveShortcut(() => {
-    if (state.hasUnsavedChanges) return state.saveNow()
+  useSaveShortcut(async () => {
+    // The shortcut only saves; a refusal is already said on the page.
+    if (state.hasUnsavedChanges) await state.saveNow()
   })
 
   const [showPresetPicker, setShowPresetPicker] = useState(false)
@@ -401,7 +402,7 @@ export function QuotePageClient({
                       disabled={state.saving}
                       onClick={async () => {
                         if (state.saving) return
-                        if (state.hasUnsavedChanges) await state.saveNow()
+                        if (state.hasUnsavedChanges && !(await state.saveNow())) return
                         setShowPdfPreview(true)
                       }}
                     >
@@ -427,7 +428,7 @@ export function QuotePageClient({
                       disabled={state.saving}
                       onClick={async () => {
                         if (state.saving) return
-                        if (state.hasUnsavedChanges) await state.saveNow()
+                        if (state.hasUnsavedChanges && !(await state.saveNow())) return
                         state.setShowEmailDialog(true)
                       }}
                     >
@@ -444,7 +445,7 @@ export function QuotePageClient({
                       disabled={state.saving}
                       onClick={async () => {
                         if (state.saving) return
-                        if (state.hasUnsavedChanges) await state.saveNow()
+                        if (state.hasUnsavedChanges && !(await state.saveNow())) return
                         state.setShowShareDialog(true)
                       }}
                     >

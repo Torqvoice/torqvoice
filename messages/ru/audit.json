@@ -276,7 +276,7 @@
     "note_delete": "Удалена заметка {id}",
     "organization_create": "Создана организация «{name}»",
     "organization_sampleDataRemove": "Удалены demo-данные первичной настройки",
-    "payment_create": "Записан платёж {amount} по заказу {serviceRecordId}",
+    "payment_create": "Записан платёж {amount} по заказу {ref}",
     "payment_delete": "Удалён платёж {id}",
     "quoteRequest_update": "Статус запроса на предложение изменён на «{status, select, pending {в ожидании} approved {одобрен} rejected {отклонён} completed {завершён} other {{status}}}»",
     "quote_convert": "Предложение {ref} преобразовано в заказ {serviceRecordId}",

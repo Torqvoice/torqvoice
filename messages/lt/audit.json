@@ -276,7 +276,7 @@
     "note_delete": "Ištrintas užrašas {id}",
     "organization_create": "Sukurta organizacija „{name}“",
     "organization_sampleDataRemove": "Pašalinti pradinės sąrankos pavyzdiniai duomenys",
-    "payment_create": "Užregistruotas mokėjimas {amount} už darbą {serviceRecordId}",
+    "payment_create": "Užregistruotas mokėjimas {amount} už darbą {ref}",
     "payment_delete": "Ištrintas mokėjimas {id}",
     "quoteRequest_update": "Pasiūlymo užklausos būsena pakeista į „{status, select, pending {laukiama} approved {patvirtinta} rejected {atmesta} completed {užbaigta} other {{status}}}“",
     "quote_convert": "Pasiūlymas {ref} paverstas darbu {serviceRecordId}",

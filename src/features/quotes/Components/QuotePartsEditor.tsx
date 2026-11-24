@@ -9,6 +9,8 @@ import { useFormatCurrency } from '@/components/currency-settings-context'
 import { LineTaxToggle } from '@/features/settings/Components/LineTaxToggle'
 import { useLineTax } from '@/features/settings/Components/LineTaxContext'
 import { partTaxable } from '@/lib/taxable-lines'
+import { partLineIssues } from '@/lib/input-limits'
+import { LineFieldError, lineFieldInvalidProps } from '@/components/field-errors'
 import { cn } from '@/lib/utils'
 import { InventoryPickerDialog } from '@/features/vehicles/Components/service-edit/InventoryPickerDialog'
 import type { InventoryPartOption } from '@/features/vehicles/Components/service-edit/form-types'
@@ -73,6 +75,11 @@ const QuotePartRow = memo(function QuotePartRow({
       Number(part.unitPrice) > 0 ||
       Number(part.total) > 0
     )
+  // The figures the save would refuse, marked and said under their field as
+  // they are typed: the same rules as a work order's lines.
+  const issues = partLineIssues(part)
+  const rowId = useId()
+  const errorId = (field: string) => `${rowId}-${field}-error`
   return (
     <div
       className={`grid grid-cols-2 gap-2 sm:grid-cols-[1fr_2fr_0.6fr_0.9fr_0.7fr_0.9fr_0.9fr_auto] ${part.excluded ? 'line-through opacity-50' : ''}`}
@@ -118,31 +125,41 @@ const QuotePartRow = memo(function QuotePartRow({
         />
       </div>
       {/* The unit rides along from the stocked part; shown, not edited. */}
-      <div className="relative">
+      <div className="flex min-w-0 flex-col gap-1">
+        <div className="relative">
+          <Input
+            type="number"
+            min="0"
+            step="any"
+            value={part.quantity}
+            onChange={(e) => onUpdate(index, 'quantity', e.target.value)}
+            className={cn(part.unit && 'pr-9')}
+            {...lineFieldInvalidProps(errorId('quantity'), issues.quantity)}
+            // A line total past the limit has no box of its own to put the cursor in.
+            data-line-total-error={issues.total ? '' : undefined}
+          />
+          {part.unit && (
+            <span className="pointer-events-none absolute right-2 top-1/2 max-w-8 -translate-y-1/2 truncate text-xs text-muted-foreground">
+              {part.unit}
+            </span>
+          )}
+        </div>
+        <LineFieldError id={errorId('quantity')} error={issues.quantity} />
+      </div>
+      <div className="flex min-w-0 flex-col gap-1">
         <Input
           type="number"
           min="0"
-          step="any"
-          value={part.quantity}
-          onChange={(e) => onUpdate(index, 'quantity', e.target.value)}
-          className={cn(part.unit && 'pr-9')}
+          step="0.01"
+          value={part.unitCost}
+          onChange={(e) => onUpdate(index, 'unitCost', e.target.value)}
+          // The margin is restated here rather than on each keystroke: a cost
+          // still being typed is not a cost anyone meant.
+          onBlur={(e) => onUpdate(index, 'unitCost', e.target.value, { commit: true })}
+          {...lineFieldInvalidProps(errorId('unitCost'), issues.unitCost)}
         />
-        {part.unit && (
-          <span className="pointer-events-none absolute right-2 top-1/2 max-w-8 -translate-y-1/2 truncate text-xs text-muted-foreground">
-            {part.unit}
-          </span>
-        )}
+        <LineFieldError id={errorId('unitCost')} error={issues.unitCost} />
       </div>
-      <Input
-        type="number"
-        min="0"
-        step="0.01"
-        value={part.unitCost}
-        onChange={(e) => onUpdate(index, 'unitCost', e.target.value)}
-        // The margin is restated here rather than on each keystroke: a cost
-        // still being typed is not a cost anyone meant.
-        onBlur={(e) => onUpdate(index, 'unitCost', e.target.value, { commit: true })}
-      />
       <Input
         type="number"
         min="0"
@@ -150,15 +167,30 @@ const QuotePartRow = memo(function QuotePartRow({
         value={part.markupPercent}
         onChange={(e) => onUpdate(index, 'markupPercent', e.target.value)}
       />
-      <Input
-        type="number"
-        min="0"
-        step="0.01"
-        value={part.unitPrice}
-        onChange={(e) => onUpdate(index, 'unitPrice', e.target.value)}
-      />
-      <div className="flex items-center rounded-md bg-muted/50 px-3 text-sm font-medium">
-        {formatCurrency(part.total, currencyCode)}
+      <div className="flex min-w-0 flex-col gap-1">
+        <Input
+          type="number"
+          min="0"
+          step="0.01"
+          value={part.unitPrice}
+          onChange={(e) => onUpdate(index, 'unitPrice', e.target.value)}
+          {...lineFieldInvalidProps(errorId('unitPrice'), issues.unitPrice)}
+        />
+        <LineFieldError id={errorId('unitPrice')} error={issues.unitPrice} />
+      </div>
+      <div className="flex min-w-0 flex-col gap-1">
+        {/* Kept inside its cell however long the figure, in full on hover. */}
+        <div
+          className={cn(
+            'flex h-9 min-w-0 items-center rounded-md bg-muted/50 px-3 text-sm font-medium',
+            issues.total && 'text-destructive ring-1 ring-destructive'
+          )}
+          title={formatCurrency(part.total, currencyCode)}
+          aria-describedby={issues.total ? errorId('total') : undefined}
+        >
+          <span className="truncate">{formatCurrency(part.total, currencyCode)}</span>
+        </div>
+        <LineFieldError id={errorId('total')} error={issues.total} />
       </div>
       <div className="flex items-center gap-1">
         <LineTaxToggle

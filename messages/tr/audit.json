@@ -276,7 +276,7 @@
     "note_delete": "{id} notu silindi",
     "organization_create": "\"{name}\" organizasyonu oluşturuldu",
     "organization_sampleDataRemove": "Kuruluma ait örnek veriler kaldırıldı",
-    "payment_create": "{serviceRecordId} işi için {amount} tutarında ödeme kaydedildi",
+    "payment_create": "{ref} işi için {amount} tutarında ödeme kaydedildi",
     "payment_delete": "{id} ödemesi silindi",
     "quoteRequest_update": "Teklif talebinin durumu {status, select, pending {beklemede} approved {onaylandı} rejected {reddedildi} completed {tamamlandı} other {{status}}} olarak değiştirildi",
     "quote_convert": "{ref} teklifi {serviceRecordId} iş kaydına dönüştürüldü",

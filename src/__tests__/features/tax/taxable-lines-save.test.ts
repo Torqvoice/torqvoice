@@ -579,3 +579,88 @@ describe('saving an existing quote', () => {
     }
   })
 })
+
+/**
+ * A quote tab opened before lines were held to the cent sends its own sum
+ * (2 x 2.5 h at 19.99 = 99.95) with lines stored as 49.98 each. The stored
+ * quote adds up to what its lines do: subtotal, discount, tax and total.
+ */
+describe('a quote whose page summed unrounded lines', () => {
+  // No part lines on these quotes, sent or stored.
+  beforeEach(() => vi.mocked(db.quotePart.findMany).mockResolvedValue([]))
+
+  const line = { description: 'Fit', hours: 2.5, rate: 19.99, total: 49.974999999999994 }
+  const stored = {
+    id: 'q-1',
+    organizationId: ORG,
+    status: 'draft',
+    subtotal: 0,
+    discountType: null,
+    discountValue: 0,
+    discountAmount: 0,
+    taxRate: 25,
+    taxAmount: 0,
+    taxInclusive: false,
+    taxComponents: null,
+    totalAmount: 0,
+    warrantyStatus: null,
+    warrantyMonths: null,
+    warrantyMileage: null,
+    warrantyNotes: null,
+  }
+
+  it('is stored with the subtotal its rounded lines add up to, discount and tax with it', async () => {
+    vi.mocked(db.quote.findFirst).mockResolvedValue(stored as never)
+    const tx = transaction()
+    const result = await updateQuote({
+      id: 'q-1',
+      title: 'Labour',
+      laborItems: [line, line],
+      subtotal: 99.95,
+      discountType: 'percentage',
+      discountValue: 10,
+      discountAmount: 9.995,
+      taxRate: 25,
+      taxAmount: 22.49,
+      totalAmount: 112.44,
+    })
+    expect(result.success).toBe(true)
+    expect(tx.labor().map((l) => (l as unknown as { total: number }).total)).toEqual([49.98, 49.98])
+    // 99.96 less 10% is 89.96; 25% of that is 22.49.
+    expect(tx.data()).toMatchObject({
+      subtotal: 99.96,
+      discountAmount: 10,
+      taxAmount: 22.49,
+      totalAmount: 112.45,
+    })
+  })
+
+  it('leaves a quote whose page summed the rounded lines as it was sent', async () => {
+    vi.mocked(db.quote.findFirst).mockResolvedValue({ ...stored, taxRate: 0 } as never)
+    const tx = transaction()
+    await updateQuote({
+      id: 'q-1',
+      title: 'Labour',
+      laborItems: [line, line],
+      subtotal: 99.96,
+      taxRate: 0,
+      taxAmount: 0,
+      totalAmount: 99.96,
+    })
+    expect(tx.data()).toMatchObject({ subtotal: 99.96, taxAmount: 0, totalAmount: 99.96 })
+  })
+
+  it('is created with the subtotal its rounded lines add up to', async () => {
+    const tx = transaction()
+    const result = await createQuote({
+      title: 'Labour',
+      laborItems: [line, line],
+      subtotal: 99.95,
+      taxRate: 25,
+      taxAmount: 24.99,
+      totalAmount: 124.94,
+    })
+    expect(result.success).toBe(true)
+    expect(tx.data()).toMatchObject({ subtotal: 99.96, taxAmount: 24.99, totalAmount: 124.95 })
+  })
+})

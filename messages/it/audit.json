@@ -276,7 +276,7 @@
     "note_delete": "Nota {id} eliminata",
     "organization_create": "Organizzazione «{name}» creata",
     "organization_sampleDataRemove": "Dati di esempio dell'avvio rimossi",
-    "payment_create": "Pagamento {amount} registrato per l'intervento {serviceRecordId}",
+    "payment_create": "Pagamento {amount} registrato per l'intervento {ref}",
     "payment_delete": "Pagamento {id} eliminato",
     "quoteRequest_update": "Stato della richiesta di preventivo cambiato in {status, select, pending {in attesa} approved {approvata} rejected {rifiutata} completed {completata} other {{status}}}",
     "quote_convert": "Preventivo {ref} convertito nell'intervento {serviceRecordId}",

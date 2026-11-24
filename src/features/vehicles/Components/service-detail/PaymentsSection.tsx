@@ -329,12 +329,14 @@ export function PaymentsSection({
             {t('cancelledNotice')}
           </p>
         ) : (
-          <div className="flex items-baseline justify-between rounded-lg bg-foreground px-4 py-4 text-background">
-            <span className="text-xs font-medium uppercase tracking-wider opacity-70">
+          // The figure wraps inside the card when it is absurd (a billion parts
+          // at a hundred million) rather than running over the label and out.
+          <div className="flex items-baseline justify-between gap-3 rounded-lg bg-foreground px-4 py-4 text-background">
+            <span className="shrink-0 text-xs font-medium uppercase tracking-wider opacity-70">
               {t('balanceDue')}
             </span>
             <span
-              className="order-number text-3xl font-bold leading-none tabular-nums"
+              className="order-number min-w-0 text-right text-3xl font-bold leading-none tabular-nums [overflow-wrap:anywhere]"
               data-testid="balance-due"
             >
               {formatCurrency(balanceDue, currencyCode)}

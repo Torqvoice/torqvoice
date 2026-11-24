@@ -91,7 +91,7 @@ function Row({
       {control && (
         <span
           className={cn(
-            'flex items-center justify-end gap-1.5',
+            'flex min-w-0 flex-wrap items-center justify-end gap-1.5',
             stackControl &&
               'col-span-3 row-start-2 @[22rem]:col-span-1 @[22rem]:col-start-2 @[22rem]:row-start-1'
           )}
@@ -99,7 +99,14 @@ function Row({
           {control}
         </span>
       )}
-      <span className={cn('text-right tabular-nums', stackControl && 'col-start-3 row-start-1')}>
+      {/* An absurd figure (a billion parts at a hundred million) wraps inside
+          the card instead of running out of it. */}
+      <span
+        className={cn(
+          'min-w-0 text-right tabular-nums [overflow-wrap:anywhere]',
+          stackControl && 'col-start-3 row-start-1'
+        )}
+      >
         {amount}
       </span>
     </div>
@@ -184,7 +191,7 @@ export function TotalsSection({
 
   const rows = (
     <div className="space-y-2" data-testid="totals">
-      <div className="@container grid grid-cols-[minmax(0,1fr)_auto_auto] gap-x-3 gap-y-2">
+      <div className="@container grid grid-cols-[minmax(min-content,1fr)_minmax(0,auto)_minmax(0,auto)] gap-x-3 gap-y-2">
         <Row label={t('parts')} amount={formatCurrency(displayPartsSubtotal, currencyCode)} />
         {partsCostSubtotal > 0 && (
           <Row
@@ -290,10 +297,12 @@ export function TotalsSection({
 
       <div
         data-totals-row
-        className="flex items-center justify-between border-t pt-2 text-lg font-bold tabular-nums"
+        className="flex items-center justify-between gap-3 border-t pt-2 text-lg font-bold tabular-nums"
       >
-        <span>{t('total')}</span>
-        <span>{formatCurrency(totalAmount, currencyCode)}</span>
+        <span className="shrink-0">{t('total')}</span>
+        <span className="min-w-0 text-right [overflow-wrap:anywhere]">
+          {formatCurrency(totalAmount, currencyCode)}
+        </span>
       </div>
       {taxInclusive && (
         <p className="text-xs text-muted-foreground italic">{t('inclusiveModeHint')}</p>

@@ -121,3 +121,41 @@ export function useFieldErrors() {
 
   return { errors, report, clear, reset, invalidProps, message, text }
 }
+
+/**
+ * The line under one figure of a part or labour line that the save would
+ * refuse ("Must be 100,000 or less."), with the id its field points at
+ * through aria-describedby. Nothing when the figure is fine.
+ */
+export function LineFieldError({
+  id,
+  error,
+}: {
+  id: string
+  error: Pick<FieldError, 'issue' | 'limit'> | undefined
+}) {
+  const text = useFieldErrorText()
+  if (!error) return null
+  return (
+    <p id={id} className="text-xs text-destructive">
+      {text(error)}
+    </p>
+  )
+}
+
+/** The first of a form's line figures the save would refuse, for the save to focus. */
+export const LINE_ERROR_SELECTOR = '[data-line-error], [data-line-total-error]'
+
+/**
+ * The attributes that mark a line's figure as refused: red, announced, and
+ * findable by the save that wants to put the cursor on it.
+ */
+export function lineFieldInvalidProps(id: string, error: unknown) {
+  return error
+    ? {
+        'aria-invalid': true as const,
+        'aria-describedby': id,
+        'data-line-error': '',
+      }
+    : {}
+}
