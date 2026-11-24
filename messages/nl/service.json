@@ -267,6 +267,30 @@
     "body": "Die blijft buiten de lijst terwijl je bewerkt. Bij je volgende keer opslaan gaat die sowieso mee.",
     "show": "Tonen"
   },
+  "changedElsewhere": {
+    "keptTitle": "Elders gewijzigd terwijl je aan het bewerken was: {fields}.",
+    "keptBody": "Deze pagina slaat jouw versie eroverheen op.",
+    "replacedTitle": "Elders gewijzigd: {fields}.",
+    "replacedBody": "Een latere opslag heeft je wijziging vervangen. Deze pagina toont nu de nieuwste versie.",
+    "dismiss": "OK",
+    "fields": {
+      "title": "Titel",
+      "type": "Type",
+      "status": "Status",
+      "mileage": "Kilometerstand",
+      "mileageMarine": "Motoruren",
+      "description": "Omschrijving",
+      "diagnosticNotes": "Interne notities",
+      "invoiceNotes": "Klantnotities",
+      "invoiceNumber": "Factuurnummer",
+      "invoiceDate": "Factuurdatum",
+      "invoiceDueDate": "Vervaldatum",
+      "taxRate": "Btw-tarief",
+      "discount": "Korting",
+      "warranty": "Garantie",
+      "concerns": "Klachten"
+    }
+  },
   "totals": {
     "title": "Totalen",
     "parts": "Onderdelen",

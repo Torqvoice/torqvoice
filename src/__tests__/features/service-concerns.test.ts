@@ -46,7 +46,8 @@ describe('service concerns', () => {
   })
 
   it('reconciles concerns by id on update instead of replacing them', () => {
-    const actions = read('src/features/vehicles/Actions/serviceActions.ts')
+    // The work order's update, which both save actions write through.
+    const actions = read('src/features/vehicles/Lib/writeServiceRecordUpdate.server.ts')
     // The guard rail for the bug above: if this ever becomes a deleteMany over
     // the whole job again, findings lose their concern on the next autosave.
     expect(actions).not.toMatch(/serviceConcern\.deleteMany\(\{\s*where:\s*\{\s*serviceRecordId/)

@@ -267,6 +267,30 @@
     "body": "Fica fora da lista enquanto edita. A próxima gravação inclui-a de qualquer forma.",
     "show": "Mostrar"
   },
+  "changedElsewhere": {
+    "keptTitle": "Alterado noutro local enquanto editava: {fields}.",
+    "keptBody": "Esta página guarda a sua versão por cima.",
+    "replacedTitle": "Alterado noutro local: {fields}.",
+    "replacedBody": "Uma gravação posterior substituiu a sua alteração. Esta página mostra agora a versão mais recente.",
+    "dismiss": "OK",
+    "fields": {
+      "title": "Título",
+      "type": "Tipo",
+      "status": "Estado",
+      "mileage": "Quilometragem",
+      "mileageMarine": "Horas de motor",
+      "description": "Descrição",
+      "diagnosticNotes": "Notas internas",
+      "invoiceNotes": "Notas para o cliente",
+      "invoiceNumber": "Número da fatura",
+      "invoiceDate": "Data da fatura",
+      "invoiceDueDate": "Data de vencimento",
+      "taxRate": "Taxa de imposto",
+      "discount": "Desconto",
+      "warranty": "Garantia",
+      "concerns": "Problemas"
+    }
+  },
   "totals": {
     "title": "Totais",
     "parts": "Peças",

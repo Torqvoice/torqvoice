@@ -128,6 +128,27 @@ export const updateServiceSchema = createServiceSchema.partial().extend({
   id: z.string(),
 })
 
+/**
+ * What one tab of a work order changed (saveServiceRecordChanges). The money
+ * is not among it: the server reckons the totals from what is stored, so a
+ * tab holding an old copy of the lines cannot write totals that belong to
+ * them. Nor the fields the page has no control for.
+ */
+export const saveServiceChangesSchema = updateServiceSchema.omit({
+  customerId: true,
+  cost: true,
+  shopName: true,
+  techName: true,
+  parts: true,
+  laborHours: true,
+  attachments: true,
+  subtotal: true,
+  taxAmount: true,
+  taxInclusive: true,
+  totalAmount: true,
+  discountAmount: true,
+})
+
 export type ServiceAttachmentInput = z.infer<typeof serviceAttachmentSchema>
 export type ServiceConcernInput = z.infer<typeof serviceConcernSchema>
 /**

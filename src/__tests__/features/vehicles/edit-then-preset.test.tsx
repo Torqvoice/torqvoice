@@ -27,9 +27,11 @@ vi.mock('@/components/confirm-dialog', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/components/confirm-dialog')>()),
   useConfirm: () => vi.fn(async () => true),
 }))
-const updateServiceRecord = vi.fn()
+const saveServiceRecordChanges = vi.fn()
+vi.mock('@/features/vehicles/Actions/saveServiceRecordChanges', () => ({
+  saveServiceRecordChanges: (input: unknown) => saveServiceRecordChanges(input),
+}))
 vi.mock('@/features/vehicles/Actions/serviceActions', () => ({
-  updateServiceRecord: (input: unknown) => updateServiceRecord(input),
   deleteServiceRecord: vi.fn(),
   deleteServiceAttachment: vi.fn(),
   toggleManuallyPaid: vi.fn(),
@@ -121,7 +123,7 @@ function openPage() {
 /** The save the server is running, held open until the test lets it finish. */
 function heldSave() {
   let finish: () => void = () => undefined
-  updateServiceRecord.mockImplementationOnce(
+  saveServiceRecordChanges.mockImplementationOnce(
     () =>
       new Promise((resolve) => {
         finish = () => resolve({ success: true })
@@ -131,7 +133,7 @@ function heldSave() {
 }
 
 const sent = (call = -1) =>
-  updateServiceRecord.mock.calls.at(call)?.[0] as {
+  saveServiceRecordChanges.mock.calls.at(call)?.[0] as {
     laborItems: ServiceLaborInput[]
     partItems: ServicePartInput[]
   }
@@ -143,7 +145,7 @@ const applyPreset = (page: ReturnType<typeof openPage>['page']) =>
   })
 
 beforeEach(() => {
-  updateServiceRecord.mockReset().mockResolvedValue({ success: true })
+  saveServiceRecordChanges.mockReset().mockResolvedValue({ success: true })
 })
 
 afterEach(() => {
@@ -315,6 +317,9 @@ describe('saved lines compared as the server returns them', () => {
     expect(page().partsAddedElsewhere).toEqual([])
     await act(() => submit())
     expect(sent().laborItems.map((l) => l.description)).toEqual(['ZZ Repro B', 'ZZ Oil service'])
-    expect(sent().partItems.map((p) => p.name)).toEqual(['ZZ Oil filter', 'ZZ Brake cleaner'])
+    // The parts went with the first save and have not changed since, so the
+    // second leaves them as they are stored; on screen each shows once.
+    expect(sent().partItems).toBeUndefined()
+    expect(page().partItems.map((p) => p.name)).toEqual(['ZZ Oil filter', 'ZZ Brake cleaner'])
   })
 })

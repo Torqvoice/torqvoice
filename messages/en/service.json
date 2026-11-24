@@ -267,6 +267,30 @@
     "body": "It stays out of the list while you are editing. Your next save includes it either way.",
     "show": "Show it"
   },
+  "changedElsewhere": {
+    "keptTitle": "Changed elsewhere while you were editing: {fields}.",
+    "keptBody": "This page saves your version over it.",
+    "replacedTitle": "Changed elsewhere: {fields}.",
+    "replacedBody": "A later save replaced your change. This page now shows the newer version.",
+    "dismiss": "OK",
+    "fields": {
+      "title": "Title",
+      "type": "Type",
+      "status": "Status",
+      "mileage": "Mileage",
+      "mileageMarine": "Engine hours",
+      "description": "Description",
+      "diagnosticNotes": "Internal notes",
+      "invoiceNotes": "Customer notes",
+      "invoiceNumber": "Invoice number",
+      "invoiceDate": "Invoice date",
+      "invoiceDueDate": "Due date",
+      "taxRate": "Tax rate",
+      "discount": "Discount",
+      "warranty": "Warranty",
+      "concerns": "Concerns"
+    }
+  },
   "totals": {
     "title": "Totals",
     "parts": "Parts",

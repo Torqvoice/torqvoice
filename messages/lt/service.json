@@ -267,6 +267,30 @@
     "body": "Kol redaguojate, ji nerodoma sąraše. Kitą kartą išsaugant ji bus įtraukta.",
     "show": "Rodyti"
   },
+  "changedElsewhere": {
+    "keptTitle": "Pakeista kitur, kol redagavote: {fields}.",
+    "keptBody": "Šis puslapis išsaugos jūsų versiją vietoj jos.",
+    "replacedTitle": "Pakeista kitur: {fields}.",
+    "replacedBody": "Vėlesnis išsaugojimas pakeitė jūsų pakeitimą. Puslapyje dabar rodoma naujesnė versija.",
+    "dismiss": "Gerai",
+    "fields": {
+      "title": "Pavadinimas",
+      "type": "Tipas",
+      "status": "Būsena",
+      "mileage": "Rida",
+      "mileageMarine": "Variklio valandos",
+      "description": "Aprašymas",
+      "diagnosticNotes": "Vidinės pastabos",
+      "invoiceNotes": "Pastabos klientui",
+      "invoiceNumber": "Sąskaitos numeris",
+      "invoiceDate": "Sąskaitos data",
+      "invoiceDueDate": "Mokėjimo terminas",
+      "taxRate": "Mokesčio tarifas",
+      "discount": "Nuolaida",
+      "warranty": "Garantija",
+      "concerns": "Nusiskundimai"
+    }
+  },
   "totals": {
     "title": "Sumos",
     "parts": "Dalys",

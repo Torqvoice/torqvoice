@@ -80,9 +80,12 @@ describe('the meter tables', () => {
   })
 
   it('are no longer a job’s when the job moves to another vehicle, in the same save', () => {
-    const source = readFileSync('src/features/vehicles/Actions/serviceActions.ts', 'utf8')
+    const source = readFileSync(
+      'src/features/vehicles/Lib/writeServiceRecordUpdate.server.ts',
+      'utf8'
+    )
     const move = source.slice(source.indexOf('if (!sameVehicle && vehicleBefore) {'))
-    expect(move.slice(0, move.indexOf('\n        }\n'))).toContain(
+    expect(move.slice(0, move.indexOf('\n    }\n'))).toContain(
       'unlinkJobMeterReadingsFromOtherVehicles(tx'
     )
   })

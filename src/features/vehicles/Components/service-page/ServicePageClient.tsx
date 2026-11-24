@@ -64,6 +64,7 @@ import type { ServicePageClientProps, ServiceTab } from './service-page-types'
 import { WorkOrderLayoutProvider } from '@/components/work-order-layout-context'
 import { track } from '@/lib/analytics'
 import { LaborAddedBanner } from './LaborAddedBanner'
+import { ChangedElsewhereBanner } from './ChangedElsewhereBanner'
 import { LeaveUnsavedDialog } from './LeaveUnsavedDialog'
 import { useLiveRecord } from '@/features/realtime/hooks'
 import { PresenceChips } from '@/features/realtime/Components/PresenceChips'
@@ -801,6 +802,12 @@ export function ServicePageClient({
                 formState.applyLaborAddedElsewhere()
                 formState.applyPartsAddedElsewhere()
               }}
+            />
+
+            <ChangedElsewhereBanner
+              kept={formState.changedElsewhere.kept}
+              replaced={formState.changedElsewhere.replaced}
+              onDismiss={formState.dismissChangedElsewhere}
             />
 
             <LeaveUnsavedDialog

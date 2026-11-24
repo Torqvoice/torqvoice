@@ -154,6 +154,8 @@ vi.mock('@/features/vehicles/Components/service-page/useServiceFormState', () =>
       blockedLeave: null,
       laborAddedElsewhere: [],
       partsAddedElsewhere: [],
+      changedElsewhere: { kept: [], replaced: [] },
+      dismissChangedElsewhere: vi.fn(),
       imageAttachments: [],
       showPresetPicker: false,
       showInventoryPicker: false,

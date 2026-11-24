@@ -267,6 +267,30 @@
     "body": "Siz düzenlerken listeye eklenmez. Bir sonraki kaydetmede yine de kaydedilir.",
     "show": "Göster"
   },
+  "changedElsewhere": {
+    "keptTitle": "Siz düzenlerken başka bir yerde değiştirildi: {fields}.",
+    "keptBody": "Bu sayfa sizin sürümünüzü onun üzerine kaydeder.",
+    "replacedTitle": "Başka bir yerde değiştirildi: {fields}.",
+    "replacedBody": "Daha sonraki bir kayıt değişikliğinizin yerini aldı. Bu sayfa artık daha yeni sürümü gösteriyor.",
+    "dismiss": "Tamam",
+    "fields": {
+      "title": "Başlık",
+      "type": "Tür",
+      "status": "Durum",
+      "mileage": "Kilometre",
+      "mileageMarine": "Motor saati",
+      "description": "Açıklama",
+      "diagnosticNotes": "Dahili notlar",
+      "invoiceNotes": "Müşteri notları",
+      "invoiceNumber": "Fatura numarası",
+      "invoiceDate": "Fatura tarihi",
+      "invoiceDueDate": "Vade tarihi",
+      "taxRate": "Vergi oranı",
+      "discount": "İndirim",
+      "warranty": "Garanti",
+      "concerns": "Şikayetler"
+    }
+  },
   "totals": {
     "title": "Toplamlar",
     "parts": "Parçalar",

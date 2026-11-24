@@ -267,6 +267,30 @@
     "body": "Den holdes utenfor listen mens du redigerer. Den blir lagret uansett neste gang du lagrer.",
     "show": "Vis den"
   },
+  "changedElsewhere": {
+    "keptTitle": "Endret et annet sted mens du redigerte: {fields}.",
+    "keptBody": "Denne siden lagrer din versjon over den.",
+    "replacedTitle": "Endret et annet sted: {fields}.",
+    "replacedBody": "En senere lagring erstattet endringen din. Siden viser nå den nyeste versjonen.",
+    "dismiss": "OK",
+    "fields": {
+      "title": "Tittel",
+      "type": "Type",
+      "status": "Status",
+      "mileage": "Kilometerstand",
+      "mileageMarine": "Motortimer",
+      "description": "Beskrivelse",
+      "diagnosticNotes": "Interne notater",
+      "invoiceNotes": "Kundenotater",
+      "invoiceNumber": "Fakturanummer",
+      "invoiceDate": "Fakturadato",
+      "invoiceDueDate": "Forfallsdato",
+      "taxRate": "Mva-sats",
+      "discount": "Rabatt",
+      "warranty": "Garanti",
+      "concerns": "Problemer"
+    }
+  },
   "totals": {
     "title": "Totalt",
     "parts": "Deler",

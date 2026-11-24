@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
@@ -31,6 +31,14 @@ interface NotesSectionProps {
   publicLocked?: boolean
   /** Only when the internal notes have no save of their own on a locked invoice. */
   internalLocked?: boolean
+  /**
+   * Notes saved elsewhere that the page has taken, because nothing was typed
+   * in them here; see useServiceFormState. A note being typed is never in it.
+   */
+  adopted?: {
+    invoiceNotes?: { value: unknown }
+    diagnosticNotes?: { value: unknown }
+  }
 }
 
 function hasContent(html: string): boolean {
@@ -45,6 +53,7 @@ export function NotesSection({
   aiEnabled,
   publicLocked = false,
   internalLocked = false,
+  adopted,
 }: NotesSectionProps) {
   const t = useTranslations('service.notes')
   const modern = useModernWorkOrder()
@@ -54,6 +63,15 @@ export function NotesSection({
   const [generating, setGenerating] = useState(false)
   const [showDialog, setShowDialog] = useState(false)
   const [dontShowAgain, setDontShowAgain] = useState(false)
+
+  const adoptedPublic = adopted?.invoiceNotes
+  const adoptedInternal = adopted?.diagnosticNotes
+  useEffect(() => {
+    if (adoptedPublic) setPublicNotes(String(adoptedPublic.value ?? ''))
+  }, [adoptedPublic])
+  useEffect(() => {
+    if (adoptedInternal) setInternalNotes(String(adoptedInternal.value ?? ''))
+  }, [adoptedInternal])
 
   const handlePublicChange = (html: string) => {
     setPublicNotes(html)

@@ -20,9 +20,11 @@ vi.mock('@/components/confirm-dialog', async (importOriginal) => ({
   ...(await importOriginal<typeof import('@/components/confirm-dialog')>()),
   useConfirm: () => vi.fn(async () => true),
 }))
-const updateServiceRecord = vi.fn()
+const saveServiceRecordChanges = vi.fn()
+vi.mock('@/features/vehicles/Actions/saveServiceRecordChanges', () => ({
+  saveServiceRecordChanges: (input: unknown) => saveServiceRecordChanges(input),
+}))
 vi.mock('@/features/vehicles/Actions/serviceActions', () => ({
-  updateServiceRecord: (input: unknown) => updateServiceRecord(input),
   deleteServiceRecord: vi.fn(),
   deleteServiceAttachment: vi.fn(),
   toggleManuallyPaid: vi.fn(),
@@ -34,8 +36,33 @@ vi.mock('@/features/payments/Actions/paymentActions', () => ({
 vi.mock('@/features/sms/Actions/smsActions', () => ({ getSmsTemplates: vi.fn() }))
 
 import { useServiceActions } from '@/features/vehicles/Components/service-page/useServiceActions'
+import {
+  changedWorkOrderFields,
+  savedWorkOrderFields,
+  type WorkOrderFieldValues,
+} from '@/features/vehicles/Lib/workOrderFields'
 
 type Options = Parameters<typeof useServiceActions>[0]
+
+/**
+ * What the page changed, worked out as the real form state does it
+ * (workOrderFields): the form's title and reading, and the stage, against the
+ * job as saved.
+ */
+function fieldChanges(form: { status: string; initialData: object }) {
+  const value = (name: string) =>
+    document.querySelector<HTMLInputElement>(`form input[name="${name}"]`)?.value
+  const current: Partial<WorkOrderFieldValues> = { status: form.status }
+  const title = value('title')
+  if (title !== undefined) current.title = title
+  const mileage = value('mileage')
+  if (mileage !== undefined) current.mileage = mileage === '' ? null : Number(mileage)
+  const saved = savedWorkOrderFields(
+    form.initialData as Parameters<typeof savedWorkOrderFields>[0],
+    0
+  )
+  return { current, changed: changedWorkOrderFields(saved, current) }
+}
 
 const WAITING = 'The reading is not saved yet. Answer the question under it first.'
 
@@ -45,7 +72,7 @@ afterEach(() => {
 })
 
 beforeEach(() => {
-  updateServiceRecord.mockReset().mockResolvedValue({ success: true })
+  saveServiceRecordChanges.mockReset().mockResolvedValue({ success: true })
 })
 
 /** The work order as the page holds it: last reading 148,000, nothing saved on the job yet. */
@@ -87,6 +114,17 @@ function page(over: { confirmed?: number | null; saved?: number | null } = {}) {
     confirmedReadingRef: { current: over.confirmed ?? null },
     acknowledgeSavedLines: vi.fn(),
     sendingLinesRef: { current: null },
+    partsAddedElsewhere: [],
+    laborAddedElsewhere: [],
+    fieldChanges: () => fieldChanges(form),
+    acknowledgeSavedFields: vi.fn(),
+    lineEditsForSave: () => ({
+      parts: true,
+      labor: true,
+      partsRevision: 0,
+      laborRevision: 0,
+    }),
+    settleLineEdits: vi.fn(),
   }
   const hook = renderHook(() =>
     useServiceActions({
@@ -120,13 +158,13 @@ function page(over: { confirmed?: number | null; saved?: number | null } = {}) {
   return { form, save, reading }
 }
 
-const sent = () => updateServiceRecord.mock.calls.at(-1)?.[0] as Record<string, unknown>
+const sent = () => saveServiceRecordChanges.mock.calls.at(-1)?.[0] as Record<string, unknown>
 
 describe('a reading far above the last one, not yet answered', () => {
   it('an autosave writes the rest of the work order and not the reading', async () => {
     const { form, save } = page()
     await save({ autosave: true })
-    expect(updateServiceRecord).toHaveBeenCalledTimes(1)
+    expect(saveServiceRecordChanges).toHaveBeenCalledTimes(1)
     expect(sent()).toMatchObject({ id: 'job1', title: 'ZZ Brakes' })
     // Left out, the job keeps the reading it had.
     expect(sent().mileage).toBeUndefined()
@@ -171,7 +209,7 @@ describe('a reading far above the last one, not yet answered', () => {
     expect(form.markDirty).not.toHaveBeenCalled()
 
     // An edit made while the save ran is newer and gets a save of its own.
-    updateServiceRecord.mockImplementationOnce(async () => {
+    saveServiceRecordChanges.mockImplementationOnce(async () => {
       form.editRevisionRef.current += 1
       return { success: true }
     })
@@ -207,7 +245,8 @@ describe('once answered, or when nothing needs asking', () => {
   it('a reading already saved on the job is not asked about again', async () => {
     const { form, save } = page({ saved: 1490000 })
     await save({ autosave: true })
-    expect(sent().mileage).toBe(1490000)
+    // Not changed on this page, so not sent: the job keeps it as it is.
+    expect(sent().mileage).toBeUndefined()
     expect(form.markSaved).toHaveBeenCalled()
   })
 })
