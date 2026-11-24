@@ -88,7 +88,9 @@ export async function getVehicleGlance(vehicleId: string) {
         if (done) {
           doneJobs += 1
           const at = job.startDateTime ?? job.serviceDate
-          if (!lastVisit || at > lastVisit) {
+          // A visit that has not started is not the last one: a job
+          // completed before its booked slot read "Last visit in 13 hours".
+          if (at <= now && (!lastVisit || at > lastVisit)) {
             lastVisit = at
             lastVisitJobId = job.id
           }
