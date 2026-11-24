@@ -880,7 +880,7 @@ export function VehicleForm({
             onSubmit={handleSubmit}
             onInput={readDrafts}
             // A refused field's mark goes as soon as it is changed.
-            onChange={(e) => fieldErrors.clear((e.target as HTMLInputElement).name)}
+            onChange={(e) => fieldErrors.clear((e.target as Element).getAttribute('name') ?? '')}
             className="flex min-h-0 flex-1 flex-col"
           >
             <DialogBody className="space-y-4">

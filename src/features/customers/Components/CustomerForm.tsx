@@ -301,7 +301,7 @@ export function CustomerForm({
           ref={formRef}
           onSubmit={handleSubmit}
           // A refused field's mark goes as soon as it is changed.
-          onChange={(e) => fieldErrors.clear((e.target as HTMLInputElement).name)}
+          onChange={(e) => fieldErrors.clear((e.target as Element).getAttribute('name') ?? '')}
           className="flex min-h-0 flex-1 flex-col"
         >
           <DialogBody className="grid content-start gap-x-8 gap-y-4 md:grid-cols-2">
