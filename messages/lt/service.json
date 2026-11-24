@@ -398,6 +398,8 @@
     "received": "Gauti mokėjimai",
     "noneYet": "Dar nieko nesumokėta.",
     "balanceDue": "Mokėtina suma",
+    "aboveBalance": "Mokėtina suma yra {amount}. Mokėjimas negali būti didesnis.",
+    "nothingDue": "Pagal šią sąskaitą nieko nebeliko mokėti.",
     "refund": "Grąžinimas"
   },
   "attachments": {

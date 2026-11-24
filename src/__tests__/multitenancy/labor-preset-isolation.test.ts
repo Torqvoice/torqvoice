@@ -25,6 +25,7 @@ vi.mock('@/lib/db', () => ({
     laborPresetItem: {
       deleteMany: vi.fn(),
     },
+    inventoryPart: { findMany: vi.fn() },
     $transaction: vi.fn(),
   },
 }))
@@ -32,6 +33,7 @@ vi.mock('@/lib/db', () => ({
 import { getCachedSession, getCachedMembership } from '@/lib/cached-session'
 import { db } from '@/lib/db'
 import {
+  getLaborPresetsList,
   getLaborPreset,
   updateLaborPreset,
   deleteLaborPreset,
@@ -193,5 +195,53 @@ describe('deleteLaborPreset — cross-org isolation', () => {
 
     expect(result.success).toBe(true)
     expect((result.data as any).deleted).toBe(true)
+  })
+})
+
+describe('getLaborPresetsList — stock cost on preset parts', () => {
+  const presetPart = (name: string, inventoryPartId: string | null) => ({
+    name,
+    partNumber: null,
+    quantity: 1,
+    unit: null,
+    category: null,
+    unitPrice: 12.5,
+    inventoryPartId,
+    sortOrder: 0,
+  })
+
+  it("carries the linked item's cost, looked up only in the caller's workshop", async () => {
+    setupOrgAOwner()
+    vi.mocked(db.laborPreset.findMany).mockResolvedValue([
+      {
+        id: 'preset-a',
+        name: 'Wiper service',
+        description: null,
+        items: [],
+        parts: [
+          presetPart('Wiper blade', 'inv-wiper'),
+          presetPart('Shop rag', null),
+          presetPart('Foreign part', 'inv-org-b'),
+        ],
+      },
+    ] as any)
+    vi.mocked(db.inventoryPart.findMany).mockResolvedValue([
+      { id: 'inv-wiper', unitCost: 6.4 },
+    ] as any)
+
+    const result = await getLaborPresetsList()
+
+    expect(vi.mocked(db.inventoryPart.findMany)).toHaveBeenCalledWith(
+      expect.objectContaining({
+        where: { id: { in: ['inv-wiper', 'inv-org-b'] }, organizationId: ORG_A },
+      })
+    )
+    expect(result.success).toBe(true)
+    const parts = (result.data as any)[0].parts
+    expect(parts.map((p: { name: string; unitCost: number }) => [p.name, p.unitCost])).toEqual([
+      ['Wiper blade', 6.4],
+      ['Shop rag', 0],
+      ['Foreign part', 0],
+    ])
   })
 })

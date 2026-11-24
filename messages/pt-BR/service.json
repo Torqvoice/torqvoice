@@ -398,6 +398,8 @@
     "received": "Pagamentos recebidos",
     "noneYet": "Nada pago ainda.",
     "balanceDue": "Saldo devedor",
+    "aboveBalance": "O saldo devedor é {amount}. Um pagamento não pode ser maior que isso.",
+    "nothingDue": "Não há nada a pagar nesta fatura.",
     "refund": "Reembolso"
   },
   "attachments": {

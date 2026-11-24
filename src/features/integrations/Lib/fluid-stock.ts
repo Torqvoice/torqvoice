@@ -1,4 +1,5 @@
 import {
+  isPriceOverridden,
   lineTotal,
   type PricingSettings,
   resolvePartPrice,
@@ -46,6 +47,11 @@ export interface FluidPartLine {
   unitPrice: number
   total: number
   inventoryPartId: string | null
+  /**
+   * The price is the stocked item's own and the rounded markup cannot rebuild
+   * it, so a later cost edit keeps it instead of repricing the line.
+   */
+  priceOverridden: boolean
 }
 
 /**
@@ -248,6 +254,7 @@ export function fluidPartLine(
       unitPrice,
       total: lineTotal(quantity, unitPrice),
       inventoryPartId: part.id,
+      priceOverridden: isPriceOverridden({ unitCost: part.unitCost, markupPercent, unitPrice }),
     }
   }
   const unit = options.units === 'us' ? 'qt' : 'l'
@@ -262,5 +269,6 @@ export function fluidPartLine(
     unitPrice: 0,
     total: 0,
     inventoryPartId: null,
+    priceOverridden: false,
   }
 }
