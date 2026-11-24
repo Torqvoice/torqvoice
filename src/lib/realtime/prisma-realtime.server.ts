@@ -256,7 +256,11 @@ async function announce(
   if (!kind && !child) return
 
   if (kind) {
-    const id = action === 'bulk' ? null : idFrom(args, result)
+    // A bulk write that names one row by id is a write of that row: a
+    // conditional update (`updateMany` where id and status) is how a cancel
+    // or a status change refuses to undo another, and the job's screens must
+    // hear it. One that names none is the workshop's lists' to hear.
+    const id = action === 'bulk' ? stringOf(((args.where ?? {}) as Row).id) : idFrom(args, result)
     const organizationId =
       organizationFrom(args, result) ?? (id ? await organizationOf(kind, id, hooks) : null)
     if (!organizationId) return

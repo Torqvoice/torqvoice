@@ -236,6 +236,18 @@ describe('a bulk write', () => {
       { kind: 'serviceRecord', id: null, organizationId: 'org-1', action: 'updated' },
     ])
   })
+
+  it('announces the one record a conditional update names by id', async () => {
+    // A cancel writes only if the job is not cancelled already.
+    await write('ServiceRecord', 'updateMany', {
+      where: { id: 'sr-1', organizationId: 'org-1', status: { not: 'cancelled' } },
+      data: { status: 'cancelled' },
+    })
+
+    expect(published).toEqual([
+      { kind: 'serviceRecord', id: 'sr-1', organizationId: 'org-1', action: 'updated' },
+    ])
+  })
 })
 
 describe('what is not announced', () => {
