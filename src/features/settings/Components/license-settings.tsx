@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useLocale, useTranslations } from 'next-intl'
+import { useFormatDate } from '@/lib/use-format-date'
 import { toast } from 'sonner'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -167,6 +168,7 @@ export function LicenseSettings({
 }) {
   const router = useRouter()
   const t = useTranslations('settings')
+  const { formatDate } = useFormatDate()
   const locale = useLocale()
   const [licenseKey, setLicenseKey] = useState(initialKey)
   const [status, setStatus] = useState<LicenseTokenStatus>(initialStatus)
@@ -291,12 +293,12 @@ export function LicenseSettings({
           )}
           {!perpetual && initialExpiresAt && (
             <span className="text-xs text-muted-foreground">
-              {t('license.expiresOn', { date: new Date(initialExpiresAt).toLocaleDateString() })}
+              {t('license.expiresOn', { date: formatDate(initialExpiresAt) })}
             </span>
           )}
           {!perpetual && initialCheckedAt && (
             <span className="text-xs text-muted-foreground">
-              {t('license.lastChecked', { date: new Date(initialCheckedAt).toLocaleDateString() })}
+              {t('license.lastChecked', { date: formatDate(initialCheckedAt) })}
             </span>
           )}
         </div>

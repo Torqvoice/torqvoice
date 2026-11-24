@@ -29,6 +29,7 @@ import {
   buildPortalThread,
   type PortalChatStampKind,
   type PortalChatStamps,
+  type PortalChatClock,
   portalChatFormats,
   workshopDayKey,
 } from './chatThread'
@@ -69,8 +70,8 @@ export interface PortalChatPanelProps {
    * without it the events arrive with the chat's first poll.
    */
   initialEvents?: PortalChatEvent[]
-  /** How times are printed: the workshop's zone and its 12 or 24 hour clock. */
-  clock: { timeZone: string; timeFormat: '12h' | '24h' }
+  /** How times are printed: the workshop's zone, its 12 or 24 hour clock and its date format. */
+  clock: PortalChatClock
   /**
    * The times and days of that first thread as the server printed them, so
    * the page reads the same before and after the browser takes over. Optional:
@@ -132,8 +133,13 @@ export function PortalChatPanel({
   const canWrite = enabled && thread.enabled
 
   const formats = useMemo(
-    () => portalChatFormats(locale, { timeZone: clock.timeZone, timeFormat: clock.timeFormat }),
-    [locale, clock.timeZone, clock.timeFormat]
+    () =>
+      portalChatFormats(locale, {
+        timeZone: clock.timeZone,
+        timeFormat: clock.timeFormat,
+        dateFormat: clock.dateFormat,
+      }),
+    [locale, clock.timeZone, clock.timeFormat, clock.dateFormat]
   )
   /**
    * A moment as the thread prints it. What the server already printed is

@@ -65,6 +65,7 @@ vi.mock('@/features/portal/Lib/portalFormat', async () => {
         locale: 'nb',
         timeZone: 'Europe/Oslo',
         timeFormat: '24h',
+        dateFormat: 'dd/MM/yyyy',
         money: (n) => `kr ${n.toFixed(2)}`,
         today: 'i dag',
         tomorrow: 'i morgen',
@@ -140,9 +141,9 @@ describe('the invoice list', () => {
     return screen.getAllByRole('list')[0]
   }
 
-  it('prints the date as the workshop day in the portal language', async () => {
+  it('prints the date as the workshop day in the workshop date format', async () => {
     const cards = await renderList()
-    expect(within(cards).getAllByText('8. nov.')).toHaveLength(3)
+    expect(within(cards).getAllByText('08/11/2026')).toHaveLength(3)
     expect(screen.queryByText('11/8/2026')).not.toBeInTheDocument()
   })
 
@@ -173,7 +174,7 @@ describe('the invoice list', () => {
     // 1000 unpaid and 600 left on the partly paid one.
     expect(within(summary).getByText('kr 1600.00')).toBeInTheDocument()
     expect(within(summary).getByText(/on 2 invoices/)).toBeInTheDocument()
-    expect(within(summary).getByText(/Next due 22\. nov\./)).toBeInTheDocument()
+    expect(within(summary).getByText(/Next due 22\/11\/2026/)).toBeInTheDocument()
     expect(within(summary).getByRole('link', { name: 'Open Invoice 1001' })).toHaveAttribute(
       'href',
       '/portal/verksted/invoices/a'
@@ -199,9 +200,9 @@ describe('the invoice list', () => {
 
   it('says what is left to pay and when it is due, but not on a paid one', async () => {
     const cards = await renderList()
-    expect(within(cards).getByText('Due 22. nov.')).toBeInTheDocument()
+    expect(within(cards).getByText('Due 22/11/2026')).toBeInTheDocument()
     expect(within(cards).getByText('kr 600.00 left to pay')).toBeInTheDocument()
-    expect(within(cards).queryByText('Due 1. nov.')).not.toBeInTheDocument()
+    expect(within(cards).queryByText('Due 01/11/2026')).not.toBeInTheDocument()
   })
 
   it('says an unpaid bill is overdue once its due day has passed at the workshop', async () => {
@@ -223,11 +224,11 @@ describe('the invoice list', () => {
     const lateCard = within(cards).getAllByRole('listitem')[0]
     expect(lateCard.querySelector('[data-payment="overdue"]')).toHaveTextContent('Overdue')
     expect(lateCard.querySelector('[data-payment="overdue"]')).toHaveClass('p-badge--danger')
-    const late = within(cards).getByText('Overdue since 14. nov.')
+    const late = within(cards).getByText('Overdue since 14/11/2026')
     // The theme's own warning colour, which every theme defines.
     expect(late).toHaveClass('text-[color:var(--p-danger)]')
-    expect(within(cards).queryByText('Due 14. nov.')).not.toBeInTheDocument()
-    expect(within(cards).getByText('Due 15. nov.')).toBeInTheDocument()
+    expect(within(cards).queryByText('Due 14/11/2026')).not.toBeInTheDocument()
+    expect(within(cards).getByText('Due 15/11/2026')).toBeInTheDocument()
   })
 
   it('opens the invoice from the whole card and keeps the download its own link', async () => {
@@ -415,7 +416,7 @@ describe('the vehicle page', () => {
     expect(within(tires).getByText('Winter tyres stored with us')).toBeInTheDocument()
     expect(
       within(tires).getByText(
-        'Nokian Hakkapeliitta 10 · 225/60 R18 · 4 tyres · studded · on rims · stored since 20. okt.'
+        'Nokian Hakkapeliitta 10 · 225/60 R18 · 4 tyres · studded · on rims · stored since 20/10/2026'
       )
     ).toBeInTheDocument()
   })
