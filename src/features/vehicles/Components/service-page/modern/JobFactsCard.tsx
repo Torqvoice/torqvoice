@@ -447,7 +447,13 @@ export function JobFactsCard({
                     type="number"
                     min={0}
                     max={READING_MAX}
-                    placeholder="50000"
+                    // The last reading known for this vehicle, so the one
+                    // typed can be read against it; none when nothing is known.
+                    placeholder={
+                      !vehicleChanged && initialData.lastReading != null
+                        ? String(initialData.lastReading)
+                        : undefined
+                    }
                     className="h-8 w-32"
                     defaultValue={initialData.mileage ?? ''}
                     onChange={(e) => setReadingTyped(e.target.value)}

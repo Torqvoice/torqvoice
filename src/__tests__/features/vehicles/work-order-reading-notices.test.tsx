@@ -121,6 +121,16 @@ describe('the reading on a work order', () => {
     expect(screen.queryByTestId('lower-reading-notice')).not.toBeInTheDocument()
   })
 
+  it('shows the last known reading as the hint in the empty field', () => {
+    renderCard()
+    expect(screen.getByLabelText('Mileage')).toHaveAttribute('placeholder', '412380')
+  })
+
+  it('shows no made-up reading as the hint when none is known', () => {
+    renderCard({ lastReading: null })
+    expect(screen.getByLabelText('Mileage')).not.toHaveAttribute('placeholder')
+  })
+
   it('says nothing when no reading is known for the vehicle', () => {
     renderCard({ lastReading: null })
     fireEvent.change(screen.getByLabelText('Mileage'), { target: { value: '5' } })
