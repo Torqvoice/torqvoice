@@ -185,7 +185,8 @@
     "skipped": "{count, plural, one {# code figurait déjà sur ce travail} other {# codes figuraient déjà sur ce travail}}",
     "failed": "Impossible d'ajouter les codes",
     "descriptionOem": "Saisissez ou collez les codes de l'outil de diagnostic, des codes OBD comme P0420 ou des codes BMW comme 2A82. Chacun devient une observation sur ce travail, avec sa signification enregistrée.",
-    "placeholderOem": "P0420, 2A82 mémorisé"
+    "placeholderOem": "P0420, 2A82 mémorisé",
+    "unrecognised": "{count, plural, one {Pas un code défaut, ignoré : {codes}} other {Pas des codes défaut, ignorés : {codes}}}"
   },
   "finding": {
     "seenBefore": "Vu {date}",

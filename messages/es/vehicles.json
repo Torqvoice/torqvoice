@@ -749,6 +749,7 @@
     "added": "{name} añadido",
     "itemTitle": "Contadores",
     "noItemMeters": "Este elemento no tiene contadores.",
-    "addItemMeterHint": "El contador va con este elemento dondequiera que esté instalado."
+    "addItemMeterHint": "El contador va con este elemento dondequiera que esté instalado.",
+    "negativeReading": "Una lectura no puede ser negativa."
   }
 }
