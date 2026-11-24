@@ -749,6 +749,7 @@
     "added": "{name} hinzugefügt",
     "itemTitle": "Zähler",
     "noItemMeters": "Keine Zähler an diesem Eintrag.",
-    "addItemMeterHint": "Der Zähler bleibt bei diesem Eintrag, egal wo er montiert ist."
+    "addItemMeterHint": "Der Zähler bleibt bei diesem Eintrag, egal wo er montiert ist.",
+    "negativeReading": "Ein Zählerstand kann nicht negativ sein."
   }
 }

@@ -71,6 +71,6 @@
     "saveFailed": "Nepavyko išsaugoti darbų šablono",
     "deleteFailed": "Nepavyko ištrinti darbų šablono",
     "loadFailed": "Nepavyko įkelti darbų šablono",
-    "noItems": "Reikalingas bent vienas elementas"
+    "itemNameMissing": "Suteikite šiai eilutei pavadinimą."
   }
 }

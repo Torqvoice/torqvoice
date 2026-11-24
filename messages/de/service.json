@@ -374,6 +374,8 @@
     "received": "Erhaltene Zahlungen",
     "noneYet": "Noch nichts bezahlt.",
     "balanceDue": "Ausstehend",
+    "aboveBalance": "Offen sind {amount}. Eine Zahlung darf nicht höher sein.",
+    "nothingDue": "Auf dieser Rechnung ist nichts mehr offen.",
     "refund": "Erstattung"
   },
   "attachments": {

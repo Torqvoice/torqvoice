@@ -71,6 +71,6 @@
     "saveFailed": "İşçilik şablonu kaydedilemedi",
     "deleteFailed": "İşçilik şablonu silinemedi",
     "loadFailed": "İşçilik şablonu yüklenemedi",
-    "noItems": "En az bir kalem gereklidir"
+    "itemNameMissing": "Bu kaleme bir ad verin."
   }
 }

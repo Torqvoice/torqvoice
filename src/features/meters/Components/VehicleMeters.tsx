@@ -40,7 +40,12 @@ import {
   removeVehicleMeter,
   replaceVehicleMeter,
 } from '../Actions/vehicleMeterActions'
-import { isLowerMeterValue, parseMeterValue } from '../Lib/meterValue'
+import {
+  isLowerMeterValue,
+  METER_PROBLEM_KEY,
+  meterValueProblem,
+  parseMeterValue,
+} from '../Lib/meterValue'
 import { ReadingQuestion } from '@/features/vehicles/Components/ReadingQuestion'
 import { readingNeedsAnswer } from '@/features/vehicles/Lib/vehicleReading'
 import { meterReadingKind } from '../Lib/meterAsk'
@@ -254,6 +259,7 @@ function ReadingField({
   onChange,
   describedBy,
   autoFocus,
+  error,
 }: {
   id: string
   label: string
@@ -262,7 +268,10 @@ function ReadingField({
   onChange: (value: string) => void
   describedBy?: string
   autoFocus?: boolean
+  /** Why the reading was refused, said under it. */
+  error?: string | null
 }) {
+  const errorId = `${id}-error`
   return (
     <div className="space-y-1.5">
       <Label htmlFor={id}>{label}</Label>
@@ -274,13 +283,50 @@ function ReadingField({
           className="w-40"
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          aria-describedby={describedBy}
+          aria-invalid={error ? true : undefined}
+          aria-describedby={[describedBy, error && errorId].filter(Boolean).join(' ') || undefined}
           autoFocus={autoFocus}
         />
         {unit && <span className="text-sm text-muted-foreground">{unit}</span>}
       </div>
+      {error && (
+        <p id={errorId} role="alert" className="text-xs text-destructive">
+          {error}
+        </p>
+      )}
     </div>
   )
+}
+
+/**
+ * The reading fields of one dialog that were refused, by field id, with the
+ * words for each. A field's mark goes as soon as it is typed in again; the
+ * first refused one takes the focus.
+ */
+function useReadingErrors() {
+  const t = useTranslations('vehicles.meters')
+  const [errors, setErrors] = useState<Record<string, string>>({})
+  /** Checks each field; true when all read. `optional` fields may be left empty. */
+  const check = (fields: { id: string; value: string; optional?: boolean }[]) => {
+    const next: Record<string, string> = {}
+    for (const field of fields) {
+      if (field.optional && !field.value.trim()) continue
+      const problem = meterValueProblem(field.value)
+      if (problem) next[field.id] = t(METER_PROBLEM_KEY[problem])
+    }
+    setErrors(next)
+    const first = fields.find((field) => next[field.id])
+    if (first) document.getElementById(first.id)?.focus()
+    return !first
+  }
+  const clear = (id: string) =>
+    setErrors((prev) => {
+      if (!(id in prev)) return prev
+      const next = { ...prev }
+      delete next[id]
+      return next
+    })
+  return { errors, check, clear }
 }
 
 function AddMeterDialog({
@@ -314,12 +360,11 @@ function AddMeterDialog({
     onClose()
   }
 
+  const readingErrors = useReadingErrors()
+
   const save = async () => {
     if (!chosen) return
-    if (value.trim() && parseMeterValue(value) === null) {
-      toast.error(t('invalidReading'))
-      return
-    }
+    if (!readingErrors.check([{ id: 'meter-first-reading', value, optional: true }])) return
     setSaving(true)
     const fields = {
       meterTypeId: chosen.id,
@@ -378,7 +423,11 @@ function AddMeterDialog({
             label={t('firstReading')}
             unit={chosen?.unit ?? ''}
             value={value}
-            onChange={setValue}
+            onChange={(next) => {
+              setValue(next)
+              readingErrors.clear('meter-first-reading')
+            }}
+            error={readingErrors.errors['meter-first-reading']}
           />
           <div className="space-y-1.5">
             <Label htmlFor="meter-reading-date-0">{t('readingDate')}</Label>
@@ -413,6 +462,7 @@ function ReadingDialog({ meter, onClose }: { meter: VehicleMeterView; onClose: (
   // A reading far above the last one waits for a yes, the odometer's question,
   // with the limit for the meter's unit (meterAsk.ts).
   const [confirmed, setConfirmed] = useState<number | null>(null)
+  const readingErrors = useReadingErrors()
   const typedValue = parseMeterValue(value)
   const askKind = meterReadingKind(meter.unit)
   const asking =
@@ -427,10 +477,7 @@ function ReadingDialog({ meter, onClose }: { meter: VehicleMeterView; onClose: (
     })
 
   const save = async (answered = false) => {
-    if (parseMeterValue(value) === null) {
-      toast.error(t('invalidReading'))
-      return
-    }
+    if (!readingErrors.check([{ id: 'meter-reading', value }])) return
     if (asking && !answered) return
     setSaving(true)
     const result = await addMeterReading({
@@ -469,7 +516,11 @@ function ReadingDialog({ meter, onClose }: { meter: VehicleMeterView; onClose: (
             label={t('reading')}
             unit={meter.unit}
             value={value}
-            onChange={setValue}
+            onChange={(next) => {
+              setValue(next)
+              readingErrors.clear('meter-reading')
+            }}
+            error={readingErrors.errors['meter-reading']}
             describedBy={lower ? 'meter-reading-lower' : undefined}
             autoFocus
           />
@@ -528,9 +579,15 @@ function ReplaceDialog({ meter, onClose }: { meter: VehicleMeterView; onClose: (
   const [day, setDay] = useState('')
   const [saving, setSaving] = useState(false)
 
+  const readingErrors = useReadingErrors()
+
   const save = async () => {
-    if (parseMeterValue(oldEnd) === null || parseMeterValue(newStart) === null) {
-      toast.error(t('invalidReading'))
+    if (
+      !readingErrors.check([
+        { id: 'meter-old-end', value: oldEnd },
+        { id: 'meter-new-start', value: newStart },
+      ])
+    ) {
       return
     }
     setSaving(true)
@@ -563,14 +620,22 @@ function ReplaceDialog({ meter, onClose }: { meter: VehicleMeterView; onClose: (
             label={t('oldEnd')}
             unit={meter.unit}
             value={oldEnd}
-            onChange={setOldEnd}
+            onChange={(next) => {
+              setOldEnd(next)
+              readingErrors.clear('meter-old-end')
+            }}
+            error={readingErrors.errors['meter-old-end']}
           />
           <ReadingField
             id="meter-new-start"
             label={t('newStart')}
             unit={meter.unit}
             value={newStart}
-            onChange={setNewStart}
+            onChange={(next) => {
+              setNewStart(next)
+              readingErrors.clear('meter-new-start')
+            }}
+            error={readingErrors.errors['meter-new-start']}
           />
           <div className="space-y-1.5">
             <Label htmlFor="meter-replaced-date-2">{t('replacedOn')}</Label>

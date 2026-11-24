@@ -1,4 +1,51 @@
+import { isPriceOverridden } from '@/features/inventory/Lib/partPricing'
 import type { ServicePartInput } from '@/features/vehicles/Schema/serviceSchema'
+
+/**
+ * A saved part line as the work order editor holds it.
+ *
+ * Whether the price was set over the cost-and-markup formula is not stored,
+ * so it is read back from the stored cost, markup and price, once, on settled
+ * values (see isPriceOverridden). Left out, a line whose price the rounded
+ * markup cannot rebuild, such as a preset's 133.37 over a cost of 100, was
+ * repriced from the formula the first time its cost was edited after a save.
+ */
+export function editorPartRow(p: {
+  partNumber: string | null
+  name: string
+  quantity: number
+  unit?: string | null
+  category?: string | null
+  unitPrice: number
+  total: number
+  unitCost: number | null
+  markupPercent: number | null
+  inventoryPartId: string | null
+  taxable: boolean
+}): ServicePartInput {
+  const unitCost = p.unitCost ?? 0
+  const markupPercent = p.markupPercent ?? 0
+  return {
+    partNumber: p.partNumber || '',
+    name: p.name,
+    quantity: p.quantity,
+    unit: p.unit ?? null,
+    category: p.category ?? null,
+    unitPrice: p.unitPrice,
+    total: p.total,
+    unitCost,
+    markupPercent,
+    // Preserve the inventory link so editing/saving a work order keeps
+    // deducting the right stock. Without this, a saved edit sends unlinked
+    // parts and inventory reconciliation restocks the "removed" part.
+    inventoryPartId: p.inventoryPartId ?? undefined,
+    // Whether the line is taxed is the line's own. Left out here, a save
+    // would send the line back without it and the server would put the
+    // workshop's default over whatever had been chosen.
+    taxable: p.taxable,
+    priceOverridden: isPriceOverridden({ unitCost, markupPercent, unitPrice: p.unitPrice }),
+  }
+}
 
 /**
  * What a job gained in parts while a page was open: a part a technician
@@ -10,24 +57,46 @@ import type { ServicePartInput } from '@/features/vehicles/Schema/serviceSchema'
  * part added.
  */
 
-const key = (part: ServicePartInput) =>
-  JSON.stringify([
-    part.name,
-    part.partNumber ?? null,
-    part.quantity,
-    part.unitPrice,
-    part.total,
-    part.inventoryPartId ?? null,
+/**
+ * A part as the server hands it back after a save. The editor holds what is
+ * typed (numbers as the strings in the boxes) and a preset's part carries an
+ * empty part number and inventory link where the page's own rows carry none;
+ * the save coerces both, and the refresh after it brings back numbers. Both
+ * sides of every comparison go through this, so a part the page has just
+ * saved is never read as a different one.
+ */
+export function savedPartShape(part: ServicePartInput): ServicePartInput {
+  return {
+    ...part,
+    partNumber: part.partNumber || '',
+    quantity: Number(part.quantity) || 0,
+    unitPrice: Number(part.unitPrice) || 0,
+    total: Number(part.total) || 0,
+    inventoryPartId: part.inventoryPartId || undefined,
+  }
+}
+
+const key = (part: ServicePartInput) => {
+  const saved = savedPartShape(part)
+  return JSON.stringify([
+    saved.name,
+    saved.partNumber,
+    saved.quantity,
+    saved.unitPrice,
+    saved.total,
+    saved.inventoryPartId ?? null,
   ])
+}
 
 export function addedPartLines(
   before: readonly ServicePartInput[],
-  after: readonly ServicePartInput[]
+  after: readonly ServicePartInput[],
+  /** What a save still on its way sent; see addedLaborLines. */
+  sending?: readonly ServicePartInput[]
 ): ServicePartInput[] {
-  const remaining = new Map<string, number>()
-  for (const part of before) {
-    const k = key(part)
-    remaining.set(k, (remaining.get(k) ?? 0) + 1)
+  const remaining = counts(before)
+  if (sending) {
+    for (const [k, n] of counts(sending)) remaining.set(k, Math.max(remaining.get(k) ?? 0, n))
   }
   const added: ServicePartInput[] = []
   for (const part of after) {
@@ -37,4 +106,13 @@ export function addedPartLines(
     else added.push(part)
   }
   return added
+}
+
+function counts(parts: readonly ServicePartInput[]): Map<string, number> {
+  const map = new Map<string, number>()
+  for (const part of parts) {
+    const k = key(part)
+    map.set(k, (map.get(k) ?? 0) + 1)
+  }
+  return map
 }

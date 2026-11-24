@@ -71,6 +71,6 @@
     "saveFailed": "Nie udało się zapisać szablonu robocizny",
     "deleteFailed": "Nie udało się usunąć szablonu robocizny",
     "loadFailed": "Nie udało się załadować szablonu robocizny",
-    "noItems": "Wymagana jest co najmniej jedna pozycja"
+    "itemNameMissing": "Nadaj tej pozycji nazwę."
   }
 }

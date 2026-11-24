@@ -360,6 +360,7 @@ export const QuotePartsEditor = memo(function QuotePartsEditor({
                 unitCost: Number(picked.unitCost) || 0,
                 markupPercent: Number(picked.markupPercent) || 0,
                 unitPrice: picked.unitPrice,
+                priceOverridden: picked.priceOverridden ?? false,
                 total: lineTotal(picked.quantity, picked.unitPrice),
                 excluded: false,
                 inventoryPartId: picked.inventoryPartId ?? null,

@@ -749,6 +749,7 @@
     "added": "{name} eklendi",
     "itemTitle": "Sayaçlar",
     "noItemMeters": "Bu öğede sayaç yok.",
-    "addItemMeterHint": "Sayaç, nereye takılırsa takılsın bu öğeyle birlikte gider."
+    "addItemMeterHint": "Sayaç, nereye takılırsa takılsın bu öğeyle birlikte gider.",
+    "negativeReading": "Okuma değeri negatif olamaz."
   }
 }

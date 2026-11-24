@@ -297,3 +297,25 @@ export function findingLine(finding: {
     ? description
     : `${finding.faultCode} ${description}`
 }
+
+/**
+ * Words in pasted text that look like a code but are not one this reads:
+ * "XYZ123" in "P0401 p0300, XYZ123", a code with a digit too many (P04011)
+ * or one short (P041). A letter first, a digit somewhere, four to eight
+ * characters. Said back to the person rather than dropped without a word,
+ * so a code mistyped off the scan tool is noticed before the job is saved.
+ * Upper case, once each, in the order they appear.
+ */
+export function unrecognisedCodeWords(text: string, options?: { oem?: boolean }): string[] {
+  const out: string[] = []
+  for (const raw of text.split(/[\s,;|]+/)) {
+    // Brackets and sentence marks around a word are not part of it.
+    const word = raw.replace(/^[("'[]+|[)"'\].:!?]+$/g, '').toUpperCase()
+    if (word.length < 4 || word.length > 8) continue
+    if (!/^[A-Z][A-Z0-9:-]*$/.test(word) || !/\d/.test(word)) continue
+    if (out.includes(word)) continue
+    if (extractFaultCodes(word, options).length > 0) continue
+    out.push(word)
+  }
+  return out
+}

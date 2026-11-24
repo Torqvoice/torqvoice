@@ -60,6 +60,7 @@ import { PageHeader } from '@/components/page-header'
 import { getLocale, getTranslations } from 'next-intl/server'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { zonedDayKey } from '@/lib/timezone'
+import { editorPartRow } from '@/features/vehicles/Lib/partLines'
 
 /**
  * Shared server component behind both service-record routes:
@@ -324,25 +325,7 @@ export async function ServiceRecordPage({
       confirmedAt: c.confirmedAt ? c.confirmedAt.toISOString() : null,
       confirmedByName: c.confirmedBy?.name ?? null,
     })),
-    partItems: record.partItems.map((p) => ({
-      partNumber: p.partNumber || '',
-      name: p.name,
-      quantity: p.quantity,
-      unit: p.unit ?? null,
-      category: p.category ?? null,
-      unitPrice: p.unitPrice,
-      total: p.total,
-      unitCost: p.unitCost ?? 0,
-      markupPercent: p.markupPercent ?? 0,
-      // Preserve the inventory link so editing/saving a work order keeps
-      // deducting the right stock. Without this, a saved edit sends unlinked
-      // parts and inventory reconciliation restocks the "removed" part.
-      inventoryPartId: p.inventoryPartId ?? undefined,
-      // Whether the line is taxed is the line's own. Left out here, a save
-      // would send the line back without it and the server would put the
-      // workshop's default over whatever had been chosen.
-      taxable: p.taxable,
-    })),
+    partItems: record.partItems.map(editorPartRow),
     laborItems: shopFeeLinesLast(record.laborItems).map((l) => ({
       description: l.description,
       hours: l.hours,

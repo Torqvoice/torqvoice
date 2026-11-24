@@ -71,6 +71,6 @@
     "saveFailed": "Não foi possível guardar o modelo de mão de obra",
     "deleteFailed": "Não foi possível eliminar o modelo de mão de obra",
     "loadFailed": "Não foi possível carregar o modelo de mão de obra",
-    "noItems": "É necessário pelo menos um item"
+    "itemNameMissing": "Dê um nome a este item."
   }
 }

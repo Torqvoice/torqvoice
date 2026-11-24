@@ -71,6 +71,6 @@
     "saveFailed": "Kan arbeidssjabloon niet opslaan",
     "deleteFailed": "Kan arbeidssjabloon niet verwijderen",
     "loadFailed": "Kan arbeidssjabloon niet laden",
-    "noItems": "Minimaal één item is vereist"
+    "itemNameMissing": "Geef dit item een naam."
   }
 }

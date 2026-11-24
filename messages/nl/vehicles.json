@@ -749,6 +749,7 @@
     "added": "{name} toegevoegd",
     "itemTitle": "Tellers",
     "noItemMeters": "Geen tellers op dit onderdeel.",
-    "addItemMeterHint": "De teller gaat mee met dit onderdeel, waar het ook gemonteerd is."
+    "addItemMeterHint": "De teller gaat mee met dit onderdeel, waar het ook gemonteerd is.",
+    "negativeReading": "Een stand kan niet negatief zijn."
   }
 }

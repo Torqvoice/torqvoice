@@ -71,6 +71,6 @@
     "saveFailed": "Kunne ikke lagre arbeidsmalen",
     "deleteFailed": "Kunne ikke slette arbeidsmalen",
     "loadFailed": "Kunne ikke laste arbeidsmalen",
-    "noItems": "Minst ett element er påkrevd"
+    "itemNameMissing": "Gi denne posten et navn."
   }
 }

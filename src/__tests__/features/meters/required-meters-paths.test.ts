@@ -77,8 +77,9 @@ vi.mock('@/lib/db', () => ({
       updateMany: vi.fn(),
     },
     servicePart: { findMany: vi.fn() },
-    payment: { create: vi.fn() },
+    payment: { create: vi.fn(), aggregate: vi.fn() },
     $transaction: vi.fn(),
+    $queryRaw: vi.fn(),
   },
 }))
 
@@ -323,6 +324,11 @@ describe('handing the invoice over', () => {
 describe('money, with a required reading missing', () => {
   it('a payment recorded at the desk is taken and issues the invoice as before', async () => {
     vi.mocked(db.payment.create).mockResolvedValue({ id: 'pay-1' } as never)
+    // Taken under the job's row lock, against what is still owed on it.
+    vi.mocked(db.$transaction).mockImplementation((async (cb: (tx: unknown) => unknown) =>
+      cb(db)) as never)
+    vi.mocked(db.$queryRaw).mockResolvedValue([{ totalAmount: 100, cost: 0 }] as never)
+    vi.mocked(db.payment.aggregate).mockResolvedValue({ _sum: { amount: 0 } } as never)
     const result = await createPayment({
       serviceRecordId: 'job-1',
       amount: 100,

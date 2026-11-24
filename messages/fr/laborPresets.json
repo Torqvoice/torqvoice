@@ -71,6 +71,6 @@
     "saveFailed": "Échec de l'enregistrement du modèle de main-d'œuvre",
     "deleteFailed": "Échec de la suppression du modèle de main-d'œuvre",
     "loadFailed": "Échec du chargement du modèle de main-d'œuvre",
-    "noItems": "Au moins un élément est requis"
+    "itemNameMissing": "Donnez un nom à cet élément."
   }
 }
