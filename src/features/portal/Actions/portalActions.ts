@@ -186,7 +186,9 @@ export async function getPortalInvoices() {
       where: {
         organizationId,
         OR: [{ vehicle: { customerId } }, { customerId }],
-        status: 'completed',
+        // And the ones the workshop cancelled after they went out: the
+        // customer holds a copy, so the portal shows it, marked cancelled.
+        status: { in: ['completed', 'cancelled'] },
         // Not the ones still waiting for the customer's reference / PO.
         ...(await notAwaitingReference(organizationId)),
       },
@@ -225,7 +227,7 @@ export async function getPortalInvoiceSheet(invoiceId: string) {
         id: invoiceId,
         organizationId,
         OR: [{ vehicle: { customerId } }, { customerId }],
-        status: 'completed',
+        status: { in: ['completed', 'cancelled'] },
         ...(await notAwaitingReference(organizationId)),
       },
       select: { id: true, title: true, invoiceNumber: true, publicToken: true },

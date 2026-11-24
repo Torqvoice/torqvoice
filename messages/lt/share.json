@@ -74,7 +74,9 @@
     "findingSeverityNeedsWork": "Vidutinė",
     "findingSeverityMonitor": "Žema",
     "tel": "Tel.: {phone}",
-    "customFields": "Papildoma informacija"
+    "customFields": "Papildoma informacija",
+    "cancelledTitle": "Ši sąskaita atšaukta",
+    "cancelledBody": "Pagal ją nieko nemokėti. Jei turite klausimų, susisiekite su servisu."
   },
   "quote": {
     "title": "Pasiūlymas",

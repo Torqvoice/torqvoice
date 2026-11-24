@@ -84,6 +84,8 @@ export async function getVehicleGlance(vehicleId: string) {
       const owed: Record<string, 'unpaid' | 'partial'> = {}
 
       for (const job of jobs) {
+        // A cancelled invoice is neither open work nor money owed.
+        if (job.status === 'cancelled') continue
         const done = job.status === 'completed'
         if (done) {
           doneJobs += 1

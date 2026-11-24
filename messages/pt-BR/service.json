@@ -66,7 +66,8 @@
     "designRefreshConfirm": "Atualizar a fatura",
     "designRefreshDone": "Esta fatura agora é impressa com os dados atuais",
     "designRefreshFailed": "Não foi possível atualizar a fatura",
-    "printWorkOrder": "Imprimir ordem de serviço"
+    "printWorkOrder": "Imprimir ordem de serviço",
+    "cancelInvoice": "Cancelar fatura"
   },
   "basicInfo": {
     "title": "Informações Básicas",
@@ -104,7 +105,8 @@
       "pending": "Pendente",
       "in_progress": "Em Progresso",
       "waiting_parts": "Aguardando Peças",
-      "completed": "Concluído"
+      "completed": "Concluído",
+      "cancelled": "Cancelada"
     },
     "searchVehicles": "Pesquisar veículos...",
     "noVehicleFound": "Nenhum veículo encontrado.",
@@ -377,6 +379,7 @@
     "received": "Pagamentos recebidos",
     "noneYet": "Nada pago ainda.",
     "balanceDue": "Saldo devedor",
+    "cancelledNotice": "Cancelada: nada é devido nesta fatura. Os pagamentos e reembolsos continuam listados acima.",
     "aboveBalance": "O saldo devedor é {amount}. Um pagamento não pode ser maior que isso.",
     "nothingDue": "Não há nada a pagar nesta fatura.",
     "refund": "Reembolso"
@@ -756,7 +759,9 @@
       "preview": "Pré-visualizar fatura",
       "previewShort": "Pré-visualizar",
       "send": "Enviar ao cliente",
-      "sendShort": "Enviar"
+      "sendShort": "Enviar",
+      "cancelled": "Cancelada",
+      "nothingOwed": "Nada a pagar"
     },
     "vehicleInfo": {
       "more": "Mais informações",
@@ -886,5 +891,28 @@
     "hint": "Fique para corrigir ou saia e perca as alterações feitas desde o último salvamento.",
     "stay": "Ficar e corrigir",
     "leave": "Sair sem salvar"
+  },
+  "cancelInvoice": {
+    "title": "Cancelar a fatura {number}?",
+    "titleNoNumber": "Cancelar esta fatura?",
+    "description": "Esta fatura já foi enviada ao cliente, por isso não pode ser excluída: a maioria dos países exige números de fatura sem lacunas.",
+    "pointKept": "O serviço é mantido e marcado como cancelado. A fatura mantém seu número e não pode mais ser alterada.",
+    "pointShown": "A fatura, o link compartilhado, o PDF e o portal do cliente a mostram como cancelada.",
+    "pointReports": "Ela deixa de contar na receita, nos impostos e nos valores em aberto.",
+    "pointLedger": "Um sistema contábil conectado anula sua cópia quando possível. Uma cópia com pagamentos fica para seu contador emitir o crédito.",
+    "paidNotice": "O cliente pagou {amount} nesta fatura.",
+    "recordRefund": "Registrar um reembolso do valor devolvido ao cliente",
+    "refundAmount": "Valor do reembolso",
+    "refundMethod": "Reembolsado por",
+    "refundTooMuch": "Um reembolso não pode ser maior que {amount}.",
+    "refundNote": "Reembolso de fatura cancelada",
+    "noRefundHint": "Sem reembolso, os pagamentos continuam registrados como estão.",
+    "keep": "Manter fatura",
+    "confirm": "Cancelar fatura",
+    "done": "Fatura cancelada",
+    "failed": "Não foi possível cancelar a fatura",
+    "bannerTitle": "A fatura {number} está cancelada",
+    "bannerTitleNoNumber": "Esta fatura está cancelada",
+    "bannerBody": "Ela mantém seu número e não pode mais ser alterada. O cliente a vê marcada como cancelada."
   }
 }

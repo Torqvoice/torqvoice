@@ -1,7 +1,8 @@
 import { db } from '@/lib/db'
 import { notificationBus } from '@/lib/notification-bus'
 import { announceJobStatusChanged } from '@/features/vehicles/Lib/jobEvents'
-import { statusColumns } from '@/features/work-order-statuses/Lib/stages'
+import { isCancelled, statusColumns } from '@/features/work-order-statuses/Lib/stages'
+import { CANCELLED_JOB_REFUSAL } from '@/features/invoices/Lib/cancelInvoice'
 
 /**
  * Clocking a technician on and off a job.
@@ -14,7 +15,12 @@ import { statusColumns } from '@/features/work-order-statuses/Lib/stages'
 /** A stop that lands before its start is a clock error, not a negative shift. */
 export class TimeEntryError extends Error {
   constructor(
-    public code: 'already_running' | 'not_running' | 'job_not_found' | 'invalid_range',
+    public code:
+      | 'already_running'
+      | 'not_running'
+      | 'job_not_found'
+      | 'invalid_range'
+      | 'job_cancelled',
     message: string
   ) {
     super(message)
@@ -139,6 +145,10 @@ export async function startEntry(args: {
   })
   if (!job) {
     throw new TimeEntryError('job_not_found', 'That job does not exist in this workshop.')
+  }
+  // Its invoice was cancelled: no more work is clocked on it.
+  if (isCancelled(job.status)) {
+    throw new TimeEntryError('job_cancelled', CANCELLED_JOB_REFUSAL)
   }
 
   const open = await getOpenEntry(organizationId, technicianIds)

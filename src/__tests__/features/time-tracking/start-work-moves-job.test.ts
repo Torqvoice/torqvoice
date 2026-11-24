@@ -132,3 +132,13 @@ describe('starting work on a job', () => {
     expect(heard.map((e) => e.type)).toEqual(['clock_started'])
   })
 })
+
+describe('starting work on a cancelled job', () => {
+  it('is refused, and no clock starts', async () => {
+    state.status = 'cancelled'
+
+    await expect(start()).rejects.toMatchObject({ code: 'job_cancelled' })
+    expect(db.$transaction).not.toHaveBeenCalled()
+    expect(tx.serviceRecord.updateMany).not.toHaveBeenCalled()
+  })
+})

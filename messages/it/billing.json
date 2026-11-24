@@ -27,7 +27,8 @@
     "filterUnviewed": "Non aperte",
     "filterUnviewedHint": "Fatture inviate ma mai aperte",
     "filterCompleted": "Solo completati",
-    "filterCompletedHint": "Mostra solo gli ordini di lavoro segnati come completati. Viene ricordato per la prossima volta."
+    "filterCompletedHint": "Mostra solo gli ordini di lavoro segnati come completati. Viene ricordato per la prossima volta.",
+    "statusCancelled": "Annullata"
   },
   "recurring": {
     "title": "Ricorrente",

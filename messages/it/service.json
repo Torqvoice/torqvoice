@@ -66,7 +66,8 @@
     "designRefreshConfirm": "Aggiorna la fattura",
     "designRefreshDone": "Questa fattura ora viene stampata con i dati attuali",
     "designRefreshFailed": "Impossibile aggiornare la fattura",
-    "printWorkOrder": "Stampa ordine di lavoro"
+    "printWorkOrder": "Stampa ordine di lavoro",
+    "cancelInvoice": "Annulla fattura"
   },
   "basicInfo": {
     "title": "Informazioni di Base",
@@ -104,7 +105,8 @@
       "pending": "In Sospeso",
       "in_progress": "In Corso",
       "waiting_parts": "In Attesa di Pezzi",
-      "completed": "Completato"
+      "completed": "Completato",
+      "cancelled": "Annullata"
     },
     "searchVehicles": "Cerca veicoli...",
     "noVehicleFound": "Nessun veicolo trovato.",
@@ -377,6 +379,7 @@
     "received": "Pagamenti ricevuti",
     "noneYet": "Ancora nessun pagamento.",
     "balanceDue": "Importo dovuto",
+    "cancelledNotice": "Annullata: non è dovuto nulla su questa fattura. Pagamenti e rimborsi restano elencati sopra.",
     "aboveBalance": "L’importo dovuto è {amount}. Un pagamento non può superarlo.",
     "nothingDue": "Non c’è nulla da pagare su questa fattura.",
     "refund": "Rimborso"
@@ -756,7 +759,9 @@
       "preview": "Anteprima fattura",
       "previewShort": "Anteprima",
       "send": "Invia al cliente",
-      "sendShort": "Invia"
+      "sendShort": "Invia",
+      "cancelled": "Annullata",
+      "nothingOwed": "Nulla da pagare"
     },
     "vehicleInfo": {
       "more": "Più info",
@@ -886,5 +891,28 @@
     "hint": "Resta per correggere, oppure esci e perdi le modifiche fatte dall'ultimo salvataggio.",
     "stay": "Resta e correggi",
     "leave": "Esci senza salvare"
+  },
+  "cancelInvoice": {
+    "title": "Annullare la fattura {number}?",
+    "titleNoNumber": "Annullare questa fattura?",
+    "description": "Questa fattura è già stata inviata al cliente, quindi non può essere eliminata: nella maggior parte dei paesi la numerazione delle fatture non deve avere buchi.",
+    "pointKept": "Il lavoro viene mantenuto e segnato come annullato. La fattura conserva il suo numero e non può più essere modificata.",
+    "pointShown": "La fattura, il link condiviso, il PDF e il portale clienti la mostrano come annullata.",
+    "pointReports": "Non viene più conteggiata nei ricavi, nelle imposte né negli importi dovuti.",
+    "pointLedger": "Un sistema contabile collegato annulla la sua copia quando può. Una copia con pagamenti resta al tuo contabile per la nota di credito.",
+    "paidNotice": "Il cliente ha pagato {amount} su questa fattura.",
+    "recordRefund": "Registra un rimborso del denaro restituito al cliente",
+    "refundAmount": "Importo del rimborso",
+    "refundMethod": "Rimborsato tramite",
+    "refundTooMuch": "Un rimborso non può superare {amount}.",
+    "refundNote": "Rimborso su fattura annullata",
+    "noRefundHint": "Senza rimborso i pagamenti restano registrati così come sono.",
+    "keep": "Mantieni fattura",
+    "confirm": "Annulla fattura",
+    "done": "Fattura annullata",
+    "failed": "Impossibile annullare la fattura",
+    "bannerTitle": "La fattura {number} è annullata",
+    "bannerTitleNoNumber": "Questa fattura è annullata",
+    "bannerBody": "Conserva il suo numero e non può più essere modificata. Il cliente la vede segnata come annullata."
   }
 }

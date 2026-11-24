@@ -27,7 +27,8 @@
     "filterUnviewed": "Neperžiūrėtos",
     "filterUnviewedHint": "Sąskaitos, kurios išsiųstos, bet niekada neatidarytos",
     "filterCompleted": "Tik užbaigti",
-    "filterCompletedHint": "Rodyti tik užsakymus, pažymėtus kaip užbaigti. Įsimenama kitam kartui."
+    "filterCompletedHint": "Rodyti tik užsakymus, pažymėtus kaip užbaigti. Įsimenama kitam kartui.",
+    "statusCancelled": "Atšaukta"
   },
   "recurring": {
     "title": "Periodinės",

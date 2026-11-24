@@ -349,6 +349,7 @@
     "partial": "Partly paid",
     "unpaid": "Unpaid",
     "overdue": "Overdue",
+    "cancelled": "Cancelled",
     "toPayTitle": "Left to pay",
     "toPayCount": "{count, plural, one {on # invoice} other {on # invoices}}",
     "toPayNextDue": "Next due {date}",
@@ -643,7 +644,8 @@
       "scheduled": "Scheduled",
       "inProgress": "In progress",
       "waitingParts": "Waiting for parts",
-      "completed": "Completed"
+      "completed": "Completed",
+      "cancelled": "Cancelled"
     },
     "request": {
       "pending": "Waiting for an answer",

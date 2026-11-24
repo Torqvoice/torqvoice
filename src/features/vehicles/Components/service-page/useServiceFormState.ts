@@ -184,7 +184,10 @@ export function useServiceFormState({
    */
   const savedStatus = initialData.status
   useEffect(() => {
-    if (hasUnsavedChangesRef.current || !savedStatus) return
+    if (!savedStatus) return
+    // A cancelled invoice is final, and no save can change it back, so it
+    // is taken whatever is being edited.
+    if (hasUnsavedChangesRef.current && savedStatus !== 'cancelled') return
     setStatus(savedStatus)
   }, [savedStatus])
 

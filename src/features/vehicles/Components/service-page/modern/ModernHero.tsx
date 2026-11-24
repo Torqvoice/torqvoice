@@ -287,7 +287,7 @@ export function ModernHero({
                       ? t(`basicInfo.statusOptions.${statusMessageKeys[status]}`)
                       : status}
                   </span>
-                  {onTakePayment && paymentStatus !== 'paid' ? (
+                  {status === 'cancelled' ? null : onTakePayment && paymentStatus !== 'paid' ? (
                     // What is owed is the thing to do something about: the
                     // same "Take payment" as the money bar along the bottom.
                     <button

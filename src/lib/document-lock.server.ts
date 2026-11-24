@@ -11,6 +11,8 @@ import {
   type LockState,
 } from './document-lock'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { isCancelled } from '@/features/work-order-statuses/Lib/stages'
+import { CancelledInvoiceError } from '@/features/invoices/Lib/cancelInvoice'
 
 const LOCK_SETTING_KEYS = {
   invoiceLockEnabled: SETTING_KEYS.INVOICE_LOCK_ENABLED,
@@ -45,10 +47,18 @@ export async function getInvoiceLockState(
   recordId: string,
   organizationId: string
 ): Promise<LockState> {
+  return (await loadInvoiceLock(recordId, organizationId)).state
+}
+
+async function loadInvoiceLock(
+  recordId: string,
+  organizationId: string
+): Promise<{ state: LockState; cancelled: boolean }> {
   const [record, settings] = await Promise.all([
     db.serviceRecord.findFirst({
       where: { id: recordId, organizationId },
       select: {
+        status: true,
         sentAt: true,
         manuallyPaid: true,
         totalAmount: true,
@@ -59,8 +69,8 @@ export async function getInvoiceLockState(
     }),
     getDocumentLockSettings(organizationId),
   ])
-  if (!record) return { locked: false, reason: null, unlockedAt: null }
-  return invoiceLockState(record, settings)
+  if (!record) return { state: { locked: false, reason: null, unlockedAt: null }, cancelled: false }
+  return { state: invoiceLockState(record, settings), cancelled: isCancelled(record.status) }
 }
 
 export async function getQuoteLockState(
@@ -83,7 +93,11 @@ export async function getQuoteLockState(
  * document says it is owed; payments, status and sharing do not go through it.
  */
 export async function assertInvoiceEditable(recordId: string, organizationId: string) {
-  assertEditable(await getInvoiceLockState(recordId, organizationId))
+  const { state, cancelled } = await loadInvoiceLock(recordId, organizationId)
+  // A cancelled invoice is final, whatever the lock setting says: the copy
+  // the customer holds says cancelled, and its number is spent.
+  if (cancelled) throw new CancelledInvoiceError()
+  assertEditable(state)
 }
 
 export async function assertQuoteEditable(quoteId: string, organizationId: string) {

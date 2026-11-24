@@ -23,6 +23,17 @@ function statusScope(options: FinancialReportOptions) {
   return options.completedOnly ? { status: 'completed' } : {}
 }
 
+/**
+ * The invoices that count as charged: never a cancelled one. Its number is
+ * kept, but nothing is owed on it and no tax was charged, so it is out of
+ * revenue, outstanding and tax. Money that moved on it still counts where it
+ * moved: a payment taken and a refund handed back on cancelling are both
+ * cash, each in its own month, and net to what the workshop kept.
+ */
+function chargedScope(options: FinancialReportOptions) {
+  return options.completedOnly ? { status: 'completed' } : { status: { not: 'cancelled' } }
+}
+
 const chargedTotal = (r: { totalAmount: number; cost: number }) =>
   r.totalAmount > 0 ? r.totalAmount : r.cost
 
@@ -54,7 +65,7 @@ export async function computeRevenue(
   const [records, payments, manuallyPaid] = await Promise.all([
     // Invoices dated in the window: what was charged.
     db.serviceRecord.findMany({
-      where: { organizationId, ...scope, AND: [documentDateIn(range)] },
+      where: { organizationId, ...chargedScope(options), AND: [documentDateIn(range)] },
       select: {
         serviceDate: true,
         startDateTime: true,
@@ -160,9 +171,15 @@ export async function computeRevenue(
     if (!r.manuallyPaid) continue
     // What the payments had covered when it was marked. A payment or refund
     // after that counts in its own month, so a closed month never changes.
-    // Marked before that day was recorded: every payment, as there is no cut-off.
+    // Marked before that day was recorded: every payment received, as there
+    // is no cut-off. Not the refunds: with no day to place the mark, a
+    // refund (one booked on cancelling, say) is taken to come after it, and
+    // counted only in its own month. Counted here as well, it would raise
+    // the receipt it answers, and the two would no longer net to nothing.
     const markedAt = r.manuallyPaidAt
-    const coveredBefore = markedAt ? r.payments.filter((p) => p.date <= markedAt) : r.payments
+    const coveredBefore = markedAt
+      ? r.payments.filter((p) => p.date <= markedAt)
+      : r.payments.filter((p) => p.amount > 0)
     const remainder = Math.max(0, chargedTotal(r) - sumPayments(coveredBefore))
     if (remainder === 0) continue
     month(r.manuallyPaidAt ?? documentDateOf(r)).collected += remainder
@@ -200,7 +217,7 @@ export async function computeTax(
   options: FinancialReportOptions = {}
 ) {
   const records = await db.serviceRecord.findMany({
-    where: { organizationId, ...statusScope(options), AND: [documentDateIn(range)] },
+    where: { organizationId, ...chargedScope(options), AND: [documentDateIn(range)] },
     select: {
       serviceDate: true,
       startDateTime: true,

@@ -153,7 +153,8 @@
     "summaryDue": "Son ödeme tarihi",
     "summaryReference": "Referansınız / sipariş no",
     "summaryDate": "Tarih",
-    "fullInvoice": "Faturanın tamamı"
+    "fullInvoice": "Faturanın tamamı",
+    "cancelled": "İptal edildi"
   },
   "quotes": {
     "title": "Teklifler",
@@ -384,7 +385,8 @@
       "scheduled": "Planlandı",
       "inProgress": "Devam ediyor",
       "waitingParts": "Parça bekleniyor",
-      "completed": "Tamamlandı"
+      "completed": "Tamamlandı",
+      "cancelled": "İptal edildi"
     },
     "request": {
       "pending": "Yanıt bekleniyor",

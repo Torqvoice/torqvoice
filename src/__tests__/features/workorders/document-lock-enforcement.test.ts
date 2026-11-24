@@ -116,6 +116,7 @@ const UNPAID_INVOICE = { ...PAID_INVOICE, manuallyPaid: false, payments: [] }
 
 beforeEach(() => {
   vi.resetAllMocks()
+  vi.mocked(db.serviceRecord.updateMany).mockResolvedValue({ count: 1 } as any)
   vi.mocked(db.$transaction).mockImplementation(async (cb: any) => cb(db))
   vi.mocked(db.servicePart.findMany).mockResolvedValue([] as any)
   signInAsOwner()
@@ -363,7 +364,7 @@ describe('what a locked invoice must still be able to do', () => {
     const result = await updateServiceStatus('rec-1', 'completed')
 
     expectNotBlockedByLock(result)
-    expect(db.serviceRecord.update).toHaveBeenCalled()
+    expect(db.serviceRecord.updateMany).toHaveBeenCalled()
   })
 
   it('still accepts being marked paid or unpaid', async () => {

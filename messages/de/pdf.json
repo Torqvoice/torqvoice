@@ -90,7 +90,9 @@
     "qtyOrHours": "Einheit / Stunden",
     "customFieldsTitle": "Zusätzliche Informationen",
     "telegramConnect": "Chatten Sie mit uns auf Telegram",
-    "taxRegistrationLabel": "{name}-Nr."
+    "taxRegistrationLabel": "{name}-Nr.",
+    "cancelledTitle": "RECHNUNG (STORNIERT)",
+    "cancelledNotice": "STORNIERT"
   },
   "quote": {
     "title": "ANGEBOT",

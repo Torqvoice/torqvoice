@@ -464,6 +464,7 @@ describe('the shared invoice', () => {
     ])
     expect(Object.keys(record).sort()).toEqual([
       'attachments',
+      'cancelled',
       'cost',
       'discountAmount',
       'discountType',

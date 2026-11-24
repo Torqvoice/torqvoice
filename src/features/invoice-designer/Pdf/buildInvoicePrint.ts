@@ -428,6 +428,10 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     })
   )
   totals.push({ label: L('total', 'Total'), value: money(displayTotal), kind: 'total' })
+  // A cancelled invoice keeps its number and its lines, and says plainly
+  // that nothing is owed on it: the payments and any refund are listed, and
+  // in place of what is due, the word itself.
+  const cancelled = data.status === 'cancelled'
   if (paymentSummary && paymentSummary.payments.length > 0) {
     // Money in reads as money in: what came in all told, under the total,
     // then each payment as the amount the customer paid, so Total less
@@ -450,10 +454,14 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
       })
     }
     totals.push(
-      isPaidInFull
-        ? { label: L('paidInFull', 'PAID IN FULL'), value: '', kind: 'paid' }
-        : { label: L('amountDue', 'Amount Due'), value: money(balanceDue), kind: 'due' }
+      cancelled
+        ? { label: L('cancelledNotice', 'CANCELLED'), value: '', kind: 'due' }
+        : isPaidInFull
+          ? { label: L('paidInFull', 'PAID IN FULL'), value: '', kind: 'paid' }
+          : { label: L('amountDue', 'Amount Due'), value: money(balanceDue), kind: 'due' }
     )
+  } else if (cancelled) {
+    totals.push({ label: L('cancelledNotice', 'CANCELLED'), value: '', kind: 'due' })
   }
 
   // -------------------------------------------------------------------------
@@ -515,7 +523,7 @@ export function buildInvoicePrintSpec(input: InvoicePrintInput): DocumentSpec {
     logoUrl: input.logoDataUri,
     labels,
     meta: {
-      title: L('title', 'INVOICE'),
+      title: cancelled ? L('cancelledTitle', 'INVOICE (CANCELLED)') : L('title', 'INVOICE'),
       number: invoiceNum,
       customerNumber: customer?.customerNumber ?? undefined,
       date: serviceDate,

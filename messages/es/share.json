@@ -74,7 +74,9 @@
     "findingSeverityNeedsWork": "Media",
     "findingSeverityMonitor": "Baja",
     "tel": "Tel: {phone}",
-    "customFields": "Información adicional"
+    "customFields": "Información adicional",
+    "cancelledTitle": "Esta factura ha sido anulada",
+    "cancelledBody": "No se debe nada por ella. Contacta con el taller si tienes alguna pregunta."
   },
   "quote": {
     "title": "Presupuesto",
