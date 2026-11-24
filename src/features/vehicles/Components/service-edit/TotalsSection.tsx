@@ -191,7 +191,7 @@ export function TotalsSection({
 
   const rows = (
     <div className="space-y-2" data-testid="totals">
-      <div className="@container grid grid-cols-[minmax(0,1fr)_minmax(0,auto)_minmax(0,auto)] gap-x-3 gap-y-2">
+      <div className="@container grid grid-cols-[minmax(min-content,1fr)_minmax(0,auto)_minmax(0,auto)] gap-x-3 gap-y-2">
         <Row label={t('parts')} amount={formatCurrency(displayPartsSubtotal, currencyCode)} />
         {partsCostSubtotal > 0 && (
           <Row
