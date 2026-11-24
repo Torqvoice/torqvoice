@@ -57,6 +57,7 @@
     "partsCostDesc": "Paslaugose naudotų dalių pirkimo savikaina",
     "netProfitDesc": "Dalių grynasis pelnas plius darbų pajamos",
     "monthlyRevenue": "Mėnesio pajamos",
+    "dateBasisHint": "Pajamos ir mokesčiai skaičiuojami pagal kiekvienos sąskaitos datą. Surinkta suma skaičiuojama pagal kiekvieno mokėjimo gavimo dieną.",
     "revenueByType": "Pajamos pagal tipą",
     "monthlyBreakdown": "Mėnesio suskirstymas",
     "tableHeaders": {

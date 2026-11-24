@@ -13,6 +13,7 @@ vi.mock('@/lib/db', () => ({
   db: {
     user: { findUnique: vi.fn() },
     serviceRecord: { findMany: vi.fn() },
+    payment: { findMany: vi.fn() },
     $queryRaw: vi.fn(),
   },
 }))
@@ -39,12 +40,22 @@ beforeEach(() => {
   vi.resetAllMocks()
   setupAuth()
   vi.mocked(db.serviceRecord.findMany).mockResolvedValue([])
+  vi.mocked(db.payment.findMany).mockResolvedValue([])
 })
 
 describe('reports', () => {
   it('count every job when the switch is off', async () => {
     await getRevenueReport({ startDate: '2026-01-01', endDate: '2026-01-31' })
     expect(whereOf().status).toBeUndefined()
+  })
+
+  it('count only payments on completed jobs, and jobs marked paid by hand, when the switch is on', async () => {
+    await getRevenueReport({ startDate: '2026-01-01', endDate: '2026-01-31', completedOnly: true })
+    const wheres = vi.mocked(db.serviceRecord.findMany).mock.calls.map((c) => (c[0] as any).where)
+    expect(wheres).toHaveLength(2)
+    for (const where of wheres) expect(where.status).toBe('completed')
+    const paymentWhere = (vi.mocked(db.payment.findMany).mock.calls[0][0] as any).where
+    expect(paymentWhere.serviceRecord).toEqual({ organizationId: 'org-1', status: 'completed' })
   })
 
   it('count only completed jobs when the switch is on', async () => {
