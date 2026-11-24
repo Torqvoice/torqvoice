@@ -3,6 +3,7 @@
 import { useGuardedPush } from '@/hooks/use-guarded-push'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useFormatter, useTranslations } from 'next-intl'
+import { useFormatDate } from '@/lib/use-format-date'
 import {
   ArrowRight,
   Building2,
@@ -79,6 +80,7 @@ export function PlateLookupCommand() {
   const t = useTranslations('vehicles.plateLookup')
   const tf = useTranslations('vehicles.form')
   const format = useFormatter()
+  const { formatDay } = useFormatDate()
   const go = useGuardedPush()
   const { available, canCreate, registryName } = usePlateLookupAccess()
   const { canBook } = useBookingAccess()
@@ -220,7 +222,8 @@ export function PlateLookupCommand() {
     const known = ['automatic', 'manual', 'cvt']
     return known.includes(gearbox) ? tf(gearbox) : gearbox
   }
-  const date = (iso: string) => format.dateTime(new Date(iso), { dateStyle: 'medium' })
+  // Registry dates in the workshop's date format; a bare day stays that day.
+  const date = (iso: string) => formatDay(iso)
 
   const registry = result?.registry ?? null
   const vehicle = result?.vehicle ?? null

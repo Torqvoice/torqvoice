@@ -29,6 +29,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useConfirm } from '@/components/confirm-dialog'
 import { useDateSettings } from '@/components/date-settings-context'
+import { useFormatDate } from '@/lib/use-format-date'
 import { useServiceType } from '@/components/service-type-context'
 import { zonedDayKey } from '@/lib/timezone'
 import { cn } from '@/lib/utils'
@@ -60,12 +61,10 @@ function useMeterText() {
   }
 }
 
-/** A reading's date on the workshop's clock. */
+/** A reading's date on the workshop's clock, in the workshop's date format. */
 function useReadingDate() {
-  const format = useFormatter()
-  const { timezone } = useDateSettings()
-  return (iso: string) =>
-    format.dateTime(new Date(iso), { dateStyle: 'medium', timeZone: timezone || undefined })
+  const { formatDate } = useFormatDate()
+  return (iso: string) => formatDate(iso)
 }
 
 /** Today on the workshop's calendar, for a reading date field. */

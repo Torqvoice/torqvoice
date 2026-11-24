@@ -1,8 +1,9 @@
 /**
  * The day on a status report's share page is the workshop's day, written by
- * the server. The browser used to write it, in the phone's zone and the
- * phone's date style, so a customer far from the server read another day
- * than the server had rendered and React drew the page twice.
+ * the server in the workshop's date format, the same way the expiry date
+ * beside it is. The browser used to write it, in the phone's zone and the
+ * phone's date style, and then the server wrote it in the language's long
+ * form ("November 24, 2026") next to a "08/12/2026" expiry.
  */
 import { render, screen } from '@testing-library/react'
 import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
@@ -29,17 +30,18 @@ afterAll(() => {
 
 describe('the day a status report was made', () => {
   it("is the workshop's day, whatever clock the machine has", () => {
-    expect(formatReportDay(MADE, 'en', 'Australia/Sydney')).toBe('December 1, 2026')
-    expect(formatReportDay(MADE, 'en', 'Pacific/Honolulu')).toBe('November 30, 2026')
+    expect(formatReportDay(MADE, 'dd/MM/yyyy', 'Australia/Sydney')).toBe('01/12/2026')
+    expect(formatReportDay(MADE, 'dd/MM/yyyy', 'Pacific/Honolulu')).toBe('30/11/2026')
   })
 
-  it("is written in the page's language", () => {
-    expect(formatReportDay(MADE, 'nl', 'Europe/Brussels')).toBe('30 november 2026')
-    expect(formatReportDay(MADE, 'fr', 'Europe/Brussels')).toBe('30 novembre 2026')
+  it("is written in the workshop's date format", () => {
+    expect(formatReportDay(MADE, 'MM/dd/yyyy', 'Australia/Sydney')).toBe('12/01/2026')
+    expect(formatReportDay(MADE, 'yyyy-MM-dd', 'Australia/Sydney')).toBe('2026-12-01')
+    expect(formatReportDay(MADE, 'dd.MM.yyyy', 'Europe/Brussels')).toBe('30.11.2026')
   })
 
   it('falls back to the day in UTC for a zone the runtime does not know', () => {
-    expect(formatReportDay(MADE, 'en', 'Mars/Olympus')).toBe('November 30, 2026')
+    expect(formatReportDay(MADE, 'dd/MM/yyyy', 'Mars/Olympus')).toBe('30/11/2026')
   })
 
   it('is shown on the share page exactly as the server wrote it', () => {
@@ -52,7 +54,7 @@ describe('the day a status report was made', () => {
           videoUrl: null,
           videoFileName: null,
           status: 'sent',
-          createdDay: formatReportDay(MADE, 'en', 'Australia/Sydney'),
+          createdDay: formatReportDay(MADE, 'dd/MM/yyyy', 'Australia/Sydney'),
           customerFeedback: null,
           feedbackAt: null,
         }}
@@ -67,6 +69,6 @@ describe('the day a status report was made', () => {
         showBranding={false}
       />
     )
-    expect(screen.getByText('December 1, 2026')).toBeInTheDocument()
+    expect(screen.getByText('01/12/2026')).toBeInTheDocument()
   })
 })

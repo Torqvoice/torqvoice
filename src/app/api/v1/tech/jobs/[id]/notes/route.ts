@@ -2,7 +2,8 @@ import { z } from 'zod'
 import { db } from '@/lib/db'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { apiError, apiOk, withApiAuth } from '@/lib/with-api-auth'
-import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { formatDate } from '@/lib/format'
+import { workshopDateSettings } from '@/lib/workshop-timezone'
 import { jobScopeFor } from '@/features/workboard/Lib/jobTeam'
 
 /**
@@ -47,12 +48,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       // Stamped, because a shared field with several authors and no
       // attribution becomes unreadable within a week. The web editor stores
       // HTML, so this matches rather than injecting bare newlines into it.
-      // Dated on the workshop's calendar, not the server's.
-      const stamp = new Date().toLocaleDateString('en-GB', {
-        day: 'numeric',
-        month: 'short',
-        timeZone: await workshopTimeZone(ctx.organizationId),
-      })
+      // Dated on the workshop's calendar, not the server's, in its date format.
+      const shop = await workshopDateSettings(ctx.organizationId)
+      const stamp = formatDate(new Date(), shop.dateFormat, shop.timeZone)
       const line = `<p><strong>${technician?.name ?? 'Technician'}, ${stamp}:</strong> ${escapeHtml(note.trim())}</p>`
 
       const updated = await db.serviceRecord.update({

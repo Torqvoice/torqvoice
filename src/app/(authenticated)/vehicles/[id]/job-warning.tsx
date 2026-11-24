@@ -3,8 +3,9 @@
 import Link from 'next/link'
 import { useMemo } from 'react'
 import { AlertTriangle } from 'lucide-react'
-import { useFormatter, useTranslations } from 'next-intl'
+import { useTranslations } from 'next-intl'
 import { useDateSettings } from '@/components/date-settings-context'
+import { useFormatDate } from '@/lib/use-format-date'
 import { awayEdges } from '@/features/workshop-calendar/Lib/format'
 import type { VehicleJobWarning } from '@/features/vehicles/Lib/vehicleJobWarnings'
 
@@ -18,22 +19,12 @@ export function useJobWarningText() {
   const t = useTranslations('vehicles.detail.jobWarning')
   const tCal = useTranslations('workshopCalendar')
   const tSchedule = useTranslations('service.schedule')
-  const format = useFormatter()
   const { timezone } = useDateSettings()
+  // Days in the workshop's date format, times on its clock, as on the work order.
+  const { formatDate: day, formatDateTime: dayAndClock, formatTime: clock } = useFormatDate()
 
   return useMemo(() => {
     const timeZone = timezone || undefined
-    const day = (at: Date) => format.dateTime(at, { day: 'numeric', month: 'short', timeZone })
-    const dayAndClock = (at: Date) =>
-      format.dateTime(at, {
-        day: 'numeric',
-        month: 'short',
-        hour: '2-digit',
-        minute: '2-digit',
-        timeZone,
-      })
-    const clock = (at: Date) =>
-      format.dateTime(at, { hour: '2-digit', minute: '2-digit', timeZone })
     const reason = (stored: string) =>
       tCal.has(`reasons.${stored}`) ? tCal(`reasons.${stored}`) : stored
 
@@ -68,7 +59,7 @@ export function useJobWarningText() {
     }
 
     return { lines, heading: t('heading') }
-  }, [t, tCal, tSchedule, format, timezone])
+  }, [t, tCal, tSchedule, day, dayAndClock, clock, timezone])
 }
 
 /**

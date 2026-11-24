@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback, useTransition, useRef } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useFormatDate } from '@/lib/use-format-date'
 import { Trash2 } from 'lucide-react'
 import { useConfirm } from '@/components/confirm-dialog'
 import { toast } from 'sonner'
@@ -30,7 +31,7 @@ export interface TelegramMessage {
 
 const PAGE_SIZE = 50
 
-function formatRelativeTime(date: string | Date) {
+function formatRelativeTime(date: string | Date, formatDate: (date: Date) => string) {
   const diffMs = Date.now() - new Date(date).getTime()
   const mins = Math.floor(diffMs / 60000)
   if (mins < 1) return 'now'
@@ -39,7 +40,7 @@ function formatRelativeTime(date: string | Date) {
   if (hrs < 24) return `${hrs}h`
   const days = Math.floor(diffMs / 86400000)
   if (days < 7) return `${days}d`
-  return new Date(date).toLocaleDateString([], { month: 'short', day: 'numeric' })
+  return formatDate(new Date(date))
 }
 
 export function TelegramMessagesClient({
@@ -52,6 +53,8 @@ export function TelegramMessagesClient({
   const searchParams = useSearchParams()
   const router = useRouter()
   const t = useTranslations('telegramMessages.threads')
+  // An older thread's day in the workshop's date format, on its clock.
+  const { formatDate } = useFormatDate()
   const tc = useTranslations('common.buttons')
   const [threads, setThreads] = useState<TelegramThread[]>(initialThreads)
   const [hasMore, setHasMore] = useState(initialHasMore)
@@ -202,7 +205,7 @@ export function TelegramMessagesClient({
         isLoadingMore={isLoadingMore}
         onSelectThread={handleSelectThread}
         onLoadMore={handleLoadMore}
-        formatRelativeTime={formatRelativeTime}
+        formatRelativeTime={(date: string | Date) => formatRelativeTime(date, formatDate)}
         t={t}
       />
       <TelegramConversationPanel

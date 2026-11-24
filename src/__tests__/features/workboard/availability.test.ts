@@ -41,6 +41,12 @@ describe('overlapping in time', () => {
     // Back to back is the normal way a bay is used, not a clash.
     expect(overlaps(at(1, 9), at(1, 11), at(1, 11), at(1, 13))).toBe(false)
   })
+
+  it('never counts a job that holds no time, as one completed before its slot does', () => {
+    // Completed at 10:00, start and end both moved to then.
+    expect(overlaps(at(1, 10), at(1, 10), at(1, 9), at(1, 11))).toBe(false)
+    expect(overlaps(at(1, 9), at(1, 11), at(1, 10), at(1, 10))).toBe(false)
+  })
 })
 
 describe('what counts as a clash', () => {
@@ -57,6 +63,21 @@ describe('what counts as a clash', () => {
   it('clashes when the same technician is already busy', () => {
     const c = findConflicts({ start: at(1, 10), end: at(1, 12), technicianId: 't1' }, existing)
     expect(c.map((b) => b.id)).toEqual(['job-1'])
+  })
+
+  it('does not clash with a job completed at 10:00 before its slot', () => {
+    const done = booking({
+      id: 'done',
+      start: at(1, 10),
+      end: at(1, 10),
+      technicianId: 't2',
+      workBayId: 'bay2',
+    })
+    const c = findConflicts(
+      { start: at(1, 9), end: at(1, 11), technicianId: 't2', workBayId: 'bay2' },
+      [done]
+    )
+    expect(c).toEqual([])
   })
 
   it('clashes when the same bay is already occupied', () => {

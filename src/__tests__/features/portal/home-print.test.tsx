@@ -181,7 +181,7 @@ describe('the car in the workshop', () => {
     })
     const other = section('Also booked or under way')
     expect(other.getByText('Wheel alignment')).toBeInTheDocument()
-    expect(other.getByText('Volvo V60 · Booked for 20 Nov at 09:00')).toBeInTheDocument()
+    expect(other.getByText('Volvo V60 · Booked for 20/11/2026 at 09:00')).toBeInTheDocument()
   })
 
   it('prints a long job title and a long workshop name in full', async () => {
@@ -211,7 +211,7 @@ describe('the ledger of what waits for the customer', () => {
     const quote = ledgerRow('Front discs and pads')
     expect(quote.getByText('Needs your answer')).toBeInTheDocument()
     expect(quote.getByText('4 850 kr')).toBeInTheDocument()
-    expect(quote.getByText('Valid until 29 Nov')).toBeInTheDocument()
+    expect(quote.getByText('Valid until 29/11/2026')).toBeInTheDocument()
     expect(quote.getByText('Quote Q-2041 · Volvo V60')).toBeInTheDocument()
     expect(quote.getByRole('link', { name: 'Read the quote' })).toHaveAttribute(
       'href',
@@ -254,8 +254,8 @@ describe('the ledger of what waits for the customer', () => {
     const pay = ledgerRow('EU inspection and service')
     expect(pay.getByText('To pay')).toBeInTheDocument()
     expect(pay.getByText('4 280 kr')).toBeInTheDocument()
-    expect(pay.getByText('Due 28 Nov')).toBeInTheDocument()
-    expect(pay.getByText('Invoice 1042 · Toyota RAV4 · 9 Nov')).toBeInTheDocument()
+    expect(pay.getByText('Due 28/11/2026')).toBeInTheDocument()
+    expect(pay.getByText('Invoice 1042 · Toyota RAV4 · 09/11/2026')).toBeInTheDocument()
     expect(pay.getByRole('link', { name: 'Pay now' })).toHaveAttribute(
       'href',
       '/share/invoice/fjordside/tok-i1'
@@ -292,7 +292,7 @@ describe('the ledger of what waits for the customer', () => {
       section('Waiting for you').getByText('2 items · 3 280 kr to pay on 1 invoice · 1 overdue')
     ).toBeInTheDocument()
     const pay = ledgerRow('EU inspection and service')
-    expect(pay.getByText('Overdue since 10 Nov')).toBeInTheDocument()
+    expect(pay.getByText('Overdue since 10/11/2026')).toBeInTheDocument()
     expect(pay.getByText('3 280 kr')).toBeInTheDocument()
     expect(pay.getByText(/1 000 kr of 4 280 kr paid/)).toBeInTheDocument()
   })
@@ -373,7 +373,7 @@ describe('tyres stored with the workshop', () => {
     await home(fullHome)
     const tires = section('Tyre hotel')
     expect(tires.getByText('Summer tyres stored with us')).toBeInTheDocument()
-    expect(tires.getByText('stored since 21 Oct')).toBeInTheDocument()
+    expect(tires.getByText('stored since 21/10/2026')).toBeInTheDocument()
     const fact = (label: string) => tires.getByText(label).nextElementSibling
     expect(fact('Car')).toHaveTextContent('Toyota RAV4')
     expect(fact('Tyre')).toHaveTextContent('Michelin Primacy 4')
@@ -499,7 +499,7 @@ describe('a customer with no car in the workshop', () => {
     })
     const sent = section('Sent to the workshop')
     expect(sent.getByText('Winter tyres on, and a look at the wipers')).toBeInTheDocument()
-    expect(sent.getByText('Sent 12 Nov · Waiting for an answer')).toBeInTheDocument()
+    expect(sent.getByText('Sent 12/11/2026 · Waiting for an answer')).toBeInTheDocument()
   })
 })
 

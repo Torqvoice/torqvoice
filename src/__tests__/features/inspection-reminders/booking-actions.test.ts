@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { formatDateTime } from '@/lib/format'
 
 const inspectionReminderSend = { findUnique: vi.fn(), update: vi.fn() }
 const serviceRecord = {
@@ -42,6 +43,7 @@ vi.mock('@/lib/notify', () => ({ notify }))
 vi.mock('next-intl/server', () => ({
   getTranslations: async () => (key: string, values?: Record<string, unknown>) =>
     `${key}${values ? ` ${JSON.stringify(values)}` : ''}`,
+  getLocale: async () => 'en',
 }))
 const claimableResource = vi.fn()
 vi.mock('@/features/inspection-reminders/Lib/booking', () => ({
@@ -67,6 +69,8 @@ const settings = {
   workingHours: { start: '08:00', end: '16:00', includeWeekends: false, timeZone: 'Europe/Oslo' },
   timeZone: 'Europe/Oslo',
   timeZoneDetected: false,
+  dateFormat: 'dd/MM/yyyy',
+  timeFormat: '24h' as '12h' | '24h',
 }
 vi.mock('@/features/inspection-reminders/Lib/settings', () => ({
   loadInspectionReminderSettings: vi.fn(async () => settings),
@@ -113,6 +117,8 @@ beforeEach(() => {
   vi.clearAllMocks()
   settings.bookingMode = 'direct'
   settings.timeZone = 'Europe/Oslo'
+  settings.dateFormat = 'dd/MM/yyyy'
+  settings.timeFormat = '24h'
   appSetting.findUnique.mockResolvedValue(null)
   serviceRecord.create.mockResolvedValue({ id: 'rec-1', vehicleId: 'v-1' })
   serviceRequest.create.mockResolvedValue({ id: 'req-1' })
@@ -165,12 +171,7 @@ describe('booking link', () => {
 
   it('tells the desk and the customer the booked time on the workshop clock, not the server clock', async () => {
     const slot = new Date('2026-12-02T07:00:00Z')
-    const format = (timeZone?: string) =>
-      new Intl.DateTimeFormat(undefined, {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-        timeZone,
-      }).format(slot)
+    const format = (timeZone?: string) => formatDateTime(slot, 'dd/MM/yyyy', '24h', timeZone)
     // A workshop whose clock reads differently from the machine running the
     // tests, wherever that is: no two of these agree at this hour, so at
     // least one is not the host's, and the test never passes by coincidence.
@@ -192,6 +193,27 @@ describe('booking link', () => {
     const [notice] = notify.mock.calls as unknown as [{ message: string }][]
     expect(notice[0].message).toContain(onWorkshopClock)
     expect(scheduledMessage.create.mock.calls[0][0].data.body).toContain(onWorkshopClock)
+  })
+
+  it("writes the booked time in the workshop's date format and clock", async () => {
+    // 07:00 UTC on 2 December is 20:00 that evening in Auckland.
+    const slot = new Date('2026-12-02T07:00:00Z')
+    settings.timeZone = 'Pacific/Auckland'
+    inspectionReminderSend.findUnique.mockResolvedValue(
+      send({ dueAt: new Date('2026-12-20T00:00:00Z'), expiresAt: new Date('2026-12-30T00:00:00Z') })
+    )
+    vi.setSystemTime(new Date('2026-11-20T00:00:00Z'))
+    try {
+      await confirmBooking({ token: TOKEN, start: slot.toISOString() })
+      settings.dateFormat = 'MM/dd/yyyy'
+      settings.timeFormat = '12h'
+      await confirmBooking({ token: TOKEN, start: slot.toISOString() })
+    } finally {
+      vi.useRealTimers()
+    }
+    const bodies = scheduledMessage.create.mock.calls.map((call) => call[0].data.body as string)
+    expect(bodies[0]).toContain('02/12/2026 20:00')
+    expect(bodies[1]).toContain('12/02/2026 08:00 PM')
   })
 
   it('refuses a slot that was taken in the meantime', async () => {
