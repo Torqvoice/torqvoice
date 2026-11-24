@@ -55,12 +55,12 @@ afterEach(() => {
   vi.useRealTimers()
 })
 
-async function openReports(zone: string, now: string) {
+async function openReports(zone: string, now: string, dateFormat = 'dd/MM/yyyy') {
   vi.useFakeTimers({ toFake: ['Date'] })
   vi.setSystemTime(new Date(now))
   await act(async () => {
     render(
-      <DateSettingsProvider dateFormat="dd/MM/yyyy" timeFormat="24h" timezone={zone}>
+      <DateSettingsProvider dateFormat={dateFormat} timeFormat="24h" timezone={zone}>
         <ReportsClient currencyCode="NZD" primaryColor="#d97706" organizationName="Test" />
       </DateSettingsProvider>
     )
@@ -71,7 +71,7 @@ describe('the default report range', () => {
   it("ends on the Auckland workshop's today for a viewer in London", async () => {
     // 16:00 on 24 November in London, 05:00 on the 25th in Auckland.
     await openReports('Pacific/Auckland', '2026-11-24T16:00:00Z')
-    expect(screen.getByText(/Jan 01, 2026 – Nov 25, 2026/)).toBeInTheDocument()
+    expect(screen.getByText('01/01/2026 – 25/11/2026')).toBeInTheDocument()
     expect(getRevenueReport).toHaveBeenCalledWith(
       expect.objectContaining({ startDate: '2026-01-01', endDate: '2026-11-25' })
     )
@@ -80,10 +80,15 @@ describe('the default report range', () => {
   it("ends on the Los Angeles workshop's today, a day behind London", async () => {
     // 06:00 on 25 November in London, 22:00 on the 24th in Los Angeles.
     await openReports('America/Los_Angeles', '2026-11-25T06:00:00Z')
-    expect(screen.getByText(/Jan 01, 2026 – Nov 24, 2026/)).toBeInTheDocument()
+    expect(screen.getByText('01/01/2026 – 24/11/2026')).toBeInTheDocument()
     expect(getRevenueReport).toHaveBeenCalledWith(
       expect.objectContaining({ startDate: '2026-01-01', endDate: '2026-11-24' })
     )
+  })
+
+  it("writes the range in the workshop's date format, whichever it chose", async () => {
+    await openReports('Pacific/Auckland', '2026-11-24T16:00:00Z', 'MM/dd/yyyy')
+    expect(screen.getByText('01/01/2026 – 11/25/2026')).toBeInTheDocument()
   })
 
   it("starts on the workshop's new year while London is still in the old one", async () => {

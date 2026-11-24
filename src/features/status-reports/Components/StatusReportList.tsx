@@ -5,6 +5,7 @@ import { interactiveRow } from '@/lib/interactive-row'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
+import { useFormatDate } from '@/lib/use-format-date'
 import {
   Plus,
   Copy,
@@ -95,6 +96,7 @@ export function StatusReportList({
   initialReports,
 }: StatusReportListProps) {
   const t = useTranslations('statusReport.list')
+  const { formatDate, formatDateTime } = useFormatDate()
   const router = useRouter()
   const [showCreate, setShowCreate] = useState(false)
   const tableNav = useTableKeyboardNav()
@@ -135,15 +137,8 @@ export function StatusReportList({
     }
   }
 
-  function fmtDate(iso: string) {
-    return new Date(iso).toLocaleDateString(undefined, {
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    })
-  }
+  // In the workshop's date format and on its clock, not the browser's.
+  const fmtDate = (iso: string) => formatDateTime(iso)
 
   return (
     <>
@@ -217,12 +212,7 @@ export function StatusReportList({
                         </Badge>
                       )}
                       <span className="text-xs text-muted-foreground" suppressHydrationWarning>
-                        {new Date(report.createdAt).toLocaleDateString(undefined, {
-                          month: 'short',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
+                        {formatDateTime(report.createdAt)}
                       </span>
                     </div>
                   </button>
@@ -317,12 +307,7 @@ export function StatusReportList({
                             className="py-2 text-xs text-muted-foreground hidden sm:table-cell"
                             suppressHydrationWarning
                           >
-                            {new Date(report.createdAt).toLocaleDateString(undefined, {
-                              month: 'short',
-                              day: 'numeric',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
+                            {formatDateTime(report.createdAt)}
                           </TableCell>
                           <TableCell className="py-2 hidden md:table-cell">
                             {report.customerFeedback ? (
@@ -465,13 +450,7 @@ export function StatusReportList({
                   {detailReport.expiresAt && (
                     <div>
                       <p className="text-xs text-muted-foreground">{t('expires')}</p>
-                      <p className="mt-0.5">
-                        {new Date(detailReport.expiresAt).toLocaleDateString(undefined, {
-                          month: 'short',
-                          day: 'numeric',
-                          year: 'numeric',
-                        })}
-                      </p>
+                      <p className="mt-0.5">{formatDate(detailReport.expiresAt)}</p>
                     </div>
                   )}
                 </div>

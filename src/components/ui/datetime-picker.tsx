@@ -663,6 +663,7 @@ const LocalDateTimePicker = React.forwardRef<
     },
     ref
   ) => {
+    const { dateFormat } = useDateSettings()
     const [month, setMonth] = React.useState<Date>(value ?? defaultPopupValue)
     const buttonRef = useRef<HTMLButtonElement>(null)
     const [displayDate, setDisplayDate] = React.useState<Date | undefined>(value ?? undefined)
@@ -710,13 +711,12 @@ const LocalDateTimePicker = React.forwardRef<
       [displayDate]
     )
 
+    // The date reads the way the workshop writes dates (Settings, Localization),
+    // not date-fns' own long English form.
+    const seconds = !granularity || granularity === 'second' ? ':ss' : ''
     const initHourFormat = {
-      hour24:
-        displayFormat?.hour24 ??
-        `PPP HH:mm${!granularity || granularity === 'second' ? ':ss' : ''}`,
-      hour12:
-        displayFormat?.hour12 ??
-        `PP hh:mm${!granularity || granularity === 'second' ? ':ss' : ''} b`,
+      hour24: displayFormat?.hour24 ?? `${dateFormat} HH:mm${seconds}`,
+      hour12: displayFormat?.hour12 ?? `${dateFormat} hh:mm${seconds} a`,
     }
 
     let loc = enUS
@@ -744,10 +744,10 @@ const LocalDateTimePicker = React.forwardRef<
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {displayDate ? (
-              format(
+              formatDisplay(
                 displayDate,
                 hourCycle === 24 ? initHourFormat.hour24 : initHourFormat.hour12,
-                { locale: loc }
+                loc
               )
             ) : (
               <span>{placeholder}</span>
@@ -797,6 +797,15 @@ const LocalDateTimePicker = React.forwardRef<
 )
 
 LocalDateTimePicker.displayName = 'LocalDateTimePicker'
+
+/** A pattern date-fns refuses (an odd stored setting) falls back to its own long form. */
+function formatDisplay(date: Date, pattern: string, locale: Locale): string {
+  try {
+    return format(date, pattern, { locale })
+  } catch {
+    return format(date, 'PPP HH:mm', { locale })
+  }
+}
 
 /**
  * The picker above works entirely in the browser's local time: it formats with

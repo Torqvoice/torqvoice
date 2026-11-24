@@ -504,7 +504,7 @@ export function DashboardClient({
     if (diffMins < 60) return t('relativeTime.minutes', { count: diffMins })
     if (diffHours < 24) return t('relativeTime.hours', { count: diffHours })
     if (diffDays < 7) return t('relativeTime.days', { count: diffDays })
-    return d.toLocaleDateString([], { month: 'short', day: 'numeric' })
+    return formatDate(d)
   }
 
   /**

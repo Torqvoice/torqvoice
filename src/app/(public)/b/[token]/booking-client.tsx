@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { CalendarCheck, CalendarX, Loader2, Phone } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
+import { formatDate } from '@/lib/format'
 import {
   type BookingPage,
   cancelBooking,
@@ -104,10 +105,7 @@ export function BookingClient({ token, initial }: { token: string; initial: Book
       </p>
       <p className="text-muted-foreground">
         {t('due', {
-          date: format.dateTime(new Date(page.dueAt), {
-            dateStyle: 'long',
-            timeZone: page.timeZone,
-          }),
+          date: formatDate(page.dueAt, page.dateFormat, page.timeZone),
         })}
       </p>
     </div>

@@ -76,6 +76,7 @@ import type { WorkOrderJobProps, WorkOrderSidebarProps } from './modern/details-
 import { lineTotal, resolvePartPrice } from '@/features/inventory/Lib/partPricing'
 import { vehicleName } from '@/lib/vehicle-name'
 import { useDateSettings } from '@/components/date-settings-context'
+import { useFormatDate } from '@/lib/use-format-date'
 import { addDaysToDayKey, dayKeyToLocalDate, workshopTodayKey } from '@/lib/workshop-datetime'
 
 export type { ServicePageClientProps, BoardTechnicianOption } from './service-page-types'
@@ -224,8 +225,8 @@ export function ServicePageClient({
   const [updatingDates, setUpdatingDates] = useState(false)
   const [customizingDates, setCustomizingDates] = useState(false)
 
-  const formatDate = (date: Date) =>
-    date.toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+  // The picked days, in the workshop's date format.
+  const { formatDay: formatDate } = useFormatDate()
   const toISODate = (date: Date) =>
     `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
 

@@ -1,4 +1,5 @@
 import { db } from '@/lib/db'
+import { formatDate } from '@/lib/format'
 import {
   addZonedDays,
   atZonedTime,
@@ -81,9 +82,9 @@ export function templateValues(input: {
     customerName: candidate.customerName ?? '',
     vehicle: candidate.vehicle,
     plate: candidate.licensePlate ?? '',
-    dueDate: new Intl.DateTimeFormat(input.locale, { dateStyle: 'long' }).format(
-      new Date(candidate.dueAt)
-    ),
+    // The customer reads the day on the workshop's calendar, written the way
+    // the workshop writes dates on everything else it sends.
+    dueDate: formatDate(new Date(candidate.dueAt), settings.dateFormat, settings.timeZone),
     workshopName: settings.workshopName,
     bookingLink: input.link,
     phone: settings.phone ?? '',

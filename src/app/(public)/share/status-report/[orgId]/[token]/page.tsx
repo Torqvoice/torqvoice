@@ -1,4 +1,4 @@
-import { getLocale, getTranslations } from 'next-intl/server'
+import { getTranslations } from 'next-intl/server'
 import { cache } from 'react'
 import { closedShareLinkTitle, ShareLinkClosed } from '@/components/share-link-expired'
 import { ShareLinkOpenUntil } from '@/components/share-link-open-until'
@@ -9,7 +9,7 @@ import { StatusReportView } from './status-report-view'
 import { resolvePortalOrg } from '@/lib/portal-slug'
 import { getFeatures } from '@/lib/features'
 import { formatReportDay } from '@/features/status-reports/Lib/reportDay'
-import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { workshopDateSettings } from '@/lib/workshop-timezone'
 import type { Metadata } from 'next'
 
 function toPublicFileUrl(fileUrl: string, token: string): string {
@@ -108,7 +108,7 @@ export default async function PublicStatusReportPage({
   }
 
   // Fetch workshop settings
-  const [settings, features, locale, timeZone] = await Promise.all([
+  const [settings, features, dates] = await Promise.all([
     db.appSetting.findMany({
       where: {
         organizationId: orgId,
@@ -125,8 +125,7 @@ export default async function PublicStatusReportPage({
       },
     }),
     getFeatures(orgId),
-    getLocale(),
-    workshopTimeZone(orgId),
+    workshopDateSettings(orgId),
   ])
 
   const settingsMap: Record<string, string> = {}
@@ -144,7 +143,7 @@ export default async function PublicStatusReportPage({
         videoUrl,
         videoFileName: report.videoFileName,
         status: report.status,
-        createdDay: formatReportDay(report.createdAt, locale, timeZone),
+        createdDay: formatReportDay(report.createdAt, dates.dateFormat, dates.timeZone),
         customerFeedback: report.customerFeedback,
         feedbackAt: report.feedbackAt?.toISOString() || null,
       }}

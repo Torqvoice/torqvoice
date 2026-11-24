@@ -1,12 +1,13 @@
 'use server'
 
 import { z } from 'zod'
-import { getLocale, getTranslations } from 'next-intl/server'
+import { getTranslations } from 'next-intl/server'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { demoGuard } from '@/lib/demo'
-import { workshopTimeZone } from '@/lib/workshop-timezone'
+import { formatDateTime } from '@/lib/format'
+import { workshopDateSettings } from '@/lib/workshop-timezone'
 import { sendSmsToCustomer } from '@/features/sms/Actions/smsActions'
 import { sendNotificationEmail } from '@/features/email/Actions/emailActions'
 import { sendTelegramToCustomer } from '@/features/telegram/Actions/telegramActions'
@@ -65,15 +66,10 @@ export async function sendServiceVideoCall(input: unknown) {
       const t = await getTranslations('service.videoCall.notify')
       let when: string | null = null
       if (record.startDateTime) {
-        const [locale, timeZone] = await Promise.all([
-          getLocale(),
-          workshopTimeZone(organizationId),
-        ])
-        when = new Intl.DateTimeFormat(locale, {
-          dateStyle: 'full',
-          timeStyle: 'short',
-          timeZone,
-        }).format(record.startDateTime)
+        // The customer reads the time on the workshop's clock, written the
+        // way the workshop writes dates and times on everything it sends.
+        const shop = await workshopDateSettings(organizationId)
+        when = formatDateTime(record.startDateTime, shop.dateFormat, shop.timeFormat, shop.timeZone)
       }
       const body = videoCallMessage({
         customMessage: data.customMessage,

@@ -209,6 +209,18 @@ export function formatDate(
 }
 
 /**
+ * A calendar day already worked out on the workshop's clock ("2026-11-24",
+ * as `zonedDayKey` gives it) in the org date format. No zone is applied: the
+ * key is the day, whatever clock formats it. Anything that is not a key is
+ * returned as it is.
+ */
+export function formatDayKey(key: string, dateFormat: string = DEFAULT_DATE_FORMAT): string {
+  const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(key)
+  if (!m) return key
+  return formatWithPattern(new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])), dateFormat)
+}
+
+/**
  * Format a date and time using org settings.
  */
 export function formatDateTime(

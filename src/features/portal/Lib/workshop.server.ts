@@ -8,7 +8,11 @@ import { dayState } from '@/features/workshop-calendar/Lib/calendar'
 import { loadWorkshopCalendar } from '@/features/workshop-calendar/Lib/loadCalendar.server'
 import { db } from '@/lib/db'
 import { zonedDayKey } from '@/lib/timezone'
-import { workshopTimeZone } from '@/lib/workshop-timezone'
+import {
+  type WorkshopDateSettings,
+  workshopDateSettings,
+  workshopTimeZone,
+} from '@/lib/workshop-timezone'
 import { workshopHoursLine, workshopHoursNow } from './homeData'
 import type { PortalWorkshop } from './homeTypes'
 import { readPortalOpeningHours } from './openingHours.server'
@@ -102,19 +106,10 @@ export const loadPortalWorkshop = cache(
 )
 
 /**
- * How the workshop prints a time: its zone and its 12 or 24 hour clock. For
- * client components that print times themselves (the chat), which cannot be
- * handed `PortalHomeFormat`'s functions.
+ * How the workshop prints a time and a date: its zone, its 12 or 24 hour
+ * clock and its date format. For client components that print times
+ * themselves (the chat), which cannot be handed `PortalHomeFormat`'s functions.
  */
 export const portalClock = cache(
-  async (organizationId: string): Promise<{ timeZone: string; timeFormat: '12h' | '24h' }> => {
-    const [timeZone, row] = await Promise.all([
-      workshopTimeZone(organizationId),
-      db.appSetting.findFirst({
-        where: { organizationId, key: SETTING_KEYS.TIME_FORMAT },
-        select: { value: true },
-      }),
-    ])
-    return { timeZone, timeFormat: row?.value === '24h' ? '24h' : '12h' }
-  }
+  (organizationId: string): Promise<WorkshopDateSettings> => workshopDateSettings(organizationId)
 )

@@ -5,6 +5,7 @@ import { getTranslations } from 'next-intl/server'
 import { z } from 'zod'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { db } from '@/lib/db'
+import { formatDateTime } from '@/lib/format'
 import { notify } from '@/lib/notify'
 import { serviceRecordHref } from '@/lib/service-record'
 import { type BookableDay, availabilityFor, claimableResource } from '../Lib/booking'
@@ -52,6 +53,8 @@ export interface BookingPage {
   durationMinutes: number
   /** The workshop's zone; every time on the page is shown in it. */
   timeZone: string
+  /** The workshop's date format, for the due date. */
+  dateFormat?: string
   booking: { start: string; end: string; pendingApproval: boolean } | null
   days: BookableDay[]
   firstStart: string | null
@@ -156,6 +159,7 @@ export async function getBookingPage(rawToken: string): Promise<BookingPage | nu
     bookingMode: settings.bookingMode,
     durationMinutes: settings.durationMinutes,
     timeZone: settings.timeZone,
+    dateFormat: settings.dateFormat,
     booking: booking
       ? {
           start: booking.start.toISOString(),
@@ -253,11 +257,7 @@ export async function confirmBooking(raw: unknown) {
 
   // The server runs in UTC: the customer's confirmation and the desk's notice
   // both read the slot on the workshop's clock, as the cancellation already does.
-  const when = new Intl.DateTimeFormat(undefined, {
-    dateStyle: 'medium',
-    timeStyle: 'short',
-    timeZone: settings.timeZone,
-  }).format(start)
+  const when = formatDateTime(start, settings.dateFormat, settings.timeFormat, settings.timeZone)
   await notify({
     organizationId: send.organizationId,
     type: 'online_booking',
@@ -363,11 +363,10 @@ export async function cancelBooking(rawToken: string) {
     message: t('cancelledNotificationBody', {
       customer: send.customer.name,
       vehicle: vehicleLabel,
-      when: new Intl.DateTimeFormat(undefined, {
-        dateStyle: 'medium',
-        timeStyle: 'short',
-        timeZone: (await loadInspectionReminderSettings(send.organizationId)).timeZone,
-      }).format(booking.start),
+      when: await (async () => {
+        const shop = await loadInspectionReminderSettings(send.organizationId)
+        return formatDateTime(booking.start, shop.dateFormat, shop.timeFormat, shop.timeZone)
+      })(),
     }),
     // A cancelled request stays listed on the customer, marked cancelled; a
     // booked slot is deleted, which leaves the vehicle as the place to look.
