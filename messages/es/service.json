@@ -66,7 +66,8 @@
     "designRefreshConfirm": "Actualizar la factura",
     "designRefreshDone": "Esta factura ahora se imprime con los datos actuales",
     "designRefreshFailed": "No se pudo actualizar la factura",
-    "printWorkOrder": "Imprimir orden de trabajo"
+    "printWorkOrder": "Imprimir orden de trabajo",
+    "cancelInvoice": "Anular factura"
   },
   "basicInfo": {
     "title": "Información Básica",
@@ -93,6 +94,9 @@
     "invoiceDueDateOnIssuePlaceholder": "Por plazo",
     "invoiceDateOnIssueHint": "Si se deja vacío, la factura lleva la fecha del día en que se envía y vence según sus condiciones de pago.",
     "invoiceDueDateOnIssueHint": "Si se deja vacío, la fecha de vencimiento se fija según sus condiciones de pago al enviar la factura.",
+    "noPaymentTerms": "No hay condiciones de pago, así que no hay fecha de vencimiento.",
+    "setPaymentTerms": "Definir condiciones de pago",
+    "noDueDatePlaceholder": "Sin vencimiento",
     "typeOptions": {
       "maintenance": "Mantenimiento",
       "repair": "Reparación",
@@ -104,7 +108,8 @@
       "pending": "Pendiente",
       "in_progress": "En Progreso",
       "waiting_parts": "Esperando Piezas",
-      "completed": "Completado"
+      "completed": "Completado",
+      "cancelled": "Anulada"
     },
     "searchVehicles": "Buscar vehículos...",
     "noVehicleFound": "Vehículo no encontrado.",
@@ -377,6 +382,7 @@
     "received": "Pagos recibidos",
     "noneYet": "Todavía no se ha pagado nada.",
     "balanceDue": "Saldo pendiente",
+    "cancelledNotice": "Anulada: no se debe nada por esta factura. Los pagos y reembolsos siguen listados arriba.",
     "aboveBalance": "El saldo pendiente es {amount}. Un pago no puede superarlo.",
     "nothingDue": "No hay nada pendiente en esta factura.",
     "refund": "Reembolso"
@@ -519,6 +525,7 @@
     "slotPicked": "Reservado en la siguiente franja libre",
     "noSlotFound": "No se encontró ninguna franja libre en las próximas semanas",
     "assignedTitle": "Técnico asignado",
+    "notAssigned": "Aún sin asignar. Elija quién hará este trabajo.",
     "boardLink": "Tablero de trabajo",
     "someoneElse": "Otra persona",
     "loadOf": "{booked} / {capacity} h",
@@ -756,7 +763,9 @@
       "preview": "Vista previa de la factura",
       "previewShort": "Vista previa",
       "send": "Enviar al cliente",
-      "sendShort": "Enviar"
+      "sendShort": "Enviar",
+      "cancelled": "Anulada",
+      "nothingOwed": "Nada pendiente"
     },
     "vehicleInfo": {
       "more": "Más información",
@@ -886,5 +895,28 @@
     "hint": "Quédate para corregirlo, o sal y pierde los cambios hechos desde el último guardado.",
     "stay": "Quedarme y corregir",
     "leave": "Salir sin guardar"
+  },
+  "cancelInvoice": {
+    "title": "¿Anular la factura {number}?",
+    "titleNoNumber": "¿Anular esta factura?",
+    "description": "Esta factura ya se envió al cliente, así que no se puede eliminar: la mayoría de los países exigen números de factura sin huecos.",
+    "pointKept": "El trabajo se conserva y se marca como anulado. La factura mantiene su número y ya no se puede modificar.",
+    "pointShown": "La factura, su enlace compartido, el PDF y el portal del cliente la muestran como anulada.",
+    "pointReports": "Deja de contar en ingresos, impuestos y saldos pendientes.",
+    "pointLedger": "Un sistema contable conectado anula su copia cuando puede. Una copia con pagos se deja para que tu contable emita el abono.",
+    "paidNotice": "El cliente ha pagado {amount} de esta factura.",
+    "recordRefund": "Registrar un reembolso del dinero devuelto al cliente",
+    "refundAmount": "Importe del reembolso",
+    "refundMethod": "Reembolsado por",
+    "refundTooMuch": "Un reembolso no puede superar {amount}.",
+    "refundNote": "Reembolso de factura anulada",
+    "noRefundHint": "Sin reembolso, los pagos quedan registrados tal como están.",
+    "keep": "Conservar factura",
+    "confirm": "Anular factura",
+    "done": "Factura anulada",
+    "failed": "No se pudo anular la factura",
+    "bannerTitle": "La factura {number} está anulada",
+    "bannerTitleNoNumber": "Esta factura está anulada",
+    "bannerBody": "Mantiene su número y ya no se puede modificar. El cliente la ve marcada como anulada."
   }
 }

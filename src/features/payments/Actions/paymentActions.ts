@@ -14,6 +14,8 @@ import { workshopCurrencySettings, workshopMoneyFormatter } from '@/lib/workshop
 import { paymentBalanceDue } from '../Lib/balanceDue'
 import { getDocumentLockSettings } from '@/lib/document-lock.server'
 import { DocumentLockedError, invoiceLockState } from '@/lib/document-lock'
+import { isCancelled } from '@/features/work-order-statuses/Lib/stages'
+import { CancelledInvoiceError } from '@/features/invoices/Lib/cancelInvoice'
 
 export async function createPayment(input: unknown) {
   return withAuth(
@@ -24,9 +26,11 @@ export async function createPayment(input: unknown) {
       const serviceRecord = await db.serviceRecord.findFirst({
         where: { id: data.serviceRecordId, organizationId },
         // The invoice number or the title name the job in the audit log.
-        select: { id: true, vehicleId: true, invoiceNumber: true, title: true },
+        select: { id: true, vehicleId: true, status: true, invoiceNumber: true, title: true },
       })
       if (!serviceRecord) throw new Error('Service record not found')
+      // Nothing is owed on a cancelled invoice; a refund is booked as it is cancelled.
+      if (isCancelled(serviceRecord.status)) throw new CancelledInvoiceError()
 
       const date =
         toSafeWorkshopDate(data.date, await workshopTimeZone(organizationId)) ?? new Date()
@@ -127,6 +131,7 @@ export async function deletePayment(paymentId: string) {
             select: {
               vehicleId: true,
               id: true,
+              status: true,
               sentAt: true,
               manuallyPaid: true,
               totalAmount: true,
@@ -138,6 +143,9 @@ export async function deletePayment(paymentId: string) {
         },
       })
       if (!payment) throw new Error('Payment not found')
+      // What moved on a cancelled invoice is its record: the payment and the
+      // refund that answered it both stay.
+      if (isCancelled(payment.serviceRecord.status)) throw new CancelledInvoiceError()
 
       // Recording payments is always allowed, but removing the payment that
       // settled a locked invoice would release the lock — the admin-only

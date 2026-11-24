@@ -74,7 +74,9 @@
     "findingSeverityNeedsWork": "Medium",
     "findingSeverityMonitor": "Low",
     "tel": "Tel: {phone}",
-    "customFields": "Additional information"
+    "customFields": "Additional information",
+    "cancelledTitle": "This invoice has been cancelled",
+    "cancelledBody": "Nothing is owed on it. Contact the workshop if you have any questions."
   },
   "quote": {
     "title": "Quote",

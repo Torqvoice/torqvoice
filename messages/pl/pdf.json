@@ -90,7 +90,9 @@
     "qtyOrHours": "Jednostka / Godziny",
     "customFieldsTitle": "Informacje dodatkowe",
     "telegramConnect": "Napisz do nas na Telegramie",
-    "taxRegistrationLabel": "Nr {name}"
+    "taxRegistrationLabel": "Nr {name}",
+    "cancelledTitle": "FAKTURA (ANULOWANA)",
+    "cancelledNotice": "ANULOWANA"
   },
   "quote": {
     "title": "WYCENA",

@@ -232,7 +232,8 @@
     "equipment_delete": "Slettet utstyr",
     "platform_deleteUser": "Slettet bruker",
     "platform_grantSuperAdmin": "Ga superadmin",
-    "platform_revokeSuperAdmin": "Fjernet superadmin"
+    "platform_revokeSuperAdmin": "Fjernet superadmin",
+    "service_cancel": "Kansellert faktura"
   },
   "summary": {
     "auth_twoFactorEnabled": "Slo på tofaktorinnlogging",
@@ -424,6 +425,8 @@
     "equipment_meter": "La til måleren {meter} på {name} på {vehicle}",
     "platform_deleteUser": "Slettet brukeren {name} ({email})",
     "platform_grantSuperAdmin": "Gjorde {name} ({email}) til superadmin",
-    "platform_revokeSuperAdmin": "Fjernet superadmin fra {name} ({email})"
+    "platform_revokeSuperAdmin": "Fjernet superadmin fra {name} ({email})",
+    "service_cancel": "Kansellerte faktura {ref}",
+    "service_cancelRefund": "Kansellerte faktura {ref} og registrerte en refusjon på {amount}"
   }
 }

@@ -90,7 +90,9 @@
     "qtyOrHours": "Unidade / Horas",
     "customFieldsTitle": "Informações adicionais",
     "telegramConnect": "Fale conosco no Telegram",
-    "taxRegistrationLabel": "Nº {name}"
+    "taxRegistrationLabel": "Nº {name}",
+    "cancelledTitle": "FATURA (CANCELADA)",
+    "cancelledNotice": "CANCELADA"
   },
   "quote": {
     "title": "ORÇAMENTO",

@@ -66,7 +66,8 @@
     "designRefreshConfirm": "Mettre à jour la facture",
     "designRefreshDone": "Cette facture s'imprime désormais avec les informations actuelles",
     "designRefreshFailed": "Impossible de mettre à jour la facture",
-    "printWorkOrder": "Imprimer l'ordre de travail"
+    "printWorkOrder": "Imprimer l'ordre de travail",
+    "cancelInvoice": "Annuler la facture"
   },
   "basicInfo": {
     "title": "Informations de Base",
@@ -93,6 +94,9 @@
     "invoiceDueDateOnIssuePlaceholder": "Selon délai",
     "invoiceDateOnIssueHint": "Laissée vide, la facture est datée du jour de son envoi et son échéance suit vos conditions de paiement.",
     "invoiceDueDateOnIssueHint": "Laissée vide, l'échéance est fixée selon vos conditions de paiement à l'envoi de la facture.",
+    "noPaymentTerms": "Aucune condition de paiement définie, donc pas d'échéance.",
+    "setPaymentTerms": "Définir les conditions de paiement",
+    "noDueDatePlaceholder": "Pas d'échéance",
     "typeOptions": {
       "maintenance": "Maintenance",
       "repair": "Réparation",
@@ -104,7 +108,8 @@
       "pending": "En Attente",
       "in_progress": "En Cours",
       "waiting_parts": "En Attente de Pièces",
-      "completed": "Complété"
+      "completed": "Complété",
+      "cancelled": "Annulée"
     },
     "searchVehicles": "Rechercher des véhicules...",
     "noVehicleFound": "Aucun véhicule trouvé.",
@@ -377,6 +382,7 @@
     "received": "Paiements reçus",
     "noneYet": "Rien de payé pour l'instant.",
     "balanceDue": "Solde dû",
+    "cancelledNotice": "Annulée : rien n’est dû sur cette facture. Les paiements et remboursements restent listés ci-dessus.",
     "aboveBalance": "Le solde dû est de {amount}. Un paiement ne peut pas le dépasser.",
     "nothingDue": "Rien n’est dû sur cette facture.",
     "refund": "Remboursement"
@@ -519,6 +525,7 @@
     "slotPicked": "Placé sur le prochain créneau libre",
     "noSlotFound": "Aucun créneau libre trouvé dans les prochaines semaines",
     "assignedTitle": "Technicien assigné",
+    "notAssigned": "Pas encore assigné. Choisissez qui fera ce travail.",
     "boardLink": "Tableau de travail",
     "someoneElse": "Quelqu'un d'autre",
     "loadOf": "{booked} / {capacity} h",
@@ -756,7 +763,9 @@
       "preview": "Aperçu de la facture",
       "previewShort": "Aperçu",
       "send": "Envoyer au client",
-      "sendShort": "Envoyer"
+      "sendShort": "Envoyer",
+      "cancelled": "Annulée",
+      "nothingOwed": "Rien à payer"
     },
     "vehicleInfo": {
       "more": "Plus d'infos",
@@ -886,5 +895,28 @@
     "hint": "Restez pour corriger, ou partez et perdez les modifications faites depuis le dernier enregistrement.",
     "stay": "Rester et corriger",
     "leave": "Quitter sans enregistrer"
+  },
+  "cancelInvoice": {
+    "title": "Annuler la facture {number} ?",
+    "titleNoNumber": "Annuler cette facture ?",
+    "description": "Cette facture a déjà été remise au client, elle ne peut donc pas être supprimée : la plupart des pays exigent des numéros de facture sans trous.",
+    "pointKept": "Le travail est conservé et marqué comme annulé. La facture garde son numéro et ne peut plus être modifiée.",
+    "pointShown": "La facture, son lien partagé, le PDF et le portail client l’affichent comme annulée.",
+    "pointReports": "Elle n’est plus comptée dans le chiffre d’affaires, les taxes ni les montants dus.",
+    "pointLedger": "Un logiciel comptable connecté annule sa copie quand il le peut. Une copie portant des paiements est laissée à votre comptable pour un avoir.",
+    "paidNotice": "Le client a payé {amount} sur cette facture.",
+    "recordRefund": "Enregistrer un remboursement de l’argent rendu au client",
+    "refundAmount": "Montant remboursé",
+    "refundMethod": "Remboursé par",
+    "refundTooMuch": "Un remboursement ne peut pas dépasser {amount}.",
+    "refundNote": "Remboursement de facture annulée",
+    "noRefundHint": "Sans remboursement, les paiements restent enregistrés tels quels.",
+    "keep": "Garder la facture",
+    "confirm": "Annuler la facture",
+    "done": "Facture annulée",
+    "failed": "Impossible d’annuler la facture",
+    "bannerTitle": "La facture {number} est annulée",
+    "bannerTitleNoNumber": "Cette facture est annulée",
+    "bannerBody": "Elle garde son numéro et ne peut plus être modifiée. Le client la voit marquée comme annulée."
   }
 }

@@ -116,7 +116,7 @@ describe('the due today filter', () => {
     }
 
     expect(where.promisedAt.not).toBeNull()
-    expect(where.AND).toEqual([{ status: { not: 'completed' } }])
+    expect(where.AND).toEqual([{ status: { notIn: ['completed', 'cancelled'] } }])
     // End of today in Auckland, which is not end of today in UTC.
     const end = where.promisedAt.lte
     expect(end.getTime()).toBeGreaterThan(Date.now() - 24 * 60 * 60 * 1000)
@@ -141,6 +141,6 @@ describe('the due today filter', () => {
       unknown
     >
     expect(where.status).toBe('waiting-parts')
-    expect(where.AND).toEqual([{ status: { not: 'completed' } }])
+    expect(where.AND).toEqual([{ status: { notIn: ['completed', 'cancelled'] } }])
   })
 })

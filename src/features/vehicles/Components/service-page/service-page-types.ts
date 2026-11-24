@@ -132,6 +132,8 @@ export interface ServicePageClientProps {
   workOrderStatuses?: WorkOrderStatusOption[]
   /** The viewer may change settings, so the status menus offer to add a status. */
   canAddStatus?: boolean
+  /** The viewer can open the invoice settings and change them, so the due date links there. */
+  canSetPaymentTerms?: boolean
   /** The viewer may edit vehicles, so an empty Customer box offers to add one. */
   canSetCustomer?: boolean
   /** The viewer may record payments, so the header's "Unpaid" opens the payment form. */
@@ -141,6 +143,8 @@ export interface ServicePageClientProps {
   /** The workshop's tread limits, so a set checked in here grades correctly. */
   tireThresholds?: { summerReplace: number; winterReplace: number; warnMargin: number }
   defaultDueDays?: number
+  /** What a promise to the customer defaults to on each weekday; see WorkOrderSidebarProps. */
+  promisedDefaultTimes?: string[]
   defaultMarkupPercent?: number
   markupAppliesToInventory?: boolean
   statusReports?: {

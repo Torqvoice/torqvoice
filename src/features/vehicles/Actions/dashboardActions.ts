@@ -29,7 +29,8 @@ export async function getDashboardStats() {
         recentServices,
       ] = await Promise.all([
         db.serviceRecord.count({
-          where: { organizationId, status: { not: 'completed' } },
+          // Not done yet; a cancelled job is not work to do either.
+          where: { organizationId, status: { notIn: ['completed', 'cancelled'] } },
         }),
         db.serviceRecord.count({
           where: { organizationId, status: 'pending' },

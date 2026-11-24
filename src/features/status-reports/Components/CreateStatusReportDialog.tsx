@@ -51,7 +51,10 @@ interface CreateStatusReportDialogProps {
   smsEnabled: boolean
   emailEnabled: boolean
   telegramEnabled: boolean
+  /** "Create and send": the report is made and the send step comes next. */
   onCreated?: (reportId: string) => void
+  /** Any report made, sent next or not, so the list it belongs in can show it. */
+  onSaved?: (reportId: string) => void
 }
 
 export function CreateStatusReportDialog({
@@ -61,6 +64,7 @@ export function CreateStatusReportDialog({
   inspectionId,
   vehicleName,
   onCreated,
+  onSaved,
 }: CreateStatusReportDialogProps) {
   const t = useTranslations('statusReport.create')
   const isMobile = useIsMobile()
@@ -148,6 +152,7 @@ export function CreateStatusReportDialog({
       }
       toast.success(t('created'))
       onOpenChange(false)
+      onSaved?.(result.data.id)
       if (andSend && onCreated) onCreated(result.data.id)
     } catch {
       toast.error(t('createReportFailed'))

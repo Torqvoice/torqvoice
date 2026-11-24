@@ -37,11 +37,19 @@ import { parseTaxComponentDefinitions } from '@/lib/tax-components'
 import { restatedSubtotal, subtotalFromLines } from '@/features/vehicles/Lib/subtotalFromLines'
 import { documentTotals } from '@/features/settings/Lib/workshopTax'
 import { issueInvoice } from '@/features/invoices/Lib/issueInvoice'
+import { invoiceWentOut } from '@/features/invoices/Lib/issuedInvoice'
+import {
+  CANCELLED_JOB_REFUSAL,
+  CancelledInvoiceError,
+  issuedInvoiceDeleteRefusal,
+} from '@/features/invoices/Lib/cancelInvoice'
 import { withAuth } from '@/lib/with-auth'
 import { parseSentFields, sentId } from '@/lib/parse-sent-fields'
 import { createServiceSchema, updateServiceSchema } from '../Schema/serviceSchema'
 import { revalidatePath } from 'next/cache'
 import {
+  CANCELLED,
+  isCancelled,
   isSystemStatus,
   slotOnCompletion,
   statusColumns,
@@ -1254,15 +1262,20 @@ export async function updateServiceStatus(
         },
       })
       if (!record) throw new Error('Record not found')
+      // A cancelled invoice stays cancelled: its number is spent.
+      if (isCancelled(record.status)) throw new Error(CANCELLED_JOB_REFUSAL)
       if (status === 'completed' && record.status !== 'completed') {
         await assertRequiredMetersRead(organizationId, record.id, 'complete')
       }
 
-      await db.serviceRecord.update({
-        where: { id: recordId },
-        // A finished job lets go of booked time still ahead of it.
+      // Conditional on the job not having been cancelled since it was read:
+      // a status change already on its way must not undo a cancel. A
+      // finished job lets go of booked time still ahead of it.
+      const moved = await db.serviceRecord.updateMany({
+        where: { id: recordId, organizationId, status: { not: CANCELLED } },
         data: { ...statusColumns(status, custom), ...slotOnCompletion(record, status) },
       })
+      if (moved.count === 0) throw new Error(CANCELLED_JOB_REFUSAL)
 
       notificationBus.emit('workboard', {
         type: 'job_status_changed',
@@ -1399,6 +1412,8 @@ export async function toggleManuallyPaid(recordId: string) {
         include: { payments: { select: { amount: true } } },
       })
       if (!record) throw new Error('Record not found')
+      // Nothing is owed on a cancelled invoice, paid by hand or otherwise.
+      if (isCancelled(record.status)) throw new CancelledInvoiceError()
 
       // Marking paid is always allowed — it only ever locks the document
       // further. But a flip that would *release* the lock is the admin-only
@@ -1472,12 +1487,13 @@ export async function getWorkOrders(params: {
         const endOfToday = endOfWorkshopDay(zonedDayKey(new Date(), timeZone), timeZone)
         if (endOfToday) {
           where.promisedAt = { not: null, lte: endOfToday }
-          where.AND = [...(where.AND ?? []), { status: { not: 'completed' } }]
+          where.AND = [...(where.AND ?? []), { status: { notIn: ['completed', CANCELLED] } }]
         }
       }
 
       if (params.status === 'active') {
-        where.status = { not: 'completed' }
+        // A cancelled job is not work still to do.
+        where.status = { notIn: ['completed', CANCELLED] }
       } else if (params.status && params.status !== 'all') {
         where.status = params.status
       }
@@ -1593,8 +1609,13 @@ export async function deleteServiceRecord(recordId: string) {
       await assertInvoiceEditable(recordId, organizationId)
       const record = await db.serviceRecord.findFirst({
         where: { id: recordId, organizationId },
+        include: { payments: { select: { amount: true } } },
       })
       if (!record) throw new Error('Record not found')
+      // An invoice that went out keeps its number: deleting it would leave a
+      // gap in the numbering the books and the tax office read. It is
+      // cancelled instead (cancelServiceRecord); only a draft is deleted.
+      if (invoiceWentOut(record)) throw new Error(issuedInvoiceDeleteRefusal(record.invoiceNumber))
 
       // Its attachments and status report videos, read now and let go once
       // the record is gone. A tire set's photo on this job is shared with the

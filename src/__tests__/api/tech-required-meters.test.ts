@@ -84,6 +84,7 @@ vi.mock('@/lib/db', () => ({
         id: 'job-1',
         status: data.status,
       })),
+      updateMany: vi.fn(async () => ({ count: 1 })),
     },
     serviceRecordEquipment: { findMany: vi.fn(async () => []) },
     equipmentType: { findMany: vi.fn(async () => []) },

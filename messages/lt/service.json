@@ -66,7 +66,8 @@
     "designRefreshConfirm": "Atnaujinti sąskaitą",
     "designRefreshDone": "Ši sąskaita dabar spausdinama su dabartiniais duomenimis",
     "designRefreshFailed": "Nepavyko atnaujinti sąskaitos",
-    "printWorkOrder": "Spausdinti darbo užsakymą"
+    "printWorkOrder": "Spausdinti darbo užsakymą",
+    "cancelInvoice": "Atšaukti sąskaitą"
   },
   "basicInfo": {
     "title": "Pagrindinė informacija",
@@ -93,6 +94,9 @@
     "invoiceDueDateOnIssuePlaceholder": "Iš sąlygų",
     "invoiceDateOnIssueHint": "Palikus tuščią, sąskaita datuojama jos išsiuntimo diena, o apmokėjimo terminas skaičiuojamas pagal jūsų mokėjimo sąlygas.",
     "invoiceDueDateOnIssueHint": "Palikus tuščią, apmokėjimo terminas nustatomas pagal jūsų mokėjimo sąlygas, kai sąskaita išsiunčiama.",
+    "noPaymentTerms": "Mokėjimo sąlygos nenustatytos, todėl apmokėjimo termino nėra.",
+    "setPaymentTerms": "Nustatyti mokėjimo sąlygas",
+    "noDueDatePlaceholder": "Be termino",
     "typeOptions": {
       "maintenance": "Priežiūra",
       "repair": "Remontas",
@@ -104,7 +108,8 @@
       "pending": "Laukia",
       "in_progress": "Vykdoma",
       "waiting_parts": "Laukia dalių",
-      "completed": "Užbaigta"
+      "completed": "Užbaigta",
+      "cancelled": "Atšaukta"
     },
     "searchVehicles": "Ieškoti transporto priemonių...",
     "noVehicleFound": "Transporto priemonė nerasta.",
@@ -377,6 +382,7 @@
     "received": "Gauti mokėjimai",
     "noneYet": "Dar nieko nesumokėta.",
     "balanceDue": "Mokėtina suma",
+    "cancelledNotice": "Atšaukta: pagal šią sąskaitą nieko nemokėti. Mokėjimai ir grąžinimai lieka sąraše aukščiau.",
     "aboveBalance": "Mokėtina suma yra {amount}. Mokėjimas negali būti didesnis.",
     "nothingDue": "Pagal šią sąskaitą nieko nebeliko mokėti.",
     "refund": "Grąžinimas"
@@ -519,6 +525,7 @@
     "slotPicked": "Priskirta artimiausiam laisvam laikui",
     "noSlotFound": "Artimiausiomis savaitėmis laisvo laiko nerasta",
     "assignedTitle": "Priskirtas technikas",
+    "notAssigned": "Dar nepriskirta. Pasirinkite, kas atliks šį darbą.",
     "boardLink": "Darbų lenta",
     "someoneElse": "Kitas žmogus",
     "loadOf": "{booked} / {capacity} val.",
@@ -756,7 +763,9 @@
       "preview": "Peržiūrėti sąskaitą",
       "previewShort": "Peržiūra",
       "send": "Siųsti klientui",
-      "sendShort": "Siųsti"
+      "sendShort": "Siųsti",
+      "cancelled": "Atšaukta",
+      "nothingOwed": "Nieko nemokėti"
     },
     "vehicleInfo": {
       "more": "Daugiau informacijos",
@@ -886,5 +895,28 @@
     "hint": "Likite ir pataisykite arba išeikite ir praraskite pakeitimus nuo paskutinio išsaugojimo.",
     "stay": "Likti ir pataisyti",
     "leave": "Išeiti neišsaugojus"
+  },
+  "cancelInvoice": {
+    "title": "Atšaukti sąskaitą {number}?",
+    "titleNoNumber": "Atšaukti šią sąskaitą?",
+    "description": "Ši sąskaita jau pateikta klientui, todėl jos ištrinti negalima: daugumoje šalių sąskaitų numeracija turi būti be spragų.",
+    "pointKept": "Darbas išsaugomas ir pažymimas kaip atšauktas. Sąskaita išlaiko savo numerį ir jos nebegalima keisti.",
+    "pointShown": "Sąskaita, jos bendrinama nuoroda, PDF ir kliento portalas rodo ją kaip atšauktą.",
+    "pointReports": "Ji nebeįskaičiuojama į pajamas, mokesčius ar skolas.",
+    "pointLedger": "Prijungta apskaitos sistema, kur gali, anuliuoja savo kopiją. Kopija su mokėjimais paliekama buhalteriui kredituoti.",
+    "paidNotice": "Klientas pagal šią sąskaitą sumokėjo {amount}.",
+    "recordRefund": "Užregistruoti klientui grąžintus pinigus",
+    "refundAmount": "Grąžinama suma",
+    "refundMethod": "Grąžinta",
+    "refundTooMuch": "Grąžinimas negali viršyti {amount}.",
+    "refundNote": "Grąžinimas pagal atšauktą sąskaitą",
+    "noRefundHint": "Be grąžinimo mokėjimai lieka užregistruoti kaip yra.",
+    "keep": "Palikti sąskaitą",
+    "confirm": "Atšaukti sąskaitą",
+    "done": "Sąskaita atšaukta",
+    "failed": "Nepavyko atšaukti sąskaitos",
+    "bannerTitle": "Sąskaita {number} atšaukta",
+    "bannerTitleNoNumber": "Ši sąskaita atšaukta",
+    "bannerBody": "Ji išlaiko savo numerį ir nebegali būti keičiama. Klientas mato ją pažymėtą kaip atšauktą."
   }
 }

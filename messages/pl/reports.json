@@ -203,15 +203,15 @@
     }
   },
   "tax": {
-    "totalTaxCollected": "Łącznie Zebrane Podatki",
+    "totalTaxCollected": "Podatek Łącznie",
     "taxableRevenue": "Przychody Opodatkowane",
     "invoicesWithTax": "Faktury z Podatkiem",
-    "monthlyTaxCollected": "Miesięczne Podatki Zebrane",
+    "monthlyTaxCollected": "Podatek Miesięcznie",
     "taxByRate": "Podatek wg Stawki",
     "monthlyBreakdown": "Zestawienie Miesięczne",
     "tableHeaders": {
       "taxRate": "Stawka Podatkowa",
-      "taxCollected": "Zebrany Podatek",
+      "taxCollected": "Podatek",
       "invoices": "Faktury",
       "month": "Miesiąc",
       "taxableAmount": "Kwota Opodatkowana"
@@ -254,7 +254,7 @@
     "totalSpent": "Suma Wydatków",
     "jobs": "Zlecenia",
     "visits": "Wizyty",
-    "taxCollected": "Zebrany Podatek",
+    "taxCollected": "Podatek",
     "partsCost": "Koszt Części",
     "laborCost": "Koszt Robocizny"
   },
@@ -305,7 +305,7 @@
     "customer": "Klient",
     "visits": "Wizyty",
     "avgDaysBetweenVisits": "Śr. Dni Między Wizytami",
-    "taxCollected": "Zebrany Podatek",
+    "taxCollected": "Podatek",
     "taxableAmount": "Kwota Opodatkowana",
     "invoiceCount": "Liczba Faktur",
     "invoiceNumber": "Nr Faktury",
@@ -378,7 +378,7 @@
     "over30": "Ponad 30 Dni",
     "over60": "Ponad 60 Dni",
     "over90": "Ponad 90 Dni",
-    "taxCollected": "Zebrany Podatek",
+    "taxCollected": "Podatek",
     "taxableAmount": "Kwota Opodatkowana",
     "taxRate": "Stawka Podatkowa",
     "invoiceCount": "Liczba Faktur",

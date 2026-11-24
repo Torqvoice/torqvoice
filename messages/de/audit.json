@@ -232,7 +232,8 @@
     "equipment_delete": "Ausrüstung gelöscht",
     "platform_deleteUser": "Benutzer gelöscht",
     "platform_grantSuperAdmin": "Super-Admin erteilt",
-    "platform_revokeSuperAdmin": "Super-Admin entzogen"
+    "platform_revokeSuperAdmin": "Super-Admin entzogen",
+    "service_cancel": "Rechnung storniert"
   },
   "summary": {
     "auth_twoFactorEnabled": "Zwei-Faktor-Anmeldung aktiviert",
@@ -424,6 +425,8 @@
     "equipment_meter": "Zähler {meter} zu {name} an {vehicle} hinzugefügt",
     "platform_deleteUser": "Benutzer {name} ({email}) gelöscht",
     "platform_grantSuperAdmin": "{name} ({email}) zum Super-Admin gemacht",
-    "platform_revokeSuperAdmin": "{name} ({email}) den Super-Admin entzogen"
+    "platform_revokeSuperAdmin": "{name} ({email}) den Super-Admin entzogen",
+    "service_cancel": "Rechnung {ref} storniert",
+    "service_cancelRefund": "Rechnung {ref} storniert und eine Erstattung von {amount} erfasst"
   }
 }

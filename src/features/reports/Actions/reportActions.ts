@@ -32,8 +32,15 @@ interface ReportRange {
  * four system values, whatever the workshop calls its own stages, so
  * `completed` is the same job for every workshop.
  */
-function statusScope(completedOnly?: boolean) {
-  return completedOnly ? { status: 'completed' } : {}
+/**
+ * The jobs a report counts. A cancelled job keeps its invoice number but was
+ * never charged, so the reports of money and work billed leave it out; the
+ * time and parts reports pass `keepCancelled`, since the hours were clocked
+ * and the parts taken from stock whatever became of the invoice.
+ */
+function statusScope(completedOnly?: boolean, { keepCancelled = false } = {}) {
+  if (completedOnly) return { status: 'completed' }
+  return keepCancelled ? {} : { status: { not: 'cancelled' } }
 }
 
 /**
@@ -235,7 +242,7 @@ export async function getTechnicianTimeReport(params: ReportRange) {
           where: {
             organizationId,
             AND: [workDateIn({ gte: start, lt: end })],
-            ...statusScope(params.completedOnly),
+            ...statusScope(params.completedOnly, { keepCancelled: true }),
             technicianId: { not: null },
           },
           select: {
@@ -357,7 +364,7 @@ export async function getPartsUsageReport(params: ReportRange) {
           serviceRecord: {
             organizationId,
             AND: [workDateIn({ gte: start, lt: end })],
-            ...statusScope(params.completedOnly),
+            ...statusScope(params.completedOnly, { keepCancelled: true }),
           },
         },
         select: {

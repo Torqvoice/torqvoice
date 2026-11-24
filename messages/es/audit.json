@@ -232,7 +232,8 @@
     "equipment_delete": "Equipamiento eliminado",
     "platform_deleteUser": "Usuario eliminado",
     "platform_grantSuperAdmin": "Superadministrador concedido",
-    "platform_revokeSuperAdmin": "Superadministrador retirado"
+    "platform_revokeSuperAdmin": "Superadministrador retirado",
+    "service_cancel": "Factura anulada"
   },
   "summary": {
     "auth_twoFactorEnabled": "Activó el inicio de sesión en dos pasos",
@@ -424,6 +425,8 @@
     "equipment_meter": "Añadió el contador {meter} a {name} en {vehicle}",
     "platform_deleteUser": "Usuario {name} ({email}) eliminado",
     "platform_grantSuperAdmin": "{name} ({email}) ahora es superadministrador",
-    "platform_revokeSuperAdmin": "Rol de superadministrador retirado a {name} ({email})"
+    "platform_revokeSuperAdmin": "Rol de superadministrador retirado a {name} ({email})",
+    "service_cancel": "Factura {ref} anulada",
+    "service_cancelRefund": "Factura {ref} anulada y reembolso de {amount} registrado"
   }
 }

@@ -110,6 +110,14 @@ interface RoleOption {
   name: string
 }
 
+/** The board record of a technician the dialog just added. */
+export interface AddedTechnician {
+  technicianId: string
+  name: string
+  /** Their account, for a technician with the app; null for a board-only name. */
+  userId: string | null
+}
+
 export function AddPersonDialog({
   open,
   onOpenChange,
@@ -132,7 +140,12 @@ export function AddPersonDialog({
   /** The workshop's country code. Empty until somebody has supplied one. */
   dialCode?: string
   roles?: RoleOption[]
-  onChanged: () => void
+  /**
+   * Somebody was added. A technician comes back with their board record, so
+   * a caller that opened this from a job can put them on it straight away;
+   * an invited colleague has none yet and comes back without one.
+   */
+  onChanged: (added?: AddedTechnician) => void
 }) {
   const t = useTranslations('settings')
   const tUpgrade = useTranslations('common.upgrade')
@@ -285,6 +298,7 @@ export function AddPersonDialog({
 
       const data = result.data as {
         conflict: { name: string } | null
+        technicianId?: string
         userId: string | null
         name: string
       }
@@ -300,7 +314,11 @@ export function AddPersonDialog({
 
       const technician = { userId: data.userId as string, name: data.name }
       setCreated(technician)
-      onChanged()
+      onChanged(
+        data.technicianId
+          ? { technicianId: data.technicianId, name: data.name, userId: technician.userId }
+          : undefined
+      )
       setStep('handoff')
 
       const code = await createAppSetupCode({ userId: technician.userId })
@@ -383,7 +401,11 @@ export function AddPersonDialog({
         return
       }
       setCreated({ userId: '', name: name.trim() })
-      onChanged()
+      onChanged(
+        result.data
+          ? { technicianId: result.data.id, name: result.data.name, userId: null }
+          : undefined
+      )
       setStep('done')
     },
     [busy, name, color, onChanged, t]

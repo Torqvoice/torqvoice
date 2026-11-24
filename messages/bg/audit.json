@@ -232,7 +232,8 @@
     "equipment_delete": "Изтрито оборудване",
     "platform_deleteUser": "Изтрит потребител",
     "platform_grantSuperAdmin": "Даден супер администратор",
-    "platform_revokeSuperAdmin": "Премахнат супер администратор"
+    "platform_revokeSuperAdmin": "Премахнат супер администратор",
+    "service_cancel": "Анулирана фактура"
   },
   "summary": {
     "auth_twoFactorEnabled": "Двуфакторното удостоверяване е включено",
@@ -424,6 +425,8 @@
     "equipment_meter": "Добавен е броячът {meter} към {name} на {vehicle}",
     "platform_deleteUser": "Изтрит потребител {name} ({email})",
     "platform_grantSuperAdmin": "{name} ({email}) стана супер администратор",
-    "platform_revokeSuperAdmin": "Премахнати правата на супер администратор на {name} ({email})"
+    "platform_revokeSuperAdmin": "Премахнати правата на супер администратор на {name} ({email})",
+    "service_cancel": "Анулирана фактура {ref}",
+    "service_cancelRefund": "Анулирана фактура {ref} и записано възстановяване на {amount}"
   }
 }
