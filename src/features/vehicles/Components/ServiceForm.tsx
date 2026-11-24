@@ -1,5 +1,7 @@
 'use client'
 
+import { useDateSettings } from '@/components/date-settings-context'
+import { workshopTodayKey } from '@/lib/workshop-datetime'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -37,7 +39,8 @@ export function ServiceForm({ vehicleId, open, onOpenChange }: ServiceFormProps)
   const modal = useGlassModal()
   const [loading, setLoading] = useState(false)
   const [type, setType] = useState('maintenance')
-  const [serviceDate, setServiceDate] = useState(new Date().toISOString().split('T')[0])
+  const { timezone } = useDateSettings()
+  const [serviceDate, setServiceDate] = useState(() => workshopTodayKey(timezone))
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()

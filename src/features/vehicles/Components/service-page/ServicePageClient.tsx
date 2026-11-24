@@ -80,6 +80,8 @@ import {
   resolvePartPrice,
 } from '@/features/inventory/Lib/partPricing'
 import { vehicleName } from '@/lib/vehicle-name'
+import { useDateSettings } from '@/components/date-settings-context'
+import { addDaysToDayKey, dayKeyToLocalDate, workshopTodayKey } from '@/lib/workshop-datetime'
 
 export type { ServicePageClientProps, BoardTechnicianOption } from './service-page-types'
 
@@ -215,9 +217,13 @@ export function ServicePageClient({
   // Date check dialog state
   const [showDateCheck, setShowDateCheck] = useState(false)
   const dateCheckResolveRef = useRef<((proceed: boolean) => void) | null>(null)
-  const today = new Date(new Date().toISOString().split('T')[0])
+  // The workshop's day, not the UTC one: in Auckland at 05:00 the UTC day is
+  // still yesterday. The Dates are local midnights for the pickers.
+  const { timezone } = useDateSettings()
+  const todayKey = workshopTodayKey(timezone)
+  const today = dayKeyToLocalDate(todayKey)
   const suggestedDueDate =
-    defaultDueDays > 0 ? new Date(today.getTime() + defaultDueDays * 86400000) : today
+    defaultDueDays > 0 ? dayKeyToLocalDate(addDaysToDayKey(todayKey, defaultDueDays)) : today
   const [pendingInvoiceDate, setPendingInvoiceDate] = useState<Date>(today)
   const [pendingDueDate, setPendingDueDate] = useState<Date>(suggestedDueDate)
   const [updatingDates, setUpdatingDates] = useState(false)
@@ -231,11 +237,11 @@ export function ServicePageClient({
   const areDatesExpired = useMemo(() => {
     const invoiceDateStr = initialData.invoiceDate
     const dueDateStr = initialData.invoiceDueDate
-    const todayStr = new Date().toISOString().split('T')[0]
+    const todayStr = workshopTodayKey(timezone)
     const invoiceExpired = invoiceDateStr ? invoiceDateStr < todayStr : false
     const dueExpired = dueDateStr ? dueDateStr < todayStr : false
     return invoiceExpired || dueExpired
-  }, [initialData.invoiceDate, initialData.invoiceDueDate])
+  }, [initialData.invoiceDate, initialData.invoiceDueDate, timezone])
 
   const formState = useServiceFormState({
     vehicleId,
@@ -1025,11 +1031,11 @@ export function ServicePageClient({
                       disabled={updatingDates}
                       onClick={async () => {
                         if (updatingDates) return
-                        const now = new Date(new Date().toISOString().split('T')[0])
-                        const due =
-                          defaultDueDays > 0
-                            ? new Date(now.getTime() + defaultDueDays * 86400000)
-                            : new Date(now.getTime() + 14 * 86400000)
+                        const nowKey = workshopTodayKey(timezone)
+                        const now = dayKeyToLocalDate(nowKey)
+                        const due = dayKeyToLocalDate(
+                          addDaysToDayKey(nowKey, defaultDueDays > 0 ? defaultDueDays : 14)
+                        )
                         setPendingInvoiceDate(now)
                         setPendingDueDate(due)
                         setUpdatingDates(true)

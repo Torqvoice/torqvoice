@@ -373,7 +373,8 @@
     "failedPdf": "Não foi possível gerar o PDF da fatura",
     "received": "Pagamentos recebidos",
     "noneYet": "Ainda nada pago.",
-    "balanceDue": "Valor em dívida"
+    "balanceDue": "Valor em dívida",
+    "refund": "Reembolso"
   },
   "attachments": {
     "deleteTitle": "Eliminar anexo",

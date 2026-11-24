@@ -373,7 +373,8 @@
     "failedPdf": "Error al generar factura en PDF",
     "received": "Pagos recibidos",
     "noneYet": "Todavía no se ha pagado nada.",
-    "balanceDue": "Saldo pendiente"
+    "balanceDue": "Saldo pendiente",
+    "refund": "Reembolso"
   },
   "attachments": {
     "deleteTitle": "Eliminar Archivo",

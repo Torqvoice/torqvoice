@@ -1,5 +1,7 @@
 'use client'
 
+import { useDateSettings } from '@/components/date-settings-context'
+import { workshopTodayKey } from '@/lib/workshop-datetime'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
@@ -79,6 +81,7 @@ export function NewTireJobDialog({
   canEditSettings?: boolean
 }) {
   const t = useTranslations('tireHotel')
+  const { timezone } = useDateSettings()
   const router = useRouter()
   const formatCurrency = useFormatCurrency()
   const { formatDate } = useFormatDate()
@@ -157,7 +160,7 @@ export function NewTireJobDialog({
       // blank on purpose: nobody knows when the customer will come back for
       // them, and a guessed date would print on the invoice as if they did.
       setStorageAmount(String(defaultStoragePrice || ''))
-      setStorageFrom(new Date().toISOString().slice(0, 10))
+      setStorageFrom(workshopTodayKey(timezone))
       setStorageTo('')
 
       const rows = jobs?.success && jobs.data ? jobs.data : []
@@ -167,7 +170,7 @@ export function NewTireJobDialog({
     return () => {
       cancelled = true
     }
-  }, [open, tireSetId, mode])
+  }, [open, tireSetId, mode, timezone])
 
   // Two characters is where a search stops meaning "most of the catalogue".
   const searchActive = query.trim().length >= 2

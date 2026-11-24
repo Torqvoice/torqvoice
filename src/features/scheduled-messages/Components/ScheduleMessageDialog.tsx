@@ -3,6 +3,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslations } from 'next-intl'
 import { toast } from 'sonner'
+import { useDateSettings } from '@/components/date-settings-context'
+import { zonedDateInput, zonedTimeInput } from '@/lib/timezone'
+import { parseWorkshopDateTime, workshopTodayKey } from '@/lib/workshop-datetime'
 import { Bell, Loader2, Mail, MessageCircle, MessageSquare, Send } from 'lucide-react'
 import { getWhatsappTemplateState } from '@/features/whatsapp/Actions/whatsappActions'
 import { Button } from '@/components/ui/button'
@@ -68,15 +71,13 @@ interface ScheduleMessageDialogProps {
   onSaved?: () => void
 }
 
-function toLocalDateStr(d: Date): string {
-  const y = d.getFullYear()
-  const m = String(d.getMonth() + 1).padStart(2, '0')
-  const day = String(d.getDate()).padStart(2, '0')
-  return `${y}-${m}-${day}`
-}
-
-function toTimeStr(d: Date): string {
-  return `${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`
+/** The instant a typed date and time stand for; the browser's clock when the workshop has no zone yet. */
+function sendAtInstant(value: string, timeZone: string): number {
+  try {
+    return timeZone ? parseWorkshopDateTime(value, timeZone).getTime() : new Date(value).getTime()
+  } catch {
+    return Number.NaN
+  }
 }
 
 export function ScheduleMessageDialog({
@@ -92,6 +93,9 @@ export function ScheduleMessageDialog({
 }: ScheduleMessageDialogProps) {
   const t = useTranslations('scheduledMessages.dialog')
   const tc = useTranslations('common.buttons')
+  // The fields are the workshop's wall clock: the server reads them back in
+  // its zone, so filling them from the browser's clock moves the message.
+  const { timezone } = useDateSettings()
   const isEdit = !!message
 
   const [channel, setChannel] = useState<MessageChannel>(availableChannels[0] ?? 'email')
@@ -116,10 +120,10 @@ export function ScheduleMessageDialog({
       setRecipient(message.recipient ?? '')
       setSubject(message.subject ?? '')
       setBody(message.body)
-      setDate(toLocalDateStr(message.sendAt))
-      setTime(toTimeStr(message.sendAt))
+      setDate(zonedDateInput(message.sendAt, timezone))
+      setTime(zonedTimeInput(message.sendAt, timezone))
       setFrequency(message.frequency as MessageFrequency)
-      setEndDate(message.endDate ? toLocalDateStr(message.endDate) : '')
+      setEndDate(message.endDate ? zonedDateInput(message.endDate, timezone) : '')
     } else {
       // A draft handed over from the SMS composer stays an SMS when possible
       setChannel(
@@ -129,12 +133,21 @@ export function ScheduleMessageDialog({
       setRecipient('')
       setSubject('')
       setBody(defaultBody ?? '')
-      setDate(defaultDate ?? toLocalDateStr(new Date()))
+      setDate(defaultDate ?? workshopTodayKey(timezone))
       setTime(defaultTime ?? '09:00')
       setFrequency('once')
       setEndDate('')
     }
-  }, [open, message, defaultDate, defaultTime, defaultBody, defaultCustomer?.id, availableChannels])
+  }, [
+    open,
+    message,
+    defaultDate,
+    defaultTime,
+    defaultBody,
+    defaultCustomer?.id,
+    availableChannels,
+    timezone,
+  ])
 
   // A scheduled message fires later, when the customer's 24 hour window has
   // almost certainly closed, so it goes as a template or not at all.
@@ -163,9 +176,8 @@ export function ScheduleMessageDialog({
     (channel !== 'email' || !!subject.trim()) &&
     (!needsRecipient || !!recipient.trim())
 
-  // The browser's clock stands in for the workshop's here, as everywhere on
-  // the client; the server checks again in the workshop's zone.
-  const inPast = !!date && !!time && new Date(`${date}T${time}:00`).getTime() < Date.now()
+  // Read on the workshop's clock, as the server will; the server checks again.
+  const inPast = !!date && !!time && sendAtInstant(`${date}T${time}`, timezone) < Date.now()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

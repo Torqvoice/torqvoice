@@ -1,4 +1,11 @@
-import { addZonedDays, startOfZonedDay, zonedDate, zonedParts } from '@/lib/timezone'
+import {
+  addZonedDays,
+  safeTimeZone,
+  startOfZonedDay,
+  zonedDate,
+  zonedDateInput,
+  zonedParts,
+} from '@/lib/timezone'
 
 /**
  * A "YYYY-MM-DDTHH:MM" from the schedule dialog is the workshop's wall
@@ -101,4 +108,32 @@ export function shiftWorkshopTime(
 export function workshopMonthKey(date: Date, timeZone: string): string {
   const p = zonedParts(date, timeZone)
   return `${p.year}-${String(p.month).padStart(2, '0')}`
+}
+
+/**
+ * Today in the workshop, as YYYY-MM-DD: the business day a payment, an
+ * invoice date or a report range means by "today". Not the UTC day
+ * (`toISOString().slice(0, 10)`), which is yesterday in Auckland every
+ * morning, and not the browser's day, which is wrong for a viewer abroad.
+ * An empty zone means the workshop has never chosen one, and then the
+ * runtime's own day is all there is.
+ */
+export function workshopTodayKey(timeZone: string, now: Date = new Date()): string {
+  return zonedDateInput(now, timeZone ? safeTimeZone(timeZone) : '')
+}
+
+/** The YYYY-MM-DD key `days` calendar days later (or earlier), with no clock involved. */
+export function addDaysToDayKey(key: string, days: number): string {
+  const [y, m, d] = key.split('-').map(Number)
+  return new Date(Date.UTC(y, m - 1, d + days)).toISOString().slice(0, 10)
+}
+
+/**
+ * The runtime-local midnight of a YYYY-MM-DD key, for date pickers and
+ * date-fns, which read a Date by its local getters. Its wall clock is the
+ * day the key names; the instant itself means nothing and is never stored.
+ */
+export function dayKeyToLocalDate(key: string): Date {
+  const [y, m, d] = key.split('-').map(Number)
+  return new Date(y, m - 1, d)
 }

@@ -76,6 +76,8 @@ import {
   getTechnicianTimeReport,
 } from '@/features/reports/Actions/reportActions'
 import { useFormatCurrency } from '@/components/currency-settings-context'
+import { useDateSettings } from '@/components/date-settings-context'
+import { dayKeyToLocalDate, workshopTodayKey } from '@/lib/workshop-datetime'
 import type {
   RevenueReport,
   ServiceReport,
@@ -175,7 +177,11 @@ export default function ReportsClient({
   const searchParams = useSearchParams()
   const router = useRouter()
   const pathname = usePathname()
-  const currentYear = new Date().getFullYear()
+  // The workshop's day, not the viewer's: a London viewer of an Auckland
+  // workshop otherwise ends the range on a day the workshop has left behind.
+  const { timezone } = useDateSettings()
+  const workshopToday = dayKeyToLocalDate(workshopTodayKey(timezone))
+  const currentYear = workshopToday.getFullYear()
 
   const initialTab = (
     VALID_TABS.includes(searchParams.get('tab') as ReportTab)
@@ -213,7 +219,7 @@ export default function ReportsClient({
   )
   const [dateRange, setDateRange] = useState<DateRange>({
     from: new Date(currentYear, 0, 1),
-    to: new Date(),
+    to: workshopToday,
   })
   const [pendingDateRange, setPendingDateRange] = useState<DateRange>(dateRange)
   const [datePickerOpen, setDatePickerOpen] = useState(false)
@@ -721,7 +727,7 @@ export default function ReportsClient({
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `${filename}-${format(new Date(), 'yyyy-MM-dd')}.pdf`
+      a.download = `${filename}-${workshopTodayKey(timezone)}.pdf`
       a.click()
       URL.revokeObjectURL(url)
     } catch (error) {
@@ -891,12 +897,12 @@ export default function ReportsClient({
                     // arrow click at a time is what people rage-clicked.
                     captionLayout="dropdown"
                     startMonth={new Date(2000, 0)}
-                    endMonth={new Date(currentYear, new Date().getMonth())}
+                    endMonth={new Date(currentYear, workshopToday.getMonth())}
                   />
                   <div className="border-l p-2 flex flex-col gap-0.5 min-w-[130px]">
                     {(() => {
-                      const now = new Date()
-                      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+                      const now = workshopToday
+                      const today = workshopToday
                       const presets: { label: string; from: Date; to: Date }[] = [
                         { label: t('dateRange.presets.today'), from: today, to: today },
                         {
