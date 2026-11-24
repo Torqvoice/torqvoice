@@ -61,7 +61,8 @@ vi.mock('@/lib/db', () => ({
     },
     vehicle: { findFirst: vi.fn(), deleteMany: vi.fn() },
     servicePart: { findMany: vi.fn() },
-    payment: { create: vi.fn(), findFirst: vi.fn(), delete: vi.fn() },
+    payment: { create: vi.fn(), findFirst: vi.fn(), delete: vi.fn(), aggregate: vi.fn() },
+    $queryRaw: vi.fn(),
     workOrderStatus: { findFirst: vi.fn() },
     $transaction: vi.fn(),
   },
@@ -406,6 +407,9 @@ describe('money on a cancelled invoice', () => {
   it('still lets a locked invoice that is not cancelled take a payment', async () => {
     vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(ISSUED_AND_PAID as any)
     vi.mocked(db.payment.create).mockResolvedValue({ id: 'pay-2' } as any)
+    // The balance is read under the job's row lock: £1,000 with £400 paid.
+    vi.mocked((db as any).$queryRaw).mockResolvedValue([{ totalAmount: 1000, cost: 1000 }])
+    vi.mocked((db as any).payment.aggregate).mockResolvedValue({ _sum: { amount: 400 } })
 
     const result = await createPayment({ serviceRecordId: 'job-1', amount: 50, method: 'cash' })
 
