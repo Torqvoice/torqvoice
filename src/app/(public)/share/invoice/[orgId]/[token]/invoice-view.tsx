@@ -276,7 +276,9 @@ export function InvoiceView({
 
   const sectionOrder = getSectionOrder(layoutConfig)
 
-  const showPaymentSection = enabledProviders.length > 0 && balanceDue > 0 && !paymentSuccess
+  // Nothing is paid on a cancelled invoice.
+  const showPaymentSection =
+    !record.cancelled && enabledProviders.length > 0 && balanceDue > 0 && !paymentSuccess
 
   // Deduplicated image list for carousel
   const imageAttachments = (() => {
@@ -476,6 +478,18 @@ export function InvoiceView({
           </button>
         </div>
       </div>
+
+      {/* The workshop cancelled this invoice: it stays readable, marked. */}
+      {record.cancelled && (
+        <div
+          role="status"
+          data-testid="invoice-cancelled"
+          className="mb-6 rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-800 dark:border-red-900 dark:bg-red-950/30 dark:text-red-300"
+        >
+          <p className="font-semibold">{t('cancelledTitle')}</p>
+          <p className="mt-0.5">{t('cancelledBody')}</p>
+        </div>
+      )}
 
       {/* Payment Success Banner */}
       {paymentSuccess && (

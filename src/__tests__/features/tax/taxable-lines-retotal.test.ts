@@ -312,6 +312,29 @@ describe('a part booked onto a job', () => {
     })
   })
 
+  it('is refused like a line saved with the work order, and moves no stock', async () => {
+    for (const bad of [
+      { quantity: 0 },
+      { quantity: -1 },
+      { quantity: 1_000_000_000, unitPrice: 99_999_999, total: 1 },
+      { unitPrice: 10_000_001 },
+    ]) {
+      await expect(
+        addPart({ organizationId: 'org-1', userId: 'user-1', input: { ...input, ...bad } })
+      ).rejects.toThrow()
+    }
+    expect(store.parts).toHaveLength(0)
+  })
+
+  it('stores the line total to the cent', async () => {
+    await addPart({
+      organizationId: 'org-1',
+      userId: 'user-1',
+      input: { ...input, quantity: 3, unitPrice: 0.1, total: 0.30000000000000004 },
+    })
+    expect(store.parts[0]).toMatchObject({ total: 0.3 })
+  })
+
   it('takes the caller at its word when it says', async () => {
     store.settings = PARTS_ONLY
     await addPart({

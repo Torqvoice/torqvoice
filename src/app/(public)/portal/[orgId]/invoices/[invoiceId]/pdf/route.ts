@@ -62,7 +62,8 @@ export async function GET(
 
     // Only completed records are downloadable as invoices. Work-in-progress
     // records aren't real invoices yet (prices may still change).
-    if (record.status !== 'completed') {
+    // A cancelled invoice went out first, and prints marked as cancelled.
+    if (record.status !== 'completed' && record.status !== 'cancelled') {
       return NextResponse.json({ error: 'Not found' }, { status: 404 })
     }
     // Nor is a finished job that still waits for the customer's reference /

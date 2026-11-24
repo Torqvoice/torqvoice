@@ -129,6 +129,27 @@ export function parseWeekHours(raw: string | null | undefined, fallback: WeekHou
   })
 }
 
+/** The end of the working day, for a workshop that has not said when it closes. */
+export const DEFAULT_PROMISE_TIME = '17:00'
+
+/**
+ * The time of day a promise to the customer defaults to on each weekday,
+ * Sunday first: closing time on a day the stored opening hours say the
+ * workshop opens, the end of the working day otherwise. Only hours the
+ * workshop saved count; the calendar's stand-in week is nobody's choice.
+ */
+export function promiseTimesByWeekday(rawOpeningHours: string | null | undefined): string[] {
+  const fallback = Array.from({ length: 7 }, () => DEFAULT_PROMISE_TIME)
+  if (!rawOpeningHours?.trim()) return fallback
+  // Hours that cannot be read (bad JSON, the wrong length, a day closing
+  // before it opens) fall back to a week that closes at the promise default,
+  // not to the calendar's stand-in day, which ends at 15:00.
+  const unreadable = defaultWeek(DEFAULT_DAY_START, DEFAULT_PROMISE_TIME, true)
+  return parseWeekHours(rawOpeningHours, unreadable).map((day, weekday) =>
+    day.open ? day.end : fallback[weekday]
+  )
+}
+
 /** "08:30" as 510. */
 export function minutesOf(hhmm: string): number {
   const [h, m] = hhmm.split(':').map(Number)

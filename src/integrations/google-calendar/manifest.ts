@@ -76,6 +76,7 @@ export const manifest: ConnectorManifest = {
     { event: 'service.update', job: 'calendar.push' },
     { event: 'service.status', job: 'calendar.push' },
     { event: 'service.delete', job: 'calendar.push' },
+    { event: 'service.cancel', job: 'calendar.push' },
   ],
   schedules: [{ job: 'calendar.pull', everyMinutes: 15 }],
 }

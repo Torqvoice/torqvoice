@@ -351,12 +351,14 @@ export function CustomerDetailClient({
         </Link>
 
         <div className="flex items-start gap-4">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-primary/10">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-primary/10">
             <Users className="h-7 w-7 text-primary" />
           </div>
-          <div className="flex-1">
-            <h1 className="flex items-baseline gap-2 text-2xl font-bold">
-              {customer.name}
+          {/* min-w-0, so a long name or address wraps inside the header
+              instead of widening the page past the screen. */}
+          <div className="min-w-0 flex-1">
+            <h1 className="flex flex-wrap items-baseline gap-x-2 text-2xl font-bold [overflow-wrap:anywhere]">
+              <span className="min-w-0">{customer.name}</span>
               {customer.customerNumber && (
                 <span className="font-mono text-sm font-normal text-muted-foreground">
                   #{customer.customerNumber}
@@ -366,9 +368,9 @@ export function CustomerDetailClient({
             {hasContactInfo && (
               <div className="mt-1.5 flex flex-wrap gap-x-5 gap-y-1.5 text-sm">
                 {customer.company && (
-                  <div className="flex items-center gap-1.5 text-muted-foreground">
-                    <Building2 className="h-3.5 w-3.5" />
-                    <span>{customer.company}</span>
+                  <div className="flex min-w-0 items-center gap-1.5 text-muted-foreground">
+                    <Building2 className="h-3.5 w-3.5 shrink-0" />
+                    <span className="[overflow-wrap:anywhere]">{customer.company}</span>
                   </div>
                 )}
                 {customer.email && (
@@ -398,13 +400,15 @@ export function CustomerDetailClient({
                   </button>
                 )}
                 {customer.address && (
-                  <div className="flex items-center gap-1.5 text-muted-foreground">
+                  <div className="flex min-w-0 max-w-full items-center gap-1.5 text-muted-foreground">
                     <MapPin className="h-3.5 w-3.5 shrink-0" />
                     {/* One line here, whatever it was typed as. This row is a
                         summary sitting beside the email and the phone, and a
                         three-line address makes the whole header ragged. The
                         invoice prints it as written. */}
-                    <span title={customer.address}>{oneLine(customer.address)}</span>
+                    <span title={customer.address} className="min-w-0 truncate">
+                      {oneLine(customer.address)}
+                    </span>
                   </div>
                 )}
                 {customer.taxId && (
@@ -441,7 +445,7 @@ export function CustomerDetailClient({
               </div>
             )}
             {customer.notes && (
-              <p className="mt-2 text-sm text-muted-foreground whitespace-pre-wrap">
+              <p className="mt-2 text-sm text-muted-foreground whitespace-pre-wrap [overflow-wrap:anywhere]">
                 {customer.notes}
               </p>
             )}

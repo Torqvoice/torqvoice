@@ -47,6 +47,10 @@ const gray: StatusColor = {
   hue: 'gray',
   badge: 'bg-gray-500/10 text-gray-600 dark:text-gray-400 border-gray-500/20',
 }
+const slate: StatusColor = {
+  hue: 'slate',
+  badge: 'bg-slate-500/10 text-slate-700 dark:text-slate-300 border-slate-500/30',
+}
 const red: StatusColor = {
   hue: 'red',
   badge: 'bg-red-500/10 text-red-700 dark:text-red-400 border-red-500/20',
@@ -62,7 +66,8 @@ const purple: StatusColor = {
 
 /**
  * A work order's stored status. Waiting to start is yellow, booked is sky,
- * work under way is blue, held for parts is orange, done is green.
+ * work under way is blue, held for parts is orange, done is green, and a
+ * cancelled invoice is slate, as the work board already drew it.
  */
 export const WORK_ORDER_STATUS_COLORS: Record<string, StatusColor> = {
   pending: yellow,
@@ -70,6 +75,8 @@ export const WORK_ORDER_STATUS_COLORS: Record<string, StatusColor> = {
   'in-progress': blue,
   'waiting-parts': orange,
   completed: emerald,
+  // An invoice that went out and was called off: kept, quiet, and not live.
+  cancelled: slate,
 }
 
 export const QUOTE_STATUS_COLORS: Record<string, StatusColor> = {

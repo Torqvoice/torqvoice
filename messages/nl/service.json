@@ -23,7 +23,10 @@
       "negative": "Aantallen, uren, prijzen en kosten kunnen niet negatief zijn.",
       "partName": "Elk onderdeel met een prijs heeft een naam nodig.",
       "laborDescription": "Elke arbeidsregel met uren of tarief heeft een omschrijving nodig.",
-      "concernCondition": "Een melding met een oorzaak, oplossing of controle moet een ingevulde klacht hebben."
+      "concernCondition": "Een melding met een oorzaak, oplossing of controle moet een ingevulde klacht hebben.",
+      "negativeReading": "De stand kan niet negatief zijn.",
+      "tooLarge": "Een getal is te groot. Een aantal mag hoogstens {quantity} zijn, een prijs {price}, een regeltotaal {total} en een stand {reading}.",
+      "zeroQuantity": "Een onderdeel met een prijs heeft een aantal boven nul nodig."
     }
   },
   "header": {
@@ -63,7 +66,8 @@
     "designRefreshConfirm": "Factuur bijwerken",
     "designRefreshDone": "Deze factuur wordt nu afgedrukt met de huidige gegevens",
     "designRefreshFailed": "Kon de factuur niet bijwerken",
-    "printWorkOrder": "Werkorder afdrukken"
+    "printWorkOrder": "Werkorder afdrukken",
+    "cancelInvoice": "Factuur annuleren"
   },
   "basicInfo": {
     "title": "Basisinformatie",
@@ -90,6 +94,9 @@
     "invoiceDueDateOnIssuePlaceholder": "Per termijn",
     "invoiceDateOnIssueHint": "Leeg gelaten krijgt de factuur de datum van de dag waarop hij wordt verzonden, en vervalt hij volgens je betalingsvoorwaarden.",
     "invoiceDueDateOnIssueHint": "Leeg gelaten wordt de vervaldatum bij het verzenden van de factuur bepaald volgens je betalingsvoorwaarden.",
+    "noPaymentTerms": "Geen betalingsvoorwaarden ingesteld, dus geen vervaldatum.",
+    "setPaymentTerms": "Betalingsvoorwaarden instellen",
+    "noDueDatePlaceholder": "Geen vervaldatum",
     "typeOptions": {
       "maintenance": "Onderhoud",
       "repair": "Reparatie",
@@ -101,7 +108,8 @@
       "pending": "In afwachting",
       "in_progress": "In uitvoering",
       "waiting_parts": "Wacht op onderdelen",
-      "completed": "Voltooid"
+      "completed": "Voltooid",
+      "cancelled": "Geannuleerd"
     },
     "searchVehicles": "Voertuigen zoeken...",
     "noVehicleFound": "Geen voertuig gevonden.",
@@ -398,6 +406,7 @@
     "received": "Ontvangen betalingen",
     "noneYet": "Nog niets betaald.",
     "balanceDue": "Verschuldigd bedrag",
+    "cancelledNotice": "Geannuleerd: op deze factuur hoeft niets betaald te worden. Betalingen en terugbetalingen blijven hierboven staan.",
     "aboveBalance": "Het verschuldigde bedrag is {amount}. Een betaling kan niet hoger zijn.",
     "nothingDue": "Er staat niets meer open op deze factuur.",
     "refund": "Terugbetaling"
@@ -540,6 +549,7 @@
     "slotPicked": "Ingepland op het eerstvolgende vrije slot",
     "noSlotFound": "Geen vrij slot gevonden in de komende weken",
     "assignedTitle": "Toegewezen technicus",
+    "notAssigned": "Nog niet toegewezen. Kies wie deze klus doet.",
     "boardLink": "Werkbord",
     "someoneElse": "Iemand anders",
     "loadOf": "{booked} / {capacity} u",
@@ -777,7 +787,9 @@
       "preview": "Voorbeeld factuur",
       "previewShort": "Voorbeeld",
       "send": "Naar klant sturen",
-      "sendShort": "Sturen"
+      "sendShort": "Sturen",
+      "cancelled": "Geannuleerd",
+      "nothingOwed": "Niets te betalen"
     },
     "vehicleInfo": {
       "more": "Meer info",
@@ -907,5 +919,28 @@
     "hint": "Blijf om het te herstellen, of ga weg en verlies de wijzigingen sinds de laatste keer opslaan.",
     "stay": "Blijven en herstellen",
     "leave": "Weggaan zonder opslaan"
+  },
+  "cancelInvoice": {
+    "title": "Factuur {number} annuleren?",
+    "titleNoNumber": "Deze factuur annuleren?",
+    "description": "Deze factuur is al naar de klant gegaan en kan daarom niet worden verwijderd: in de meeste landen moeten factuurnummers zonder gaten doorlopen.",
+    "pointKept": "De opdracht blijft bewaard en wordt als geannuleerd gemarkeerd. De factuur houdt haar nummer en kan niet meer worden gewijzigd.",
+    "pointShown": "De factuur, de gedeelde link, de pdf en het klantportaal tonen haar als geannuleerd.",
+    "pointReports": "Ze telt niet meer mee in omzet, belasting of openstaande bedragen.",
+    "pointLedger": "Een gekoppeld boekhoudpakket vervalt zijn kopie waar dat kan. Een kopie met betalingen blijft staan voor je boekhouder om te crediteren.",
+    "paidNotice": "De klant heeft {amount} op deze factuur betaald.",
+    "recordRefund": "Een terugbetaling aan de klant registreren",
+    "refundAmount": "Terugbetaald bedrag",
+    "refundMethod": "Terugbetaald via",
+    "refundTooMuch": "Een terugbetaling kan niet meer zijn dan {amount}.",
+    "refundNote": "Terugbetaling op geannuleerde factuur",
+    "noRefundHint": "Zonder terugbetaling blijven de betalingen staan zoals ze zijn.",
+    "keep": "Factuur behouden",
+    "confirm": "Factuur annuleren",
+    "done": "Factuur geannuleerd",
+    "failed": "Kon de factuur niet annuleren",
+    "bannerTitle": "Factuur {number} is geannuleerd",
+    "bannerTitleNoNumber": "Deze factuur is geannuleerd",
+    "bannerBody": "Ze houdt haar nummer en kan niet meer worden gewijzigd. De klant ziet haar als geannuleerd."
   }
 }

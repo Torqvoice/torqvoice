@@ -161,6 +161,7 @@ export const manifest: ConnectorManifest = {
     { event: 'service.update', job: 'accounting.invoice' },
     { event: 'service.status', job: 'accounting.invoice' },
     { event: 'service.delete', job: 'accounting.invoice' },
+    { event: 'service.cancel', job: 'accounting.invoice' },
     { event: 'customer.update', job: 'accounting.customer' },
     { event: 'payment.create', job: 'accounting.payment' },
     { event: 'payment.delete', job: 'accounting.payment' },

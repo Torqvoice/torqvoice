@@ -74,7 +74,9 @@
     "findingSeverityNeedsWork": "Media",
     "findingSeverityMonitor": "Bassa",
     "tel": "Tel: {phone}",
-    "customFields": "Informazioni aggiuntive"
+    "customFields": "Informazioni aggiuntive",
+    "cancelledTitle": "Questa fattura è stata annullata",
+    "cancelledBody": "Non è dovuto nulla. Contatta l’officina per qualsiasi domanda."
   },
   "quote": {
     "title": "Preventivo",

@@ -302,6 +302,20 @@ describe('the same work order in two tabs', () => {
     expect(sent()).not.toHaveProperty('partItems')
   })
 
+  it('takes a cancel made elsewhere even when this tab has picked another stage', async () => {
+    const a = openTab()
+    act(() => a.page().dirtySetStatus('completed'))
+    a.writeNote('diagnosticNotes', '<p>Unsaved note</p>')
+    // The invoice is cancelled in another tab.
+    stored = { ...stored, status: 'cancelled' }
+    a.refresh()
+
+    expect(a.page().status).toBe('cancelled')
+    expect(a.page().changedElsewhere.kept).not.toContain('status')
+    // The rest of what is typed stays on screen.
+    expect(a.page().notesRef.current.diagnosticNotes).toBe('<p>Unsaved note</p>')
+  })
+
   it('keeps an edit made while its save runs, when a refresh shows that save first', async () => {
     const a = openTab()
     // The save of note B is held on its way; the server has already written it.

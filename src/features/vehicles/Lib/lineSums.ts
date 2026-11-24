@@ -25,7 +25,8 @@ export async function serviceRecordLineSums(
     }),
   ])
   return {
-    subtotal: (parts._sum.total || 0) + (labor._sum.total || 0),
+    // Each stored line is to the cent; the sum is held there too (subtotalFromLines).
+    subtotal: roundMoney((parts._sum.total || 0) + (labor._sum.total || 0)),
     taxableSubtotal: roundMoney((taxableParts._sum.total || 0) + (taxableLabor._sum.total || 0)),
   }
 }

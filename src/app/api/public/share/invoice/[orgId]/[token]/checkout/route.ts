@@ -53,6 +53,10 @@ export async function POST(
     if (!record || record.organizationId !== orgId) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 })
     }
+    // A cancelled invoice is owed nothing and takes no payment.
+    if (record.status === 'cancelled') {
+      return NextResponse.json({ error: 'This invoice has been cancelled' }, { status: 400 })
+    }
     // A connected provider outlives a downgrade; the plan decides, not the row.
     const features = await getFeatures(orgId)
     if (!features.payments) {

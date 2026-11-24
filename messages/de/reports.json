@@ -203,15 +203,15 @@
     }
   },
   "tax": {
-    "totalTaxCollected": "Gesamtsteuer eingezogen",
+    "totalTaxCollected": "Steuer gesamt",
     "taxableRevenue": "Steuerpflichtiger Umsatz",
     "invoicesWithTax": "Rechnungen mit Steuer",
-    "monthlyTaxCollected": "Monatlich eingezogene Steuer",
+    "monthlyTaxCollected": "Steuer pro Monat",
     "taxByRate": "Steuer nach Satz",
     "monthlyBreakdown": "Monatliche Aufschlüsselung",
     "tableHeaders": {
       "taxRate": "Steuersatz",
-      "taxCollected": "Eingezogene Steuer",
+      "taxCollected": "Steuer",
       "invoices": "Rechnungen",
       "month": "Monat",
       "taxableAmount": "Steuerpflichtiger Betrag"
@@ -254,7 +254,7 @@
     "totalSpent": "Gesamtausgaben",
     "jobs": "Aufträge",
     "visits": "Besuche",
-    "taxCollected": "Eingezogene Steuer",
+    "taxCollected": "Steuer",
     "partsCost": "Teilekosten",
     "laborCost": "Arbeitskosten"
   },
@@ -305,7 +305,7 @@
     "customer": "Kunde",
     "visits": "Besuche",
     "avgDaysBetweenVisits": "Ø Tage zwischen Besuchen",
-    "taxCollected": "Eingezogene Steuer",
+    "taxCollected": "Steuer",
     "taxableAmount": "Steuerpflichtiger Betrag",
     "invoiceCount": "Rechnungsanzahl",
     "invoiceNumber": "Rechnungsnr.",
@@ -378,7 +378,7 @@
     "over30": "Über 30 Tage",
     "over60": "Über 60 Tage",
     "over90": "Über 90 Tage",
-    "taxCollected": "Eingenommene Steuer",
+    "taxCollected": "Steuer",
     "taxableAmount": "Steuerpflichtiger Betrag",
     "taxRate": "Steuersatz",
     "invoiceCount": "Anzahl Rechnungen",

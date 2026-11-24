@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import {
+  Ban,
   Check,
   Download,
   Eye,
@@ -38,6 +39,13 @@ export interface ServiceHeaderActionsProps {
   /** The work order as a sheet to print and sign, opened in the preview. */
   onPrintWorkOrder?: () => void
   onDelete: () => void
+  /**
+   * What the menu's last item does with the job. An invoice that went out is
+   * never deleted, so it is offered for cancelling instead; a cancelled one
+   * offers neither. Delete when left out.
+   */
+  removal?: 'delete' | 'cancel' | 'none'
+  onCancelInvoice?: () => void
   onShowEmail: () => void
   onShowShare: () => void
   onNotifyCustomer?: () => void
@@ -63,6 +71,8 @@ export function ServiceHeaderActions({
   onPreviewPDF,
   onPrintWorkOrder,
   onDelete,
+  removal = 'delete',
+  onCancelInvoice,
   onShowEmail,
   onShowShare,
   onNotifyCustomer,
@@ -165,19 +175,27 @@ export function ServiceHeaderActions({
                   <Printer className="mr-2 size-4" aria-hidden="true" />
                   {t('printWorkOrder')}
                 </DropdownMenuItem>
-                <DropdownMenuSeparator />
+                {(designMenu || removal !== 'none') && <DropdownMenuSeparator />}
               </>
             )}
             {designMenu && (
               <>
                 {designMenu}
-                <DropdownMenuSeparator />
+                {removal !== 'none' && <DropdownMenuSeparator />}
               </>
             )}
-            <DropdownMenuItem className="text-destructive" onClick={onDelete}>
-              <Trash2 className="mr-2 size-4" aria-hidden="true" />
-              {t('delete')}
-            </DropdownMenuItem>
+            {removal === 'delete' && (
+              <DropdownMenuItem className="text-destructive" onClick={onDelete}>
+                <Trash2 className="mr-2 size-4" aria-hidden="true" />
+                {t('delete')}
+              </DropdownMenuItem>
+            )}
+            {removal === 'cancel' && onCancelInvoice && (
+              <DropdownMenuItem className="text-destructive" onClick={onCancelInvoice}>
+                <Ban className="mr-2 size-4" aria-hidden="true" />
+                {t('cancelInvoice')}
+              </DropdownMenuItem>
+            )}
           </DropdownMenuContent>
         </DropdownMenu>
       </ButtonGroup>

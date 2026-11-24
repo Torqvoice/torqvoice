@@ -1,3 +1,4 @@
+import { roundMoney } from '@/lib/money'
 import type { ServiceLaborInput } from '@/features/vehicles/Schema/serviceSchema'
 import { isShopFeeLine } from '@/features/settings/Lib/shopFee'
 
@@ -22,7 +23,9 @@ export function savedLaborShape(line: ServiceLaborInput): ServiceLaborInput {
     ...line,
     hours: Number(line.hours) || 0,
     rate: Number(line.rate) || 0,
-    total: Number(line.total) || 0,
+    // Held to the cent, as the save stores it (serviceSchema), so a total the
+    // page worked out with float noise matches the one the refresh brings back.
+    total: roundMoney(line.total),
     pricingType: line.pricingType || 'hourly',
   }
 }

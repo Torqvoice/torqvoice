@@ -232,7 +232,8 @@
     "equipment_delete": "Uitrusting verwijderd",
     "platform_deleteUser": "Gebruiker verwijderd",
     "platform_grantSuperAdmin": "Superbeheerder toegekend",
-    "platform_revokeSuperAdmin": "Superbeheerder ingetrokken"
+    "platform_revokeSuperAdmin": "Superbeheerder ingetrokken",
+    "service_cancel": "Factuur geannuleerd"
   },
   "summary": {
     "auth_twoFactorEnabled": "Inloggen in twee stappen ingeschakeld",
@@ -424,6 +425,8 @@
     "equipment_meter": "Teller {meter} toegevoegd aan {name} op {vehicle}",
     "platform_deleteUser": "Gebruiker {name} ({email}) verwijderd",
     "platform_grantSuperAdmin": "{name} ({email}) superbeheerder gemaakt",
-    "platform_revokeSuperAdmin": "Superbeheerder ingetrokken voor {name} ({email})"
+    "platform_revokeSuperAdmin": "Superbeheerder ingetrokken voor {name} ({email})",
+    "service_cancel": "Factuur {ref} geannuleerd",
+    "service_cancelRefund": "Factuur {ref} geannuleerd en terugbetaling van {amount} geregistreerd"
   }
 }

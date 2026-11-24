@@ -232,7 +232,8 @@
     "equipment_delete": "Equipamento excluído",
     "platform_deleteUser": "Usuário excluído",
     "platform_grantSuperAdmin": "Super admin concedido",
-    "platform_revokeSuperAdmin": "Super admin removido"
+    "platform_revokeSuperAdmin": "Super admin removido",
+    "service_cancel": "Fatura cancelada"
   },
   "summary": {
     "auth_twoFactorEnabled": "Ativou o login em duas etapas",
@@ -424,6 +425,8 @@
     "equipment_meter": "Adicionou o medidor {meter} a {name} em {vehicle}",
     "platform_deleteUser": "Usuário {name} ({email}) excluído",
     "platform_grantSuperAdmin": "{name} ({email}) agora é super admin",
-    "platform_revokeSuperAdmin": "Super admin removido de {name} ({email})"
+    "platform_revokeSuperAdmin": "Super admin removido de {name} ({email})",
+    "service_cancel": "Fatura {ref} cancelada",
+    "service_cancelRefund": "Fatura {ref} cancelada e reembolso de {amount} registrado"
   }
 }

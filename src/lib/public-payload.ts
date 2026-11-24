@@ -25,6 +25,8 @@ export type ToPublicUrl = (fileUrl: string) => string
 export interface PublicInvoiceRecord {
   id: string
   invoiceNumber: string | null
+  /** True for an invoice the workshop cancelled: nothing is owed, nothing is paid online. */
+  cancelled?: boolean
   shopName: string | null
   serviceDate: Date
   startDateTime: Date | null
@@ -52,7 +54,8 @@ export interface PublicAttachment {
   description: string | null
 }
 
-type InvoiceSource = Omit<PublicInvoiceRecord, 'attachments' | 'vehicle'> & {
+type InvoiceSource = Omit<PublicInvoiceRecord, 'attachments' | 'vehicle' | 'cancelled'> & {
+  status?: string
   attachments: (PublicAttachment & { includeInInvoice?: boolean | null })[]
 }
 
@@ -69,6 +72,7 @@ export function publicInvoiceRecord(
   return {
     id: record.id,
     invoiceNumber: record.invoiceNumber,
+    cancelled: record.status === 'cancelled',
     shopName: record.shopName,
     serviceDate: record.serviceDate,
     startDateTime: record.startDateTime,

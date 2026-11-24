@@ -24,6 +24,19 @@ export type SystemStatus = (typeof SYSTEM_STATUSES)[number]
 
 export const WAITING_PARTS = 'waiting-parts'
 
+/**
+ * A job whose invoice went out and was then called off. It is not a stage
+ * and no menu offers it: an invoice that reached the customer keeps its
+ * number for good, so instead of being deleted the job is set here by the
+ * cancel action (cancelServiceRecord) and stays, marked, out of every count
+ * of open work and of revenue. Nothing moves it on again.
+ */
+export const CANCELLED = 'cancelled'
+
+export function isCancelled(status: string | null | undefined): boolean {
+  return status === CANCELLED
+}
+
 export function isStage(value: unknown): value is Stage {
   return typeof value === 'string' && (STAGES as readonly string[]).includes(value)
 }

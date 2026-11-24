@@ -216,6 +216,27 @@ describe('saveServiceRecordChanges', () => {
     expect(job).toMatchObject({ subtotal: 700, taxAmount: 70, totalAmount: 770, cost: 770 })
   })
 
+  it('stores each line to the cent and totals the job from the stored lines', async () => {
+    await saveServiceRecordChanges({
+      id: 'rec-1',
+      // 2.5 h at 19.99, twice: 49.975 each as typed.
+      laborItems: [
+        { description: 'ZZ Front', hours: 2.5, rate: 19.99, total: 49.975, pricingType: 'hourly' },
+        { description: 'ZZ Rear', hours: 2.5, rate: 19.99, total: 49.975, pricingType: 'hourly' },
+      ],
+    })
+    expect(labor.map((line) => line.total)).toEqual([49.98, 49.98])
+    // 200 of parts and 99.96 of labour; 10% tax.
+    expect(job).toMatchObject({ subtotal: 299.96, taxAmount: 30, totalAmount: 329.96 })
+  })
+
+  it('is refused on a cancelled job before anything is written', async () => {
+    vi.mocked(assertInvoiceEditable).mockRejectedValue(new Error('This invoice is cancelled.'))
+    const result = await saveServiceRecordChanges({ id: 'rec-1', title: 'ZZ Renamed' })
+    expect(result.success).toBe(false)
+    expect(job.title).toBe('ZZ Brakes')
+  })
+
   it('is refused on a locked invoice before anything is written', async () => {
     vi.mocked(assertInvoiceEditable).mockRejectedValue(new Error('This invoice is locked.'))
     const result = await saveServiceRecordChanges({ id: 'rec-1', diagnosticNotes: 'x' })

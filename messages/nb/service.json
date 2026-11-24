@@ -23,7 +23,10 @@
       "negative": "Antall, timer, priser og kostnader kan ikke være negative.",
       "partName": "Alle deler med pris må ha et navn.",
       "laborDescription": "Alle arbeidslinjer med timer eller sats må ha en beskrivelse.",
-      "concernCondition": "Et punkt med årsak, utbedring eller kontroll må ha tilstanden fylt ut."
+      "concernCondition": "Et punkt med årsak, utbedring eller kontroll må ha tilstanden fylt ut.",
+      "negativeReading": "Avlesningen kan ikke være negativ.",
+      "tooLarge": "Et tall er for stort. Et antall kan være høyst {quantity}, en pris {price}, en linjesum {total} og en avlesning {reading}.",
+      "zeroQuantity": "En del med pris må ha et antall over null."
     }
   },
   "header": {
@@ -63,7 +66,8 @@
     "designRefreshConfirm": "Oppdater fakturaen",
     "designRefreshDone": "Denne fakturaen skrives nå ut med dagens opplysninger",
     "designRefreshFailed": "Kunne ikke oppdatere fakturaen",
-    "printWorkOrder": "Skriv ut arbeidsordre"
+    "printWorkOrder": "Skriv ut arbeidsordre",
+    "cancelInvoice": "Kanseller faktura"
   },
   "basicInfo": {
     "title": "Grunnleggende informasjon",
@@ -90,6 +94,9 @@
     "invoiceDueDateOnIssuePlaceholder": "Etter vilkår",
     "invoiceDateOnIssueHint": "Står feltet tomt, dateres fakturaen den dagen den sendes, og forfaller etter betalingsbetingelsene dine.",
     "invoiceDueDateOnIssueHint": "Står feltet tomt, settes forfallsdatoen etter betalingsbetingelsene dine når fakturaen sendes.",
+    "noPaymentTerms": "Ingen betalingsbetingelser er satt, så fakturaen har ingen forfallsdato.",
+    "setPaymentTerms": "Sett betalingsbetingelser",
+    "noDueDatePlaceholder": "Ingen forfallsdato",
     "typeOptions": {
       "maintenance": "Vedlikehold",
       "repair": "Reparasjon",
@@ -101,7 +108,8 @@
       "pending": "Avventende",
       "in_progress": "Pågår",
       "waiting_parts": "Venter på deler",
-      "completed": "Fullført"
+      "completed": "Fullført",
+      "cancelled": "Kansellert"
     },
     "searchVehicles": "Søk kjøretøyer...",
     "noVehicleFound": "Ingen kjøretøy funnet.",
@@ -398,6 +406,7 @@
     "received": "Mottatte betalinger",
     "noneYet": "Ingenting betalt ennå.",
     "balanceDue": "Utestående",
+    "cancelledNotice": "Kansellert: ingenting skal betales på denne fakturaen. Betalinger og refusjoner står fortsatt over.",
     "aboveBalance": "Utestående er {amount}. En betaling kan ikke være høyere enn det.",
     "nothingDue": "Det er ingenting utestående på denne fakturaen.",
     "refund": "Refusjon"
@@ -540,6 +549,7 @@
     "slotPicked": "Booket inn på neste ledige tid",
     "noSlotFound": "Fant ingen ledig tid de neste ukene",
     "assignedTitle": "Tilordnet tekniker",
+    "notAssigned": "Ikke tildelt ennå. Velg hvem som skal gjøre jobben.",
     "boardLink": "Arbeidstavle",
     "someoneElse": "Noen andre",
     "loadOf": "{booked} / {capacity} t",
@@ -777,7 +787,9 @@
       "preview": "Forhåndsvis faktura",
       "previewShort": "Forhåndsvis",
       "send": "Send til kunden",
-      "sendShort": "Send"
+      "sendShort": "Send",
+      "cancelled": "Kansellert",
+      "nothingOwed": "Ingenting å betale"
     },
     "vehicleInfo": {
       "more": "Mer info",
@@ -907,5 +919,28 @@
     "hint": "Bli for å rette det, eller gå og mist endringene siden forrige lagring.",
     "stay": "Bli og rett opp",
     "leave": "Gå uten å lagre"
+  },
+  "cancelInvoice": {
+    "title": "Kansellere faktura {number}?",
+    "titleNoNumber": "Kansellere denne fakturaen?",
+    "description": "Denne fakturaen er sendt til kunden og kan derfor ikke slettes: de fleste land krever fakturanumre uten hull.",
+    "pointKept": "Jobben beholdes og merkes som kansellert. Fakturaen beholder nummeret sitt og kan ikke lenger endres.",
+    "pointShown": "Fakturaen, den delte lenken, PDF-en og kundeportalen viser den som kansellert.",
+    "pointReports": "Den teller ikke lenger med i omsetning, avgift eller utestående.",
+    "pointLedger": "Et tilkoblet regnskapssystem annullerer sin kopi der det kan. En kopi med betalinger blir stående til regnskapsføreren krediterer den.",
+    "paidNotice": "Kunden har betalt {amount} på denne fakturaen.",
+    "recordRefund": "Registrer en refusjon av penger tilbakebetalt til kunden",
+    "refundAmount": "Refusjonsbeløp",
+    "refundMethod": "Refundert med",
+    "refundTooMuch": "En refusjon kan ikke være mer enn {amount}.",
+    "refundNote": "Refusjon for kansellert faktura",
+    "noRefundHint": "Uten refusjon blir betalingene stående som de er.",
+    "keep": "Behold fakturaen",
+    "confirm": "Kanseller faktura",
+    "done": "Fakturaen er kansellert",
+    "failed": "Kunne ikke kansellere fakturaen",
+    "bannerTitle": "Faktura {number} er kansellert",
+    "bannerTitleNoNumber": "Denne fakturaen er kansellert",
+    "bannerBody": "Den beholder nummeret sitt og kan ikke lenger endres. Kunden ser den merket som kansellert."
   }
 }

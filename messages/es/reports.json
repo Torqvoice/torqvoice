@@ -203,15 +203,15 @@
     }
   },
   "tax": {
-    "totalTaxCollected": "Impuesto Total Recaudado",
+    "totalTaxCollected": "Impuesto Total",
     "taxableRevenue": "Ingresos Gravables",
     "invoicesWithTax": "Facturas con Impuesto",
-    "monthlyTaxCollected": "Impuesto Mensual Recaudado",
+    "monthlyTaxCollected": "Impuesto Mensual",
     "taxByRate": "Impuesto por Tasa",
     "monthlyBreakdown": "Desglose Mensual",
     "tableHeaders": {
       "taxRate": "Tasa de Impuesto",
-      "taxCollected": "Impuesto Recaudado",
+      "taxCollected": "Impuesto",
       "invoices": "Facturas",
       "month": "Mes",
       "taxableAmount": "Monto Gravable"
@@ -254,7 +254,7 @@
     "totalSpent": "Gasto Total",
     "jobs": "Trabajos",
     "visits": "Visitas",
-    "taxCollected": "Impuesto Recaudado",
+    "taxCollected": "Impuesto",
     "partsCost": "Coste de Piezas",
     "laborCost": "Costo de Mano de Obra"
   },
@@ -305,7 +305,7 @@
     "customer": "Cliente",
     "visits": "Visitas",
     "avgDaysBetweenVisits": "Prom. Días Entre Visitas",
-    "taxCollected": "Impuesto Recaudado",
+    "taxCollected": "Impuesto",
     "taxableAmount": "Monto Gravable",
     "invoiceCount": "Cant. de Facturas",
     "invoiceNumber": "N.º Factura",
@@ -378,7 +378,7 @@
     "over30": "Más de 30 Días",
     "over60": "Más de 60 Días",
     "over90": "Más de 90 Días",
-    "taxCollected": "Impuesto Recaudado",
+    "taxCollected": "Impuesto",
     "taxableAmount": "Monto Gravable",
     "taxRate": "Tasa de Impuesto",
     "invoiceCount": "Número de Facturas",

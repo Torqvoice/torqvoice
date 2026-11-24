@@ -90,7 +90,9 @@
     "org": "Организация: {org}",
     "customFieldsTitle": "Допълнителна информация",
     "telegramConnect": "Свържете се с нас в Telegram",
-    "taxRegistrationLabel": "№ по {name}"
+    "taxRegistrationLabel": "№ по {name}",
+    "cancelledTitle": "ФАКТУРА (АНУЛИРАНА)",
+    "cancelledNotice": "АНУЛИРАНА"
   },
   "quote": {
     "title": "ОФЕРТА",

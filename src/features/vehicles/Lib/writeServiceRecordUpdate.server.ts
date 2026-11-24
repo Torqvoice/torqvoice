@@ -2,7 +2,8 @@ import { unlinkJobMeterReadingsFromOtherVehicles } from '@/features/meters/Lib/j
 import { assertRequiredMetersRead } from '@/features/meters/Lib/requiredMeters.server'
 import { db } from '@/lib/db'
 import { concernStoryData } from '@/features/vehicles/Lib/concernStory'
-import { savedDocumentTax } from '@/features/settings/Lib/workshopTax'
+import { documentTotals, savedDocumentTax } from '@/features/settings/Lib/workshopTax'
+import { restatedSubtotal, subtotalFromLines } from '@/features/vehicles/Lib/subtotalFromLines'
 import { loadTaxApplies } from '@/features/settings/Lib/loadTaxApplies'
 import { withTaxableLabor, withTaxableParts } from '@/lib/taxable-lines'
 import { warrantyExpiryFor } from '@/features/settings/Lib/warrantyDefaults'
@@ -138,6 +139,38 @@ export async function writeServiceRecordUpdate(
     partItems !== undefined && taxApplies ? withTaxableParts(partItems, taxApplies) : undefined
   const taxedLabor =
     laborItems !== undefined && taxApplies ? withTaxableLabor(laborItems, taxApplies) : undefined
+  // Lines are stored to the cent (serviceSchema). The subtotal the page
+  // sent was added up from its own figures, so it is restated from the
+  // lines as stored, and the discount and tax with it, or the invoice's
+  // lines would not add up to its subtotal. Only a save that sends money:
+  // one re-totalled from what is stored (below) never takes the page's.
+  let fromLines: ReturnType<typeof restatedSubtotal> = null
+  if (linesSent && recordData.subtotal !== undefined) {
+    const linesSubtotal = subtotalFromLines(
+      partItems ??
+        (await db.servicePart.findMany({
+          where: { serviceRecordId: id },
+          select: { total: true },
+        })),
+      laborItems ??
+        (await db.serviceLabor.findMany({
+          where: { serviceRecordId: id },
+          select: { total: true },
+        }))
+    )
+    fromLines = restatedSubtotal({
+      sentSubtotal: recordData.subtotal,
+      linesSubtotal,
+      discountType: recordData.discountType ?? existing.discountType,
+      discountValue: recordData.discountValue ?? existing.discountValue,
+    })
+    if (fromLines) {
+      recordData.subtotal = fromLines.subtotal
+      if (fromLines.discountAmount !== undefined) {
+        recordData.discountAmount = fromLines.discountAmount
+      }
+    }
+  }
   const moneyTouched =
     linesSent ||
     recordData.subtotal !== undefined ||
@@ -181,6 +214,23 @@ export async function writeServiceRecordUpdate(
     if (restated.taxComponents) recordData.taxRate = existing.taxRate
     recordData.taxAmount = restated.taxAmount
     recordData.totalAmount = restated.totalAmount
+  } else if (fromLines) {
+    // A plain job, every line taxed at one rate: its tax and total follow
+    // the restated subtotal too.
+    const totals = documentTotals({
+      subtotal: fromLines.subtotal,
+      discountAmount: recordData.discountAmount ?? existing.discountAmount,
+      taxRate: recordData.taxRate ?? existing.taxRate,
+      taxInclusive: recordData.taxInclusive ?? existing.taxInclusive,
+      taxComponents: existing.taxComponents,
+      taxableSubtotal: null,
+    })
+    recordData.taxAmount = totals.taxAmount
+    recordData.totalAmount = totals.totalAmount
+  }
+  if (fromLines && recordData.cost !== undefined && recordData.totalAmount !== undefined) {
+    // The page sends the job's cost as its total.
+    recordData.cost = recordData.totalAmount
   }
   // A job with components keeps the rate they add up to, here too.
   if (options.retotal && parseTaxComponentDefinitions(existing.taxComponents)) {

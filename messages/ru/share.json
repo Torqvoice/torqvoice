@@ -74,7 +74,9 @@
     "findingSeverityNeedsWork": "Средний",
     "findingSeverityMonitor": "Низкий",
     "tel": "Тел: {phone}",
-    "customFields": "Дополнительные сведения"
+    "customFields": "Дополнительные сведения",
+    "cancelledTitle": "Этот счёт аннулирован",
+    "cancelledBody": "По нему ничего не нужно платить. Если есть вопросы, свяжитесь с мастерской."
   },
   "quote": {
     "title": "Предложение",

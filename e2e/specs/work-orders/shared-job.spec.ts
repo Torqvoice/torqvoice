@@ -227,6 +227,8 @@ test('no technician takes everybody off the job', async ({ page }) => {
 
   const list = technicianList(page)
   await expect(list.getByRole('radio', { checked: true })).toHaveCount(0)
+  // The cards are there to choose from, and the card says nobody has the job.
+  await expect(page.getByText('Not assigned yet. Choose who does this job.')).toBeVisible()
   await expect(list.getByText('Also on this job')).toHaveCount(0)
   await expect(list.getByText('Lead', { exact: true })).toHaveCount(0)
   await expect(list.getByRole('button', { name: /to this job$|off this job$/ })).toHaveCount(0)

@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect, useLayoutEffect } from 'react'
+import { roundMoney } from '@/lib/money'
 import { calculateTotals, discountAmountFor, storedTaxableSubtotal } from '@/lib/tax'
 import {
   TAX_APPLIES_TO_ALL,
@@ -504,12 +505,20 @@ export function useServiceFormState({
         savedHereRef.current.add(field)
       }
     }
-    const { adopt, kept, replaced } = mergeWorkOrderFields({
+    const merged = mergeWorkOrderFields({
       synced,
       current: readCurrentFieldsRef.current(),
       server,
       savedHere: savedHereRef.current,
     })
+    const { adopt, replaced } = merged
+    let { kept } = merged
+    // A cancelled invoice is final, and no save can change it back, so the
+    // cancel is taken whatever stage this page had picked.
+    if (server.status === 'cancelled' && kept.includes('status')) {
+      kept = kept.filter((field) => field !== 'status')
+      adopt.push('status')
+    }
     syncedFieldsRef.current = server
     for (const field of replaced) savedHereRef.current.delete(field)
     const setInput = (name: string, value: string) => {
@@ -617,7 +626,14 @@ export function useServiceFormState({
   // Computed totals. They count the lines waiting behind the banner too: those
   // are on the job already, and a save sends them, so the money it sends has
   // to include them or the invoice is saved short.
-  const partsSubtotal = partItemsForSave.reduce((sum, p) => sum + p.total, 0)
+  //
+  // Each line to the cent first, as the save stores it (serviceSchema): the
+  // page's own sum of unrounded lines (2 x 2.5 h at 19.99 is 99.95) is not
+  // what the stored lines add up to (2 x 49.98), and the invoice would not
+  // add up.
+  const partLinesForTotals = partItemsForSave.map((p) => ({ ...p, total: roundMoney(p.total) }))
+  const laborLinesForTotals = laborItemsForSave.map((l) => ({ ...l, total: roundMoney(l.total) }))
+  const partsSubtotal = roundMoney(partLinesForTotals.reduce((sum, p) => sum + p.total, 0))
 
   // A percentage shop fee follows the lines it is a percentage of. Returns the
   // same array when the fee is already right, so this settles after one pass.
@@ -639,14 +655,14 @@ export function useServiceFormState({
     (sum, p) => sum + (Number(p.unitCost) || 0) * (Number(p.quantity) || 0),
     0
   )
-  const laborSubtotal = laborItemsForSave.reduce((sum, l) => sum + l.total, 0)
-  const subtotal = partsSubtotal + laborSubtotal
+  const laborSubtotal = roundMoney(laborLinesForTotals.reduce((sum, l) => sum + l.total, 0))
+  const subtotal = roundMoney(partsSubtotal + laborSubtotal)
   const discountAmount = discountAmountFor(subtotal, discountType, discountValue)
   // The tax is charged on the taxable lines alone. A line says whether it
   // is taxed, and one that has not been asked follows the workshop's rule
   // for its kind; the server settles it the same way when the job is saved.
-  const taxableParts = taxablePartsTotal(partItemsForSave, taxApplies)
-  const taxableLabor = taxableLaborTotal(laborItemsForSave, taxApplies)
+  const taxableParts = taxablePartsTotal(partLinesForTotals, taxApplies)
+  const taxableLabor = taxableLaborTotal(laborLinesForTotals, taxApplies)
   const taxableSubtotal = storedTaxableSubtotal(subtotal, taxableParts + taxableLabor)
   const {
     taxAmount,
@@ -749,7 +765,7 @@ export function useServiceFormState({
         const updated = [...prev]
         const labor = { ...updated[index], [field]: value }
         if (field === 'hours' || field === 'rate') {
-          labor.total = Number(labor.hours) * Number(labor.rate)
+          labor.total = roundMoney(Number(labor.hours) * Number(labor.rate))
         }
         updated[index] = labor
         return updated

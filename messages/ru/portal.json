@@ -366,7 +366,8 @@
     "summaryDue": "Срок оплаты",
     "summaryReference": "Ваш референс / № заказа",
     "summaryDate": "Дата",
-    "fullInvoice": "Полный счёт"
+    "fullInvoice": "Полный счёт",
+    "cancelled": "Аннулирован"
   },
   "quotes": {
     "title": "Предложения",
@@ -643,7 +644,8 @@
       "scheduled": "Запланирован",
       "inProgress": "В работе",
       "waitingParts": "Ожидает запчасти",
-      "completed": "Завершён"
+      "completed": "Завершён",
+      "cancelled": "Аннулирован"
     },
     "request": {
       "pending": "Ждёт ответа",

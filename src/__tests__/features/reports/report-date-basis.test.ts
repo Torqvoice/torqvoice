@@ -281,6 +281,31 @@ describe('jobs marked paid by hand', () => {
     ])
   })
 
+  it('net to nothing when an old paid-by-hand invoice is cancelled with a full refund', async () => {
+    // Marked paid before the day was recorded, then cancelled in November
+    // with the 1000 handed back: 1000 in, 1000 out.
+    const refund = { amount: -1000, date: NOV_1 }
+    seed({
+      manual: [
+        job({
+          invoiceDate: SEP_15,
+          manuallyPaid: true,
+          manuallyPaidAt: null,
+          payments: [refund],
+        }),
+      ],
+      payments: [refund],
+    })
+
+    const { data } = await getRevenueReport(WINDOW)
+
+    expect(months(data)).toEqual([
+      { month: '2026-09', revenue: 0, collected: 1000 },
+      { month: '2026-11', revenue: 0, collected: -1000 },
+    ])
+    expect(data?.summary.totalCollected).toBe(0)
+  })
+
   it('ask for jobs marked in the window, or unmarked-date jobs dated in it', async () => {
     await getRevenueReport(WINDOW)
 
