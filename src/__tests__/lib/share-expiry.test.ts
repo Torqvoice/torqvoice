@@ -10,7 +10,9 @@ import {
   readShareExpiryRules,
   type ShareLinkFacts,
   shareExpiry,
+  shareOpenUntilDay,
 } from '@/lib/share-expiry'
+import { formatDate } from '@/lib/format'
 
 const ZONE = 'Pacific/Auckland'
 
@@ -148,5 +150,32 @@ describe('whether an invoice is paid, and when', () => {
       paid: true,
       at,
     })
+  })
+})
+
+describe('the day the share page says a link works until', () => {
+  // The end of 8 December in Auckland is 10:59:59.999 UTC.
+  const endOf8Dec = new Date('2026-12-08T10:59:59.999Z')
+  const now = new Date('2026-11-24T12:00:00Z')
+  const day = (at: Date) => {
+    const until = shareOpenUntilDay({ kind: 'date', at, source: 'document' }, ZONE, now)
+    return until ? formatDate(until, 'dd/MM/yyyy', ZONE) : null
+  }
+
+  it('is the day the link closes at the end of', () => {
+    expect(day(endOf8Dec)).toBe('08/12/2026')
+  })
+
+  it('is the same day when the close was stored without its last milliseconds', () => {
+    // 23:59:59 and 23:59 on 8 December. The staff page names 08/12 for
+    // both; the share page used to say "until 07/12/2026".
+    expect(day(new Date(endOf8Dec.getTime() - 999))).toBe('08/12/2026')
+    expect(day(new Date(endOf8Dec.getTime() - 59_999))).toBe('08/12/2026')
+  })
+
+  it('is the day before for a link that closes partway through a day', () => {
+    // 14 days to the minute: closing at 17:30 on the 8th, it is promised
+    // only through the 7th.
+    expect(day(new Date('2026-12-08T04:30:00Z'))).toBe('07/12/2026')
   })
 })

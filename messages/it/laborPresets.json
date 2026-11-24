@@ -6,8 +6,8 @@
     "description": "Descrizione",
     "itemCount": "Voci",
     "type": "Tipo",
-    "hrs": "ore",
-    "units": "unità"
+    "hoursCount": "{hours, plural, one {# ora} other {# ore}}",
+    "unitsCount": "{units, number} unità"
   },
   "empty": {
     "noMatch": "Nessun modello corrisponde alla ricerca.",

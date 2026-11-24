@@ -20,6 +20,7 @@ import {
   recordSubject,
 } from '../Lib/customFieldRecords.server'
 import { type CustomFieldError, judgeCustomFieldValues } from '../Lib/customFieldValueRules'
+import { dropFieldFromLayouts } from '../Lib/dropFieldFromLayouts'
 
 /**
  * Whose permission a record's custom fields fall under: the record's own.
@@ -153,12 +154,16 @@ export async function deleteFieldDefinition(fieldId: string) {
       })
       if (!field) throw new Error('Field not found')
 
-      await db.$transaction([
-        db.customFieldValue.deleteMany({ where: { fieldId } }),
-        db.customFieldDefinition.delete({ where: { id: fieldId } }),
-      ])
+      await db.$transaction(async (tx) => {
+        await tx.customFieldValue.deleteMany({ where: { fieldId } })
+        await tx.customFieldDefinition.delete({ where: { id: fieldId } })
+        // The layouts that placed it forget it too, or it stays switched on
+        // in a saved arrangement with no definition behind it.
+        await dropFieldFromLayouts(tx, organizationId, fieldId)
+      })
 
       revalidatePath('/settings/invoice')
+      revalidatePath('/settings/templates')
       return { fieldId, fieldName: field.name }
     },
     {

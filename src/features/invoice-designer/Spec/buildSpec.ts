@@ -2270,9 +2270,9 @@ function footer(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
   if (data.branding) {
     // The workshop's own closing line stays on its own row, so the mark below
     // it reads as a signature on the sheet rather than a tail on their
-    // sentence. This is the one place the branding is meant to be seen: the
-    // header and totals carry it quietly, and three loud mentions on a
-    // customer's invoice would read as an advert rather than a credit.
+    // sentence. The footer is where the mark lives (see brandingHome): it
+    // repeats on every sheet, and the header and totals leave it out, since
+    // three mentions on a customer's invoice read as an advert, not a credit.
     if (note) {
       children.push({
         kind: 'text',
@@ -2280,29 +2280,7 @@ function footer(section: InvoiceSection, theme: DocumentTheme, data: DocumentDat
         style: { color: look.muted, fontSize: scale(size, 0.78), align: 'center' },
       })
     }
-    children.push({
-      kind: 'row',
-      gap: 4,
-      justify: 'center',
-      align: 'center',
-      children: [
-        {
-          node: {
-            kind: 'text',
-            text: label(data, 'poweredBy', 'Powered by'),
-            style: { color: look.muted, fontSize: scale(size, 0.9) },
-          },
-        },
-        { node: { kind: 'image', src: data.branding.logoDataUri, maxWidth: 22, maxHeight: 22 } },
-        {
-          node: {
-            kind: 'text',
-            text: 'Torqvoice',
-            style: { color: theme.primary, fontSize: scale(size, 1.35), bold: true },
-          },
-        },
-      ],
-    })
+    children.push(brandingMarkRow(data.branding.logoDataUri, data, look.muted, theme.primary, size))
   } else if (note) {
     children.push({
       kind: 'text',
@@ -2403,6 +2381,71 @@ function blockFor(
   }
 }
 
+/** The "Powered by Torqvoice" line as the foot of a sheet prints it. */
+function brandingMarkRow(
+  logoDataUri: string,
+  data: DocumentData,
+  muted: string | undefined,
+  primary: string,
+  size: number
+): Node {
+  return {
+    kind: 'row',
+    gap: 4,
+    justify: 'center',
+    align: 'center',
+    children: [
+      {
+        node: {
+          kind: 'text',
+          text: label(data, 'poweredBy', 'Powered by'),
+          style: { color: muted, fontSize: scale(size, 0.9) },
+        },
+      },
+      { node: { kind: 'image', src: logoDataUri, maxWidth: 22, maxHeight: 22 } },
+      {
+        node: {
+          kind: 'text',
+          text: 'Torqvoice',
+          style: { color: primary, fontSize: scale(size, 1.35), bold: true },
+        },
+      },
+    ],
+  }
+}
+
+/** The id of the block that carries the mark when the footer cannot. */
+export const BRANDING_BLOCK_ID = 'branding'
+
+type BrandingHome = 'footer' | typeof BRANDING_BLOCK_ID | null
+
+/**
+ * Where the "Powered by Torqvoice" mark prints: once on every sheet.
+ *
+ * The header, the totals and the footer each used to print it, so page one
+ * of an invoice carried it three times. The footer is the place when it
+ * repeats: shown, and pinned to the foot of every sheet. A footer the layout
+ * hides, or one placed by hand on one page, does not repeat, and nor do the
+ * header and the totals; the mark then gets a block of its own at the foot
+ * of every sheet, and the workshop's own sections stay where they were put.
+ * Whether a sheet carries the mark at all is decided before this, by
+ * whoever passes `branding` (licensing).
+ */
+export function brandingHome(
+  sections: InvoiceSection[],
+  data: DocumentData,
+  anchors: Record<string, unknown> = {}
+): BrandingHome {
+  if (!data.branding) return null
+  const footerRepeats = sections.some((s) => s.id === 'footer' && s.visible) && !anchors.footer
+  return footerRepeats ? 'footer' : BRANDING_BLOCK_ID
+}
+
+/** The data a section is built from: the mark only for the section that prints it. */
+function dataFor(sectionId: string, data: DocumentData, home: BrandingHome): DocumentData {
+  return data.branding && sectionId !== home ? { ...data, branding: undefined } : data
+}
+
 export function buildDocumentSpec(
   layout: InvoiceLayoutConfig,
   theme: DocumentTheme,
@@ -2426,9 +2469,10 @@ export function buildDocumentSpec(
   // Only the default placement rides the band; a letterhead somebody dragged
   // elsewhere leaves the band at its usual height.
   const headerSection = ordered.find((s) => s.id === 'header' && s.visible)
+  const home = brandingHome(ordered, data, anchors)
   const bandHeight =
     framed && headerSection && !anchors.header
-      ? framedBandHeight(headerSection, theme, data)
+      ? framedBandHeight(headerSection, theme, dataFor('header', data, home))
       : FRAMED.bandHeight
   const framedTop = bandHeight + FRAMED_BAND_GAP
 
@@ -2441,7 +2485,13 @@ export function buildDocumentSpec(
       (section.column ? (contentWidth - BLOCK_GAP) / 2 : contentWidth) -
         (section.style?.marginLeft ?? 0) -
         (section.style?.marginRight ?? 0)
-    const content = blockFor(section, theme, data, blockWidth, documentType)
+    const content = blockFor(
+      section,
+      theme,
+      dataFor(section.id, data, home),
+      blockWidth,
+      documentType
+    )
     if (!content) return
 
     const placement: Placement =
@@ -2503,6 +2553,29 @@ export function buildDocumentSpec(
       continue
     }
     push(section)
+  }
+
+  if (home === BRANDING_BLOCK_ID && data.branding) {
+    blocks.push({
+      id: BRANDING_BLOCK_ID,
+      label: 'branding',
+      synthetic: true,
+      placement: { mode: 'pinned', edge: 'bottom' },
+      text: { color: theme.text, fontFamily: theme.fontFamily, fontSize: theme.fontSize },
+      content: {
+        kind: 'stack',
+        id: BRANDING_BLOCK_ID,
+        children: [
+          brandingMarkRow(
+            data.branding.logoDataUri,
+            data,
+            theme.muted,
+            theme.primary,
+            theme.fontSize
+          ),
+        ],
+      },
+    })
   }
 
   return {

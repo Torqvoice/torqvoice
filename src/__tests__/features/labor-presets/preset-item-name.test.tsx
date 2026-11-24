@@ -38,7 +38,7 @@ function renderForm() {
 
 const save = async () => {
   await act(async () => {
-    fireEvent.click(screen.getByRole('button', { name: 'Create Package' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Create Preset' }))
   })
 }
 

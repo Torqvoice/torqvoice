@@ -6,8 +6,8 @@
     "description": "Descrição",
     "itemCount": "Itens",
     "type": "Tipo",
-    "hrs": "h",
-    "units": "unidade(s)"
+    "hoursCount": "{hours, number} h",
+    "unitsCount": "{units, plural, one {# unidade} other {# unidades}}"
   },
   "empty": {
     "noMatch": "Nenhum modelo corresponde à sua pesquisa.",
@@ -41,7 +41,7 @@
     "itemDescriptionPlaceholder": "Descrição *",
     "addItem": "Adicionar item",
     "cancel": "Cancelar",
-    "create": "Criar pacote",
+    "create": "Criar",
     "saveChanges": "Salvar alterações",
     "itemQty": "Qtd",
     "itemQtyOrHours": "Unidade / Horas",

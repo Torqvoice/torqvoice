@@ -1,10 +1,9 @@
 import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
-import { Document, Image, Page, Text, View } from '@react-pdf/renderer'
+import { Document, Image, Text, View } from '@react-pdf/renderer'
 import {
   buildQuotePrintSpec,
   type QuotePrintData,
 } from '@/features/invoice-designer/Pdf/buildQuotePrint'
-import { pdfFamily } from '@/features/invoice-designer/Pdf/renderPdf'
 import { SpecPdfPage } from '@/features/invoice-designer/Pdf/SpecPdf'
 import type { InvoiceLayoutConfig } from '@/features/settings/Schema/invoiceLayoutSchema'
 import type { VisitConditionMap } from '@/features/condition-map/Lib/print'
@@ -103,53 +102,38 @@ export function QuotePDF({
     inspectionResults,
   })
 
-  const quoteNum = data.quoteNumber || 'QUOTE'
-  const shopName = workshop?.name || 'Torqvoice'
-  const fontFamily = pdfFamily(spec.page.fontFamily)
-
   return (
     <Document>
-      <SpecPdfPage spec={spec} />
-
-      {imageAttachments.length > 0 && (
-        <Page size="A4" style={{ padding: 40, fontFamily, fontSize: 9, color: '#111827' }}>
-          <Text style={{ fontSize: 12, fontWeight: 700, marginBottom: 10 }}>
-            {labels.quoteImages || 'Quote Images'}
-          </Text>
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
-            {imageAttachments.map((img, i) => (
-              <View key={i} style={{ width: '48%', marginBottom: 8 }}>
-                <Image
-                  src={img.dataUri}
-                  style={{
-                    maxHeight: 250,
-                    borderRadius: 4,
-                    objectFit: 'contain',
-                    objectPosition: 'left',
-                  }}
-                />
-                <Text style={{ fontSize: 8, color: '#6b7280', marginTop: 2 }}>
-                  {img.description || img.fileName}
-                </Text>
-              </View>
-            ))}
+      {/* The pictures follow on the document's own sheets, so they carry the
+          same pinned footer as the pages before them instead of a footer
+          of their own. */}
+      <SpecPdfPage spec={spec}>
+        {imageAttachments.length > 0 && (
+          <View break>
+            <Text style={{ fontSize: 12, fontWeight: 700, marginBottom: 10 }}>
+              {labels.quoteImages || 'Quote Images'}
+            </Text>
+            <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 12 }}>
+              {imageAttachments.map((img, i) => (
+                <View key={i} style={{ width: '48%', marginBottom: 8 }}>
+                  <Image
+                    src={img.dataUri}
+                    style={{
+                      maxHeight: 250,
+                      borderRadius: 4,
+                      objectFit: 'contain',
+                      objectPosition: 'left',
+                    }}
+                  />
+                  <Text style={{ fontSize: 8, color: '#6b7280', marginTop: 2 }}>
+                    {img.description || img.fileName}
+                  </Text>
+                </View>
+              ))}
+            </View>
           </View>
-          <Text
-            fixed
-            style={{
-              position: 'absolute',
-              bottom: 16,
-              left: 40,
-              right: 40,
-              fontSize: 8,
-              color: '#6b7280',
-              textAlign: 'center',
-            }}
-          >
-            {quoteNum} · {shopName}
-          </Text>
-        </Page>
-      )}
+        )}
+      </SpecPdfPage>
     </Document>
   )
 }

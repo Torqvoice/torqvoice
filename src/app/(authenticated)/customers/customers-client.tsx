@@ -478,7 +478,7 @@ export function CustomersClient({
                   onClick={(e) => e.stopPropagation()}
                 />
               </TableHead>
-              <TableHead className="w-[80px]">
+              <TableHead className="w-[96px]">
                 <button
                   type="button"
                   className="flex items-center hover:text-foreground"
@@ -564,7 +564,10 @@ export function CustomersClient({
                           onClick={(e) => e.stopPropagation()}
                         />
                       </TableCell>
-                      <TableCell className="font-mono text-xs text-muted-foreground">
+                      <TableCell
+                        className="truncate font-mono text-xs text-muted-foreground"
+                        title={c.customerNumber || undefined}
+                      >
                         {c.customerNumber || '-'}
                       </TableCell>
                       <TableCell>

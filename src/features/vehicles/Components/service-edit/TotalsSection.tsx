@@ -51,25 +51,64 @@ function Row({
   amount,
   className,
   testId,
+  stackControl = false,
 }: {
   label: React.ReactNode
   control?: React.ReactNode
   amount?: React.ReactNode
   className?: string
   testId?: string
+  /**
+   * A control too wide to share the line with its label in a narrow card
+   * (the work order sidebar is 320px at its narrowest): below the card's
+   * 22rem width it drops under the label and amount, so the label keeps
+   * its whole word instead of being cut to "Di".
+   */
+  stackControl?: boolean
 }) {
   return (
     <div
       data-totals-row
       data-testid={testId}
-      className={cn('col-span-3 grid grid-cols-subgrid items-center text-sm', className)}
+      className={cn(
+        'col-span-3 grid grid-cols-subgrid items-center text-sm',
+        stackControl && 'gap-y-1.5',
+        className
+      )}
     >
-      <span className="min-w-0 text-muted-foreground">{label}</span>
-      <span className="flex min-w-0 flex-wrap items-center justify-end gap-1.5">{control}</span>
+      {/* A row with nothing to change lends its label the control's column,
+          so "Parts cost (internal)" is not squeezed into the room beside the
+          widest field of the card. */}
+      <span
+        className={cn(
+          'min-w-0 text-muted-foreground',
+          (!control || stackControl) && 'col-span-2',
+          stackControl && '@[22rem]:col-span-1'
+        )}
+      >
+        {label}
+      </span>
+      {control && (
+        <span
+          className={cn(
+            'flex min-w-0 flex-wrap items-center justify-end gap-1.5',
+            stackControl &&
+              'col-span-3 row-start-2 @[22rem]:col-span-1 @[22rem]:col-start-2 @[22rem]:row-start-1'
+          )}
+        >
+          {control}
+        </span>
+      )}
       {/* An absurd figure (a billion parts at a hundred million) wraps inside
-          the card instead of running out of it: the amount and the control
-          columns share what the labels leave, each up to its full width. */}
-      <span className="min-w-0 text-right tabular-nums [overflow-wrap:anywhere]">{amount}</span>
+          the card instead of running out of it. */}
+      <span
+        className={cn(
+          'min-w-0 text-right tabular-nums [overflow-wrap:anywhere]',
+          stackControl && 'col-start-3 row-start-1'
+        )}
+      >
+        {amount}
+      </span>
     </div>
   )
 }
@@ -152,7 +191,7 @@ export function TotalsSection({
 
   const rows = (
     <div className="space-y-2" data-testid="totals">
-      <div className="grid grid-cols-[minmax(min-content,1fr)_minmax(0,auto)_minmax(0,auto)] gap-x-3 gap-y-2">
+      <div className="@container grid grid-cols-[minmax(0,1fr)_minmax(0,auto)_minmax(0,auto)] gap-x-3 gap-y-2">
         <Row label={t('parts')} amount={formatCurrency(displayPartsSubtotal, currencyCode)} />
         {partsCostSubtotal > 0 && (
           <Row
@@ -171,6 +210,7 @@ export function TotalsSection({
         />
 
         <Row
+          stackControl
           label={t('discount')}
           control={
             <>

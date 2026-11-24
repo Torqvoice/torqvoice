@@ -6,8 +6,8 @@
     "description": "Descripción",
     "itemCount": "Elementos",
     "type": "Tipo",
-    "hrs": "h",
-    "units": "unidad(es)"
+    "hoursCount": "{hours, number} h",
+    "unitsCount": "{units, plural, one {# unidad} other {# unidades}}"
   },
   "empty": {
     "noMatch": "Ninguna plantilla coincide con su búsqueda.",
