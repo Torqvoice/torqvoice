@@ -341,6 +341,7 @@
     "wholeNumber": "Въведете цяло число.",
     "invalid": "Тази стойност е невалидна.",
     "notSaved": "Не е запазено. Проверете отбелязаните полета.",
-    "withLabel": "{label}: {problem}"
+    "withLabel": "{label}: {problem}",
+    "positive": "Трябва да е повече от 0."
   }
 }

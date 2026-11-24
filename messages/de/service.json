@@ -23,7 +23,10 @@
       "negative": "Mengen, Stunden, Preise und Kosten dürfen nicht negativ sein.",
       "partName": "Jedes Teil mit Preis braucht einen Namen.",
       "laborDescription": "Jede Arbeitszeile mit Stunden oder Satz braucht eine Beschreibung.",
-      "concernCondition": "Ein Anliegen mit Ursache, Behebung oder Kontrolle braucht eine ausgefüllte Beanstandung."
+      "concernCondition": "Ein Anliegen mit Ursache, Behebung oder Kontrolle braucht eine ausgefüllte Beanstandung.",
+      "negativeReading": "Der Zählerstand darf nicht negativ sein.",
+      "tooLarge": "Ein Wert ist zu groß. Eine Menge darf höchstens {quantity} sein, ein Preis {price}, eine Zeilensumme {total} und ein Zählerstand {reading}.",
+      "zeroQuantity": "Ein Teil mit Preis braucht eine Menge über null."
     }
   },
   "header": {

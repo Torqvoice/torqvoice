@@ -13,10 +13,23 @@
  */
 
 import { concernHasStory } from './concernStory'
+import {
+  LABOR_HOURS_MAX,
+  LINE_TOTAL_MAX,
+  QUANTITY_MAX,
+  READING_MAX,
+  UNIT_PRICE_MAX,
+} from '@/lib/input-limits'
 
 export type ServiceFormProblem =
   | 'title'
   | 'negative'
+  /** The odometer or hour meter typed below zero. */
+  | 'negativeReading'
+  /** A reading, quantity, price or line total past what any job has (lib/input-limits.ts). */
+  | 'tooLarge'
+  /** A part with a price and a quantity of zero: priced, and billed nothing. */
+  | 'zeroQuantity'
   /** A part priced or numbered but never named. */
   | 'partName'
   /** Labour with hours, or a priced service, but nothing said about it. */
@@ -51,6 +64,8 @@ export interface ServiceFormConcern {
 
 export interface ServiceFormInput {
   title: string
+  /** The reading as typed; empty or absent is no reading. */
+  mileage?: number | string | null
   partItems: ServiceFormPart[]
   laborItems: ServiceFormLabor[]
   concerns?: ServiceFormConcern[]
@@ -88,6 +103,10 @@ export function laborRowHasContent(labor: ServiceFormLabor): boolean {
 export function findServiceFormProblem(input: ServiceFormInput): ServiceFormProblem | null {
   if (!input.title.trim()) return 'title'
 
+  const reading =
+    input.mileage == null || String(input.mileage).trim() === '' ? null : num(input.mileage)
+  if (reading !== null && reading < 0) return 'negativeReading'
+
   // Money and time only run one way. A negative here is a typo or a minus
   // sign left in the field, and it reaches the totals before it reaches the
   // save, so the editor can already be showing a negative invoice.
@@ -101,6 +120,31 @@ export function findServiceFormProblem(input: ServiceFormInput): ServiceFormProb
   )
   const negativeLabor = input.laborItems.some((l) => num(l.hours) < 0 || num(l.rate) < 0)
   if (negativePart || negativeLabor) return 'negative'
+
+  // Past anything a job has: a slip of the finger that would put a total of
+  // trillions on the invoice and push it off the page.
+  const tooLarge =
+    (reading !== null && reading > READING_MAX) ||
+    input.partItems.some(
+      (p) =>
+        num(p.quantity) > QUANTITY_MAX ||
+        num(p.unitPrice) > UNIT_PRICE_MAX ||
+        num(p.unitCost) > UNIT_PRICE_MAX ||
+        num(p.quantity) * num(p.unitPrice) > LINE_TOTAL_MAX
+    ) ||
+    input.laborItems.some(
+      (l) =>
+        num(l.hours) > LABOR_HOURS_MAX ||
+        num(l.rate) > UNIT_PRICE_MAX ||
+        num(l.hours) * num(l.rate) > LINE_TOTAL_MAX
+    )
+  if (tooLarge) return 'tooLarge'
+
+  // Priced and billed nothing. A free part may sit at zero as a note of what
+  // was used; a priced one is a quantity somebody forgot.
+  if (input.partItems.some((p) => p.name.trim() && num(p.unitPrice) > 0 && num(p.quantity) <= 0)) {
+    return 'zeroQuantity'
+  }
 
   // A row with a price and no name used to be dropped on save without a word,
   // taking its money off the invoice. The workshop finds out when the

@@ -23,7 +23,10 @@
       "negative": "Miktarlar, saatler, fiyatlar ve maliyetler negatif olamaz.",
       "partName": "Fiyatı olan her parçanın bir adı olmalı.",
       "laborDescription": "Saati veya ücreti olan her işçilik satırının bir açıklaması olmalı.",
-      "concernCondition": "Nedeni, onarımı veya doğrulaması olan bir maddenin belirtisi doldurulmalı."
+      "concernCondition": "Nedeni, onarımı veya doğrulaması olan bir maddenin belirtisi doldurulmalı.",
+      "negativeReading": "Okuma değeri negatif olamaz.",
+      "tooLarge": "Bir değer çok büyük. Miktar en fazla {quantity}, fiyat {price}, satır toplamı {total} ve okuma {reading} olabilir.",
+      "zeroQuantity": "Fiyatı olan bir parçanın miktarı sıfırdan büyük olmalı."
     }
   },
   "header": {

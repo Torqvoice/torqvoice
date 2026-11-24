@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useTranslations } from 'next-intl'
+import { LABOR_HOURS_MAX, UNIT_PRICE_MAX } from '@/lib/input-limits'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -486,6 +487,7 @@ export function LaborPresetForm({
                       <Input
                         type="number"
                         min="0"
+                        max={LABOR_HOURS_MAX}
                         step={item.pricingType === 'service' ? '1' : 'any'}
                         placeholder={
                           item.pricingType === 'service' ? t('form.itemQty') : t('form.itemHours')
@@ -496,6 +498,7 @@ export function LaborPresetForm({
                       <Input
                         type="number"
                         min="0"
+                        max={UNIT_PRICE_MAX}
                         step="0.01"
                         value={item.rate}
                         onChange={(e) => updateSingleItem(i, 'rate', e.target.value)}
@@ -599,6 +602,7 @@ export function LaborPresetForm({
                       <Input
                         type="number"
                         min="0"
+                        max={LABOR_HOURS_MAX}
                         step={item.pricingType === 'service' ? '1' : 'any'}
                         placeholder={
                           item.pricingType === 'service' ? t('form.itemQty') : t('form.itemHours')
@@ -609,6 +613,7 @@ export function LaborPresetForm({
                       <Input
                         type="number"
                         min="0"
+                        max={UNIT_PRICE_MAX}
                         step="0.01"
                         value={item.rate}
                         onChange={(e) => updateItem(i, 'rate', e.target.value)}

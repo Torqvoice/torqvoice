@@ -1,45 +1,81 @@
 import { z } from 'zod'
+import { roundMoney } from '@/lib/money'
+import {
+  checkLineAmounts,
+  LABOR_HOURS_MAX,
+  LINE_TOTAL_MAX,
+  QUANTITY_MAX,
+  READING_MAX,
+  UNIT_PRICE_MAX,
+} from '@/lib/input-limits'
 import { uploadUrlSchema } from '@/lib/upload-url'
 
-export const servicePartSchema = z.object({
-  partNumber: z.string().optional(),
-  name: z.string().min(1, 'Part name is required'),
-  quantity: z.coerce.number().min(0).default(1),
-  /** Unit of measure snapshotted from the picked inventory part. */
-  unit: z.string().nullish(),
-  category: z.string().nullish(),
-  unitPrice: z.coerce.number().min(0).default(0),
-  total: z.coerce.number().min(0).default(0),
-  unitCost: z.coerce.number().min(0).default(0),
-  /**
-   * Selling below cost is a real decision (a goodwill line, matching a price),
-   * and the markup has to be able to say so. Floored at -100, which is giving
-   * the part away: anything lower would imply a negative price, which
-   * unitPrice already refuses.
-   */
-  markupPercent: z.coerce.number().min(-100).default(0),
-  inventoryPartId: z.string().optional(),
-  /**
-   * Whether the document's tax is charged on this line. Left out by a caller
-   * that does not choose, and the server then takes the workshop's answer
-   * for this kind of line (Settings, Tax).
-   */
-  taxable: z.boolean().optional(),
-})
+export const servicePartSchema = z
+  .object({
+    partNumber: z.string().optional(),
+    name: z.string().min(1, 'Part name is required'),
+    quantity: z.coerce.number().min(0).max(QUANTITY_MAX).default(1),
+    /** Unit of measure snapshotted from the picked inventory part. */
+    unit: z.string().nullish(),
+    category: z.string().nullish(),
+    unitPrice: z.coerce.number().min(0).max(UNIT_PRICE_MAX).default(0),
+    /** Held to the cent on save, whatever the page worked it out as. */
+    total: z.coerce.number().min(0).max(LINE_TOTAL_MAX).default(0).transform(roundMoney),
+    unitCost: z.coerce.number().min(0).max(UNIT_PRICE_MAX).default(0),
+    /**
+     * Selling below cost is a real decision (a goodwill line, matching a price),
+     * and the markup has to be able to say so. Floored at -100, which is giving
+     * the part away: anything lower would imply a negative price, which
+     * unitPrice already refuses.
+     */
+    markupPercent: z.coerce.number().min(-100).default(0),
+    inventoryPartId: z.string().optional(),
+    /**
+     * Whether the document's tax is charged on this line. Left out by a caller
+     * that does not choose, and the server then takes the workshop's answer
+     * for this kind of line (Settings, Tax).
+     */
+    taxable: z.boolean().optional(),
+  })
+  // A priced part billed none of: a quantity of zero puts a price on the
+  // line and nothing on the invoice. A free part (no price) may still be
+  // listed at zero, as a note of what was used.
+  // Its quantity times its price is checked too, whatever total was sent.
+  .superRefine((part, ctx) =>
+    checkLineAmounts(
+      { count: part.quantity, price: part.unitPrice },
+      ctx,
+      { count: 'quantity', total: 'total' },
+      { pricedNeedsCount: true }
+    )
+  )
 
-export const serviceLaborSchema = z.object({
-  description: z.string().min(1, 'Description is required'),
-  hours: z.coerce.number().min(0).default(0),
-  rate: z.coerce.number().min(0).default(0),
-  total: z.coerce.number().min(0).default(0),
-  pricingType: z.enum(['hourly', 'service', 'shopFee']).default('hourly'),
-  /**
-   * Whether the document's tax is charged on this line. Left out by a caller
-   * that does not choose, and the server then takes the workshop's answer
-   * for this kind of line (Settings, Tax).
-   */
-  taxable: z.boolean().optional(),
-})
+/**
+ * Hours may be zero: a line a technician has started and not yet clocked
+ * time on (live labour from the phone), or work done for nothing, is a real
+ * line. Only negatives and absurd figures are refused.
+ */
+export const serviceLaborSchema = z
+  .object({
+    description: z.string().min(1, 'Description is required'),
+    hours: z.coerce.number().min(0).max(LABOR_HOURS_MAX).default(0),
+    rate: z.coerce.number().min(0).max(UNIT_PRICE_MAX).default(0),
+    /** Held to the cent on save, whatever the page worked it out as. */
+    total: z.coerce.number().min(0).max(LINE_TOTAL_MAX).default(0).transform(roundMoney),
+    pricingType: z.enum(['hourly', 'service', 'shopFee']).default('hourly'),
+    /**
+     * Whether the document's tax is charged on this line. Left out by a caller
+     * that does not choose, and the server then takes the workshop's answer
+     * for this kind of line (Settings, Tax).
+     */
+    taxable: z.boolean().optional(),
+  })
+  .superRefine((labor, ctx) =>
+    checkLineAmounts({ count: labor.hours, price: labor.rate }, ctx, {
+      count: 'hours',
+      total: 'total',
+    })
+  )
 
 export const serviceAttachmentSchema = z.object({
   fileName: z.string(),
@@ -94,7 +130,8 @@ export const createServiceSchema = z.object({
     .enum(['scheduled', 'pending', 'in-progress', 'waiting-parts', 'completed'])
     .default('pending'),
   cost: z.coerce.number().min(0).default(0),
-  mileage: z.coerce.number().nullable().optional(),
+  /** Never below zero, and an odometer's worth at most, as the technician app takes it. */
+  mileage: z.coerce.number().int().min(0).max(READING_MAX).nullable().optional(),
   serviceDate: z.string().default(() => new Date().toISOString()),
   shopName: z.string().optional(),
   techName: z.string().optional(),

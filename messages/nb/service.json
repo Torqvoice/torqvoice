@@ -23,7 +23,10 @@
       "negative": "Antall, timer, priser og kostnader kan ikke være negative.",
       "partName": "Alle deler med pris må ha et navn.",
       "laborDescription": "Alle arbeidslinjer med timer eller sats må ha en beskrivelse.",
-      "concernCondition": "Et punkt med årsak, utbedring eller kontroll må ha tilstanden fylt ut."
+      "concernCondition": "Et punkt med årsak, utbedring eller kontroll må ha tilstanden fylt ut.",
+      "negativeReading": "Avlesningen kan ikke være negativ.",
+      "tooLarge": "Et tall er for stort. Et antall kan være høyst {quantity}, en pris {price}, en linjesum {total} og en avlesning {reading}.",
+      "zeroQuantity": "En del med pris må ha et antall over null."
     }
   },
   "header": {
