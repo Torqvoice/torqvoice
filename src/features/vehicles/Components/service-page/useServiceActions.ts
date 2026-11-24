@@ -491,8 +491,19 @@ export function useServiceActions({
     note?: string
   }) => {
     setPaymentLoading(true)
-    const result = await createPayment({ serviceRecordId: record.id, ...data }).catch(() => null)
-    setPaymentLoading(false)
+    let result: Awaited<ReturnType<typeof createPayment>> | null = null
+    try {
+      // The server takes payments up to the saved total, and the form offers
+      // the total on screen: a line added in the last few seconds is saved
+      // first, so the two agree.
+      if (formState.isDirty()) await formState.saveNow()
+      result = await createPayment({ serviceRecordId: record.id, ...data })
+    } catch {
+      // A save or a request that never came back: said below, never left spinning.
+      result = null
+    } finally {
+      setPaymentLoading(false)
+    }
     if (result?.success) {
       toast.success(t('payments.recorded'))
       router.refresh()

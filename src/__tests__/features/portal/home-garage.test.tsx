@@ -173,7 +173,7 @@ describe('the car in the workshop', () => {
     })
     const other = section('Also booked or under way')
     expect(other.getByText('Wheel alignment')).toBeInTheDocument()
-    expect(other.getByText('Volvo V60 · Booked for 20 Nov at 09:00')).toBeInTheDocument()
+    expect(other.getByText('Volvo V60 · Booked for 20/11/2026 at 09:00')).toBeInTheDocument()
     expect(other.getByRole('link', { name: /Wheel alignment/ })).toHaveAttribute(
       'href',
       '/portal/fjordside/vehicles/v60'
@@ -204,7 +204,7 @@ describe('what needs an answer', () => {
     expect(quote.getByText('Front discs and pads')).toBeInTheDocument()
     expect(quote.getByText('4 850 kr')).toBeInTheDocument()
     expect(quote.getByText('Quote Q-2041')).toBeInTheDocument()
-    expect(quote.getByText('Volvo V60 · Valid until 29 Nov')).toBeInTheDocument()
+    expect(quote.getByText('Volvo V60 · Valid until 29/11/2026')).toBeInTheDocument()
     expect(quote.getByRole('link', { name: 'Read the quote' })).toHaveAttribute(
       'href',
       '/portal/fjordside/quotes/q1'
@@ -258,8 +258,8 @@ describe('what there is to pay', () => {
     const pay = section('To pay')
     expect(pay.getByText('EU inspection and service')).toBeInTheDocument()
     expect(pay.getByText('4 280 kr')).toBeInTheDocument()
-    expect(pay.getByText('Invoice 1042 · 9 Nov')).toBeInTheDocument()
-    expect(pay.getByText('Toyota RAV4 · Due 28 Nov')).toBeInTheDocument()
+    expect(pay.getByText('Invoice 1042 · 09/11/2026')).toBeInTheDocument()
+    expect(pay.getByText('Toyota RAV4 · Due 28/11/2026')).toBeInTheDocument()
     expect(pay.getByRole('link', { name: 'Pay now' })).toHaveAttribute(
       'href',
       '/share/invoice/fjordside/tok-i1'
@@ -293,8 +293,8 @@ describe('what there is to pay', () => {
       toPayOverdueCount: 1,
     })
     const pay = section('To pay')
-    expect(pay.getByText('Overdue since 10 Nov')).toBeInTheDocument()
-    expect(pay.queryByText(/Due 10 Nov/)).not.toBeInTheDocument()
+    expect(pay.getByText('Overdue since 10/11/2026')).toBeInTheDocument()
+    expect(pay.queryByText(/Due 10\/11\/2026/)).not.toBeInTheDocument()
     expect(pay.getByText('3 280 kr')).toBeInTheDocument()
     expect(pay.getByText(/1 000 kr of 4 280 kr paid/)).toBeInTheDocument()
     expect(pay.queryByRole('link', { name: /See all/ })).not.toBeInTheDocument()
@@ -319,7 +319,7 @@ describe('what there is to pay', () => {
     expect(pay.getByText('Most urgent')).toBeInTheDocument()
     expect(pay.getByText('EU inspection and service')).toBeInTheDocument()
     expect(pay.getByText('3 280 kr')).toBeInTheDocument()
-    expect(pay.getByText('Overdue since 10 Nov')).toBeInTheDocument()
+    expect(pay.getByText('Overdue since 10/11/2026')).toBeInTheDocument()
     expect(
       pay.getByText(/Invoice 1042 · Toyota RAV4 · 1 000 kr of 4 280 kr paid/)
     ).toBeInTheDocument()
@@ -345,7 +345,7 @@ describe('what there is to pay', () => {
     const pay = section('To pay')
     expect(pay.getByText('4 780 kr')).toBeInTheDocument()
     expect(pay.getByText('Next to pay')).toBeInTheDocument()
-    expect(pay.getByText(/Due 28 Nov/)).toBeInTheDocument()
+    expect(pay.getByText(/Due 28\/11\/2026/)).toBeInTheDocument()
     expect(pay.queryByText(/overdue/i)).not.toBeInTheDocument()
   })
 
@@ -390,7 +390,7 @@ describe('tyres stored with the workshop', () => {
     await home(fullHome)
     const tires = section('Tyre hotel')
     expect(tires.getByText('Summer tyres stored with us')).toBeInTheDocument()
-    expect(tires.getByText('stored since 21 Oct')).toBeInTheDocument()
+    expect(tires.getByText('stored since 21/10/2026')).toBeInTheDocument()
     expect(spec(tires, 'Car')).toHaveTextContent('Toyota RAV4')
     expect(spec(tires, 'Tyres')).toHaveTextContent('Michelin Primacy 4')
     expect(spec(tires, 'Size')).toHaveTextContent('225/60 R18')
@@ -523,7 +523,7 @@ describe('a customer with no car in the workshop', () => {
     })
     const sent = section('Sent to the workshop')
     expect(sent.getByText('Winter tyres on, and a look at the wipers')).toBeInTheDocument()
-    expect(sent.getByText('Sent 12 Nov · Waiting for an answer')).toBeInTheDocument()
+    expect(sent.getByText('Sent 12/11/2026 · Waiting for an answer')).toBeInTheDocument()
   })
 })
 

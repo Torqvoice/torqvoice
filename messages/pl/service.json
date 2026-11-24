@@ -377,6 +377,8 @@
     "received": "Otrzymane płatności",
     "noneYet": "Nic jeszcze nie zapłacono.",
     "balanceDue": "Pozostało do zapłaty",
+    "aboveBalance": "Do zapłaty pozostało {amount}. Płatność nie może być wyższa.",
+    "nothingDue": "Na tej fakturze nie ma nic do zapłaty.",
     "refund": "Zwrot"
   },
   "attachments": {

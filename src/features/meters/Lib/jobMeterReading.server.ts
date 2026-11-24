@@ -225,7 +225,9 @@ type UnlinkTx = {
  * date the job had when the reading was typed, before a reschedule. The date it
  * counts at today is written with the unlink, in the same statement, so the
  * reading stays where it was in the history and the current reading does not
- * change.
+ * change. That is `effectiveReadAt`, not the job's own date: a reading on a
+ * job booked into tomorrow counts from when it was typed, and the job's date
+ * written here put it back in the future once the job let go of it.
  */
 async function unlinkReadingsFromJobs(
   tx: UnlinkTx,
@@ -237,20 +239,30 @@ async function unlinkReadingsFromJobs(
     // replaced that with "any job", which let one job's change take the
     // readings of every other job with it.
     where: { AND: [where, { organizationId, serviceRecordId: { not: null } }] },
-    select: { serviceRecordId: true },
-    distinct: ['serviceRecordId'],
+    select: { id: true, serviceRecordId: true, readAt: true, createdAt: true },
   })
-  const jobIds = linked.flatMap((r) => (r.serviceRecordId ? [r.serviceRecordId] : []))
+  const jobIds = [...new Set(linked.flatMap((r) => (r.serviceRecordId ? [r.serviceRecordId] : [])))]
   if (jobIds.length === 0) return
   const jobs = await tx.serviceRecord.findMany({
     where: { id: { in: jobIds }, organizationId },
     select: { id: true, ...READING_JOB_DATES },
   })
+  const now = new Date()
   for (const job of jobs) {
-    await tx.meterReading.updateMany({
-      where: { ...where, organizationId, serviceRecordId: job.id },
-      data: { serviceRecordId: null, readAt: jobReadingDate(job) },
-    })
+    // The readings of this job by the date each counts at now; usually one.
+    const byDate = new Map<number, string[]>()
+    for (const reading of linked) {
+      if (reading.serviceRecordId !== job.id) continue
+      const at = effectiveReadAt({ ...reading, serviceRecord: job }, now).getTime()
+      byDate.set(at, [...(byDate.get(at) ?? []), reading.id])
+    }
+    for (const [at, ids] of byDate) {
+      await tx.meterReading.updateMany({
+        // Still this job's: one taken off it meanwhile is not dated again.
+        where: { ...where, organizationId, serviceRecordId: job.id, id: { in: ids } },
+        data: { serviceRecordId: null, readAt: new Date(at) },
+      })
+    }
   }
 }
 
