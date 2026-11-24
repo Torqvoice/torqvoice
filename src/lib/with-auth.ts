@@ -7,6 +7,7 @@ import { hasAllPermissions, PermissionAction } from './permissions'
 import { logAudit } from '@/lib/audit'
 import type { AuditEvent } from '@/lib/audit'
 import type { FeatureGatedError } from '@/lib/features'
+import { type FieldError, fieldErrorsFromZod } from '@/lib/field-errors'
 import { publicErrorMessage } from '@/lib/public-error-message'
 import { runAsActor } from '@/lib/realtime/actor.server'
 import { SCOPED_SESSION_MESSAGE, sessionOrganizationScope } from './session-scope'
@@ -33,6 +34,13 @@ export type ActionResult<T = unknown> = {
    * Nothing was written. `error` already names them.
    */
   customFieldErrors?: { fieldId: string; label: string; issue: string }[]
+  /**
+   * Set when the action's input failed its schema: each field, what was
+   * wrong with it and the limit, so the form can say it under the field in
+   * the person's language. Nothing was written. `error` is the schema's own
+   * English, for the log.
+   */
+  fieldErrors?: FieldError[]
   /**
    * Set when a job was not completed, or its invoice not sent or shared,
    * because a meter the workshop requires has no reading on it: which
@@ -231,7 +239,7 @@ export async function withAuth<T>(
       })
       const message = messages.join('. ')
       console.error('[withAuth] Validation error:', message)
-      return { success: false, error: message }
+      return { success: false, error: message, fieldErrors: fieldErrorsFromZod(error) }
     }
     // Matched by name rather than `instanceof`: tests replace '@/lib/features'
     // with partial mocks, and a plan refusal must still come through as one.

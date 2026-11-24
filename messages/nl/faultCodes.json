@@ -185,7 +185,8 @@
     "skipped": "{count, plural, one {# code stond al bij deze klus} other {# codes stonden al bij deze klus}}",
     "failed": "De codes konden niet worden toegevoegd",
     "descriptionOem": "Typ of plak codes uit het diagnoseapparaat, OBD-codes zoals P0420 of BMW-codes zoals 2A82. Elke code wordt een observatie op deze opdracht, met de betekenis opgeslagen.",
-    "placeholderOem": "P0420, 2A82 opgeslagen"
+    "placeholderOem": "P0420, 2A82 opgeslagen",
+    "unrecognised": "{count, plural, one {Geen foutcode, weggelaten: {codes}} other {Geen foutcodes, weggelaten: {codes}}}"
   },
   "finding": {
     "seenBefore": "Gezien {date}",
