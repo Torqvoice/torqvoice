@@ -72,7 +72,8 @@ describe('the printed cancelled invoice', () => {
       totalPaid: 0,
       payments: [...PAID.payments, { amount: -1000, date: '03/10/2026', method: 'transfer' }],
     })
-    expect(text).toContain('03/10/2026 (transfer)')
+    expect(text).toContain('Refund 03/10/2026 (Bank transfer)')
+    expect(text).toContain('CANCELLED')
   })
 
   it('leaves an invoice that is not cancelled as it was', () => {
