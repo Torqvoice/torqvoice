@@ -149,7 +149,11 @@ describe('saving with lines still waiting', () => {
       pricingType: 'hourly',
     }
 
-    act(() => result.current.dirtySetPartItems([DESK]))
+    // The desk is editing its lines, labour among them.
+    act(() => {
+      result.current.dirtySetPartItems([DESK])
+      result.current.dirtySetLaborItems([])
+    })
     rerender(props([], [billed]))
     expect(result.current.laborAddedElsewhere).toEqual([billed])
     expect(result.current.subtotal).toBe(DESK.total + 125)

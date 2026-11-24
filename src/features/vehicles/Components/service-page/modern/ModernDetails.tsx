@@ -540,6 +540,7 @@ export function ModernDetails(props: ModernDetailsProps) {
                   serviceRecordId={record.id}
                   aiEnabled={props.aiEnabled}
                   publicLocked={locked}
+                  adopted={formState.adoptedFields}
                 />
               </div>
 
@@ -594,6 +595,7 @@ export function ModernDetails(props: ModernDetailsProps) {
                       <InvoiceDetailsSection
                         part="invoice"
                         initialData={formState.initialData}
+                        adopted={formState.adoptedFields}
                         type={formState.type}
                         setType={formState.dirtySetType}
                         status={formState.status}

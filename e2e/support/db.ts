@@ -2390,3 +2390,17 @@ export async function removeSharedDocuments(planted: PlantedSharedDocuments): Pr
     await db.query('delete from vehicles where id = $1', [planted.vehicleId])
   })
 }
+
+/** What a job has stored of the fields two tabs on it save. */
+export async function jobNotesAndReading(
+  serviceRecordId: string
+): Promise<{ diagnosticNotes: string | null; mileage: number | null }> {
+  return withDb(async (db) => {
+    const result = await db.query<{ diagnosticNotes: string | null; mileage: number | null }>(
+      `select "diagnosticNotes", mileage from service_records where id = $1`,
+      [serviceRecordId]
+    )
+    if (!result.rows[0]) throw new Error(`no job ${serviceRecordId}`)
+    return result.rows[0]
+  })
+}

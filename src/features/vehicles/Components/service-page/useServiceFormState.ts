@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react'
+import { useState, useCallback, useRef, useEffect, useLayoutEffect } from 'react'
 import { roundMoney } from '@/lib/money'
 import { calculateTotals, discountAmountFor, storedTaxableSubtotal } from '@/lib/tax'
 import {
@@ -15,6 +15,18 @@ import { lineTotal, repricePartRow } from '@/features/inventory/Lib/partPricing'
 import { reconcileConcernRows } from '@/features/vehicles/Lib/concernStory'
 import { addedLaborLines, savedLaborShape } from '@/features/vehicles/Lib/laborLines'
 import { addedPartLines, savedPartShape } from '@/features/vehicles/Lib/partLines'
+import {
+  concernsForSave,
+  changedWorkOrderFields,
+  discountForSave,
+  mergeWorkOrderFields,
+  richText,
+  sameFieldValue,
+  savedWorkOrderFields,
+  warrantyForSave,
+  type WorkOrderField,
+  type WorkOrderFieldValues,
+} from '@/features/vehicles/Lib/workOrderFields'
 import {
   recalculateShopFeeLines,
   shopFeeLinesLast,
@@ -155,9 +167,14 @@ export function useServiceFormState({
   // save, was taken for a new one, and the saved row was deleted with every
   // finding that pointed at it.
   const savedConcernsKey = JSON.stringify(initialData.concerns ?? [])
+  // Set by the merge below when the concerns changed elsewhere and not here:
+  // the server's list is taken then, whatever else is being edited.
+  const adoptConcernsRef = useRef(false)
   useEffect(() => {
     const saved: ConcernRow[] = JSON.parse(savedConcernsKey)
-    setConcerns((current) => reconcileConcernRows(current, saved, hasUnsavedChangesRef.current))
+    const keepRows = hasUnsavedChangesRef.current && !adoptConcernsRef.current
+    adoptConcernsRef.current = false
+    setConcerns((current) => reconcileConcernRows(current, saved, keepRows))
   }, [savedConcernsKey])
 
   /**
@@ -174,24 +191,6 @@ export function useServiceFormState({
    * them whether or not the offer was taken.
    */
   /**
-   * The status as the server now has it. A technician marking the job
-   * complete in the bay has to move the bar on the desk's screen, and the
-   * page refreshes on that event, so the saved status arrives here.
-   *
-   * Not while the desk is editing: the status is part of what a save writes,
-   * and replacing a choice someone has just made in the dropdown would send
-   * back the wrong one. Their save wins, and the bar follows it.
-   */
-  const savedStatus = initialData.status
-  useEffect(() => {
-    if (!savedStatus) return
-    // A cancelled invoice is final, and no save can change it back, so it
-    // is taken whatever is being edited.
-    if (hasUnsavedChangesRef.current && savedStatus !== 'cancelled') return
-    setStatus(savedStatus)
-  }, [savedStatus])
-
-  /**
    * The lines of the save on its way to the server, if one is. A refresh can
    * be read either side of its write; see addedLaborLines.
    */
@@ -200,6 +199,27 @@ export function useServiceFormState({
     labor: ServiceLaborInput[]
   } | null>(null)
 
+  /**
+   * Whether this page has changed its parts, or its labour, since its last
+   * save. A save sends a list only then (it replaces every line of it), and
+   * only then does a list keep what is typed and hold lines from elsewhere
+   * behind the banner: a page editing the notes takes the technician's new
+   * line straight into its list, as a page editing nothing does. The
+   * revision says whether a save covered every edit of the list.
+   */
+  const partsEditedRef = useRef(false)
+  const laborEditedRef = useRef(false)
+  const partsRevisionRef = useRef(0)
+  const laborRevisionRef = useRef(0)
+  const markPartsEdited = useCallback(() => {
+    partsEditedRef.current = true
+    partsRevisionRef.current += 1
+  }, [])
+  const markLaborEdited = useCallback(() => {
+    laborEditedRef.current = true
+    laborRevisionRef.current += 1
+  }, [])
+
   const [laborAddedElsewhere, setLaborAddedElsewhere] = useState<ServiceLaborInput[]>([])
   const savedLaborKey = JSON.stringify(initialData.laborItems ?? [])
   const syncedLaborRef = useRef<ServiceLaborInput[]>(initialData.laborItems ?? [])
@@ -207,7 +227,7 @@ export function useServiceFormState({
     const saved: ServiceLaborInput[] = JSON.parse(savedLaborKey)
     const previous = syncedLaborRef.current
     syncedLaborRef.current = saved
-    if (!hasUnsavedChangesRef.current) {
+    if (!laborEditedRef.current) {
       setLaborItems(saved)
       setLaborAddedElsewhere([])
       return
@@ -227,7 +247,7 @@ export function useServiceFormState({
     const saved: ServicePartInput[] = JSON.parse(savedPartsKey)
     const previous = syncedPartsRef.current
     syncedPartsRef.current = saved
-    if (!hasUnsavedChangesRef.current) {
+    if (!partsEditedRef.current) {
       setPartItems(saved)
       setPartsAddedElsewhere([])
       return
@@ -387,6 +407,214 @@ export function useServiceFormState({
   )
 
   /**
+   * The job's own fields as the server last told this page (workOrderFields).
+   * A save sends the ones the page holds differently, and no others: with the
+   * job open in a second tab, a field this one never touched is the other
+   * tab's to change, and sending back this page's old copy of it threw away
+   * what was saved there.
+   */
+  const serverFieldsKey = JSON.stringify(savedWorkOrderFields(initialData, defaultTaxRate))
+  const syncedFieldsRef = useRef<WorkOrderFieldValues>(JSON.parse(serverFieldsKey))
+  /** The fields this page has saved, so it can be told when a later save replaces one. */
+  const savedHereRef = useRef(new Set<WorkOrderField>())
+  /**
+   * The values a save on its way to the server sent, as they were when it
+   * left. A refresh can show that save before its answer arrives; the field
+   * then compares against what was sent, not what is on screen, so an edit
+   * made after the save left is still this page's (even one that puts the
+   * field back as it was before).
+   */
+  const sendingFieldsRef = useRef<Partial<WorkOrderFieldValues> | null>(null)
+  /**
+   * Values taken from the server for fields drawn by sections that hold
+   * their own copy (the notes editors, the invoice dates). A new object each
+   * time, so a section follows even when the same value comes back.
+   */
+  const [adoptedFields, setAdoptedFields] = useState<
+    Partial<Record<WorkOrderField, { value: unknown }>>
+  >({})
+  /**
+   * Fields saved somewhere else that this page had changed too. `kept`: this
+   * page is still editing it, and its save replaces the other one. `replaced`:
+   * this page had saved it, and a later save elsewhere replaced that.
+   */
+  const [changedElsewhere, setChangedElsewhere] = useState<{
+    kept: WorkOrderField[]
+    replaced: WorkOrderField[]
+  }>({ kept: [], replaced: [] })
+  const dismissChangedElsewhere = useCallback(
+    () => setChangedElsewhere({ kept: [], replaced: [] }),
+    []
+  )
+
+  /**
+   * The fields as the page holds them now. Most are state; the title, the
+   * reading and the invoice number and dates are read from the form, and a
+   * field the page does not draw is left out.
+   */
+  const readCurrentFields = (): Partial<WorkOrderFieldValues> => {
+    const current: Partial<WorkOrderFieldValues> = {
+      type,
+      status,
+      taxRate,
+      discount: discountForSave(discountType, discountValue),
+      warranty: warrantyForSave(warranty),
+      concerns: concernsForSave(concerns),
+      description: richText(notesRef.current.description),
+      diagnosticNotes: richText(notesRef.current.diagnosticNotes),
+      invoiceNotes: richText(notesRef.current.invoiceNotes),
+    }
+    const form = formRef.current
+    const read = (name: string) =>
+      form?.querySelector<HTMLInputElement | HTMLTextAreaElement>(
+        `input[name="${name}"], textarea[name="${name}"]`
+      )?.value
+    const title = read('title')
+    if (title !== undefined) current.title = title
+    const mileage = read('mileage')
+    if (mileage !== undefined) {
+      if (mileage.trim() === '') current.mileage = null
+      else if (!Number.isNaN(Number(mileage))) current.mileage = Number(mileage)
+    }
+    for (const name of ['invoiceNumber', 'invoiceDate', 'invoiceDueDate'] as const) {
+      const value = read(name)
+      if (value !== undefined) current[name] = value
+    }
+    return current
+  }
+  const readCurrentFieldsRef = useRef(readCurrentFields)
+  readCurrentFieldsRef.current = readCurrentFields
+
+  /**
+   * The job as the server has it now, after a save here or anywhere else:
+   * each field this page has not changed takes the server's value, each one
+   * it has keeps what is typed (mergeWorkOrderFields). Before the sections'
+   * own effects run, so what they hold is still what this page had.
+   */
+  useLayoutEffect(() => {
+    const server: WorkOrderFieldValues = JSON.parse(serverFieldsKey)
+    // This page's own save, shown by the refresh before its answer is back:
+    // what it sent is what this page last knew of those fields.
+    let synced = syncedFieldsRef.current
+    const sending = sendingFieldsRef.current
+    if (sending) {
+      for (const field of Object.keys(sending) as WorkOrderField[]) {
+        if (!sameFieldValue(field, server[field], sending[field])) continue
+        synced = { ...synced, [field]: sending[field] }
+        delete sending[field]
+        savedHereRef.current.add(field)
+      }
+    }
+    const merged = mergeWorkOrderFields({
+      synced,
+      current: readCurrentFieldsRef.current(),
+      server,
+      savedHere: savedHereRef.current,
+    })
+    const { adopt, replaced } = merged
+    let { kept } = merged
+    // A cancelled invoice is final, and no save can change it back, so the
+    // cancel is taken whatever stage this page had picked.
+    if (server.status === 'cancelled' && kept.includes('status')) {
+      kept = kept.filter((field) => field !== 'status')
+      adopt.push('status')
+    }
+    syncedFieldsRef.current = server
+    for (const field of replaced) savedHereRef.current.delete(field)
+    const setInput = (name: string, value: string) => {
+      const input = formRef.current?.querySelector<HTMLInputElement>(`input[name="${name}"]`)
+      if (input) input.value = value
+    }
+    for (const field of adopt) {
+      if (field === 'type') setType(server.type)
+      else if (field === 'status') setStatus(server.status)
+      else if (field === 'taxRate') setTaxRate(server.taxRate)
+      else if (field === 'discount') {
+        setDiscountType(server.discount.discountType)
+        setDiscountValue(server.discount.discountValue)
+      } else if (field === 'warranty') setWarranty(normalizeWarranty(server.warranty))
+      else if (field === 'concerns') adoptConcernsRef.current = true
+      else if (field === 'mileage') setInput('mileage', String(server.mileage ?? ''))
+      else if (field === 'invoiceNumber') setInput('invoiceNumber', server.invoiceNumber)
+      else if (field === 'description' || field === 'diagnosticNotes' || field === 'invoiceNotes') {
+        notesRef.current[field] = server[field]
+      }
+    }
+    if (adopt.length > 0) {
+      setAdoptedFields((previous) => {
+        const next = { ...previous }
+        for (const field of adopt) next[field] = { value: server[field] }
+        return next
+      })
+    }
+    if (kept.length > 0 || replaced.length > 0) {
+      const union = (a: WorkOrderField[], b: WorkOrderField[]) => [...new Set([...a, ...b])]
+      setChangedElsewhere((previous) => ({
+        kept: union(previous.kept, kept),
+        replaced: union(previous.replaced, replaced),
+      }))
+    }
+  }, [serverFieldsKey])
+
+  /**
+   * What a save sends of the job's own fields: those this page changed,
+   * as the page holds them.
+   */
+  const fieldChanges = useCallback(() => {
+    const current = readCurrentFieldsRef.current()
+    return { current, changed: changedWorkOrderFields(syncedFieldsRef.current, current) }
+  }, [])
+
+  /** A save leaves with these values (see sendingFieldsRef); null when it is over. */
+  const beginFieldSave = useCallback((sent: Partial<WorkOrderFieldValues> | null) => {
+    sendingFieldsRef.current = sent ? { ...sent } : null
+  }, [])
+
+  /** A save went through: these values are the server's now, and this page's. */
+  const acknowledgeSavedFields = useCallback((sent: Partial<WorkOrderFieldValues>) => {
+    const fields = Object.keys(sent) as WorkOrderField[]
+    // A field a refresh already showed this save for is settled there, and
+    // may have moved on since; only the rest are taken as sent.
+    const sending = sendingFieldsRef.current
+    if (fields.length === 0) return
+    const unseen = sending
+      ? Object.fromEntries(fields.filter((f) => f in sending).map((f) => [f, sent[f]]))
+      : sent
+    syncedFieldsRef.current = { ...syncedFieldsRef.current, ...unseen }
+    for (const field of fields) savedHereRef.current.add(field)
+    setChangedElsewhere((previous) => {
+      const kept = previous.kept.filter((field) => !fields.includes(field))
+      const replaced = previous.replaced.filter((field) => !fields.includes(field))
+      return kept.length === previous.kept.length && replaced.length === previous.replaced.length
+        ? previous
+        : { kept, replaced }
+    })
+  }, [])
+
+  /**
+   * Which lists a save is about to send, and the edits it covers; handed back
+   * to settleLineEdits once it went through.
+   */
+  const lineEditsForSave = useCallback(
+    (pending: { parts: number; labor: number }) => ({
+      parts: partsEditedRef.current || pending.parts > 0,
+      labor: laborEditedRef.current || pending.labor > 0,
+      partsRevision: partsRevisionRef.current,
+      laborRevision: laborRevisionRef.current,
+    }),
+    []
+  )
+  /** The lists a save wrote are the server's again, unless edited while it ran. */
+  const settleLineEdits = useCallback((sent: ReturnType<typeof lineEditsForSave>) => {
+    if (sent.parts && partsRevisionRef.current === sent.partsRevision) {
+      partsEditedRef.current = false
+    }
+    if (sent.labor && laborRevisionRef.current === sent.laborRevision) {
+      laborEditedRef.current = false
+    }
+  }, [])
+
+  /**
    * What a save has to write: the lists on screen plus anything added
    * elsewhere that has not been shown yet. A save replaces every part and
    * labour line of the job, so a line left out of these is a line deleted.
@@ -417,8 +645,9 @@ export function useServiceFormState({
     const next = recalculateShopFeeLines(laborItems, partsSubtotal, shopFee)
     if (next === laborItems) return
     setLaborItems(next)
+    markLaborEdited()
     markDirty()
-  }, [laborItems, partsSubtotal, shopFee, locked, markDirty])
+  }, [laborItems, partsSubtotal, shopFee, locked, markDirty, markLaborEdited])
 
   // Internal-only: what the parts cost the workshop before markup. Shown in
   // the totals card for the mechanic, never on the PDF or share views.
@@ -524,9 +753,10 @@ export function useServiceFormState({
         )
       }
 
+      markPartsEdited()
       markDirty()
     },
-    [markDirty, cancelCommit, scheduleCommit]
+    [markDirty, markPartsEdited, cancelCommit, scheduleCommit]
   )
 
   const updateLabor = useCallback(
@@ -540,26 +770,29 @@ export function useServiceFormState({
         updated[index] = labor
         return updated
       })
+      markLaborEdited()
       markDirty()
     },
-    [markDirty]
+    [markDirty, markLaborEdited]
   )
 
   // Wrapped setters that trigger autosave
   const dirtySetPartItems: typeof setPartItems = useCallback(
     (action) => {
       setPartItems(action)
+      markPartsEdited()
       markDirty()
     },
-    [markDirty]
+    [markDirty, markPartsEdited]
   )
 
   const dirtySetLaborItems: typeof setLaborItems = useCallback(
     (action) => {
       setLaborItems(action)
+      markLaborEdited()
       markDirty()
     },
-    [markDirty]
+    [markDirty, markLaborEdited]
   )
 
   const applyLaborAddedElsewhere = useCallback(() => {
@@ -690,6 +923,17 @@ export function useServiceFormState({
     confirmReading,
     acknowledgeSavedLines,
     sendingLinesRef,
+    /** The job's fields this page changed, for a save to send (see workOrderFields). */
+    fieldChanges,
+    beginFieldSave,
+    acknowledgeSavedFields,
+    lineEditsForSave,
+    settleLineEdits,
+    /** Server values for the sections that keep their own copy of a field. */
+    adoptedFields,
+    /** Fields this page changed that were saved elsewhere too; see the banner. */
+    changedElsewhere,
+    dismissChangedElsewhere,
     /**
      * Whether edits are still unsaved, read at the moment of the call. For
      * code that awaits saveNow and has to know whether the save went

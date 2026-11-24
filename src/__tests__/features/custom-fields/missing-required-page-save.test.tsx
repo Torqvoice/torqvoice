@@ -30,9 +30,11 @@ vi.mock('@/features/quotes/Actions/quoteActions', () => ({
 vi.mock('@/features/quotes/Actions/quoteResponseActions', () => ({
   acknowledgeQuoteResponse: vi.fn(),
 }))
-const updateServiceRecord = vi.fn()
+const saveServiceRecordChanges = vi.fn()
+vi.mock('@/features/vehicles/Actions/saveServiceRecordChanges', () => ({
+  saveServiceRecordChanges: (input: unknown) => saveServiceRecordChanges(input),
+}))
 vi.mock('@/features/vehicles/Actions/serviceActions', () => ({
-  updateServiceRecord: (input: unknown) => updateServiceRecord(input),
   deleteServiceRecord: vi.fn(),
   deleteServiceAttachment: vi.fn(),
   toggleManuallyPaid: vi.fn(),
@@ -66,7 +68,7 @@ afterEach(() => {
 beforeEach(() => {
   toastError.mockClear()
   updateQuote.mockReset().mockResolvedValue({ success: true })
-  updateServiceRecord.mockReset().mockResolvedValue({ success: true })
+  saveServiceRecordChanges.mockReset().mockResolvedValue({ success: true })
 })
 
 describe('the words', () => {
@@ -118,7 +120,7 @@ describe('a work order', () => {
     await save()
 
     expect(toastError).toHaveBeenCalledWith('Not saved. Fill in: Fleet contact')
-    expect(updateServiceRecord).not.toHaveBeenCalled()
+    expect(saveServiceRecordChanges).not.toHaveBeenCalled()
     // Saving is free again, and the page was not marked saved.
     expect(form.isSavingRef.current).toBe(false)
     expect(form.setHasUnsavedChanges).not.toHaveBeenCalled()
@@ -132,7 +134,7 @@ describe('a work order', () => {
     await save()
 
     expect(toastError).toHaveBeenCalledWith('Not saved. Fill in: Fleet contact, Cost centre')
-    expect(updateServiceRecord).not.toHaveBeenCalled()
+    expect(saveServiceRecordChanges).not.toHaveBeenCalled()
   })
 
   it('a value that does not fit is named too, in its own words', async () => {
@@ -166,7 +168,7 @@ describe('a work order', () => {
 
     expect(form.lastSaveErrorRef.current).toBe('Not saved. Fill in: Fleet contact, Cost centre')
     expect(toastError).not.toHaveBeenCalled()
-    expect(updateServiceRecord).not.toHaveBeenCalled()
+    expect(saveServiceRecordChanges).not.toHaveBeenCalled()
   })
 })
 
