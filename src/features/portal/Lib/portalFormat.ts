@@ -86,7 +86,7 @@ export function buildPortalFormat(options: {
   // A calendar day is written the way the workshop writes it on its invoices
   // and share pages, year included: "24/11/2026", never the language's own
   // "24 Nov" beside a "24/11/2026" on the invoice it opens.
-  const day = (iso: string) => formatDate(new Date(iso), dateFormat, timeZone)
+  const day = (iso: string) => formatDate(new Date(iso), dateFormat, timeZone, locale)
   return {
     money,
     day,

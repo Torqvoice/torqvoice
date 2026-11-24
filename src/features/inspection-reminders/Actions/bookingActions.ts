@@ -1,7 +1,7 @@
 'use server'
 
 import { deleteCustomFieldValuesOf } from '@/features/custom-fields/Lib/deleteCustomFieldValues'
-import { getTranslations } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 import { z } from 'zod'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { db } from '@/lib/db'
@@ -257,7 +257,14 @@ export async function confirmBooking(raw: unknown) {
 
   // The server runs in UTC: the customer's confirmation and the desk's notice
   // both read the slot on the workshop's clock, as the cancellation already does.
-  const when = formatDateTime(start, settings.dateFormat, settings.timeFormat, settings.timeZone)
+  // Month names in the language the confirmation itself is written in.
+  const when = formatDateTime(
+    start,
+    settings.dateFormat,
+    settings.timeFormat,
+    settings.timeZone,
+    await getLocale()
+  )
   await notify({
     organizationId: send.organizationId,
     type: 'online_booking',
@@ -365,7 +372,13 @@ export async function cancelBooking(rawToken: string) {
       vehicle: vehicleLabel,
       when: await (async () => {
         const shop = await loadInspectionReminderSettings(send.organizationId)
-        return formatDateTime(booking.start, shop.dateFormat, shop.timeFormat, shop.timeZone)
+        return formatDateTime(
+          booking.start,
+          shop.dateFormat,
+          shop.timeFormat,
+          shop.timeZone,
+          await getLocale()
+        )
       })(),
     }),
     // A cancelled request stays listed on the customer, marked cancelled; a

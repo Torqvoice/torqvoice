@@ -43,6 +43,7 @@ vi.mock('@/lib/notify', () => ({ notify }))
 vi.mock('next-intl/server', () => ({
   getTranslations: async () => (key: string, values?: Record<string, unknown>) =>
     `${key}${values ? ` ${JSON.stringify(values)}` : ''}`,
+  getLocale: async () => 'en',
 }))
 const claimableResource = vi.fn()
 vi.mock('@/features/inspection-reminders/Lib/booking', () => ({

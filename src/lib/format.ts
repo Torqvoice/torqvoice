@@ -4,6 +4,7 @@ import {
   DEFAULT_CURRENCY_CODE,
   DEFAULT_CURRENCY_FORMAT,
 } from '@/lib/currencies'
+import { zonedParts } from '@/lib/timezone'
 
 export { type CurrencyFormat, DEFAULT_CURRENCY_FORMAT } from '@/lib/currencies'
 
@@ -91,36 +92,46 @@ export function getCurrencySymbol(
 }
 
 /**
- * Convert a date to a specific timezone by shifting its local representation.
- * Uses Intl.DateTimeFormat to get the date parts in the target timezone,
- * then reconstructs a Date object whose local time matches those parts.
+ * The fields a date pattern prints: the wall clock in `timezone` when one is
+ * given, else this runtime's own. Read straight from Intl, never by building
+ * a browser-local Date out of them: a local Date cannot hold a wall-clock
+ * time that falls in the viewer's own DST gap (02:30 on the night Los
+ * Angeles springs forward does not exist there and comes out as 03:30).
  */
-function toTimezone(date: Date, timezone: string): Date {
-  try {
-    const parts = new Intl.DateTimeFormat('en-US', {
-      timeZone: timezone,
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-    }).formatToParts(date)
+interface DateFields {
+  year: number
+  /** 1 to 12. */
+  month: number
+  day: number
+  hour: number
+  minute: number
+  second: number
+}
 
-    const get = (type: Intl.DateTimeFormatPartTypes) =>
-      Number(parts.find((p) => p.type === type)?.value || 0)
-
-    return new Date(
-      get('year'),
-      get('month') - 1,
-      get('day'),
-      get('hour') === 24 ? 0 : get('hour'),
-      get('minute'),
-      get('second')
-    )
-  } catch {
-    return date
+function fieldsOf(date: Date, timezone?: string): DateFields {
+  if (timezone) {
+    try {
+      const p = zonedParts(date, timezone)
+      return {
+        year: p.year,
+        month: p.month,
+        day: p.day,
+        hour: p.hour,
+        minute: p.minute,
+        // No zone in use today is offset by a part of a minute.
+        second: date.getUTCSeconds(),
+      }
+    } catch {
+      // A zone this runtime does not know: the runtime's own clock below.
+    }
+  }
+  return {
+    year: date.getFullYear(),
+    month: date.getMonth() + 1,
+    day: date.getDate(),
+    hour: date.getHours(),
+    minute: date.getMinutes(),
+    second: date.getSeconds(),
   }
 }
 
@@ -130,48 +141,56 @@ function toTimezone(date: Date, timezone: string): Date {
 export const DEFAULT_DATE_FORMAT = 'MMM d, yyyy'
 export const DEFAULT_TIME_FORMAT = '12h' as const
 
+const MONTHS_LONG = [
+  'January',
+  'February',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'August',
+  'September',
+  'October',
+  'November',
+  'December',
+]
+const MONTHS_SHORT = MONTHS_LONG.map((name) => name.slice(0, 3))
+
+const monthNames = new Map<string, { long: string[]; short: string[] }>()
+
+/**
+ * The month names of a language, from the runtime's own data (every locale
+ * the app ships, with no date library to bundle). Without a language, or for
+ * one the runtime does not know, the English names the app has always used.
+ */
+function monthsFor(locale?: string): { long: string[]; short: string[] } {
+  if (!locale) return { long: MONTHS_LONG, short: MONTHS_SHORT }
+  let names = monthNames.get(locale)
+  if (!names) {
+    try {
+      const name = (month: 'long' | 'short') => {
+        // Standalone, not in a date: "november", not a genitive form.
+        const f = new Intl.DateTimeFormat(locale, { month, timeZone: 'UTC' })
+        return Array.from({ length: 12 }, (_, i) => f.format(new Date(Date.UTC(2000, i, 15))))
+      }
+      names = { long: name('long'), short: name('short') }
+    } catch {
+      names = { long: MONTHS_LONG, short: MONTHS_SHORT }
+    }
+    monthNames.set(locale, names)
+  }
+  return names
+}
+
 /**
  * Simple date-fns-style format function that handles common tokens.
  * Tokens: yyyy, yy, MMMM, MMM, MM, dd, d, HH, hh, mm, ss, a
  */
-function formatWithPattern(date: Date, pattern: string): string {
-  const months = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-    'July',
-    'August',
-    'September',
-    'October',
-    'November',
-    'December',
-  ]
-  const monthsShort = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ]
-
-  const y = date.getFullYear()
-  const M = date.getMonth()
-  const d = date.getDate()
-  const H = date.getHours()
-  const m = date.getMinutes()
-  const s = date.getSeconds()
-  const h12 = H % 12 || 12
-  const ampm = H < 12 ? 'AM' : 'PM'
+function formatWithPattern(f: DateFields, pattern: string, locale?: string): string {
+  const months = monthsFor(locale)
+  const h12 = f.hour % 12 || 12
+  const ampm = f.hour < 12 ? 'AM' : 'PM'
 
   // Use placeholders for month names to avoid collisions with later replacements
   // (e.g. "a" in "May" being replaced by the AM/PM token)
@@ -179,33 +198,36 @@ function formatWithPattern(date: Date, pattern: string): string {
   const MONTH_SHORT = '\x02'
 
   return pattern
-    .replace('yyyy', String(y))
-    .replace('yy', String(y).slice(-2))
+    .replace('yyyy', String(f.year))
+    .replace('yy', String(f.year).slice(-2))
     .replace('MMMM', MONTH_LONG)
     .replace('MMM', MONTH_SHORT)
-    .replace('MM', String(M + 1).padStart(2, '0'))
-    .replace(/\bdd\b/, String(d).padStart(2, '0'))
-    .replace(/\bd\b/, String(d))
-    .replace('HH', String(H).padStart(2, '0'))
+    .replace('MM', String(f.month).padStart(2, '0'))
+    .replace(/\bdd\b/, String(f.day).padStart(2, '0'))
+    .replace(/\bd\b/, String(f.day))
+    .replace('HH', String(f.hour).padStart(2, '0'))
     .replace('hh', String(h12).padStart(2, '0'))
-    .replace('mm', String(m).padStart(2, '0'))
-    .replace('ss', String(s).padStart(2, '0'))
+    .replace('mm', String(f.minute).padStart(2, '0'))
+    .replace('ss', String(f.second).padStart(2, '0'))
     .replace('a', ampm)
-    .replace(MONTH_LONG, months[M])
-    .replace(MONTH_SHORT, monthsShort[M])
+    .replace(MONTH_LONG, months.long[f.month - 1])
+    .replace(MONTH_SHORT, months.short[f.month - 1])
 }
 
+const toDate = (date: Date | string) => (typeof date === 'string' ? new Date(date) : date)
+
 /**
- * Format a date using the org date format and optional timezone.
+ * Format a date using the org date format and optional timezone. `locale`
+ * names the months for a format that spells them ("d MMMM yyyy"); without
+ * one they are English.
  */
 export function formatDate(
   date: Date | string,
   dateFormat: string = DEFAULT_DATE_FORMAT,
-  timezone?: string
+  timezone?: string,
+  locale?: string
 ): string {
-  let d = typeof date === 'string' ? new Date(date) : date
-  if (timezone) d = toTimezone(d, timezone)
-  return formatWithPattern(d, dateFormat)
+  return formatWithPattern(fieldsOf(toDate(date), timezone), dateFormat, locale)
 }
 
 /**
@@ -214,10 +236,19 @@ export function formatDate(
  * key is the day, whatever clock formats it. Anything that is not a key is
  * returned as it is.
  */
-export function formatDayKey(key: string, dateFormat: string = DEFAULT_DATE_FORMAT): string {
+export function formatDayKey(
+  key: string,
+  dateFormat: string = DEFAULT_DATE_FORMAT,
+  locale?: string
+): string {
   const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(key)
   if (!m) return key
-  return formatWithPattern(new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])), dateFormat)
+  const fields = { year: Number(m[1]), month: Number(m[2]), day: Number(m[3]) }
+  return formatWithPattern({ ...fields, hour: 0, minute: 0, second: 0 }, dateFormat, locale)
+}
+
+function timeOf(f: DateFields, timeFormat: '12h' | '24h'): string {
+  return formatWithPattern(f, timeFormat === '24h' ? 'HH:mm' : 'hh:mm a')
 }
 
 /**
@@ -227,14 +258,11 @@ export function formatDateTime(
   date: Date | string,
   dateFormat: string = DEFAULT_DATE_FORMAT,
   timeFormat: '12h' | '24h' = '12h',
-  timezone?: string
+  timezone?: string,
+  locale?: string
 ): string {
-  let d = typeof date === 'string' ? new Date(date) : date
-  if (timezone) d = toTimezone(d, timezone)
-  const datePart = formatWithPattern(d, dateFormat)
-  const timePart =
-    timeFormat === '24h' ? formatWithPattern(d, 'HH:mm') : formatWithPattern(d, 'hh:mm a')
-  return `${datePart} ${timePart}`
+  const f = fieldsOf(toDate(date), timezone)
+  return `${formatWithPattern(f, dateFormat, locale)} ${timeOf(f, timeFormat)}`
 }
 
 /**
@@ -245,23 +273,18 @@ export function formatTime(
   timeFormat: '12h' | '24h' = '12h',
   timezone?: string
 ): string {
-  let d = typeof date === 'string' ? new Date(date) : date
-  if (timezone) d = toTimezone(d, timezone)
-  return timeFormat === '24h' ? formatWithPattern(d, 'HH:mm') : formatWithPattern(d, 'hh:mm a')
+  return timeOf(fieldsOf(toDate(date), timezone), timeFormat)
 }
 
 /**
- * Format a date for server-side PDF/invoice rendering (uses toLocaleDateString for full month names).
- * Applies timezone if provided, otherwise UTC for server contexts.
+ * Format a date for server-side PDF/invoice rendering.
+ * Applies timezone if provided, otherwise the runtime's own clock.
  */
 export function formatDateForPdf(
   date: Date | string,
   dateFormat: string = DEFAULT_DATE_FORMAT,
-  timezone?: string
+  timezone?: string,
+  locale?: string
 ): string {
-  let d = typeof date === 'string' ? new Date(date) : date
-  if (timezone) {
-    d = toTimezone(d, timezone)
-  }
-  return formatWithPattern(d, dateFormat)
+  return formatDate(date, dateFormat, timezone, locale)
 }

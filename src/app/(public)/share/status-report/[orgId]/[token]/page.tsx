@@ -1,4 +1,4 @@
-import { getTranslations } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 import { cache } from 'react'
 import { closedShareLinkTitle, ShareLinkClosed } from '@/components/share-link-expired'
 import { ShareLinkOpenUntil } from '@/components/share-link-open-until'
@@ -108,7 +108,7 @@ export default async function PublicStatusReportPage({
   }
 
   // Fetch workshop settings
-  const [settings, features, dates] = await Promise.all([
+  const [settings, features, dates, locale] = await Promise.all([
     db.appSetting.findMany({
       where: {
         organizationId: orgId,
@@ -126,6 +126,8 @@ export default async function PublicStatusReportPage({
     }),
     getFeatures(orgId),
     workshopDateSettings(orgId),
+    // The page's language: the workshop's when it decides, else the customer's.
+    getLocale(),
   ])
 
   const settingsMap: Record<string, string> = {}
@@ -143,7 +145,7 @@ export default async function PublicStatusReportPage({
         videoUrl,
         videoFileName: report.videoFileName,
         status: report.status,
-        createdDay: formatReportDay(report.createdAt, dates.dateFormat, dates.timeZone),
+        createdDay: formatReportDay(report.createdAt, dates.dateFormat, dates.timeZone, locale),
         customerFeedback: report.customerFeedback,
         feedbackAt: report.feedbackAt?.toISOString() || null,
       }}

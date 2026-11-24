@@ -2,6 +2,7 @@
 
 import { z } from 'zod'
 import { getTranslations } from 'next-intl/server'
+import { resolveDocumentLocale } from '@/i18n/locale-from-request'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
@@ -63,13 +64,22 @@ export async function sendServiceVideoCall(input: unknown) {
       if (!link) throw new Error('No video call on this work order')
 
       const vehicle = record.vehicle ? `${vehicleName(record.vehicle)}` : record.title
-      const t = await getTranslations('service.videoCall.notify')
+      // What the customer receives is in the workshop's language, whatever
+      // language the person sending it reads the app in.
+      const locale = await resolveDocumentLocale(organizationId)
+      const t = await getTranslations({ locale, namespace: 'service.videoCall.notify' })
       let when: string | null = null
       if (record.startDateTime) {
         // The customer reads the time on the workshop's clock, written the
         // way the workshop writes dates and times on everything it sends.
         const shop = await workshopDateSettings(organizationId)
-        when = formatDateTime(record.startDateTime, shop.dateFormat, shop.timeFormat, shop.timeZone)
+        when = formatDateTime(
+          record.startDateTime,
+          shop.dateFormat,
+          shop.timeFormat,
+          shop.timeZone,
+          locale
+        )
       }
       const body = videoCallMessage({
         customMessage: data.customMessage,

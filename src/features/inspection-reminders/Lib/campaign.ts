@@ -84,7 +84,12 @@ export function templateValues(input: {
     plate: candidate.licensePlate ?? '',
     // The customer reads the day on the workshop's calendar, written the way
     // the workshop writes dates on everything else it sends.
-    dueDate: formatDate(new Date(candidate.dueAt), settings.dateFormat, settings.timeZone),
+    dueDate: formatDate(
+      new Date(candidate.dueAt),
+      settings.dateFormat,
+      settings.timeZone,
+      input.locale
+    ),
     workshopName: settings.workshopName,
     bookingLink: input.link,
     phone: settings.phone ?? '',

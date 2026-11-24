@@ -42,7 +42,9 @@ import { DateTimePicker } from '@/components/ui/datetime-picker'
 import { VehicleMeters } from '@/features/meters/Components/VehicleMeters'
 import { StatusReportList } from '@/features/status-reports/Components/StatusReportList'
 import { templateValues } from '@/features/inspection-reminders/Lib/campaign'
-import { formatDayKey } from '@/lib/format'
+import { buildPortalFormat } from '@/features/portal/Lib/portalFormat'
+import { formatReportDay } from '@/features/status-reports/Lib/reportDay'
+import { formatDate, formatDateTime, formatDayKey, formatTime } from '@/lib/format'
 
 const originalTz = process.env.TZ
 beforeAll(() => {
@@ -202,6 +204,84 @@ describe('the due date in an inspection reminder the customer receives', () => {
   it("is the workshop's day in its date format", () => {
     expect(values('dd/MM/yyyy')).toBe('01/12/2026')
     expect(values('MM/dd/yyyy')).toBe('12/01/2026')
+  })
+})
+
+describe('a workshop format that spells the month', () => {
+  // 22:30 UTC on 30 November: already 1 December in Auckland.
+  const MADE = new Date('2026-11-30T22:30:00Z')
+
+  it("names the month in the customer's language, not in English", () => {
+    expect(formatDate(MADE, 'd MMMM yyyy', 'Europe/Oslo', 'nb')).toBe('30 november 2026')
+    expect(formatDate(MADE, 'd MMMM yyyy', 'Pacific/Auckland', 'nb')).toBe('1 desember 2026')
+    expect(formatDate(MADE, 'd MMMM yyyy', 'Pacific/Auckland', 'de')).toBe('1 Dezember 2026')
+    expect(formatDayKey('2026-05-17', 'd MMMM yyyy', 'nb')).toBe('17 mai 2026')
+  })
+
+  it('keeps the English names the app has always used when no language is given', () => {
+    expect(formatDate(MADE, 'MMM d, yyyy', 'Pacific/Auckland')).toBe('Dec 1, 2026')
+    expect(formatDate(MADE, 'd MMMM yyyy', 'Pacific/Auckland')).toBe('1 December 2026')
+  })
+
+  it('reaches the status report share page and the portal in that language', () => {
+    expect(formatReportDay(MADE, 'd MMMM yyyy', 'Pacific/Auckland', 'nb')).toBe('1 desember 2026')
+    const portal = buildPortalFormat({
+      locale: 'nb',
+      timeZone: 'Pacific/Auckland',
+      timeFormat: '24h',
+      dateFormat: 'd MMMM yyyy',
+      money: (amount) => `${amount} kr`,
+      today: 'i dag',
+      tomorrow: 'i morgen',
+      now: new Date('2026-11-01T00:00:00Z'),
+    })
+    expect(portal.day(MADE.toISOString())).toBe('1 desember 2026')
+  })
+})
+
+describe("a time that falls in the viewer's own DST gap", () => {
+  // 02:30 on 8 March in Auckland. Los Angeles, where this browser is, springs
+  // forward at 02:00 that same morning, so 02:30 does not exist there.
+  const IN_THE_GAP = '2026-03-07T13:30:00.000Z'
+
+  it("is still the workshop's 02:30", () => {
+    expect(formatDateTime(IN_THE_GAP, 'dd/MM/yyyy', '24h', 'Pacific/Auckland')).toBe(
+      '08/03/2026 02:30'
+    )
+    expect(formatTime(IN_THE_GAP, '24h', 'Pacific/Auckland')).toBe('02:30')
+    expect(formatTime(IN_THE_GAP, '12h', 'Pacific/Auckland')).toBe('02:30 AM')
+  })
+
+  it('reads 02:30 in the list of status reports', () => {
+    inWorkshop(
+      'dd/MM/yyyy',
+      <StatusReportList
+        serviceRecordId="sr-1"
+        organizationId="org-1"
+        vehicleName="Volvo V60"
+        customer={null}
+        smsEnabled={false}
+        emailEnabled={false}
+        telegramEnabled={false}
+        initialReports={[
+          {
+            id: 'r-2',
+            title: 'Night check',
+            message: null,
+            status: 'sent',
+            videoUrl: null,
+            createdAt: IN_THE_GAP,
+            expiresAt: null,
+            publicToken: 'tok2',
+            customerFeedback: null,
+            feedbackAt: null,
+            sentVia: 'sms',
+            sentAt: IN_THE_GAP,
+          },
+        ]}
+      />
+    )
+    expect(screen.getAllByText('08/03/2026 02:30').length).toBeGreaterThan(0)
   })
 })
 

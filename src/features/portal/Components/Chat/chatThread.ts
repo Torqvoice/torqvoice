@@ -187,7 +187,8 @@ export function portalChatFormats(
     // The day alone, for an event that has no time of day (an invoice's
     // date): written the way the workshop writes dates, as on the invoice.
     shortDay: {
-      format: (date) => formatDate(date, clock.dateFormat || DEFAULT_DATE_FORMAT, clock.timeZone),
+      format: (date) =>
+        formatDate(date, clock.dateFormat || DEFAULT_DATE_FORMAT, clock.timeZone, locale),
     },
     dayWithYear: new Intl.DateTimeFormat(locale, {
       ...zone,
