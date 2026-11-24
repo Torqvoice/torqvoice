@@ -119,9 +119,11 @@ export function PaymentsSection({
     const amount = formRef.current.querySelector<HTMLInputElement>('[name="paymentAmount"]')
     const date = formRef.current.querySelector<HTMLInputElement>('[name="paymentDate"]')
     const note = formRef.current.querySelector<HTMLInputElement>('[name="paymentNote"]')
-    if (!amount?.value || Number(amount.value) <= 0) return
+    // Read once, to the cent: the figure checked is the figure sent.
+    const value = roundMoney(amount?.value)
+    if (!amount || value <= 0) return
     // Never more than is owed; createPayment refuses it too.
-    if (roundMoney(amount.value) > payable) {
+    if (value > payable) {
       setAmountError(
         payable > 0
           ? t('aboveBalance', { amount: formatCurrency(payable, currencyCode) })
@@ -131,7 +133,7 @@ export function PaymentsSection({
       return
     }
     const success = await onCreatePayment({
-      amount: Number(amount.value),
+      amount: value,
       date: date?.value || new Date().toISOString(),
       method: paymentMethod,
       note: note?.value || undefined,

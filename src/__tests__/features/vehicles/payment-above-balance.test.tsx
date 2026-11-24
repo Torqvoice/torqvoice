@@ -92,6 +92,17 @@ describe.each([
     expect(onCreatePayment).toHaveBeenCalledWith(expect.objectContaining({ amount: 552.74 }))
   })
 
+  it('sends the same figure, to the cent, that it checked against the balance', () => {
+    render(<Section modern={modern} />)
+    const amount = openForm()
+    // A hair over the balance as typed, the balance itself to the cent.
+    fireEvent.change(amount, { target: { value: '552.744' } })
+    fireEvent.click(screen.getByRole('button', { name: /save payment/i }))
+
+    expect(screen.queryByRole('alert')).toBeNull()
+    expect(onCreatePayment).toHaveBeenCalledWith(expect.objectContaining({ amount: 552.74 }))
+  })
+
   it('clears the message once the amount is changed', () => {
     render(<Section modern={modern} />)
     const amount = openForm()
