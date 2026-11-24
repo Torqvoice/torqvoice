@@ -1,4 +1,5 @@
 import { discountAmountFor } from '@/lib/tax'
+import { restatedSubtotal, subtotalFromLines } from '@/features/vehicles/Lib/subtotalFromLines'
 import 'server-only'
 
 import { db } from '@/lib/db'
@@ -79,6 +80,27 @@ export async function createQuoteRecord(
     if (!inspection) throw new Error('Inspection not found')
   }
 
+  // The lines are stored to the cent (quoteSchema), so the subtotal is what
+  // they add up to as stored, not the page's own sum: a tab opened before the
+  // lines were rounded sends 99.95 for two lines stored as 49.98 each. The
+  // discount follows, and the tax and total are recomputed below.
+  const sentLines = (data.partItems?.length ?? 0) + (data.laborItems?.length ?? 0) > 0
+  const fromLines = sentLines
+    ? restatedSubtotal({
+        sentSubtotal: data.subtotal,
+        linesSubtotal: subtotalFromLines(
+          (data.partItems ?? []).filter((p) => !p.excluded),
+          (data.laborItems ?? []).filter((l) => !l.excluded)
+        ),
+        discountType: data.discountType,
+        discountValue: data.discountValue,
+      })
+    : null
+  if (fromLines) {
+    data.subtotal = fromLines.subtotal
+    if (fromLines.discountAmount !== undefined) data.discountAmount = fromLines.discountAmount
+  }
+
   // The workshop's shop fee, priced for the lines the quote starts with. A
   // caller that already carries one (a copied quote) keeps its own. Most
   // quotes start empty, so a percentage fee starts at nothing; the line is
@@ -139,8 +161,9 @@ export async function createQuoteRecord(
   const counted = <T extends { excluded?: boolean }>(lines: T[]) =>
     lines.filter((line) => !line.excluded)
   const taxableSubtotal = taxableSubtotalOf(counted(taxedParts), counted(taxedLabor))
-  // The fee moved the subtotal, so the caller's tax and total are recomputed.
-  if (feeAdded) {
+  // The fee or the stored lines moved the subtotal, so the caller's tax and
+  // total are recomputed.
+  if (feeAdded || fromLines) {
     const totals = documentTotals({
       subtotal: data.subtotal,
       discountAmount: data.discountAmount,

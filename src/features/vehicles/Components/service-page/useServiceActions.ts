@@ -222,12 +222,11 @@ export function useServiceActions({
       // line figure the editors have marked (see partLineIssues). Not on an
       // autosave, which would pull the cursor out of whatever is being typed.
       const lineField = form.querySelector<HTMLElement>(LINE_ERROR_SELECTOR)
-      if (problem === 'negativeReading' || (problem === 'tooLarge' && !lineField))
+      if (autosave) {
+        // Said, and the cursor left where it is.
+      } else if (problem === 'negativeReading' || (problem === 'tooLarge' && !lineField))
         form.querySelector<HTMLInputElement>('input[name="mileage"]')?.focus()
-      else if (
-        !autosave &&
-        (problem === 'negative' || problem === 'tooLarge' || problem === 'zeroQuantity')
-      )
+      else if (problem === 'negative' || problem === 'tooLarge' || problem === 'zeroQuantity')
         lineField?.focus()
       return
     }

@@ -401,7 +401,7 @@ export function QuotePageClient({
                       disabled={state.saving}
                       onClick={async () => {
                         if (state.saving) return
-                        if (state.hasUnsavedChanges) await state.saveNow()
+                        if (state.hasUnsavedChanges && !(await state.saveNow())) return
                         setShowPdfPreview(true)
                       }}
                     >
@@ -427,7 +427,7 @@ export function QuotePageClient({
                       disabled={state.saving}
                       onClick={async () => {
                         if (state.saving) return
-                        if (state.hasUnsavedChanges) await state.saveNow()
+                        if (state.hasUnsavedChanges && !(await state.saveNow())) return
                         state.setShowEmailDialog(true)
                       }}
                     >
@@ -444,7 +444,7 @@ export function QuotePageClient({
                       disabled={state.saving}
                       onClick={async () => {
                         if (state.saving) return
-                        if (state.hasUnsavedChanges) await state.saveNow()
+                        if (state.hasUnsavedChanges && !(await state.saveNow())) return
                         state.setShowShareDialog(true)
                       }}
                     >

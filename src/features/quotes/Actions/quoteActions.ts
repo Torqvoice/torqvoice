@@ -19,7 +19,12 @@ import { db } from '@/lib/db'
 import { assertOwnedCustomer, assertOwnedVehicle } from '@/lib/owned-records'
 import { Prisma } from '@/generated/prisma/client'
 import { parseTaxComponentDefinitions } from '@/lib/tax-components'
-import { savedDocumentTax, taxComponentsForCopy } from '@/features/settings/Lib/workshopTax'
+import {
+  documentTotals,
+  savedDocumentTax,
+  taxComponentsForCopy,
+} from '@/features/settings/Lib/workshopTax'
+import { restatedSubtotal, subtotalFromLines } from '@/features/vehicles/Lib/subtotalFromLines'
 import { loadTaxApplies } from '@/features/settings/Lib/loadTaxApplies'
 import { withTaxableLabor, withTaxableParts } from '@/lib/taxable-lines'
 import { parseSentFields, sentId } from '@/lib/parse-sent-fields'
@@ -321,6 +326,43 @@ export async function updateQuote(input: unknown) {
         laborItems !== undefined && taxApplies
           ? withTaxableLabor(laborItems, taxApplies)
           : undefined
+      // Lines are stored to the cent (quoteSchema). The subtotal the page sent
+      // was added up from its own figures, and a tab opened before the lines
+      // were rounded sends 99.95 for lines stored as 99.96, so it is restated
+      // from the lines as stored, the discount and tax with it, as on a work
+      // order. Lines left out of the customer's total do not count.
+      let fromLines: ReturnType<typeof restatedSubtotal> = null
+      if (linesSent && quoteData.subtotal !== undefined) {
+        const counted = <T extends { excluded?: boolean | null }>(lines: T[]) =>
+          lines.filter((line) => !line.excluded)
+        fromLines = restatedSubtotal({
+          sentSubtotal: quoteData.subtotal,
+          linesSubtotal: subtotalFromLines(
+            counted(
+              partItems ??
+                (await db.quotePart.findMany({
+                  where: { quoteId: id },
+                  select: { total: true, excluded: true },
+                }))
+            ),
+            counted(
+              laborItems ??
+                (await db.quoteLabor.findMany({
+                  where: { quoteId: id },
+                  select: { total: true, excluded: true },
+                }))
+            )
+          ),
+          discountType: quoteData.discountType ?? existing.discountType,
+          discountValue: quoteData.discountValue ?? existing.discountValue,
+        })
+        if (fromLines) {
+          quoteData.subtotal = fromLines.subtotal
+          if (fromLines.discountAmount !== undefined) {
+            quoteData.discountAmount = fromLines.discountAmount
+          }
+        }
+      }
       const moneyTouched =
         linesSent ||
         quoteData.subtotal !== undefined ||
@@ -358,6 +400,19 @@ export async function updateQuote(input: unknown) {
         if (restated.taxComponents) quoteData.taxRate = existing.taxRate
         quoteData.taxAmount = restated.taxAmount
         quoteData.totalAmount = restated.totalAmount
+      } else if (fromLines) {
+        // A plain quote, every line taxed at one rate: its tax and total
+        // follow the restated subtotal too.
+        const totals = documentTotals({
+          subtotal: fromLines.subtotal,
+          discountAmount: quoteData.discountAmount ?? existing.discountAmount,
+          taxRate: quoteData.taxRate ?? existing.taxRate,
+          taxInclusive: quoteData.taxInclusive ?? existing.taxInclusive,
+          taxComponents: existing.taxComponents,
+          taxableSubtotal: null,
+        })
+        quoteData.taxAmount = totals.taxAmount
+        quoteData.totalAmount = totals.totalAmount
       }
 
       const quote = await db.$transaction(async (tx) => {

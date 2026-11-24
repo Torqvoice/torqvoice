@@ -363,12 +363,14 @@ export function useQuoteFormState({
   // The tax is charged on the taxable lines the customer kept. A line says
   // whether it is taxed, and one that has not been asked follows the
   // workshop's rule for its kind; the server settles it the same way.
+  // Each line to the cent here too, or the taxed share is summed from other
+  // figures than the subtotal (3 x 2.5 h at 19.99: 149.94 against 149.93).
   const taxableParts = taxablePartsTotal(
-    partItems.filter((p) => !p.excluded),
+    partItems.filter((p) => !p.excluded).map((p) => ({ ...p, total: roundMoney(p.total) })),
     taxApplies
   )
   const taxableLabor = taxableLaborTotal(
-    laborItems.filter((l) => !l.excluded),
+    laborItems.filter((l) => !l.excluded).map((l) => ({ ...l, total: roundMoney(l.total) })),
     taxApplies
   )
   const taxableSubtotal = storedTaxableSubtotal(subtotal, taxableParts + taxableLabor)
@@ -532,6 +534,8 @@ export function useQuoteFormState({
     autosaveRunRef.current = false
     if (isSavingRef.current) return
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
+    // This save's answer, not an earlier one's (see saveNow).
+    lastSaveErrorRef.current = null
     // Saving from here on, the custom fields included: whoever waits for this
     // save (a link held back, the PDF) must not take that first step for the end.
     isSavingRef.current = true
@@ -682,17 +686,31 @@ export function useQuoteFormState({
     }
   }
 
-  const saveNow = async () => {
-    if (!formRef.current || isSavingRef.current) return
+  /**
+   * Saves now and says whether it went through. A save refused (a line past
+   * the limits, a custom field missing, the server saying no) has already
+   * said why; whatever waited on it (convert, the PDF, sending) stops there
+   * rather than going on with what the database held before the edit.
+   */
+  const saveNow = async (): Promise<boolean> => {
+    if (!formRef.current) return false
+    const settled = () =>
+      new Promise<void>((resolve) => {
+        const check = () => {
+          if (!isSavingRef.current) return resolve()
+          setTimeout(check, 50)
+        }
+        setTimeout(check, 50)
+      })
+    // An autosave already under way is the save; its answer is the answer.
+    if (isSavingRef.current) {
+      await settled()
+      return lastSaveErrorRef.current === null
+    }
     if (autosaveTimer.current) clearTimeout(autosaveTimer.current)
     formRef.current.requestSubmit()
-    await new Promise<void>((resolve) => {
-      const check = () => {
-        if (!isSavingRef.current) return resolve()
-        setTimeout(check, 50)
-      }
-      setTimeout(check, 50)
-    })
+    await settled()
+    return lastSaveErrorRef.current === null
   }
 
   // Leaving by a link, a shortcut or the search palette saves first. The
@@ -718,7 +736,7 @@ export function useQuoteFormState({
   })
 
   const handleDownloadPDF = async () => {
-    if (hasUnsavedChanges) await saveNow()
+    if (hasUnsavedChanges && !(await saveNow())) return
     setDownloading(true)
     try {
       const res = await fetch(`/api/protected/quotes/${quote.id}/pdf`)
@@ -787,7 +805,9 @@ export function useQuoteFormState({
   const convertConflictsUnresolved = convertConflicts.some((c) => !convertResolutions[c.kind])
 
   const handleConvert = async () => {
-    if (hasUnsavedChanges) await saveNow()
+    // A refused save stops the conversion: going on would convert what the
+    // database held, and the edit on screen would be lost with no word.
+    if (hasUnsavedChanges && !(await saveNow())) return
     if (!convertVehicleId) {
       modal.open('error', 'Error', t('page.selectVehicle'))
       return
