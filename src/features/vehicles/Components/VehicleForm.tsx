@@ -306,7 +306,7 @@ export function VehicleForm({
     if (asked?.key === key) {
       // Back to a plate already asked about: its answer is shown again.
       asked.answer.then((found) => {
-        if (plateCheck.current === asked) setPlateDuplicates(found)
+        if (isCurrentPlateCheck(asked)) setPlateDuplicates(found)
       })
       return asked
     }
@@ -325,13 +325,17 @@ export function VehicleForm({
     const check = { key, answer }
     plateCheck.current = check
     answer.then((found) => {
-      // Only the newest question's answer is shown.
-      if (plateCheck.current !== check) return
+      // Only the answer about the plate in the field now is shown: one that
+      // arrives after the plate was changed again is about another plate.
+      if (!isCurrentPlateCheck(check)) return
       setPlateDuplicates(found)
       if (found.length > 0) plateShownFor.current = key
     })
     return check
   }
+  /** Whether a plate check is still the newest one and about the plate in the field. */
+  const isCurrentPlateCheck = (check: { key: string }) =>
+    plateCheck.current === check && plateMatchKey(fieldValue('licensePlate')) === check.key
 
   // Sync state when vehicle prop changes (e.g. opening edit for a different vehicle)
   useEffect(() => {
@@ -635,6 +639,9 @@ export function VehicleForm({
       setLoading(true)
       const found = await plate.answer
       setLoading(false)
+      // Changed while the check was out: nothing is saved on an answer
+      // about another plate; the next save asks about this one.
+      if (!isCurrentPlateCheck(plate)) return
       if (found.length > 0) {
         plateShownFor.current = plate.key
         toast.warning(isMarine ? t('plateDuplicateFoundMarine') : t('plateDuplicateFound'))
@@ -956,8 +963,14 @@ export function VehicleForm({
             onChange={(e) => {
               const name = (e.target as Element).getAttribute('name') ?? ''
               fieldErrors.clear(name)
-              // The vehicles found were for the plate as it was before.
-              if (name === 'licensePlate') setPlateDuplicates((prev) => (prev.length ? [] : prev))
+              // The vehicles found were for the plate as it was before, and
+              // so is a check still on its way: it is dropped, so its answer
+              // cannot put an old warning under the new plate.
+              if (name === 'licensePlate') {
+                plateCheck.current = null
+                plateShownFor.current = null
+                setPlateDuplicates((prev) => (prev.length ? [] : prev))
+              }
             }}
             className="flex min-h-0 flex-1 flex-col"
           >

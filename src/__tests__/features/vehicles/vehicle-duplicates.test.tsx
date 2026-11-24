@@ -157,6 +157,32 @@ describe('a plate another vehicle has', () => {
     expect(createVehicle).toHaveBeenCalledTimes(1)
   })
 
+  it('does not put a late answer about an earlier plate under the new one', async () => {
+    let answer: (value: unknown) => void = () => undefined
+    vi.mocked(findVehiclesWithPlate).mockImplementationOnce(
+      () => new Promise((resolve) => (answer = resolve)) as never
+    )
+    renderForm()
+    const plate = field('licensePlate')
+    fireEvent.input(plate, { target: { value: 'ZZ 10001' } })
+    fireEvent.blur(plate)
+    // Changed again while the first check is still out.
+    fireEvent.input(plate, { target: { value: 'ZZ 77777' } })
+    await act(async () => {
+      answer({ success: true, data: [OTHER] })
+    })
+    expect(screen.queryByText('Another vehicle has this plate:')).not.toBeInTheDocument()
+
+    // Saving asks about the plate now in the field, and goes ahead when nobody has it.
+    fillNew()
+    await submit()
+    expect(findVehiclesWithPlate).toHaveBeenLastCalledWith({
+      plate: 'ZZ77777',
+      excludeId: undefined,
+    })
+    expect(createVehicle).toHaveBeenCalledTimes(1)
+  })
+
   it('goes away when the plate is changed', async () => {
     vi.mocked(findVehiclesWithPlate).mockResolvedValue({ success: true, data: [OTHER] })
     renderForm()

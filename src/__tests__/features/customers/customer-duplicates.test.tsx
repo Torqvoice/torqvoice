@@ -96,6 +96,30 @@ describe('another customer with the same details', () => {
     )
   })
 
+  it('does not put a late answer about an earlier email under the new one', async () => {
+    let answer: (value: unknown) => void = () => undefined
+    vi.mocked(findCustomerDuplicates).mockImplementationOnce(
+      () => new Promise((resolve) => (answer = resolve)) as never
+    )
+    renderForm()
+    const email = screen.getByLabelText('Email')
+    fireEvent.change(email, { target: { value: 'kari@testvik.example' } })
+    fireEvent.blur(email)
+    // Changed again while the first check is still out.
+    fireEvent.change(email, { target: { value: 'someone.else@testvik.example' } })
+    await act(async () => {
+      answer({ success: true, data: { ...NONE, email: [KARI] } })
+    })
+    expect(screen.queryByText('Another customer has this email:')).not.toBeInTheDocument()
+    expect(screen.queryByRole('link', { name: /ZZ Kari Testvik/ })).not.toBeInTheDocument()
+
+    // The new value is asked about on its own when the field is left.
+    fireEvent.blur(email)
+    expect(findCustomerDuplicates).toHaveBeenLastCalledWith(
+      expect.objectContaining({ email: 'someone.else@testvik.example' })
+    )
+  })
+
   it('stops the first save to show them, and saves on the second', async () => {
     vi.mocked(findCustomerDuplicates).mockResolvedValue({
       success: true,

@@ -193,7 +193,7 @@ export function CustomerForm({
     if (asked?.key === key) {
       // Back to values already asked about: their answer is shown again.
       asked.answer.then((found) => {
-        if (duplicateCheck.current === asked) setDuplicates(found)
+        if (isCurrentCheck(asked)) setDuplicates(found)
       })
       return asked
     }
@@ -212,13 +212,17 @@ export function CustomerForm({
     const check = { key, answer }
     duplicateCheck.current = check
     answer.then((found) => {
-      // Only the newest question's answer is shown.
-      if (duplicateCheck.current !== check) return
+      // Only the answer about what the fields hold now is shown: one that
+      // arrives after a field was changed again is about other values.
+      if (!isCurrentCheck(check)) return
       setDuplicates(found)
       if (hasDuplicates(found)) duplicatesShownFor.current = key
     })
     return check
   }
+  /** Whether a check is still the newest one and about what the fields hold now. */
+  const isCurrentCheck = (check: { key: string }) =>
+    duplicateCheck.current === check && duplicateQuery().key === check.key
   const duplicateId = (field: DuplicateField) => `duplicate-${field}`
   const duplicateWarning = (field: DuplicateField, message: string) => (
     <DuplicateWarning
@@ -280,6 +284,9 @@ export function CustomerForm({
       setLoading(true)
       const found = await check.answer
       setLoading(false)
+      // Changed while the check was out: nothing is saved on an answer
+      // about other values; the next save asks about these.
+      if (!isCurrentCheck(check)) return
       if (hasDuplicates(found)) {
         duplicatesShownFor.current = check.key
         toast.warning(t('duplicateFound'))
@@ -432,8 +439,12 @@ export function CustomerForm({
           onChange={(e) => {
             const name = (e.target as Element).getAttribute('name') ?? ''
             fieldErrors.clear(name)
-            // What another customer has was about what was typed before.
+            // What another customer has was about what was typed before,
+            // and so is a check still on its way: it is dropped, so its
+            // answer cannot put an old warning under the new value.
             if ((DUPLICATE_FIELDS as string[]).includes(name)) {
+              duplicateCheck.current = null
+              duplicatesShownFor.current = null
               setDuplicates((prev) =>
                 prev[name as DuplicateField].length ? { ...prev, [name]: [] } : prev
               )
