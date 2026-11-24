@@ -118,6 +118,7 @@ function page(over: { confirmed?: number | null; saved?: number | null } = {}) {
     laborAddedElsewhere: [],
     fieldChanges: () => fieldChanges(form),
     acknowledgeSavedFields: vi.fn(),
+    beginFieldSave: vi.fn(),
     lineEditsForSave: () => ({
       parts: true,
       labor: true,

@@ -301,4 +301,38 @@ describe('the same work order in two tabs', () => {
     expect(sent().laborItems).toEqual([DIAGNOSIS, road, fromTheBay])
     expect(sent()).not.toHaveProperty('partItems')
   })
+
+  it('keeps an edit made while its save runs, when a refresh shows that save first', async () => {
+    const a = openTab()
+    // The save of note B is held on its way; the server has already written it.
+    let answer: (value: unknown) => void = () => undefined
+    saveServiceRecordChanges.mockImplementationOnce(async (input: Record<string, unknown>) => {
+      const { id: _id, ...fields } = input
+      stored = { ...stored, ...structuredClone(fields) }
+      return new Promise((resolve) => {
+        answer = resolve
+      })
+    })
+    a.writeNote('diagnosticNotes', '<p>Note B</p>')
+    let saving: Promise<void> = Promise.resolve()
+    act(() => {
+      saving = a.save()
+    })
+    // Put back as it was before, while the save runs.
+    a.writeNote('diagnosticNotes', '<p>Pads worn</p>')
+    // The refresh shows the save before its answer arrives.
+    a.refresh()
+    expect(a.page().notesRef.current.diagnosticNotes).toBe('<p>Pads worn</p>')
+    expect(a.page().adoptedFields.diagnosticNotes).toBeUndefined()
+    expect(a.page().changedElsewhere).toEqual({ kept: [], replaced: [] })
+
+    await act(async () => {
+      answer({ success: true, data: { id: 'rec-1' } })
+      await saving
+    })
+    // The newer edit is still this page's, and the next save sends it.
+    await a.save()
+    expect(sent()).toEqual({ id: 'rec-1', diagnosticNotes: '<p>Pads worn</p>' })
+    expect(stored.diagnosticNotes).toBe('<p>Pads worn</p>')
+  })
 })

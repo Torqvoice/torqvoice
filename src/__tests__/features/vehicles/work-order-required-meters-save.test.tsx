@@ -137,6 +137,7 @@ function page(status: string, saved: string) {
     laborAddedElsewhere: [],
     fieldChanges: () => fieldChanges(form),
     acknowledgeSavedFields: vi.fn(),
+    beginFieldSave: vi.fn(),
     lineEditsForSave: () => ({
       parts: false,
       labor: false,

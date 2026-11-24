@@ -20,6 +20,7 @@ import {
   discountForSave,
   mergeWorkOrderFields,
   richText,
+  sameFieldValue,
   savedWorkOrderFields,
   warrantyForSave,
   type WorkOrderField,
@@ -416,6 +417,14 @@ export function useServiceFormState({
   /** The fields this page has saved, so it can be told when a later save replaces one. */
   const savedHereRef = useRef(new Set<WorkOrderField>())
   /**
+   * The values a save on its way to the server sent, as they were when it
+   * left. A refresh can show that save before its answer arrives; the field
+   * then compares against what was sent, not what is on screen, so an edit
+   * made after the save left is still this page's (even one that puts the
+   * field back as it was before).
+   */
+  const sendingFieldsRef = useRef<Partial<WorkOrderFieldValues> | null>(null)
+  /**
    * Values taken from the server for fields drawn by sections that hold
    * their own copy (the notes editors, the invoice dates). A new object each
    * time, so a section follows even when the same value comes back.
@@ -483,8 +492,20 @@ export function useServiceFormState({
    */
   useLayoutEffect(() => {
     const server: WorkOrderFieldValues = JSON.parse(serverFieldsKey)
+    // This page's own save, shown by the refresh before its answer is back:
+    // what it sent is what this page last knew of those fields.
+    let synced = syncedFieldsRef.current
+    const sending = sendingFieldsRef.current
+    if (sending) {
+      for (const field of Object.keys(sending) as WorkOrderField[]) {
+        if (!sameFieldValue(field, server[field], sending[field])) continue
+        synced = { ...synced, [field]: sending[field] }
+        delete sending[field]
+        savedHereRef.current.add(field)
+      }
+    }
     const { adopt, kept, replaced } = mergeWorkOrderFields({
-      synced: syncedFieldsRef.current,
+      synced,
       current: readCurrentFieldsRef.current(),
       server,
       savedHere: savedHereRef.current,
@@ -535,11 +556,22 @@ export function useServiceFormState({
     return { current, changed: changedWorkOrderFields(syncedFieldsRef.current, current) }
   }, [])
 
+  /** A save leaves with these values (see sendingFieldsRef); null when it is over. */
+  const beginFieldSave = useCallback((sent: Partial<WorkOrderFieldValues> | null) => {
+    sendingFieldsRef.current = sent ? { ...sent } : null
+  }, [])
+
   /** A save went through: these values are the server's now, and this page's. */
   const acknowledgeSavedFields = useCallback((sent: Partial<WorkOrderFieldValues>) => {
     const fields = Object.keys(sent) as WorkOrderField[]
+    // A field a refresh already showed this save for is settled there, and
+    // may have moved on since; only the rest are taken as sent.
+    const sending = sendingFieldsRef.current
     if (fields.length === 0) return
-    syncedFieldsRef.current = { ...syncedFieldsRef.current, ...sent }
+    const unseen = sending
+      ? Object.fromEntries(fields.filter((f) => f in sending).map((f) => [f, sent[f]]))
+      : sent
+    syncedFieldsRef.current = { ...syncedFieldsRef.current, ...unseen }
     for (const field of fields) savedHereRef.current.add(field)
     setChangedElsewhere((previous) => {
       const kept = previous.kept.filter((field) => !fields.includes(field))
@@ -877,6 +909,7 @@ export function useServiceFormState({
     sendingLinesRef,
     /** The job's fields this page changed, for a save to send (see workOrderFields). */
     fieldChanges,
+    beginFieldSave,
     acknowledgeSavedFields,
     lineEditsForSave,
     settleLineEdits,

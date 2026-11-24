@@ -118,6 +118,7 @@ export function useServiceActions({
     acknowledgeSavedLines,
     sendingLinesRef,
     fieldChanges,
+    beginFieldSave,
     acknowledgeSavedFields,
     lineEditsForSave,
     settleLineEdits,
@@ -266,10 +267,12 @@ export function useServiceActions({
       labor: payload.laborItems ?? laborItemsForSave,
     }
     sendingLinesRef.current = sentLines
+    beginFieldSave(sentFields)
     try {
       result = await saveServiceRecordChanges(payload)
     } catch (err) {
       sendingLinesRef.current = null
+      beginFieldSave(null)
       // The request never came back (the connection dropped). Saving has to
       // end here, or the next save, and a link waiting on this one, waits
       // forever.
@@ -279,8 +282,9 @@ export function useServiceActions({
     }
     sendingLinesRef.current = null
 
+    if (result.success) acknowledgeSavedFields(sentFields)
+    beginFieldSave(null)
     if (result.success) {
-      acknowledgeSavedFields(sentFields)
       settleLineEdits(lines)
       if (lines.labor) commitLaborAddedElsewhere()
       if (lines.parts) commitPartsAddedElsewhere()
