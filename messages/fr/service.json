@@ -373,7 +373,8 @@
     "failedPdf": "Impossible de générer la facture PDF",
     "received": "Paiements reçus",
     "noneYet": "Rien de payé pour l'instant.",
-    "balanceDue": "Solde dû"
+    "balanceDue": "Solde dû",
+    "refund": "Remboursement"
   },
   "attachments": {
     "deleteTitle": "Supprimer la Pièce Jointe",
