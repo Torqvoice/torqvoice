@@ -23,6 +23,8 @@ import { workshopTodayKey } from '@/lib/workshop-datetime'
 import { paymentStatusColors, paymentStatusLabels } from './types'
 import type { Payment } from './types'
 import { useModernWorkOrder } from '@/components/work-order-layout-context'
+import { isRefund, paymentMethodLabel } from '@/features/payments/Lib/paymentMethod'
+import { cn } from '@/lib/utils'
 
 interface PaymentsSectionProps {
   payments: Payment[]
@@ -80,6 +82,7 @@ export function PaymentsSection({
   const [paymentDate, setPaymentDate] = useState(() => workshopTodayKey(timezone))
   const { formatDate } = useFormatDate()
   const formRef = useRef<HTMLDivElement>(null)
+  const methodName = (method: string) => paymentMethodLabel(method, (m) => t(`methodOptions.${m}`))
   const sectionRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -228,17 +231,23 @@ export function PaymentsSection({
             {payments.map((payment) => (
               <li
                 key={payment.id}
-                className="flex items-center justify-between gap-2 rounded-lg bg-emerald-500/10 px-3 py-2 text-sm text-emerald-800 dark:text-emerald-300"
+                className={cn(
+                  'flex items-center justify-between gap-2 rounded-lg px-3 py-2 text-sm',
+                  isRefund(payment.amount)
+                    ? 'bg-muted text-foreground'
+                    : 'bg-emerald-500/10 text-emerald-800 dark:text-emerald-300'
+                )}
               >
                 <span className="min-w-0 truncate">
-                  <strong className="font-semibold capitalize">{payment.method}</strong>
+                  {isRefund(payment.amount) && `${t('refund')} · `}
+                  <strong className="font-semibold">{methodName(payment.method)}</strong>
                   {' · '}
                   {formatDate(new Date(payment.date))}
                   {payment.note ? ` · ${payment.note}` : ''}
                 </span>
                 <span className="flex shrink-0 items-center gap-1">
                   <span className="font-mono font-medium tabular-nums">
-                    {formatCurrency(-payment.amount, currencyCode)}
+                    {formatCurrency(payment.amount, currencyCode)}
                   </span>
                   <Button
                     type="button"
@@ -367,9 +376,14 @@ export function PaymentsSection({
                         {formatCurrency(payment.amount, currencyCode)}
                       </td>
                       <td className="py-1.5">
-                        <Badge variant="outline" className="text-xs capitalize">
-                          {payment.method}
+                        <Badge variant="outline" className="text-xs">
+                          {methodName(payment.method)}
                         </Badge>
+                        {isRefund(payment.amount) && (
+                          <span className="ml-1.5 text-xs text-muted-foreground">
+                            {t('refund')}
+                          </span>
+                        )}
                       </td>
                       <td className="py-1.5 text-muted-foreground">{payment.note || '-'}</td>
                       <td className="py-1.5">

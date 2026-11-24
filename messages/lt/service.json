@@ -373,7 +373,8 @@
     "failedPdf": "Nepavyko sugeneruoti PDF sąskaitos",
     "received": "Gauti mokėjimai",
     "noneYet": "Dar nieko nesumokėta.",
-    "balanceDue": "Mokėtina suma"
+    "balanceDue": "Mokėtina suma",
+    "refund": "Grąžinimas"
   },
   "attachments": {
     "deleteTitle": "Ištrinti priedą",
