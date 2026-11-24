@@ -377,6 +377,8 @@
     "noneYet": "Henüz ödeme yapılmadı.",
     "balanceDue": "Kalan bakiye",
     "cancelledNotice": "İptal edildi: bu fatura için ödenecek bir şey yok. Ödemeler ve iadeler yukarıda listelenmeye devam eder.",
+    "aboveBalance": "Kalan bakiye {amount}. Ödeme bundan fazla olamaz.",
+    "nothingDue": "Bu faturada ödenecek bir şey kalmadı.",
     "refund": "İade"
   },
   "attachments": {

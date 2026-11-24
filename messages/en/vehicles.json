@@ -749,6 +749,7 @@
     "added": "{name} added",
     "itemTitle": "Meters",
     "noItemMeters": "No meters on this item.",
-    "addItemMeterHint": "The meter goes with this item wherever it is fitted."
+    "addItemMeterHint": "The meter goes with this item wherever it is fitted.",
+    "negativeReading": "A reading can't be negative."
   }
 }

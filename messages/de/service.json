@@ -377,6 +377,8 @@
     "noneYet": "Noch nichts bezahlt.",
     "balanceDue": "Ausstehend",
     "cancelledNotice": "Storniert: Auf diese Rechnung ist nichts zu zahlen. Zahlungen und Erstattungen bleiben oben aufgeführt.",
+    "aboveBalance": "Offen sind {amount}. Eine Zahlung darf nicht höher sein.",
+    "nothingDue": "Auf dieser Rechnung ist nichts mehr offen.",
     "refund": "Erstattung"
   },
   "attachments": {

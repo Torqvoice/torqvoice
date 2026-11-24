@@ -3,7 +3,12 @@ import 'server-only'
 import { getTranslations } from 'next-intl/server'
 import { workshopTimeZone } from '@/lib/workshop-timezone'
 import { zonedDate, zonedDayKey } from '@/lib/timezone'
-import { parseMeterValue, roundMeterValue } from './meterValue'
+import {
+  METER_PROBLEM_KEY,
+  meterValueProblem,
+  parseMeterValue,
+  roundMeterValue,
+} from './meterValue'
 
 /**
  * When a reading typed on the vehicle was taken. Today's is now, so it comes
@@ -26,7 +31,8 @@ export async function readingTime(
 export async function readingValue(typed: string | number): Promise<number> {
   const value = parseMeterValue(typed)
   if (value === null) {
-    throw new Error((await getTranslations('vehicles.meters'))('invalidReading'))
+    const problem = meterValueProblem(typed) ?? 'invalid'
+    throw new Error((await getTranslations('vehicles.meters'))(METER_PROBLEM_KEY[problem]))
   }
   return roundMeterValue(value)
 }

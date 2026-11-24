@@ -377,6 +377,8 @@
     "noneYet": "Ainda nada pago.",
     "balanceDue": "Valor em dívida",
     "cancelledNotice": "Anulada: nada é devido nesta fatura. Os pagamentos e reembolsos continuam listados acima.",
+    "aboveBalance": "O valor em dívida é {amount}. Um pagamento não pode ser superior.",
+    "nothingDue": "Não há nada em dívida nesta fatura.",
     "refund": "Reembolso"
   },
   "attachments": {

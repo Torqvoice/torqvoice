@@ -377,6 +377,8 @@
     "noneYet": "Nic jeszcze nie zapłacono.",
     "balanceDue": "Pozostało do zapłaty",
     "cancelledNotice": "Anulowana: nic nie jest do zapłaty z tej faktury. Płatności i zwroty pozostają na liście powyżej.",
+    "aboveBalance": "Do zapłaty pozostało {amount}. Płatność nie może być wyższa.",
+    "nothingDue": "Na tej fakturze nie ma nic do zapłaty.",
     "refund": "Zwrot"
   },
   "attachments": {

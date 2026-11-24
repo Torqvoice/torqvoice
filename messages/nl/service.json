@@ -377,6 +377,8 @@
     "noneYet": "Nog niets betaald.",
     "balanceDue": "Verschuldigd bedrag",
     "cancelledNotice": "Geannuleerd: op deze factuur hoeft niets betaald te worden. Betalingen en terugbetalingen blijven hierboven staan.",
+    "aboveBalance": "Het verschuldigde bedrag is {amount}. Een betaling kan niet hoger zijn.",
+    "nothingDue": "Er staat niets meer open op deze factuur.",
     "refund": "Terugbetaling"
   },
   "attachments": {

@@ -377,6 +377,8 @@
     "noneYet": "Rien de payé pour l'instant.",
     "balanceDue": "Solde dû",
     "cancelledNotice": "Annulée : rien n’est dû sur cette facture. Les paiements et remboursements restent listés ci-dessus.",
+    "aboveBalance": "Le solde dû est de {amount}. Un paiement ne peut pas le dépasser.",
+    "nothingDue": "Rien n’est dû sur cette facture.",
     "refund": "Remboursement"
   },
   "attachments": {

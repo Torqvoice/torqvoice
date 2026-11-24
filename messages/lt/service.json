@@ -377,6 +377,8 @@
     "noneYet": "Dar nieko nesumokėta.",
     "balanceDue": "Mokėtina suma",
     "cancelledNotice": "Atšaukta: pagal šią sąskaitą nieko nemokėti. Mokėjimai ir grąžinimai lieka sąraše aukščiau.",
+    "aboveBalance": "Mokėtina suma yra {amount}. Mokėjimas negali būti didesnis.",
+    "nothingDue": "Pagal šią sąskaitą nieko nebeliko mokėti.",
     "refund": "Grąžinimas"
   },
   "attachments": {

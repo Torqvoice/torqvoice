@@ -377,6 +377,8 @@
     "noneYet": "Ancora nessun pagamento.",
     "balanceDue": "Importo dovuto",
     "cancelledNotice": "Annullata: non è dovuto nulla su questa fattura. Pagamenti e rimborsi restano elencati sopra.",
+    "aboveBalance": "L’importo dovuto è {amount}. Un pagamento non può superarlo.",
+    "nothingDue": "Non c’è nulla da pagare su questa fattura.",
     "refund": "Rimborso"
   },
   "attachments": {

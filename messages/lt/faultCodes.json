@@ -185,7 +185,8 @@
     "skipped": "{count, plural, one {# kodas jau buvo šiame darbe} few {# kodai jau buvo šiame darbe} many {# kodo jau buvo šiame darbe} other {# kodų jau buvo šiame darbe}}",
     "failed": "Nepavyko pridėti kodų",
     "descriptionOem": "Įveskite arba įklijuokite kodus iš diagnostikos įrangos: OBD kodus, pvz., P0420, arba BMW kodus, pvz., 2A82. Kiekvienas tampa šio darbo pastaba su išsaugota reikšme.",
-    "placeholderOem": "P0420, 2A82 išsaugotas"
+    "placeholderOem": "P0420, 2A82 išsaugotas",
+    "unrecognised": "{count, plural, one {Ne gedimo kodas, praleista: {codes}} few {Ne gedimo kodai, praleista: {codes}} other {Ne gedimo kodai, praleista: {codes}}}"
   },
   "finding": {
     "seenBefore": "Matytas {date}",

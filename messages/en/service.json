@@ -377,6 +377,8 @@
     "noneYet": "Nothing paid yet.",
     "balanceDue": "Balance due",
     "cancelledNotice": "Cancelled: nothing is owed on this invoice. The payments and any refund stay listed above.",
+    "aboveBalance": "The balance due is {amount}. A payment cannot be more than that.",
+    "nothingDue": "Nothing is due on this invoice.",
     "refund": "Refund"
   },
   "attachments": {

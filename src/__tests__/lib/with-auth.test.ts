@@ -204,6 +204,8 @@ describe('withAuth', () => {
     expect(result.success).toBe(false)
     expect(result.error).toContain('email')
     expect(result.error).toContain('Required')
+    // And for the form, the field and what is wrong with it, to say in words.
+    expect(result.fieldErrors).toEqual([{ field: 'email', issue: 'required' }])
   })
 
   it('action throwing a generic Error returns the error message', async () => {

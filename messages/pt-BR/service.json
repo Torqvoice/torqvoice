@@ -377,6 +377,8 @@
     "noneYet": "Nada pago ainda.",
     "balanceDue": "Saldo devedor",
     "cancelledNotice": "Cancelada: nada é devido nesta fatura. Os pagamentos e reembolsos continuam listados acima.",
+    "aboveBalance": "O saldo devedor é {amount}. Um pagamento não pode ser maior que isso.",
+    "nothingDue": "Não há nada a pagar nesta fatura.",
     "refund": "Reembolso"
   },
   "attachments": {
