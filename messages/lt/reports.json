@@ -203,15 +203,15 @@
     }
   },
   "tax": {
-    "totalTaxCollected": "Iš viso sąskaitose nurodytų mokesčių",
+    "totalTaxCollected": "Iš viso mokesčių",
     "taxableRevenue": "Apmokestinamos pajamos",
     "invoicesWithTax": "Sąskaitos su mokesčiais",
-    "monthlyTaxCollected": "Sąskaitose nurodyti mokesčiai per mėnesį",
+    "monthlyTaxCollected": "Mokesčiai per mėnesį",
     "taxByRate": "Mokesčiai pagal tarifą",
     "monthlyBreakdown": "Mėnesio suskirstymas",
     "tableHeaders": {
       "taxRate": "Mokesčių tarifas",
-      "taxCollected": "Sąskaitose nurodyti mokesčiai",
+      "taxCollected": "Mokestis",
       "invoices": "Sąskaitos",
       "month": "Mėnuo",
       "taxableAmount": "Apmokestinama suma"
@@ -254,7 +254,7 @@
     "totalSpent": "Iš viso išleista",
     "jobs": "Darbai",
     "visits": "Apsilankymai",
-    "taxCollected": "Sąskaitose nurodyti mokesčiai",
+    "taxCollected": "Mokestis",
     "partsCost": "Dalių savikaina",
     "laborCost": "Darbo savikaina"
   },
@@ -305,7 +305,7 @@
     "customer": "Klientas",
     "visits": "Apsilankymai",
     "avgDaysBetweenVisits": "Vid. dienų tarp apsilankymų",
-    "taxCollected": "Sąskaitose nurodyti mokesčiai",
+    "taxCollected": "Mokestis",
     "taxableAmount": "Apmokestinama suma",
     "invoiceCount": "Sąskaitų skaičius",
     "invoiceNumber": "Sąskaita Nr.",
@@ -378,7 +378,7 @@
     "over30": "Virš 30 dienų",
     "over60": "Virš 60 dienų",
     "over90": "Virš 90 dienų",
-    "taxCollected": "Sąskaitose nurodyti mokesčiai",
+    "taxCollected": "Mokestis",
     "taxableAmount": "Apmokestinama suma",
     "taxRate": "Mokesčių tarifas",
     "invoiceCount": "Sąskaitų skaičius",

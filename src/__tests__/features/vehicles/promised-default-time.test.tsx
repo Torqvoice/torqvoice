@@ -132,7 +132,8 @@ async function promiseOn(label: RegExp, rawOpeningHours: string | null) {
   return vi.mocked(setPromisedTime).mock.calls[0][0] as { promisedAt: Date }
 }
 
-describe('picking the promised day', () => {
+// Opening a real date picker and clicking through it is slow when the whole suite shares the CPU.
+describe('picking the promised day', { timeout: 20_000 }, () => {
   it("promises the workshop's closing time that day", async () => {
     const saturday = nextMonthFirst(6)
     const { promisedAt } = await promiseOn(saturday.label, OPENING_HOURS)
@@ -173,5 +174,20 @@ describe('promiseTimesByWeekday', () => {
 
   it('is 17:00 every day with no stored hours', () => {
     expect(promiseTimesByWeekday('')).toEqual(Array(7).fill('17:00'))
+  })
+
+  it('is 17:00, not the calendar stand-in 15:00, when the stored hours cannot be read', () => {
+    expect(promiseTimesByWeekday('{not json')).toEqual(Array(7).fill('17:00'))
+    expect(promiseTimesByWeekday('[]')).toEqual(Array(7).fill('17:00'))
+  })
+
+  it('is 17:00 on a day whose stored closing time is unusable', () => {
+    const week = JSON.parse(OPENING_HOURS)
+    week[1] = { open: true, start: '08:00', end: '25:99' }
+    week[2] = { open: true, start: '16:00', end: '09:00' }
+    const times = promiseTimesByWeekday(JSON.stringify(week))
+    expect(times[1]).toBe('17:00')
+    expect(times[2]).toBe('17:00')
+    expect(times[3]).toBe('16:30')
   })
 })

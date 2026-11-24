@@ -203,15 +203,15 @@
     }
   },
   "tax": {
-    "totalTaxCollected": "Fakturert MVA totalt",
+    "totalTaxCollected": "MVA totalt",
     "taxableRevenue": "MVA-pliktig omsetning",
     "invoicesWithTax": "Fakturaer med MVA",
-    "monthlyTaxCollected": "Fakturert MVA per måned",
+    "monthlyTaxCollected": "MVA per måned",
     "taxByRate": "MVA etter sats",
     "monthlyBreakdown": "Månedlig Oversikt",
     "tableHeaders": {
       "taxRate": "MVA-sats",
-      "taxCollected": "Fakturert MVA",
+      "taxCollected": "MVA",
       "invoices": "Fakturaer",
       "month": "Måned",
       "taxableAmount": "Grunnlag for MVA"
@@ -254,7 +254,7 @@
     "totalSpent": "Totalt Brukt",
     "jobs": "Jobber",
     "visits": "Besøk",
-    "taxCollected": "Fakturert MVA",
+    "taxCollected": "MVA",
     "partsCost": "Delekostnad",
     "laborCost": "Arbeidskostnad"
   },
@@ -305,7 +305,7 @@
     "customer": "Kunde",
     "visits": "Besøk",
     "avgDaysBetweenVisits": "Gj.sn. Dager Mellom Besøk",
-    "taxCollected": "Fakturert MVA",
+    "taxCollected": "MVA",
     "taxableAmount": "Grunnlag for MVA",
     "invoiceCount": "Antall Fakturaer",
     "invoiceNumber": "Fakturanr.",
@@ -378,7 +378,7 @@
     "over30": "Over 30 dager",
     "over60": "Over 60 dager",
     "over90": "Over 90 dager",
-    "taxCollected": "Fakturert MVA",
+    "taxCollected": "MVA",
     "taxableAmount": "Grunnlag for MVA",
     "taxRate": "MVA-sats",
     "invoiceCount": "Antall fakturaer",

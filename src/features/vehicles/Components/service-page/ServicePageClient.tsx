@@ -100,6 +100,7 @@ export function ServicePageClient({
   onlinePayments = false,
   workOrderStatuses = [],
   canAddStatus = false,
+  canSetPaymentTerms = false,
   canSetCustomer = false,
   canTakePayment = false,
   videoCall = { link: null, providers: [] },
@@ -742,6 +743,7 @@ export function ServicePageClient({
     designFollowsName,
     designFollowsRule,
     paymentTermsDays: defaultDueDays,
+    canSetPaymentTerms,
     promisedDefaultTimes,
   }
 

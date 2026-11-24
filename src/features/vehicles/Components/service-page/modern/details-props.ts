@@ -104,6 +104,8 @@ export interface WorkOrderSidebarProps {
   designFollowsRule?: DesignAutoRule | null
   /** The workshop's payment terms in days; 0 when none are set, so no due date follows. */
   paymentTermsDays?: number
+  /** The viewer can open the invoice settings (READ) and change them (UPDATE). */
+  canSetPaymentTerms?: boolean
   /**
    * The time a promise to the customer defaults to on each weekday, Sunday
    * first, as "HH:mm" on the workshop's clock: closing time where opening

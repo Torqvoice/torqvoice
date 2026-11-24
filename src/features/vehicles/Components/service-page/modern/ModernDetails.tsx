@@ -603,7 +603,7 @@ export function ModernDetails(props: ModernDetailsProps) {
                         designFollowsName={props.designFollowsName}
                         designFollowsRule={props.designFollowsRule}
                         paymentTermsDays={props.paymentTermsDays}
-                        canEditSettings={props.canAddStatus}
+                        canEditSettings={props.canSetPaymentTerms}
                       />
                     </div>
                     <div className="border-b border-card-edge/60 p-5">

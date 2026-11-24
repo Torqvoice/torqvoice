@@ -203,15 +203,15 @@
     }
   },
   "tax": {
-    "totalTaxCollected": "Toplam Faturalanan Vergi",
+    "totalTaxCollected": "Toplam Vergi",
     "taxableRevenue": "Vergilendirilebilir Gelir",
     "invoicesWithTax": "Vergili Faturalar",
-    "monthlyTaxCollected": "Aylık Faturalanan Vergi",
+    "monthlyTaxCollected": "Aylık Vergi",
     "taxByRate": "Orana Göre Vergi",
     "monthlyBreakdown": "Aylık Döküm",
     "tableHeaders": {
       "taxRate": "Vergi Oranı",
-      "taxCollected": "Faturalanan Vergi",
+      "taxCollected": "Vergi",
       "invoices": "Faturalar",
       "month": "Ay",
       "taxableAmount": "Vergilendirilebilir Tutar"
@@ -254,7 +254,7 @@
     "totalSpent": "Toplam Harcama",
     "jobs": "İşler",
     "visits": "Ziyaretler",
-    "taxCollected": "Faturalanan Vergi",
+    "taxCollected": "Vergi",
     "partsCost": "Parça Maliyeti",
     "laborCost": "İşçilik Maliyeti"
   },
@@ -305,7 +305,7 @@
     "customer": "Müşteri",
     "visits": "Ziyaretler",
     "avgDaysBetweenVisits": "Ort. Ziyaret Arası Gün",
-    "taxCollected": "Faturalanan Vergi",
+    "taxCollected": "Vergi",
     "taxableAmount": "Vergilendirilebilir Tutar",
     "invoiceCount": "Fatura Sayısı",
     "invoiceNumber": "Fatura No",
@@ -378,7 +378,7 @@
     "over30": "30 Günden Fazla",
     "over60": "60 Günden Fazla",
     "over90": "90 Günden Fazla",
-    "taxCollected": "Faturalanan Vergi",
+    "taxCollected": "Vergi",
     "taxableAmount": "Vergilendirilebilir Tutar",
     "taxRate": "Vergi Oranı",
     "invoiceCount": "Fatura Sayısı",

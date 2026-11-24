@@ -3,9 +3,9 @@
  *
  * - "Completed only" shows whether it is on. It carried a check mark either
  *   way, so an outlined button with a tick read as switched on when it was off.
- * - The tax report counts VAT on the invoice date, paid or not, so its total
- *   is tax invoiced, not tax collected; a total that includes unpaid invoices
- *   must not say it was collected.
+ * - The tax report counts VAT on the document date, paid or not, and jobs
+ *   not invoiced yet on their start or service date. So its total is neither
+ *   tax collected nor tax invoiced: the labels say "Tax" and no more.
  */
 import { act, render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -83,11 +83,12 @@ describe('the "Completed only" button', () => {
 })
 
 describe('the tax report', () => {
-  it('calls its figures tax invoiced, not tax collected', async () => {
+  it('calls its figures tax, claiming neither collected nor invoiced', async () => {
     await openReports('tab=financial&subtab=tax')
 
-    expect(await screen.findByText('Total Tax Invoiced')).toBeInTheDocument()
-    expect(screen.getAllByText('Tax Invoiced').length).toBeGreaterThan(0)
-    expect(screen.queryByText(/Tax Collected/)).toBeNull()
+    expect(await screen.findByText('Total Tax')).toBeInTheDocument()
+    expect(screen.getByText('Monthly Tax')).toBeInTheDocument()
+    expect(screen.getAllByRole('columnheader', { name: 'Tax' }).length).toBeGreaterThan(0)
+    expect(screen.queryByText(/Tax (Collected|Invoiced)/i)).toBeNull()
   })
 })

@@ -141,7 +141,11 @@ export const DEFAULT_PROMISE_TIME = '17:00'
 export function promiseTimesByWeekday(rawOpeningHours: string | null | undefined): string[] {
   const fallback = Array.from({ length: 7 }, () => DEFAULT_PROMISE_TIME)
   if (!rawOpeningHours?.trim()) return fallback
-  return parseWeekHours(rawOpeningHours, defaultWeek()).map((day, weekday) =>
+  // Hours that cannot be read (bad JSON, the wrong length, a day closing
+  // before it opens) fall back to a week that closes at the promise default,
+  // not to the calendar's stand-in day, which ends at 15:00.
+  const unreadable = defaultWeek(DEFAULT_DAY_START, DEFAULT_PROMISE_TIME, true)
+  return parseWeekHours(rawOpeningHours, unreadable).map((day, weekday) =>
     day.open ? day.end : fallback[weekday]
   )
 }
