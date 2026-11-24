@@ -10,6 +10,8 @@ import { createPaymentSchema } from '../Schema/paymentSchema'
 import { revalidatePath } from 'next/cache'
 import { getDocumentLockSettings } from '@/lib/document-lock.server'
 import { DocumentLockedError, invoiceLockState } from '@/lib/document-lock'
+import { isCancelled } from '@/features/work-order-statuses/Lib/stages'
+import { CancelledInvoiceError } from '@/features/invoices/Lib/cancelInvoice'
 
 export async function createPayment(input: unknown) {
   return withAuth(
@@ -19,9 +21,11 @@ export async function createPayment(input: unknown) {
       // Verify ownership: serviceRecord -> vehicle -> organizationId
       const serviceRecord = await db.serviceRecord.findFirst({
         where: { id: data.serviceRecordId, organizationId },
-        select: { id: true, vehicleId: true },
+        select: { id: true, vehicleId: true, status: true },
       })
       if (!serviceRecord) throw new Error('Service record not found')
+      // Nothing is owed on a cancelled invoice; a refund is booked as it is cancelled.
+      if (isCancelled(serviceRecord.status)) throw new CancelledInvoiceError()
 
       const payment = await db.payment.create({
         data: {
@@ -81,6 +85,7 @@ export async function deletePayment(paymentId: string) {
             select: {
               vehicleId: true,
               id: true,
+              status: true,
               sentAt: true,
               manuallyPaid: true,
               totalAmount: true,
@@ -92,6 +97,9 @@ export async function deletePayment(paymentId: string) {
         },
       })
       if (!payment) throw new Error('Payment not found')
+      // What moved on a cancelled invoice is its record: the payment and the
+      // refund that answered it both stay.
+      if (isCancelled(payment.serviceRecord.status)) throw new CancelledInvoiceError()
 
       // Recording payments is always allowed, but removing the payment that
       // settled a locked invoice would release the lock — the admin-only

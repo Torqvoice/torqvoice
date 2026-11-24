@@ -1,5 +1,7 @@
 'use server'
 
+import { CancelledInvoiceError } from '@/features/invoices/Lib/cancelInvoice'
+import { isCancelled } from '@/features/work-order-statuses/Lib/stages'
 import { db } from '@/lib/db'
 import { withAuth } from '@/lib/with-auth'
 import { revalidatePath } from 'next/cache'
@@ -32,9 +34,11 @@ export async function setInvoiceEditUnlocked(recordId: string, unlocked: boolean
 
       const record = await db.serviceRecord.findFirst({
         where: { id: recordId, organizationId },
-        select: { id: true, vehicleId: true, invoiceNumber: true },
+        select: { id: true, vehicleId: true, invoiceNumber: true, status: true },
       })
       if (!record) throw new Error('Record not found')
+      // A cancelled invoice is not reopened: its copy is final.
+      if (unlocked && isCancelled(record.status)) throw new CancelledInvoiceError()
 
       await db.serviceRecord.update({
         where: { id: recordId },

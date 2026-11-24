@@ -98,6 +98,28 @@ describe('what is owed on a cancelled invoice', () => {
   })
 })
 
+describe('a cancelled invoice that was marked paid by hand', () => {
+  const marked = { totalAmount: 1000, cost: 0, manuallyPaid: true }
+
+  it('can refund what was paid, and only what is still held', () => {
+    expect(refundableAmount({ ...marked, payments: [] })).toBe(1000)
+    expect(refundableAmount({ ...marked, payments: [{ amount: 400 }] })).toBe(1000)
+    expect(refundableAmount({ ...marked, payments: [{ amount: -300 }] })).toBe(700)
+    expect(refundableAmount({ ...marked, payments: [{ amount: -1000 }] })).toBe(0)
+  })
+
+  it('keeps its paid amount in the portal, less any refund, with nothing owed', () => {
+    expect(portalPayment({ ...marked, payments: [], status: 'cancelled' })).toEqual({
+      state: 'cancelled',
+      paid: 1000,
+      balance: 0,
+    })
+    expect(portalPayment({ ...marked, payments: [{ amount: -250 }], status: 'cancelled' })).toEqual(
+      { state: 'cancelled', paid: 750, balance: 0 }
+    )
+  })
+})
+
 describe('which invoices went out', () => {
   const draft = { issuedAt: null, sentAt: null, manuallyPaid: false, payments: [] }
   it('is an issued one, or one sent or paid before issuing was tracked', () => {

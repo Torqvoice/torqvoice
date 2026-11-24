@@ -31,6 +31,18 @@ vi.mock('@/features/meters/Lib/jobMeterReading.server', () => ({
   unlinkMeterReadingsOfDeletedJobs: vi.fn(),
   unlinkJobMeterReadingsFromOtherVehicles: vi.fn(),
 }))
+vi.mock('@/features/time-tracking/Lib/timeEntries', () => ({
+  stopJobClocks: vi.fn(async () => []),
+}))
+vi.mock('@/features/invoices/Lib/issueInvoice', () => ({
+  issueInvoice: vi.fn(async () => false),
+  reissueInvoice: vi.fn(async () => true),
+}))
+vi.mock('@/features/invoices/Lib/reapplyDesign', () => ({
+  ISSUED_WHERE: {},
+  issuedDesignState: vi.fn(),
+  reapplyDesign: vi.fn(async () => 1),
+}))
 vi.mock('@/features/custom-fields/Lib/deleteCustomFieldValues', () => ({
   deleteCustomFieldValuesOf: vi.fn(),
   workOrderIdsOfVehicles: vi.fn(async () => ['job-1']),
@@ -49,7 +61,7 @@ vi.mock('@/lib/db', () => ({
     },
     vehicle: { findFirst: vi.fn(), deleteMany: vi.fn() },
     servicePart: { findMany: vi.fn() },
-    payment: { create: vi.fn() },
+    payment: { create: vi.fn(), findFirst: vi.fn(), delete: vi.fn() },
     workOrderStatus: { findFirst: vi.fn() },
     $transaction: vi.fn(),
   },
@@ -65,6 +77,14 @@ import {
 } from '@/features/vehicles/Actions/serviceActions'
 import { cancelServiceRecord } from '@/features/vehicles/Actions/cancelServiceRecord'
 import { deleteVehicle } from '@/features/vehicles/Actions/vehicleActions'
+import { toggleManuallyPaid } from '@/features/vehicles/Actions/serviceActions'
+import { createPayment, deletePayment } from '@/features/payments/Actions/paymentActions'
+import {
+  reapplyDesignToInvoice,
+  refreshIssuedInvoice,
+} from '@/features/invoices/Actions/invoiceDesignActions'
+import { setInvoiceEditUnlocked } from '@/features/settings/Actions/documentLockActions'
+import { stopJobClocks } from '@/features/time-tracking/Lib/timeEntries'
 
 const ORG = 'org-1'
 
@@ -312,5 +332,114 @@ describe('deleting a vehicle', () => {
     expect(db.vehicle.deleteMany).toHaveBeenCalledWith({
       where: { id: 'veh-1', organizationId: ORG },
     })
+  })
+})
+
+describe('cancelling stops the work on the job', () => {
+  it('stops every clock still running on it', async () => {
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(ISSUED_AND_PAID as any)
+
+    expect((await cancelServiceRecord({ recordId: 'job-1' })).success).toBe(true)
+
+    expect(stopJobClocks).toHaveBeenCalledWith({ organizationId: ORG, serviceRecordId: 'job-1' })
+  })
+
+  it('stops nothing when the cancel is refused', async () => {
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(DRAFT as any)
+
+    await cancelServiceRecord({ recordId: 'job-1' })
+
+    expect(stopJobClocks).not.toHaveBeenCalled()
+  })
+})
+
+describe('a status change on its way when the job is cancelled', () => {
+  it('is refused rather than undoing the cancel', async () => {
+    // Read before the cancel, written after it: the write finds nothing to move.
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(ISSUED_AND_PAID as any)
+    vi.mocked(db.serviceRecord.updateMany).mockResolvedValue({ count: 0 } as any)
+
+    const result = await updateServiceStatus('job-1', 'pending')
+
+    expect(result.success).toBe(false)
+    expect(result.error).toMatch(/cancelled/)
+    const write = vi.mocked(db.serviceRecord.updateMany).mock.calls[0][0] as any
+    expect(write.where).toMatchObject({ id: 'job-1', status: { not: 'cancelled' } })
+  })
+})
+
+describe('money on a cancelled invoice', () => {
+  const CANCELLED = { ...ISSUED_AND_PAID, status: 'cancelled' }
+
+  it('takes no new payment', async () => {
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(CANCELLED as any)
+
+    const result = await createPayment({ serviceRecordId: 'job-1', amount: 50, method: 'cash' })
+
+    expect(result.success).toBe(false)
+    expect(result.error).toMatch(/cancelled/)
+    expect(db.payment.create).not.toHaveBeenCalled()
+  })
+
+  it('keeps its payments and refunds: none can be deleted', async () => {
+    vi.mocked(db.payment.findFirst).mockResolvedValue({
+      id: 'pay-1',
+      amount: -1000,
+      serviceRecord: { ...CANCELLED, editUnlockedAt: null },
+    } as any)
+
+    const result = await deletePayment('pay-1')
+
+    expect(result.success).toBe(false)
+    expect(db.payment.delete).not.toHaveBeenCalled()
+  })
+
+  it('is not marked paid or unpaid by hand', async () => {
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(CANCELLED as any)
+
+    const result = await toggleManuallyPaid('job-1')
+
+    expect(result.success).toBe(false)
+    expect(db.serviceRecord.update).not.toHaveBeenCalled()
+  })
+
+  it('still lets a locked invoice that is not cancelled take a payment', async () => {
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(ISSUED_AND_PAID as any)
+    vi.mocked(db.payment.create).mockResolvedValue({ id: 'pay-2' } as any)
+
+    const result = await createPayment({ serviceRecordId: 'job-1', amount: 50, method: 'cash' })
+
+    expect(result.success).toBe(true)
+  })
+})
+
+describe('the copy of a cancelled invoice', () => {
+  const CANCELLED = { ...ISSUED_AND_PAID, status: 'cancelled' }
+
+  it('is not updated to today’s details', async () => {
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(CANCELLED as any)
+
+    const result = await refreshIssuedInvoice('job-1')
+
+    expect(result.success).toBe(false)
+    expect(result.error).toMatch(/cancelled/)
+  })
+
+  it('is not given another design', async () => {
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(CANCELLED as any)
+
+    const result = await reapplyDesignToInvoice('job-1', null)
+
+    expect(result.success).toBe(false)
+    expect(db.serviceRecord.update).not.toHaveBeenCalled()
+  })
+
+  it('is not reopened for editing', async () => {
+    vi.mocked(db.serviceRecord.findFirst).mockResolvedValue(CANCELLED as any)
+
+    const result = await setInvoiceEditUnlocked('job-1', true)
+
+    expect(result.success).toBe(false)
+    expect(db.serviceRecord.update).not.toHaveBeenCalled()
   })
 })

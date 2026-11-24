@@ -275,6 +275,7 @@ export async function reissueInvoice(recordId: string, organizationId: string): 
     where: { id: recordId, organizationId },
     select: {
       id: true,
+      status: true,
       issuedAt: true,
       invoiceDate: true,
       invoiceDueDate: true,
@@ -282,5 +283,7 @@ export async function reissueInvoice(recordId: string, organizationId: string): 
     },
   })
   if (!record?.issuedAt) return false
+  // A cancelled invoice keeps the copy it went out with.
+  if (record.status === 'cancelled') return false
   return captureIssue(record, organizationId, new Date(), 'redate')
 }

@@ -1,3 +1,5 @@
+import { keptOnInvoice } from '@/features/invoices/Lib/cancelInvoice'
+
 /**
  * Where an invoice stands for the customer: paid, partly paid or unpaid, and
  * what is still owed. A workshop that marks an invoice paid by hand has been
@@ -23,7 +25,8 @@ export function portalPayment(invoice: {
 }): PortalPayment {
   const recorded = invoice.payments.reduce((sum, p) => sum + p.amount, 0)
   if (invoice.status === 'cancelled') {
-    return { state: 'cancelled', paid: Math.max(0, recorded), balance: 0 }
+    // Nothing is owed; what was paid stays paid, less any refund.
+    return { state: 'cancelled', paid: keptOnInvoice(invoice), balance: 0 }
   }
   if (invoice.manuallyPaid) {
     return { state: 'paid', paid: Math.max(recorded, invoice.totalAmount), balance: 0 }

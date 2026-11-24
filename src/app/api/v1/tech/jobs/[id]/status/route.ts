@@ -1,4 +1,4 @@
-import { isCancelled, statusColumns } from '@/features/work-order-statuses/Lib/stages'
+import { CANCELLED, isCancelled, statusColumns } from '@/features/work-order-statuses/Lib/stages'
 import { CANCELLED_JOB_REFUSAL } from '@/features/invoices/Lib/cancelInvoice'
 import { z } from 'zod'
 import { announceJobStatusChanged } from '@/features/vehicles/Lib/jobEvents'
@@ -77,6 +77,18 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
         }
       }
 
+      // Conditional on the job not having been cancelled since it was read,
+      // so a tap already on its way cannot undo a cancel; the clocks are
+      // only touched once the move has really happened.
+      const moved = await db.serviceRecord.updateMany({
+        where: { id: job.id, organizationId: ctx.organizationId, status: { not: CANCELLED } },
+        // The phone moves the stage; a status of the workshop's own belonged
+        // to the stage it left.
+        data: statusColumns(status),
+      })
+      if (moved.count === 0) return apiError(409, 'conflict', CANCELLED_JOB_REFUSAL)
+      const updated = { id: job.id, status }
+
       // Finishing a job stops the clock on it. A technician who has moved on
       // is not going to remember, and a clock left running past the end of the
       // work is the exact error the whole feature exists to prevent.
@@ -98,14 +110,6 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       const technician = await db.technician.findFirst({
         where: { id: { in: ctx.technicianIds } },
         select: { name: true },
-      })
-
-      const updated = await db.serviceRecord.update({
-        where: { id: job.id },
-        // The phone moves the stage; a status of the workshop's own belonged
-        // to the stage it left.
-        data: statusColumns(status),
-        select: { id: true, status: true },
       })
 
       // Puts it on the desk's screens immediately: the board moves the card,

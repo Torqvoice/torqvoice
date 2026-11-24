@@ -35,18 +35,31 @@ export function vehicleWithInvoicesRefusal(invoiceNumbers: (string | null)[]): s
 }
 
 /**
- * What the customer has paid on the invoice, which is the most a refund on
- * cancelling can hand back. An invoice marked paid by hand was paid in full,
- * whatever payments were recorded against it. Rounded to the cent.
+ * What the workshop has kept of the customer's money on this invoice: what
+ * came in, less what was handed back. An invoice marked paid by hand was paid
+ * in full, whatever payments were recorded against it, so its receipts count
+ * as at least the total; refunds (negative payments) come off after that.
+ * Rounded to the cent; never below zero.
  */
+export function keptOnInvoice(invoice: {
+  totalAmount: number
+  cost?: number
+  manuallyPaid: boolean
+  payments: { amount: number }[]
+}): number {
+  const received = invoice.payments.filter((p) => p.amount > 0).reduce((s, p) => s + p.amount, 0)
+  const refunded = invoice.payments.filter((p) => p.amount < 0).reduce((s, p) => s + p.amount, 0)
+  const total = invoice.totalAmount > 0 ? invoice.totalAmount : (invoice.cost ?? 0)
+  const receipts = invoice.manuallyPaid ? Math.max(received, total) : received
+  return Math.max(0, Math.round((receipts + refunded) * 100) / 100)
+}
+
+/** The most a refund on cancelling can hand back: what the workshop still holds. */
 export function refundableAmount(invoice: {
   totalAmount: number
   cost: number
   manuallyPaid: boolean
   payments: { amount: number }[]
 }): number {
-  const recorded = invoice.payments.reduce((sum, p) => sum + p.amount, 0)
-  const total = invoice.totalAmount > 0 ? invoice.totalAmount : invoice.cost
-  const paid = invoice.manuallyPaid ? Math.max(recorded, total) : recorded
-  return Math.max(0, Math.round(paid * 100) / 100)
+  return keptOnInvoice(invoice)
 }

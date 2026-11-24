@@ -258,21 +258,23 @@ export function PaymentsSection({
                   <span className="font-mono font-medium tabular-nums">
                     {formatCurrency(payment.amount, currencyCode)}
                   </span>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    className="h-6 w-6 text-current opacity-60 hover:bg-transparent hover:text-destructive hover:opacity-100"
-                    disabled={deletingPayment === payment.id}
-                    onClick={() => onDeletePayment(payment.id)}
-                    aria-label={tc('delete')}
-                  >
-                    {deletingPayment === payment.id ? (
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                    ) : (
-                      <Trash2 className="h-3 w-3" />
-                    )}
-                  </Button>
+                  {!cancelled && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-6 w-6 text-current opacity-60 hover:bg-transparent hover:text-destructive hover:opacity-100"
+                      disabled={deletingPayment === payment.id}
+                      onClick={() => onDeletePayment(payment.id)}
+                      aria-label={tc('delete')}
+                    >
+                      {deletingPayment === payment.id ? (
+                        <Loader2 className="h-3 w-3 animate-spin" />
+                      ) : (
+                        <Trash2 className="h-3 w-3" />
+                      )}
+                    </Button>
+                  )}
                 </span>
               </li>
             ))}
@@ -404,7 +406,7 @@ export function PaymentsSection({
                         )}
                       </td>
                       <td className="py-1.5 text-muted-foreground">{payment.note || '-'}</td>
-                      <td className="py-1.5">
+                      <td className={cancelled ? 'hidden' : 'py-1.5'}>
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <Button

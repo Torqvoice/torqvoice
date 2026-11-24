@@ -38,6 +38,7 @@ import { issueInvoice } from '@/features/invoices/Lib/issueInvoice'
 import { invoiceWentOut } from '@/features/invoices/Lib/issuedInvoice'
 import {
   CANCELLED_JOB_REFUSAL,
+  CancelledInvoiceError,
   issuedInvoiceDeleteRefusal,
 } from '@/features/invoices/Lib/cancelInvoice'
 import { withAuth } from '@/lib/with-auth'
@@ -1184,10 +1185,13 @@ export async function updateServiceStatus(
         await assertRequiredMetersRead(organizationId, record.id, 'complete')
       }
 
-      await db.serviceRecord.update({
-        where: { id: recordId },
+      // Conditional on the job not having been cancelled since it was read:
+      // a status change already on its way must not undo a cancel.
+      const moved = await db.serviceRecord.updateMany({
+        where: { id: recordId, organizationId, status: { not: CANCELLED } },
         data: statusColumns(status, custom),
       })
+      if (moved.count === 0) throw new Error(CANCELLED_JOB_REFUSAL)
 
       notificationBus.emit('workboard', {
         type: 'job_status_changed',
@@ -1324,6 +1328,8 @@ export async function toggleManuallyPaid(recordId: string) {
         include: { payments: { select: { amount: true } } },
       })
       if (!record) throw new Error('Record not found')
+      // Nothing is owed on a cancelled invoice, paid by hand or otherwise.
+      if (isCancelled(record.status)) throw new CancelledInvoiceError()
 
       // Marking paid is always allowed — it only ever locks the document
       // further. But a flip that would *release* the lock is the admin-only

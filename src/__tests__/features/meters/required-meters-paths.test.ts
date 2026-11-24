@@ -130,6 +130,7 @@ const JOB = {
 
 beforeEach(() => {
   vi.clearAllMocks()
+  vi.mocked(db.serviceRecord.updateMany).mockResolvedValue({ count: 1 } as never)
   gaps.missing = [PTO, CRANE]
   vi.mocked(getCachedSession).mockResolvedValue({ user: { id: 'user-1' } } as never)
   vi.mocked(getCachedMembership).mockResolvedValue({
@@ -173,7 +174,7 @@ describe('completing a job', () => {
     gaps.missing = []
     const result = await updateServiceStatus('job-1', 'completed')
     expect(result.success).toBe(true)
-    expect(db.serviceRecord.update).toHaveBeenCalled()
+    expect(db.serviceRecord.updateMany).toHaveBeenCalled()
   })
 
   it('is never asked of an earlier status', async () => {

@@ -53,10 +53,15 @@ test('a paid invoice is cancelled with a refund, and keeps its number', async ({
   await page.locator('#paymentAmount').fill('300')
   await panel.getByRole('button', { name: 'Save Payment', exact: true }).click()
   await expect(page.getByText('Payment recorded', { exact: true })).toBeVisible()
+  // The customer is offered a message about the payment; there is no mail or
+  // SMS provider here, so the offer is declined once it has appeared.
   const notify = page.getByRole('dialog').filter({ hasText: /^Notify / })
-  if (await notify.isVisible().catch(() => false)) {
-    await notify.getByRole('button', { name: 'Skip', exact: true }).click()
-  }
+  const offered = await notify
+    .waitFor({ state: 'visible', timeout: 5_000 })
+    .then(() => true)
+    .catch(() => false)
+  if (offered) await notify.getByRole('button', { name: 'Skip', exact: true }).click()
+  await expect(notify).toBeHidden()
 
   const number = await page.getByLabel('Invoice Number').inputValue()
   expect(number).not.toBe('')

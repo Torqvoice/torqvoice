@@ -158,7 +158,10 @@ export function ServicePageClient({
 
   // An invoice that went out is cancelled rather than deleted, and a
   // cancelled one is final: the page reads as locked and offers neither.
-  const cancelled = isCancelled(record.status)
+  // Set the moment the cancel succeeds, so the page locks before the refresh
+  // brings the new status back.
+  const [cancelledHere, setCancelledHere] = useState(false)
+  const cancelled = isCancelled(record.status) || cancelledHere
   const wentOut = invoiceWentOut({
     issuedAt: record.issuedAt ? new Date(record.issuedAt) : null,
     sentAt: record.sentAt ? new Date(record.sentAt) : null,
@@ -601,6 +604,10 @@ export function ServicePageClient({
     const result = await cancelServiceRecord({ recordId: record.id, ...request }).catch(() => null)
     if (result?.success) {
       setShowCancelDialog(false)
+      // Taken here, not only from the refresh: the form keeps its own status
+      // while edits are unsaved, and would go on offering the stepper.
+      setCancelledHere(true)
+      formState.setStatus('cancelled')
       toast.success(t('cancelInvoice.done'))
       router.refresh()
     } else {

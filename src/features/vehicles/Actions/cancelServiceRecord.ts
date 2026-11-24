@@ -8,6 +8,7 @@ import { auditDetails } from '@/lib/audit'
 import { getCachedMembership } from '@/lib/cached-session'
 import { hasPermission, PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { notificationBus } from '@/lib/notification-bus'
+import { stopJobClocks } from '@/features/time-tracking/Lib/timeEntries'
 import { invoiceWentOut } from '@/features/invoices/Lib/issuedInvoice'
 import { refundableAmount } from '@/features/invoices/Lib/cancelInvoice'
 import { CANCELLED, isCancelled, statusColumns } from '@/features/work-order-statuses/Lib/stages'
@@ -108,6 +109,10 @@ export async function cancelServiceRecord(input: unknown) {
           })
         }
       })
+
+      // No work is done on a cancelled job: every clock still running on it
+      // stops now, as finishing a job stops them.
+      await stopJobClocks({ organizationId, serviceRecordId: record.id })
 
       notificationBus.emit('workboard', {
         type: 'job_status_changed',
