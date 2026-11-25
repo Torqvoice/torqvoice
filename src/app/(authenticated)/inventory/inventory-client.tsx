@@ -42,7 +42,7 @@ import {
 } from '@/components/ui/context-menu'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
-import { useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import { type ServerBatch, useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
 import {
   InfiniteListCount,
   InfiniteListFooter,
@@ -147,7 +147,7 @@ export function InventoryClient({
   hasAnyReorderPoint = false,
 }: {
   /** The first batch, rendered on the server. */
-  data: InventoryBatch
+  data: ServerBatch<InventoryBatch>
   /** The workshop, so one workshop's cached rows never show in another's. */
   listScope?: string
   search: string

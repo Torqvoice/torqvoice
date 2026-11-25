@@ -1,3 +1,4 @@
+import { stampServerRender } from '@/components/infinite-list/server-render'
 import { getSettings } from '@/features/settings/Actions/settingsActions'
 import type { SettingKey } from '@/features/settings/Schema/settingsSchema'
 import { getShareLinkRows } from '@/features/share-links/Actions/getShareLinkRows'
@@ -37,7 +38,7 @@ export default async function ShareLinksSettingsPage({
   return (
     <ShareLinksSettings
       rules={readShareExpiryRules(settings)}
-      links={linksResult.success && linksResult.data ? linksResult.data : null}
+      links={linksResult.success && linksResult.data ? stampServerRender(linksResult.data) : null}
       baseUrl={getAppBaseUrl()}
       filters={{
         status: one('status') === 'expired' || one('status') === 'all' ? one('status')! : 'active',

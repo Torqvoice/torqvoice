@@ -47,12 +47,19 @@ vi.mock('@/features/customers/Lib/customerList.server', async (original) => {
     customerIdsByVehicleCount: vi.fn(
       async (
         organizationId: string,
-        ids: string[],
+        params: { search?: string },
         dir: 'asc' | 'desc',
         cursor: { v: (string | number | null)[]; id: string } | null | undefined,
         take: number
       ) => {
         if (cursor) countCursorValue(cursor)
+        // The customers the list's own where finds; the SQL's twin of it is
+        // pinned and walked against Postgres on its own.
+        const { inMemoryTable } = await import('@/__tests__/helpers/in-memory-table')
+        const matching = await inMemoryTable(() => customers).findMany({
+          where: real.customerListWhere(organizationId, params),
+        })
+        const ids = matching.map((c: { id: string }) => c.id)
         return countKeysetIds(customers, (c) => c.vehicles.length, {
           organizationId,
           ids,

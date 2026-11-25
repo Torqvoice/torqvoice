@@ -1,3 +1,4 @@
+import { stampServerRender } from '@/components/infinite-list/server-render'
 import { initialCatalogMarkupPercent } from '@/features/inventory/Lib/partPricing'
 import { measureSystemIn } from '@/features/inventory/Lib/units'
 import { resolveCurrencyCode } from '@/lib/currencies'
@@ -91,7 +92,7 @@ export default async function InventoryPage({
       <PageHeader />
       <ListPage>
         <InventoryClient
-          data={result.data}
+          data={stampServerRender(result.data)}
           listScope={authCtx?.organizationId ?? ''}
           search={params.search || ''}
           category={params.category || ''}

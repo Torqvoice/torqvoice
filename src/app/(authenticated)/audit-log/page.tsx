@@ -1,3 +1,4 @@
+import { stampServerRender } from '@/components/infinite-list/server-render'
 import { getAuditLogRows } from '@/features/audit/Actions/getAuditLogRows'
 import { PageHeader } from '@/components/page-header'
 import { ListPage } from '@/components/list-page'
@@ -49,7 +50,7 @@ export default async function AuditLogPage({
       <PageHeader />
       <ListPage>
         <AuditLogClient
-          data={result.data}
+          data={stampServerRender(result.data)}
           listScope={authCtx?.organizationId ?? ''}
           search={params.search || ''}
           actionFilter={params.action || 'all'}

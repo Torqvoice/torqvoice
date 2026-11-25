@@ -1,3 +1,4 @@
+import { stampServerRender } from '@/components/infinite-list/server-render'
 import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { getTranslations } from 'next-intl/server'
 import { getCustomerRows } from '@/features/customers/Actions/getCustomerRows'
@@ -56,7 +57,7 @@ export default async function CustomersPage({
       <PageHeader />
       <ListPage>
         <CustomersClient
-          data={result.data}
+          data={stampServerRender(result.data)}
           listScope={authCtx?.organizationId ?? ''}
           search={params.search || ''}
           sortBy={sort.sortBy || ''}

@@ -104,7 +104,7 @@ describe('the account list', () => {
       <QueryClientProvider client={new QueryClient()}>
         <ConfirmProvider>
           <AdminUsers
-            data={{ rows: [row], nextCursor: null, total: 1 }}
+            data={{ rows: [row], nextCursor: null, total: 1, renderId: 'render-1' }}
             search=""
             sortBy="lastSeen"
             sortOrder="desc"

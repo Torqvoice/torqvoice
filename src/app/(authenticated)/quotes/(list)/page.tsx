@@ -1,3 +1,4 @@
+import { stampServerRender } from '@/components/infinite-list/server-render'
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { resolveListStatus } from '@/lib/list-status-preference.server'
@@ -62,7 +63,7 @@ export default async function QuotesPage({
       <PageHeader />
       <ListPage>
         <QuotesClient
-          data={result.data}
+          data={stampServerRender(result.data)}
           listScope={authCtx?.organizationId ?? ''}
           currencyCode={currencyCode}
           search={params.search || ''}

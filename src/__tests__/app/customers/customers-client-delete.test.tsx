@@ -53,7 +53,7 @@ function renderList() {
     <QueryClientProvider client={new QueryClient()}>
       <ConfirmProvider>
         <CustomersClient
-          data={{ rows: [CUSTOMER], nextCursor: null, total: 1 }}
+          data={{ rows: [CUSTOMER], nextCursor: null, total: 1, renderId: 'render-1' }}
           search=""
           sortBy="name"
           sortOrder="asc"

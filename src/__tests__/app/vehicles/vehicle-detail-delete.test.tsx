@@ -105,7 +105,7 @@ const VEHICLE = {
 }
 
 const empty = { records: [], total: 0, page: 1, pageSize: 20, totalPages: 0 }
-const noBatch = { rows: [], nextCursor: null, total: 0 }
+const noBatch = { rows: [], nextCursor: null, total: 0, renderId: 'render-1' }
 
 function renderPage(vehicle = VEHICLE) {
   render(

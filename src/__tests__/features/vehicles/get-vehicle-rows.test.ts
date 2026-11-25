@@ -33,16 +33,24 @@ vi.mock('@/features/vehicles/Lib/vehicleList.server', async (original) => {
     vehicleIdsByServiceCount: vi.fn(
       async (
         organizationId: string,
-        ids: string[],
-        sortOrder: 'asc' | 'desc' | undefined,
+        params: { sortOrder?: 'asc' | 'desc' },
+        options: Parameters<typeof real.vehicleListWhereWith>[2],
+        now: Date,
         cursor: { v: (string | number | null)[]; id: string } | null | undefined,
         take: number
       ) => {
         if (cursor) countCursorValue(cursor)
-        return countKeysetIds(state.rows as any[], (row) => row.serviceRecords.length, {
+        // The vehicles the list's own where finds; the SQL's twin of it is
+        // pinned and walked against Postgres on its own.
+        const { inMemoryTable } = await import('@/__tests__/helpers/in-memory-table')
+        const matching = await inMemoryTable(() => state.rows).findMany({
+          where: real.vehicleListWhereWith(organizationId, params, options, now),
+        })
+        const ids = matching.map((row) => row.id as string)
+        return countKeysetIds(state.rows as any[], (row: any) => row.serviceRecords.length, {
           organizationId,
           ids,
-          dir: sortOrder || 'desc',
+          dir: params.sortOrder || 'desc',
           cursor,
           take,
         })
@@ -113,16 +121,20 @@ function fixture() {
 }
 
 /**
- * What one long read of the whole list returns, in its order: the first
- * query's where and orderBy over every row. The service count is ordered by
+ * What one long read of the whole list returns, in its order: the list's
+ * where and the first query's orderBy over every row. The service count is ordered by
  * Postgres, so its order is the relation count's, then the id.
  */
 async function oneLongRead(input: Parameters<typeof getVehicleRows>[0]) {
   vi.mocked(db.vehicle.findMany).mockClear()
+  vi.mocked(db.vehicle.count).mockClear()
   await getVehicleRows(input)
   const args = vi.mocked(db.vehicle.findMany).mock.calls[0][0] as any
+  // The list's where, as the total counts it (the service-count sort reads
+  // its batch in SQL, so the first findMany only loads rows by id).
+  const counted = vi.mocked(db.vehicle.count).mock.calls[0][0] as any
   const all = await inMemoryTable(() => state.rows).findMany({
-    where: args.where,
+    where: counted.where,
     orderBy:
       input.sortBy === 'services'
         ? [{ serviceRecords: { _count: input.sortOrder || 'desc' } }, { id: 'asc' }]

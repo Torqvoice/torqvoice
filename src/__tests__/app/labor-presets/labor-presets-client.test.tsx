@@ -60,7 +60,7 @@ function renderList() {
     <QueryClientProvider client={new QueryClient()}>
       <ConfirmProvider>
         <LaborPresetsClient
-          data={{ rows: [PRESET], nextCursor: null, total: 1 }}
+          data={{ rows: [PRESET], nextCursor: null, total: 1, renderId: 'render-1' }}
           search=""
           sortBy="name"
           sortOrder="asc"

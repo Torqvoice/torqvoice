@@ -1,3 +1,4 @@
+import { stampServerRender } from '@/components/infinite-list/server-render'
 import { getObservationRows } from '@/features/vehicles/Actions/getObservationRows'
 import { observationStatusFilter } from '@/features/vehicles/Lib/observationFilters'
 import { getAuthContext } from '@/lib/get-auth-context'
@@ -48,7 +49,7 @@ export default async function ObservationsPage({
       <PageHeader />
       <ListPage>
         <ObservationsClient
-          data={result.data}
+          data={stampServerRender(result.data)}
           listScope={authCtx?.organizationId ?? ''}
           search={params.search || ''}
           statusFilter={observationStatusFilter(params.status)}

@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import { type ServerBatch, useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
 import {
   InfiniteListCount,
   InfiniteListFooter,
@@ -77,7 +77,7 @@ export function PartDetailClient({
 }: {
   part: Part
   /** The history's first batch, rendered on the server. */
-  movements: MovementBatch
+  movements: ServerBatch<MovementBatch>
   /** The workshop, so one workshop's cached rows never show in another's. */
   listScope?: string
   reason: string

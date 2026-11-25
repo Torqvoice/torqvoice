@@ -22,7 +22,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import { type ServerBatch, useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
 import {
   InfiniteListCount,
   InfiniteListFooter,
@@ -98,7 +98,7 @@ interface BillingBatch {
 
 interface BillingClientProps {
   /** The first batch, rendered on the server. */
-  data: BillingBatch
+  data: ServerBatch<BillingBatch>
   /** The workshop, so one workshop's cached rows never show in another's. */
   listScope?: string
   currencyCode?: string

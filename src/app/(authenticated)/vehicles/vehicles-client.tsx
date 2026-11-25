@@ -33,7 +33,7 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import { useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import { type ServerBatch, useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
 import {
   InfiniteListCount,
   InfiniteListFooter,
@@ -144,7 +144,7 @@ export function VehiclesClient({
   hasInspectionData = false,
 }: {
   /** The first batch, rendered on the server. */
-  data: VehicleBatch
+  data: ServerBatch<VehicleBatch>
   /** The workshop, so one workshop's cached rows never show in another's. */
   listScope?: string
   search: string

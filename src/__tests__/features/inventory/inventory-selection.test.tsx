@@ -98,7 +98,12 @@ function part(i: number) {
 }
 // Small batches keep the render quick; the list does not care how big they are.
 const all = Array.from({ length: 16 }, (_, i) => part(i + 1))
-const firstBatch = { rows: all.slice(0, 10), nextCursor: { v: ['x'], id: 'p10' }, total: 16 }
+const firstBatch = {
+  rows: all.slice(0, 10),
+  nextCursor: { v: ['x'], id: 'p10' },
+  total: 16,
+  renderId: 'render-1',
+}
 
 let client: QueryClient
 function list(category = '') {

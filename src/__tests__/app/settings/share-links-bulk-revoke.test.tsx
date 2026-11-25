@@ -88,6 +88,7 @@ const first = {
   nextCursor: { v: [link(49).sharedAt], id: 'invoice:inv-049' },
   total: 70,
   counts: { active: 70, expired: 0 },
+  renderId: 'render-1',
 }
 const second = {
   organizationId: 'org-1',
@@ -104,7 +105,7 @@ const RULES = {
 type Filters = { status: string; kind: string; search: string }
 const ALL: Filters = { status: 'active', kind: 'all', search: '' }
 
-function renderPage() {
+function renderPage(firstBatch: typeof first = first) {
   const client = new QueryClient()
   const page = (links: typeof first, filters: Filters) => (
     <QueryClientProvider client={client}>
@@ -118,7 +119,7 @@ function renderPage() {
       </ConfirmProvider>
     </QueryClientProvider>
   )
-  const view = render(page(first, ALL))
+  const view = render(page(firstBatch, ALL))
   return {
     /** The server page again, as a filter, search or sort change renders it. */
     show: (filters: Filters) => view.rerender(page({ ...first, rows: [...first.rows] }, filters)),
@@ -206,4 +207,52 @@ describe('bulk revoke on a list that loads as it scrolls', () => {
     },
     20_000
   )
+})
+
+describe('an invoice and a quote with the same id', () => {
+  // Each kind of document numbers its own ids, so two links can carry one.
+  const invoice = { ...link(0), id: 'doc-1', label: 'INV-1', href: '/sales/doc-1' }
+  const quote = {
+    ...link(1),
+    kind: 'quote' as const,
+    id: 'doc-1',
+    token: 'tq',
+    label: 'Q-1',
+    href: '/quotes/doc-1',
+  }
+
+  it('shows both links, the first batch and the next, and removes both', async () => {
+    getShareLinkRows.mockResolvedValue({
+      success: true,
+      data: { organizationId: 'org-1', rows: [quote], nextCursor: null },
+    })
+    renderPage({
+      ...first,
+      rows: [invoice],
+      nextCursor: { v: [invoice.sharedAt], id: 'invoice:doc-1' },
+      total: 2,
+    })
+
+    endInSight()
+    expect(await screen.findAllByText('Q-1')).not.toHaveLength(0)
+    expect(screen.getAllByText('INV-1')).not.toHaveLength(0)
+    expect(screen.getByText('2 results')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Select all links shown' }))
+    expect(screen.getByText('2 links selected')).toBeInTheDocument()
+    revokeShareLinks.mockResolvedValue({ success: true, data: { removed: 2 } })
+    fireEvent.click(screen.getByRole('button', { name: 'Remove selected' }))
+    const question = await screen.findByRole('alertdialog')
+    await act(async () => {
+      fireEvent.click(within(question).getByRole('button', { name: 'Remove selected' }))
+    })
+
+    // Each link goes by its own kind and the document's own id.
+    expect(revokeShareLinks).toHaveBeenCalledWith({
+      links: [
+        { kind: 'invoice', id: 'doc-1' },
+        { kind: 'quote', id: 'doc-1' },
+      ],
+    })
+  }, 20_000)
 })

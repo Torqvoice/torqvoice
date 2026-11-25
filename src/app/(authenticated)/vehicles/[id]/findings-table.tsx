@@ -27,7 +27,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import { useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import { type ServerBatch, useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
 import {
   InfiniteListCount,
   InfiniteListFooter,
@@ -61,7 +61,7 @@ export interface FindingBatch {
 interface FindingsTableProps {
   vehicleId: string
   /** The first batch, rendered on the server; the rest load as the list scrolls. */
-  initial: FindingBatch
+  initial: ServerBatch<FindingBatch>
   /**
    * Where the sticky header stops: under the page header while the window
    * scrolls, at the top of the box when the list sits in one.

@@ -166,11 +166,12 @@ function renderPage() {
       <VehicleDetailClient
         vehicle={VEHICLE}
         paginatedServices={empty}
-        noteBatch={{ rows: [], nextCursor: null, total: 0 }}
+        noteBatch={{ rows: [], nextCursor: null, total: 0, renderId: 'render-1' }}
         findingBatch={{
           rows: [finding('f1', 'Front pads worn'), finding('f2', 'Wiper blades torn')],
           nextCursor: null,
           total: 2,
+          renderId: 'render-1',
         }}
         serviceSearch=""
         serviceRecordType=""

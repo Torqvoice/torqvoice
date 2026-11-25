@@ -8,8 +8,10 @@ import type { Cursor } from '@/lib/keyset'
  * Prisma can order by a relation's count but not filter on one, so it cannot
  * ask for "the rows after this count". Paging by position instead skips a row
  * whenever one above the boundary is deleted between batches. These sorts ask
- * Postgres directly for the ordered ids after the last row's count and id,
- * and the list then loads those rows through Prisma as usual.
+ * Postgres directly for one batch of ids after the last row's count and id,
+ * with the list's own filters written out in SQL beside its Prisma `where`
+ * (kept in step by the tests that pin both, and by a database test that
+ * walks both), and the list then loads those rows through Prisma by id.
  *
  * The cursor is the last row's count and id: `{ v: [count], id }`.
  */
@@ -52,4 +54,14 @@ export function inIdOrder<T extends { id: string }>(ids: string[], rows: T[]): T
     const row = byId.get(id)
     return row ? [row] : []
   })
+}
+
+/**
+ * Prisma's `contains` with `mode: 'insensitive'`, the way Prisma 7 sends it
+ * to Postgres: `column ILIKE ('%' || term || '%')`, the term as typed. Prisma
+ * escapes none of `%`, `_` or `\` in it, so neither does this; a search for
+ * "50%" finds the same rows in both. The term travels as a parameter.
+ */
+export function containsInsensitive(column: Prisma.Sql, term: string): Prisma.Sql {
+  return Prisma.sql`${column} ILIKE ('%' || ${term} || '%')`
 }

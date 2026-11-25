@@ -1,3 +1,4 @@
+import { stampServerRender } from '@/components/infinite-list/server-render'
 import { notFound } from 'next/navigation'
 import { db } from '@/lib/db'
 import { getCachedMembership, getCachedSession } from '@/lib/cached-session'
@@ -76,7 +77,7 @@ export default async function TireHotelPage({
       <PageHeader />
       <ListPage>
         <TireHotelClient
-          data={data}
+          data={stampServerRender(data)}
           listScope={organizationId}
           locations={locations}
           vehicles={vehicles}

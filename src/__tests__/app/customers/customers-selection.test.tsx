@@ -81,6 +81,7 @@ const firstBatch = {
   rows: all.slice(0, 10),
   nextCursor: { v: ['x'], id: 'c10' },
   total: 16,
+  renderId: 'render-1',
 }
 
 let client: QueryClient

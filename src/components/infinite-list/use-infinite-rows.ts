@@ -18,11 +18,15 @@ import type { ActionResult } from '@/lib/with-auth'
  * where it was. The key is everything the server query depends on: the
  * workshop, the search, the filters and the sort.
  *
- * New server data for the same list (a `router.refresh()` after an edit, a
+ * Every server render of the page (a `router.refresh()` after an edit, a
  * revalidation) replaces the first batch at once and re-reads the batches
- * after it in the background, so a status change shows without the list
- * losing its place. A new key (another filter, search or sort) starts at the
- * first batch again.
+ * after it in the background, so an edit to a row far down the list shows
+ * without the list losing its place. The page tells a new render from an old
+ * one by the `renderId` it stamps on the first batch (`stampServerRender` in
+ * ./server-render.ts), not by comparing rows: an edit in the third batch
+ * leaves the first one as it was. A client re-render, and Back to a page the
+ * router kept, hand over the same stamp and read nothing. A new key (another
+ * filter, search or sort) starts at the first batch again.
  */
 
 export type InfinitePage<Row, Cursor> = {
@@ -33,13 +37,21 @@ export type InfinitePage<Row, Cursor> = {
   total?: number
 }
 
+/**
+ * The first batch as a server page hands it over: stamped with an id that is
+ * new on every server render of the page (see ./server-render.ts).
+ */
+export type ServerBatch<P> = P & { renderId: string }
+
 type Pages<P> = InfiniteData<P, unknown>
 
 /** How long a batch may take before the list stops waiting and offers Retry. */
 const BATCH_TIMEOUT_MS = 20_000
 
-/** What each list was last handed by its server page, to tell new data from a re-render. */
-const seenFirstBatch = new Map<string, string>()
+/** The server render each list last showed, to tell a new render from a re-render. */
+const seenRender = new Map<string, string>()
+
+const rowId = (row: { id: string }) => row.id
 
 export function useInfiniteRows<
   Row extends { id: string },
@@ -49,12 +61,19 @@ export function useInfiniteRows<
   queryKey,
   initial,
   fetchPage,
+  rowKey = rowId,
 }: {
   queryKey: readonly unknown[]
   /** The first batch, as the server rendered it. */
-  initial: P
+  initial: ServerBatch<P>
   /** One batch: the first when `cursor` is null. */
   fetchPage: (cursor: Cursor | null) => Promise<ActionResult<P>>
+  /**
+   * What tells one row from another in this list, when the id alone does not
+   * (a list of several kinds of document, each numbering its own). Keep it a
+   * stable function, defined outside the component.
+   */
+  rowKey?: (row: Row) => string
 }) {
   const queryClient = useQueryClient()
   const listKey = JSON.stringify(queryKey)
@@ -96,11 +115,11 @@ export function useInfiniteRows<
     retryDelay: 500,
   })
 
-  // New server data, or another list. Runs before paint, so neither shows a
-  // frame of the old rows.
+  // A new server render, or another list. Runs before paint, so neither
+  // shows a frame of the old rows.
   const previousKey = useRef<{ key: string; queryKey: readonly unknown[] } | null>(null)
+  const renderId = initial.renderId
   useLayoutEffect(() => {
-    const fingerprint = JSON.stringify(initial)
     const left = previousKey.current
     const keyChanged = left !== null && left.key !== listKey
     previousKey.current = { key: listKey, queryKey }
@@ -108,28 +127,34 @@ export function useInfiniteRows<
       // The list left behind is let go, so coming back to that filter later
       // starts at its top rather than wherever it was scrolled to.
       queryClient.removeQueries({ queryKey: left.queryKey, exact: true })
-      seenFirstBatch.delete(left.key)
+      seenRender.delete(left.key)
     }
+    const fresh = seenRender.get(listKey) !== renderId
+    seenRender.set(listKey, renderId)
     const cached = queryClient.getQueryData<Pages<P>>(queryKey)
 
     if (keyChanged || !cached || cached.pages.length <= 1) {
       // Another filter, search or sort starts over at the first batch.
-      seenFirstBatch.set(listKey, fingerprint)
-      if (cached && (cached.pages.length > 1 || cached.pages[0] !== initial)) {
+      if (
+        cached &&
+        (cached.pages.length > 1 || ((fresh || keyChanged) && cached.pages[0] !== initial))
+      ) {
         queryClient.setQueryData<Pages<P>>(queryKey, { pages: [initial], pageParams: [null] })
       }
       return
     }
-    if (seenFirstBatch.get(listKey) === fingerprint) return
-    seenFirstBatch.set(listKey, fingerprint)
-    // The same list with something changed in it: show the new first batch
-    // now and bring the rest up to date behind it.
+    // A client re-render, or Back to a page the router kept: the rows on
+    // screen are the ones this render was made with.
+    if (!fresh) return
+    // The same list rendered again on the server: show its first batch now
+    // and bring the rest up to date behind it, whether or not the first
+    // batch changed, since an edit may be in any of them.
     queryClient.setQueryData<Pages<P>>(queryKey, {
       pages: [initial, ...cached.pages.slice(1)],
       pageParams: cached.pageParams,
     })
     void queryClient.refetchQueries({ queryKey, exact: true })
-  }, [listKey, initial, queryClient])
+  }, [listKey, renderId, initial, queryClient])
 
   const pages = query.data?.pages ?? [initial]
   const rows = useMemo(() => {
@@ -139,13 +164,14 @@ export function useInfiniteRows<
     const out: Row[] = []
     for (const page of pages) {
       for (const row of page.rows) {
-        if (seen.has(row.id)) continue
-        seen.add(row.id)
+        const key = rowKey(row)
+        if (seen.has(key)) continue
+        seen.add(key)
         out.push(row)
       }
     }
     return out
-  }, [pages])
+  }, [pages, rowKey])
 
   const firstPage = pages[0]
   const total = firstPage.total ?? rows.length

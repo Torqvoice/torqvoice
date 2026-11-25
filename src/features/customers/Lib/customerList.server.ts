@@ -1,7 +1,7 @@
 import { Prisma } from '@/generated/prisma/client'
 import { db } from '@/lib/db'
 import { type Cursor, keysetColumn, type KeysetPart } from '@/lib/keyset'
-import { countKeysetSql } from '@/lib/keyset-count'
+import { containsInsensitive, countKeysetSql } from '@/lib/keyset-count'
 
 /**
  * The customer list's query, in one place: the page's first batch and every
@@ -67,32 +67,50 @@ export function customerListSort(sortBy?: string, sortOrder?: 'asc' | 'desc'): C
 }
 
 /**
- * One batch of the vehicle-count sort: the ids of `matchingIds` (the
- * customers the list's own where found) after the cursor, most or fewest
- * vehicles first and then by id, with each one's count for the next cursor.
+ * `customerListWhere` in SQL, for the vehicle-count sort, over the customers
+ * table as `c`. Every condition there has its twin here; the tests pin both
+ * (customer-count-sql.test.ts) and walk both against Postgres
+ * (count-sort.db.test.ts), so a filter added to one and not the other fails.
+ */
+export function customerListWhereSql(organizationId: string, params: CustomerListFilters) {
+  const clauses: Prisma.Sql[] = [Prisma.sql`c."organizationId" = ${organizationId}`]
+  const search = params.search?.trim()
+  if (search) {
+    // Every word has to match some field, as in customerListWhere.
+    for (const word of search.split(/\s+/).filter(Boolean)) {
+      const fields = FIELDS.map((field) => containsInsensitive(Prisma.raw(`c."${field}"`), word))
+      clauses.push(Prisma.sql`(${Prisma.join(fields, ' OR ')})`)
+    }
+  }
+  return Prisma.join(clauses, ' AND ')
+}
+
+/**
+ * One batch of the vehicle-count sort: the customers the list's filters find,
+ * after the cursor, most or fewest vehicles first and then by id, with each
+ * one's count for the next cursor. One query does the filtering, counting,
+ * ordering and cutting, so a batch costs the same however long the list is.
  * A vehicle is counted the way the list's `_count` counts it: every vehicle
  * of the customer, archived ones too.
  */
 export async function customerIdsByVehicleCount(
   organizationId: string,
-  matchingIds: string[],
+  params: CustomerListFilters,
   dir: 'asc' | 'desc',
   cursor: Cursor | null | undefined,
   take: number
 ): Promise<{ id: string; count: number }[]> {
-  // Checked before the early return, so a bad cursor is refused either way.
   const { having, orderBy } = countKeysetSql(
     Prisma.sql`COUNT(v."id")`,
     Prisma.sql`c."id"`,
     dir,
     cursor
   )
-  if (matchingIds.length === 0) return []
   return db.$queryRaw<{ id: string; count: number }[]>`
     SELECT c."id", COUNT(v."id")::int AS "count"
     FROM "public"."customers" c
     LEFT JOIN "public"."vehicles" v ON v."customerId" = c."id"
-    WHERE c."organizationId" = ${organizationId} AND c."id" = ANY(${matchingIds}::text[])
+    WHERE ${customerListWhereSql(organizationId, params)}
     GROUP BY c."id"
     HAVING ${having}
     ORDER BY ${orderBy}

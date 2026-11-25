@@ -23,7 +23,7 @@ import { useCallback, useMemo, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 import { AppCard } from '@/components/app-card'
 import { useConfirm } from '@/components/confirm-dialog'
-import { useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import { type ServerBatch, useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
 import {
   InfiniteListCount,
   InfiniteListFooter,
@@ -98,6 +98,13 @@ const STATUS_FILTERS = ['active', 'expired', 'all'] as const
 const KIND_FILTERS = ['all', 'invoice', 'quote', 'inspection', 'statusReport'] as const
 
 type Filters = { status: string; kind: string; search: string }
+
+/**
+ * A row's place in the list: an invoice and a quote can share an id, so a
+ * row is known by its kind as well. The links themselves (copy, open, revoke,
+ * expiry, bulk revoke) still use the document's own id.
+ */
+const listKeyOf = (row: ShareLinkRow) => `${row.kind}:${row.id}`
 
 /**
  * The workshop's rule for each kind of document: never, or a number of days
@@ -333,7 +340,7 @@ function LinksCard({
   filters,
 }: {
   /** The first batch, rendered on the server. */
-  links: ShareLinkBatch
+  links: ServerBatch<ShareLinkBatch>
   baseUrl: string
   filters: Filters
 }) {
@@ -351,6 +358,7 @@ function LinksCard({
     queryKey: ['share-links', links.organizationId, filters],
     initial: links,
     fetchPage: (cursor) => getShareLinkRows({ ...filters, cursor }),
+    rowKey: listKeyOf,
   })
   const rows = list.rows
   const counts = list.firstPage.counts ?? { active: 0, expired: 0 }
@@ -377,14 +385,13 @@ function LinksCard({
   const tc = useTranslations('common')
   const confirm = useConfirm()
   const { canEdit } = useSettingsPermission()
-  const keyOf = (row: ShareLinkRow) => `${row.kind}:${row.id}`
-  // An invoice and a quote can share an id, so a row is known by its kind
-  // as well. Only loaded rows can be ticked; another search, filter or sort
-  // is another list and starts with nothing ticked, as everywhere else.
+  const keyOf = listKeyOf
+  // Only loaded rows can be ticked; another search, filter or sort is
+  // another list and starts with nothing ticked, as everywhere else.
   const selectable = useMemo(
     () =>
       (canEdit ? rows.filter((row) => row.kind !== 'statusReport') : []).map((row) => ({
-        id: `${row.kind}:${row.id}`,
+        id: listKeyOf(row),
         row,
       })),
     [canEdit, rows]
@@ -698,7 +705,7 @@ export function ShareLinksSettings({
   filters,
 }: {
   rules: ShareExpiryRules
-  links: ShareLinkBatch | null
+  links: ServerBatch<ShareLinkBatch> | null
   baseUrl: string
   filters: Filters
 }) {

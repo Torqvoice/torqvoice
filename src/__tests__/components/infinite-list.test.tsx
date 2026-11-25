@@ -13,7 +13,11 @@ import {
   InfiniteListCount,
   InfiniteListFooter,
 } from '@/components/infinite-list/infinite-list-footer'
-import { type InfinitePage, useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import {
+  type InfinitePage,
+  type ServerBatch,
+  useInfiniteRows,
+} from '@/components/infinite-list/use-infinite-rows'
 import type { ActionResult } from '@/lib/with-auth'
 
 type Row = { id: string; name: string }
@@ -67,8 +71,14 @@ function server(all: Row[]) {
   })
 }
 
-function firstBatch(all: Row[]): Page {
-  return { rows: all.slice(0, 50), nextCursor: all.length > 50 ? 50 : null, total: all.length }
+/** The first batch as one server render of the page hands it over. */
+function firstBatch(all: Row[], renderId = 'render-1'): ServerBatch<Page> {
+  return {
+    rows: all.slice(0, 50),
+    nextCursor: all.length > 50 ? 50 : null,
+    total: all.length,
+    renderId,
+  }
 }
 
 function Harness({
@@ -77,7 +87,7 @@ function Harness({
   fetchPage,
 }: {
   filter: string
-  initial: Page
+  initial: ServerBatch<Page>
   fetchPage: (cursor: number | null) => Promise<ActionResult<Page>>
 }) {
   const list = useInfiniteRows<Row, number, Page>({
@@ -381,10 +391,49 @@ describe('the same list changing', () => {
 
     // An edit elsewhere; the server page re-renders with the new first batch.
     all[0] = { id: 'a1', name: 'a job 1, renamed' }
-    view.rerender({ filter: 'one', initial: firstBatch(all), fetchPage })
+    view.rerender({ filter: 'one', initial: firstBatch(all, 'render-2'), fetchPage })
 
     expect(screen.getByText('a job 1, renamed')).toBeInTheDocument()
     await waitFor(() => expect(screen.getAllByRole('listitem')).toHaveLength(120))
+  })
+
+  it('re-reads the later batches after a refresh, even when the first batch is the same', async () => {
+    const all = rowsOf('a', 120)
+    const fetchPage = server(all)
+    const view = show({ filter: 'one', initial: firstBatch(all), fetchPage })
+    endInSight(true)
+    await waitFor(() => expect(screen.getAllByRole('listitem')).toHaveLength(120))
+    endInSight(false)
+
+    // A row in the second batch is edited and saved; the form calls
+    // router.refresh() and the page renders again with the same first batch.
+    all[69] = { id: 'a70', name: 'a job 70, edited' }
+    view.rerender({ filter: 'one', initial: firstBatch(all, 'render-2'), fetchPage })
+
+    expect(await screen.findByText('a job 70, edited')).toBeInTheDocument()
+    expect(screen.queryByText('a job 70')).not.toBeInTheDocument()
+    // Nothing went missing while it was re-read.
+    expect(screen.getAllByRole('listitem')).toHaveLength(120)
+  })
+
+  it('reads nothing on a client re-render or Back to a page the router kept', async () => {
+    const all = rowsOf('a', 120)
+    const fetchPage = server(all)
+    const view = show({ filter: 'one', initial: firstBatch(all), fetchPage })
+    endInSight(true)
+    await waitFor(() => expect(screen.getAllByRole('listitem')).toHaveLength(120))
+    endInSight(false)
+    const calls = fetchPage.mock.calls.length
+
+    // A parent re-rendering hands over a copy of the same render.
+    view.rerender({ filter: 'one', initial: firstBatch(all), fetchPage })
+    // Leaving and pressing Back mounts the list again with that render.
+    view.unmount()
+    show({ filter: 'one', initial: firstBatch(all), fetchPage })
+
+    expect(screen.getAllByRole('listitem')).toHaveLength(120)
+    await new Promise((resolve) => setTimeout(resolve, 50))
+    expect(fetchPage).toHaveBeenCalledTimes(calls)
   })
 })
 

@@ -58,12 +58,11 @@ export async function getCustomerRows(input: z.input<typeof inputSchema>) {
             return { rows, nextCursor }
           }
 
-          // By vehicle count: the customers the search finds, ordered and
-          // cut after the cursor by Postgres, then loaded in that order.
-          const matching = await db.customer.findMany({ where, select: { id: true } })
+          // By vehicle count: one batch of ids, filtered, ordered and cut
+          // after the cursor by Postgres, then loaded in that order.
           const ordered = await customerIdsByVehicleCount(
             organizationId,
-            matching.map((customer) => customer.id),
+            params,
             sort.dir,
             params.cursor,
             CUSTOMER_BATCH_SIZE + 1

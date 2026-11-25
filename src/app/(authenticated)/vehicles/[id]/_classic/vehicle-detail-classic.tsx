@@ -1,5 +1,6 @@
 'use client'
 
+import type { ServerBatch } from '@/components/infinite-list/use-infinite-rows'
 import { VehicleMeters } from '@/features/meters/Components/VehicleMeters'
 import { VehicleEquipment } from '@/features/equipment/Components/VehicleEquipment'
 import type { VehicleEquipmentView } from '@/features/equipment/Lib/equipment.server'
@@ -241,9 +242,9 @@ export function VehicleDetailClassic({
 }: {
   vehicle: VehicleDetail
   /** The first batch of each list; the rest load as the list scrolls. */
-  serviceBatch: ServiceRecordBatch
-  noteBatch: NoteBatch
-  findingBatch: FindingBatch
+  serviceBatch: ServerBatch<ServiceRecordBatch>
+  noteBatch: ServerBatch<NoteBatch>
+  findingBatch: ServerBatch<FindingBatch>
   /** Empty unless the shop runs a tire hotel and this vehicle has sets in it. */
   tireSets?: VehicleTireSet[]
   /** The workshop's meters in use (empty while meters are off) and this vehicle's. */

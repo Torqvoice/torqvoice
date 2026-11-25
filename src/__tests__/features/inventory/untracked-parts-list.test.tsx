@@ -104,7 +104,7 @@ function renderList(parts: Part[]) {
   render(
     <QueryClientProvider client={new QueryClient()}>
       <InventoryClient
-        data={{ rows: parts, nextCursor: null, total: parts.length }}
+        data={{ rows: parts, nextCursor: null, total: parts.length, renderId: 'render-1' }}
         search=""
         category=""
         categories={[]}

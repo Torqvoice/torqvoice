@@ -33,7 +33,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import { useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import { type ServerBatch, useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
 import {
   InfiniteListCount,
   InfiniteListFooter,
@@ -100,7 +100,7 @@ export interface ServiceRecordBatch {
 interface ServiceRecordsTableProps {
   vehicleId: string
   /** The first batch, rendered on the server; the rest load as the list scrolls. */
-  initial: ServiceRecordBatch
+  initial: ServerBatch<ServiceRecordBatch>
   search: string
   type: string
   currencyCode?: string

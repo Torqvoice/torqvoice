@@ -7,7 +7,8 @@ import {
   vehicleIdsByServiceCount,
   vehicleListInclude,
   vehicleListSort,
-  vehicleListWhere,
+  vehicleListWhereWith,
+  vehicleSearchOptions,
 } from '@/features/vehicles/Lib/vehicleList.server'
 import { db } from '@/lib/db'
 import { type Cursor, cursorSchema, keysetAfter, keysetCursor, keysetOrderBy } from '@/lib/keyset'
@@ -34,7 +35,11 @@ export async function getVehicleRows(input: z.input<typeof inputSchema>) {
   return withAuth(
     async ({ organizationId }) => {
       const params = inputSchema.parse(input)
-      const where = await vehicleListWhere(organizationId, params)
+      // One reading of the settings and the clock for the Prisma where and,
+      // on the service-count sort, its SQL twin.
+      const options = await vehicleSearchOptions(organizationId, params)
+      const now = new Date()
+      const where = vehicleListWhereWith(organizationId, params, options, now)
       const sort = vehicleListSort(params)
       const first = !params.cursor
 
@@ -70,13 +75,13 @@ export async function getVehicleRows(input: z.input<typeof inputSchema>) {
           }
         }
 
-        // By service count: the vehicles the filters find, ordered and cut
+        // By service count: one batch of ids, filtered, ordered and cut
         // after the cursor by Postgres, then loaded in that order.
-        const matching = await db.vehicle.findMany({ where, select: { id: true } })
         const ordered = await vehicleIdsByServiceCount(
           organizationId,
-          matching.map((vehicle) => vehicle.id),
-          params.sortOrder,
+          params,
+          options,
+          now,
           params.cursor,
           VEHICLE_BATCH_SIZE + 1
         )

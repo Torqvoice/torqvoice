@@ -29,7 +29,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import { useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import { type ServerBatch, useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
 import {
   InfiniteListCount,
   InfiniteListFooter,
@@ -90,7 +90,7 @@ export function AuditLogClient({
   userFilter,
 }: {
   /** The first batch, rendered on the server. */
-  data: AuditLogBatch
+  data: ServerBatch<AuditLogBatch>
   /** The workshop, so one workshop's cached rows never show in another's. */
   listScope?: string
   search: string

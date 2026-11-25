@@ -218,6 +218,28 @@ describe('the share links list in batches', () => {
     })
   })
 
+  it('keeps an invoice and a quote with the same id apart across a batch boundary', async () => {
+    const at = new Date(Date.UTC(2026, 10, 1, 9))
+    // 49 newer invoices, then an invoice and a quote shared in the same
+    // moment with the same id: the first batch ends on the invoice.
+    state.invoices = Array.from({ length: 50 }, (_, i) => ({
+      ...state.invoices[0],
+      organizationId: 'org-1',
+      id: i === 49 ? 'same' : `inv-n${String(i).padStart(2, '0')}`,
+      sharedAt: i === 49 ? at : new Date(at.getTime() + (50 - i) * 1000),
+    }))
+    state.quotes = [{ ...state.quotes[0], id: 'same', publicToken: 't-same', sharedAt: at }]
+    state.inspections = []
+    state.reports = []
+
+    const first = await getShareLinkRows({ status: 'all' })
+    expect(first.data?.nextCursor?.id).toBe('invoice:same')
+    const { rows } = await walk({ status: 'all' })
+    const same = rows.filter((r) => r.id === 'same').map((r) => r.kind)
+    expect(same).toEqual(['invoice', 'quote'])
+    expect(rows).toHaveLength(first.data?.total ?? -1)
+  })
+
   it('refuses a cursor that does not fit the list', async () => {
     const result = await getShareLinkRows({ cursor: { v: [3], id: 'invoice:x' } })
     expect(result.success).toBe(false)

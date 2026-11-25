@@ -1,3 +1,4 @@
+import { stampServerRender } from '@/components/infinite-list/server-render'
 import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { cookies } from 'next/headers'
 import { getTranslations } from 'next-intl/server'
@@ -71,7 +72,7 @@ export default async function VehiclesPage({
       <PageHeader />
       <ListPage>
         <VehiclesClient
-          data={result.data}
+          data={stampServerRender(result.data)}
           listScope={authCtx?.organizationId ?? ''}
           search={params.search || ''}
           sortBy={sort.sortBy || ''}

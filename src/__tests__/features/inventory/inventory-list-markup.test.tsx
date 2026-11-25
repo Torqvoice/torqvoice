@@ -74,7 +74,7 @@ vi.mock('@/features/inventory/Actions/getInventoryRows', () => ({ getInventoryRo
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { InventoryClient } from '@/app/(authenticated)/inventory/inventory-client'
 
-const emptyList = { rows: [], nextCursor: null, total: 0 }
+const emptyList = { rows: [], nextCursor: null, total: 0, renderId: 'render-1' }
 
 function renderList(props: Partial<React.ComponentProps<typeof InventoryClient>> = {}) {
   render(

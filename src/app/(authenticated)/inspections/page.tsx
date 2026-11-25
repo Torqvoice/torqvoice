@@ -1,3 +1,4 @@
+import { stampServerRender } from '@/components/infinite-list/server-render'
 import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { resolveListStatus } from '@/lib/list-status-preference.server'
 import { getInspectionRows } from '@/features/inspections/Actions/getInspectionRows'
@@ -59,7 +60,7 @@ export default async function InspectionsPage({
       <PageHeader />
       <ListPage>
         <InspectionsClient
-          data={result.data}
+          data={stampServerRender(result.data)}
           listScope={authCtx?.organizationId ?? ''}
           templates={templates}
           search={params.search || ''}

@@ -1,3 +1,4 @@
+import { stampServerRender } from '@/components/infinite-list/server-render'
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { activeMeterTypes, vehicleMeterViews } from '@/features/meters/Lib/meters.server'
 import { vehicleEquipmentView } from '@/features/equipment/Lib/equipment.server'
@@ -154,10 +155,17 @@ export default async function VehicleDetailPage({
       : { records: [], total: 0, page: 1, pageSize: 10, totalPages: 0 }
 
   const noBatch = { rows: [], nextCursor: null, total: 0 }
-  const serviceBatch =
+  // Stamped with this render, so the tables re-read what they have loaded
+  // after a refresh (stampServerRender).
+  const serviceBatch = stampServerRender(
     serviceBatchResult?.success && serviceBatchResult.data ? serviceBatchResult.data : noBatch
-  const noteBatch = notesResult.success && notesResult.data ? notesResult.data : noBatch
-  const findingBatch = findingsResult.success && findingsResult.data ? findingsResult.data : noBatch
+  )
+  const noteBatch = stampServerRender(
+    notesResult.success && notesResult.data ? notesResult.data : noBatch
+  )
+  const findingBatch = stampServerRender(
+    findingsResult.success && findingsResult.data ? findingsResult.data : noBatch
+  )
 
   const currencySettings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
   const currencyCode = resolveCurrencyCode(currencySettings[SETTING_KEYS.CURRENCY_CODE])

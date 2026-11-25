@@ -28,7 +28,7 @@ function renderList(statusFilter: string) {
   render(
     <QueryClientProvider client={new QueryClient()}>
       <ObservationsClient
-        data={{ rows: [], nextCursor: null, total: 0 }}
+        data={{ rows: [], nextCursor: null, total: 0, renderId: 'render-1' }}
         search=""
         statusFilter={statusFilter}
         severityFilter="all"

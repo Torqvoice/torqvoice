@@ -1,3 +1,4 @@
+import { stampServerRender } from '@/components/infinite-list/server-render'
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { getInventoryPartsList } from '@/features/inventory/Actions/inventoryActions'
@@ -77,7 +78,7 @@ export default async function LaborPresetsPage({
       <PageHeader />
       <ListPage>
         <LaborPresetsClient
-          data={result.data}
+          data={stampServerRender(result.data)}
           listScope={authCtx?.organizationId ?? ''}
           search={params.search || ''}
           sortBy={sort.sortBy || ''}

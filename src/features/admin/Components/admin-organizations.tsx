@@ -24,7 +24,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import { type ServerBatch, useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
 import {
   InfiniteListCount,
   InfiniteListFooter,
@@ -58,7 +58,7 @@ export function AdminOrganizations({
   search,
 }: {
   /** The first batch, rendered on the server. */
-  data: OrgBatch
+  data: ServerBatch<OrgBatch>
   search: string
 }) {
   const router = useRouter()

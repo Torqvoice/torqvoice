@@ -1,3 +1,4 @@
+import { stampServerRender } from '@/components/infinite-list/server-render'
 import { measureSystemIn } from '@/features/inventory/Lib/units'
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { notFound } from 'next/navigation'
@@ -62,7 +63,7 @@ export default async function InventoryPartDetailPage({
       <PageHeader />
       <PartDetailClient
         part={partResult.data}
-        movements={movements}
+        movements={stampServerRender(movements)}
         listScope={authCtx?.organizationId ?? ''}
         reason={sp.reason ?? ''}
         currencyCode={resolveCurrencyCode(settings[SETTING_KEYS.CURRENCY_CODE])}

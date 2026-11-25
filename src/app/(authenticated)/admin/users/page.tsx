@@ -1,3 +1,4 @@
+import { stampServerRender } from '@/components/infinite-list/server-render'
 import { getUserRows } from '@/features/admin/Actions/getUserRows'
 import { AdminUsers } from '@/features/admin/Components/admin-users'
 import { pageTitle } from '@/lib/page-title'
@@ -25,5 +26,12 @@ export default async function AdminUsersPage({
   const result = await getUserRows({ search, sortBy, sortOrder })
   const data = result.data ?? { rows: [], nextCursor: null, total: 0 }
 
-  return <AdminUsers data={data} search={search} sortBy={sortBy} sortOrder={sortOrder} />
+  return (
+    <AdminUsers
+      data={stampServerRender(data)}
+      search={search}
+      sortBy={sortBy}
+      sortOrder={sortOrder}
+    />
+  )
 }

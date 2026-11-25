@@ -17,7 +17,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import { type ServerBatch, useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
 import {
   InfiniteListCount,
   InfiniteListFooter,
@@ -74,7 +74,7 @@ export function AdminUsers({
   sortOrder,
 }: {
   /** The first batch, rendered on the server. */
-  data: UserBatch
+  data: ServerBatch<UserBatch>
   search: string
   sortBy: string
   sortOrder: 'asc' | 'desc'

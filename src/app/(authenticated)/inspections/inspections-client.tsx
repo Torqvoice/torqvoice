@@ -27,7 +27,7 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import { useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import { type ServerBatch, useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
 import {
   InfiniteListCount,
   InfiniteListFooter,
@@ -193,7 +193,7 @@ export function InspectionsClient({
   sortOrder = 'desc',
 }: {
   /** The first batch, rendered on the server. */
-  data: InspectionBatch
+  data: ServerBatch<InspectionBatch>
   /** The workshop, so one workshop's cached rows never show in another's. */
   listScope?: string
   templates: TemplateOption[]

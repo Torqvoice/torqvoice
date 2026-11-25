@@ -4,7 +4,7 @@ import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { interactiveRow } from '@/lib/interactive-row'
 import { useFormatDate } from '@/lib/use-format-date'
 import { Button } from '@/components/ui/button'
-import { useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import { type ServerBatch, useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
 import {
   InfiniteListCount,
   InfiniteListFooter,
@@ -53,7 +53,7 @@ export interface NoteBatch {
 interface NotesTableProps {
   vehicleId: string
   /** The first batch, rendered on the server; the rest load as the list scrolls. */
-  initial: NoteBatch
+  initial: ServerBatch<NoteBatch>
   /**
    * Where the sticky header stops: under the page header while the window
    * scrolls, at the top of the box when the list sits in one.
