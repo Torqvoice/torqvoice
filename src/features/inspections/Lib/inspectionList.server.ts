@@ -48,12 +48,12 @@ export function inspectionListSort(sortBy?: string, sortOrder?: 'asc' | 'desc'):
     // models group together.
     case 'vehicle':
       return [
-        keysetColumn(['vehicle', 'make'], dir, 'string'),
-        keysetColumn(['vehicle', 'model'], dir, 'string'),
-        keysetColumn(['vehicle', 'year'], dir, 'number'),
+        keysetColumn(['vehicle', 'make'], dir, 'string', { required: true }),
+        keysetColumn(['vehicle', 'model'], dir, 'string', { required: true }),
+        keysetColumn(['vehicle', 'year'], dir, 'number', { required: true }),
       ]
     case 'template':
-      return [keysetColumn(['template', 'name'], dir, 'string')]
+      return [keysetColumn(['template', 'name'], dir, 'string', { required: true })]
     case 'status':
       return [keysetColumn(['status'], dir, 'string')]
     case 'createdAt':

@@ -1,4 +1,7 @@
-import { keysetColumn, type KeysetPart } from '@/lib/keyset'
+import { Prisma } from '@/generated/prisma/client'
+import { db } from '@/lib/db'
+import { type Cursor, keysetColumn, type KeysetPart } from '@/lib/keyset'
+import { countKeysetSql } from '@/lib/keyset-count'
 
 /**
  * The customer list's query, in one place: the page's first batch and every
@@ -35,13 +38,12 @@ export function customerListWhere(organizationId: string, params: CustomerListFi
 /**
  * How the list is sorted. Most columns are a keyset on the column and the id
  * (lib/keyset.ts). The vehicle count is not a column Prisma can compare
- * against, so that one sort pages by position instead: a customer added or
- * deleted while somebody scrolls can shift it by a row, which the infinite
- * list's own de-duplication hides on the repeat side.
+ * against, so that sort carries on from the last row's count and id through
+ * Postgres instead (`customerIdsByVehicleCount`).
  */
 export type CustomerListSort =
   | { kind: 'keyset'; parts: KeysetPart[] }
-  | { kind: 'offset'; orderBy: Record<string, any>[] }
+  | { kind: 'vehicleCount'; dir: 'asc' | 'desc' }
 
 export function customerListSort(sortBy?: string, sortOrder?: 'asc' | 'desc'): CustomerListSort {
   const dir = sortOrder || 'desc'
@@ -57,11 +59,45 @@ export function customerListSort(sortBy?: string, sortOrder?: 'asc' | 'desc'): C
     case 'email':
       return { kind: 'keyset', parts: [nullsLast(sortBy)] }
     case 'vehicles':
-      return { kind: 'offset', orderBy: [{ vehicles: { _count: dir } }, { id: 'asc' }] }
+      return { kind: 'vehicleCount', dir }
     default:
       // Most recently touched first, whatever the direction asked for.
       return { kind: 'keyset', parts: [keysetColumn(['updatedAt'], 'desc', 'date')] }
   }
+}
+
+/**
+ * One batch of the vehicle-count sort: the ids of `matchingIds` (the
+ * customers the list's own where found) after the cursor, most or fewest
+ * vehicles first and then by id, with each one's count for the next cursor.
+ * A vehicle is counted the way the list's `_count` counts it: every vehicle
+ * of the customer, archived ones too.
+ */
+export async function customerIdsByVehicleCount(
+  organizationId: string,
+  matchingIds: string[],
+  dir: 'asc' | 'desc',
+  cursor: Cursor | null | undefined,
+  take: number
+): Promise<{ id: string; count: number }[]> {
+  // Checked before the early return, so a bad cursor is refused either way.
+  const { having, orderBy } = countKeysetSql(
+    Prisma.sql`COUNT(v."id")`,
+    Prisma.sql`c."id"`,
+    dir,
+    cursor
+  )
+  if (matchingIds.length === 0) return []
+  return db.$queryRaw<{ id: string; count: number }[]>`
+    SELECT c."id", COUNT(v."id")::int AS "count"
+    FROM "public"."customers" c
+    LEFT JOIN "public"."vehicles" v ON v."customerId" = c."id"
+    WHERE c."organizationId" = ${organizationId} AND c."id" = ANY(${matchingIds}::text[])
+    GROUP BY c."id"
+    HAVING ${having}
+    ORDER BY ${orderBy}
+    LIMIT ${take}
+  `
 }
 
 export const customerListInclude = {

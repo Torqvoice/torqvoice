@@ -151,3 +151,34 @@ describe('a cursor that does not fit the sort', () => {
     ).toThrow('Invalid cursor')
   })
 })
+
+/**
+ * A required relation (an inspection's vehicle and template) can never be
+ * missing, and Prisma refuses `{ is: null }` on one. A sort through it must
+ * not ask for that, and must still walk every row.
+ */
+describe('a relation every row has', () => {
+  const withVehicle = rows.filter((row) => row.vehicle !== null)
+  const parts = (dir: 'asc' | 'desc') => [
+    keysetColumn(['vehicle', 'make'], dir, 'string', { required: true }),
+    keysetColumn(['vehicle', 'year'], dir, 'number', { required: true }),
+  ]
+
+  for (const dir of ['asc', 'desc'] as const) {
+    it(`never asks for a missing relation, sorted ${dir}`, () => {
+      const cursor = keysetCursor(parts(dir), withVehicle[3])
+      expect(JSON.stringify(keysetAfter(parts(dir), cursor))).not.toContain('"is":null')
+    })
+
+    it(`visits every row once, in order, sorted ${dir}`, () => {
+      for (const size of [1, 4, 10]) {
+        const { seen, expected } = walk(withVehicle, parts(dir), size)
+        expect(seen).toEqual(expected)
+      }
+    })
+  }
+
+  it('refuses a cursor with no value there', () => {
+    expect(() => keysetAfter(parts('asc'), { v: [null, 2010], id: 'x' })).toThrow('Invalid cursor')
+  })
+})

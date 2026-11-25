@@ -1,11 +1,13 @@
-import type { Prisma } from '@/generated/prisma/client'
+import { Prisma } from '@/generated/prisma/client'
 import { equipmentEnabled } from '@/features/equipment/Lib/equipmentGate.server'
 import { equipmentSerialMatch } from '@/features/equipment/Lib/equipmentSearch'
 import { fleetNumberMatch, isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
 import { searchYear } from '@/features/vehicles/Lib/searchYear'
 import { searchWordsOf, typeKeySearchTerms } from '@/features/vehicles/Lib/typeKey'
 import { isTypeKeyEnabled } from '@/features/vehicles/Lib/typeKeySetting'
-import { keysetColumn, type KeysetPart } from '@/lib/keyset'
+import { db } from '@/lib/db'
+import { type Cursor, keysetColumn, type KeysetPart } from '@/lib/keyset'
+import { countKeysetSql } from '@/lib/keyset-count'
 
 /**
  * The vehicle list's query, in one place: the page's first batch and every
@@ -72,9 +74,9 @@ export async function vehicleListWhere(organizationId: string, params: VehicleLi
  * What the list is sorted by, column by column; the id breaks the last tie
  * (lib/keyset.ts adds it).
  *
- * Null for the service count: Postgres can order by a relation's count, but
- * Prisma cannot filter on one, so there is no "rows after this count" to ask
- * for. That one sort pages by position instead (see `vehicleCountOrderBy`).
+ * Null for the service count: Prisma can order by a relation's count but not
+ * filter on one, so that sort asks Postgres for its ids instead
+ * (`vehicleIdsByServiceCount`).
  */
 export function vehicleListSort(params: {
   sortBy?: string
@@ -108,11 +110,37 @@ export function vehicleListSort(params: {
   }
 }
 
-/** The order for the service-count sort, which pages by position. */
-export function vehicleCountOrderBy(
-  sortOrder?: 'asc' | 'desc'
-): Prisma.VehicleOrderByWithRelationInput[] {
-  return [{ serviceRecords: { _count: sortOrder || 'desc' } }, { id: 'asc' }]
+/**
+ * One batch of the service-count sort: the ids of `matchingIds` (the
+ * vehicles the list's own where found) after the cursor, most or fewest jobs
+ * first and then by id, with each one's count for the next cursor. A job is
+ * counted the way the list's `_count` counts it: every job on the vehicle.
+ */
+export async function vehicleIdsByServiceCount(
+  organizationId: string,
+  matchingIds: string[],
+  sortOrder: 'asc' | 'desc' | undefined,
+  cursor: Cursor | null | undefined,
+  take: number
+): Promise<{ id: string; count: number }[]> {
+  // Checked before the early return, so a bad cursor is refused either way.
+  const { having, orderBy } = countKeysetSql(
+    Prisma.sql`COUNT(s."id")`,
+    Prisma.sql`v."id"`,
+    sortOrder || 'desc',
+    cursor
+  )
+  if (matchingIds.length === 0) return []
+  return db.$queryRaw<{ id: string; count: number }[]>`
+    SELECT v."id", COUNT(s."id")::int AS "count"
+    FROM "public"."vehicles" v
+    LEFT JOIN "public"."service_records" s ON s."vehicleId" = v."id"
+    WHERE v."organizationId" = ${organizationId} AND v."id" = ANY(${matchingIds}::text[])
+    GROUP BY v."id"
+    HAVING ${having}
+    ORDER BY ${orderBy}
+    LIMIT ${take}
+  `
 }
 
 export const vehicleListInclude = {

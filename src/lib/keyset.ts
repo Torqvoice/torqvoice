@@ -28,8 +28,16 @@ type Where = Record<string, any>
 /** Where in a list's batches to carry on from: the last row's sort values and id. */
 export type Cursor = { v: KeyValue[]; id: string }
 
+/**
+ * A cursor as it comes back from the browser. A value is the sort column's
+ * own value on the last row, and text columns (a work order's title, a
+ * customer's name) have no length limit in the schema, so no value is cut
+ * short or refused here: trimming one would change where the next batch
+ * starts, and refusing one would stop the list at that row for good. The
+ * whole cursor stays within the server action's request body limit.
+ */
 export const cursorSchema = z.object({
-  v: z.array(z.union([z.string().max(500), z.number(), z.null()])).max(8),
+  v: z.array(z.union([z.string(), z.number(), z.null()])).max(8),
   id: z.string().min(1).max(100),
 })
 
@@ -55,8 +63,13 @@ function nest(path: string[], inner: Where): Where {
 
 /**
  * One column to sort by. `path` is the relations to walk and then the column,
- * e.g. ['vehicle', 'customer', 'name']; each relation on the way is optional,
- * so a row without one counts as having no value.
+ * e.g. ['vehicle', 'customer', 'name']. Each relation on the way is optional
+ * unless `required` says the schema always has one (a required relation in
+ * prisma/schema), in which case a row cannot lack it: the cursor then asks for
+ * no `{ is: null }`, which Prisma refuses on a required relation.
+ *
+ * `nullable` must match the column in the schema: a nullable column marked
+ * otherwise would leave its empty rows out of every batch after the first.
  *
  * `nulls` is only given for a nullable column of the model itself, which is
  * where Prisma lets a list choose. Anything else gets the database's own
@@ -67,13 +80,14 @@ export function keysetColumn(
   path: string[],
   dir: Direction,
   kind: Kind,
-  options: { nullable?: boolean; nulls?: Nulls } = {}
+  options: { nullable?: boolean; nulls?: Nulls; required?: boolean } = {}
 ): KeysetPart {
   const relations = path.slice(0, -1)
   const column = path[path.length - 1]
   const nullable = options.nullable ?? false
   const nulls: Nulls = options.nulls ?? (dir === 'asc' ? 'last' : 'first')
-  const canBeEmpty = nullable || relations.length > 0
+  const optionalRelations = options.required ? [] : relations
+  const canBeEmpty = nullable || optionalRelations.length > 0
 
   return {
     dir,
@@ -96,7 +110,7 @@ export function keysetColumn(
     compare: (op, value) =>
       nest(relations, { [column]: op === 'equals' ? { equals: value } : { [op]: value } }),
     isNull: () => {
-      const either: Where[] = relations.map((segment, i) =>
+      const either: Where[] = optionalRelations.map((segment, i) =>
         nest(relations.slice(0, i), { [segment]: { is: null } })
       )
       if (nullable) either.push(nest(relations, { [column]: null }))

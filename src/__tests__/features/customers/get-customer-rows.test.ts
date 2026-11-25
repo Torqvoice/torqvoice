@@ -7,7 +7,12 @@
  * signed-in workshop's.
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { inMemoryTable, ordered, walkBatches } from '@/__tests__/helpers/in-memory-table'
+import {
+  countKeysetIds,
+  inMemoryTable,
+  ordered,
+  walkBatches,
+} from '@/__tests__/helpers/in-memory-table'
 
 type Customer = {
   id: string
@@ -32,6 +37,33 @@ vi.mock('@/features/customer-reference/Lib/referenceSetting', async (original) =
   ...(await original<typeof import('@/features/customer-reference/Lib/referenceSetting')>()),
   isCustomerReferenceEnabled: vi.fn(async () => false),
 }))
+// The vehicle-count sort's SQL, answered from the same rows (the query itself
+// is checked against Postgres). The cursor check is the real one.
+vi.mock('@/features/customers/Lib/customerList.server', async (original) => {
+  const real = await original<typeof import('@/features/customers/Lib/customerList.server')>()
+  const { countCursorValue } = await import('@/lib/keyset-count')
+  return {
+    ...real,
+    customerIdsByVehicleCount: vi.fn(
+      async (
+        organizationId: string,
+        ids: string[],
+        dir: 'asc' | 'desc',
+        cursor: { v: (string | number | null)[]; id: string } | null | undefined,
+        take: number
+      ) => {
+        if (cursor) countCursorValue(cursor)
+        return countKeysetIds(customers, (c) => c.vehicles.length, {
+          organizationId,
+          ids,
+          dir,
+          cursor,
+          take,
+        })
+      }
+    ),
+  }
+})
 const auth = vi.hoisted(() => ({ organizationId: 'org-1', permissions: [] as unknown[] }))
 vi.mock('@/lib/with-auth', () => ({
   withAuth: async (
@@ -88,8 +120,11 @@ describe('the customer list, batch by batch', () => {
         expect(ids).toHaveLength(137)
         expect(total).toBe(137)
         // The order the column promises: the first batch's own orderBy over
-        // every row of the workshop.
-        const orderBy = findMany.mock.calls[0][0].orderBy
+        // every row of the workshop (the vehicle count's is Postgres's).
+        const orderBy =
+          sortBy === 'vehicles'
+            ? [{ vehicles: { _count: sortOrder } }, { id: 'asc' }]
+            : findMany.mock.calls[0][0].orderBy
         const mine = customers.filter((c) => c.organizationId === 'org-1')
         expect(ids).toEqual(ordered(mine, orderBy).map((c) => c.id))
       })
@@ -101,6 +136,31 @@ describe('the customer list, batch by batch', () => {
     expect(findMany).toHaveBeenCalledTimes(3)
     for (const [args] of findMany.mock.calls) expect(args.take).toBe(51)
     expect(count).toHaveBeenCalledTimes(1)
+  })
+
+  it('carries on from the last vehicle count, so a customer deleted above it skips nobody', async () => {
+    for (const sortOrder of ['asc', 'desc'] as const) {
+      customers = [...makeCustomers('org-1', 137, 'a'), ...makeCustomers('org-2', 40, 'b')]
+      const first = await getCustomerRows({ sortBy: 'vehicles', sortOrder })
+      const firstIds = first.data?.rows.map((row) => row.id) ?? []
+      expect(firstIds).toHaveLength(50)
+      // Somebody deletes a customer the first batch already showed.
+      customers = customers.filter((c) => c.id !== firstIds[10])
+
+      const after = await walkBatches(getCustomerRows, (cursor) => ({
+        sortBy: 'vehicles',
+        sortOrder,
+        cursor: cursor ?? first.data?.nextCursor,
+      }))
+      const seen = [...firstIds, ...after.ids]
+      const expected = ordered(
+        customers.filter((c) => c.organizationId === 'org-1'),
+        [{ vehicles: { _count: sortOrder } }, { id: 'asc' }]
+      ).map((c) => c.id)
+      // Every customer still there, once each, and nothing skipped.
+      expect(new Set(seen).size).toBe(seen.length)
+      expect(seen.filter((id) => id !== firstIds[10])).toEqual(expected)
+    }
   })
 
   it('keeps to what the search finds, word by word', async () => {
@@ -133,7 +193,7 @@ describe('the customer list, batch by batch', () => {
   it('refuses a cursor that does not fit the sort', async () => {
     const result = await getCustomerRows({
       sortBy: 'vehicles',
-      cursor: { v: ['not a position'], id: 'a001' },
+      cursor: { v: ['not a count'], id: 'a001' },
     })
     expect(result.success).toBe(false)
     const keyset = await getCustomerRows({ sortBy: 'name', cursor: { v: [1, 2], id: 'a001' } })

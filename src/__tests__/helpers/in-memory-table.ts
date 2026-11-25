@@ -224,3 +224,46 @@ export async function walkBatches<const I, R extends { id: string }, C>(
   }
   throw new Error('the list never ended')
 }
+
+/**
+ * What the count sorts' SQL answers (`customerIdsByVehicleCount`,
+ * `vehicleIdsByServiceCount`), over plain rows: the workshop's rows among
+ * `ids`, after the cursor's count and id, by count in `dir` and then by id,
+ * each with its count. The real query is checked against Postgres; this lets
+ * a test walk the action around it.
+ */
+export function countKeysetIds<T extends Row & { id: string; organizationId: string }>(
+  rows: T[],
+  countOf: (row: T) => number,
+  args: {
+    organizationId: string
+    ids: string[]
+    dir: 'asc' | 'desc'
+    cursor: { v: unknown[]; id: string } | null | undefined
+    take: number
+  }
+): { id: string; count: number }[] {
+  const wanted = new Set(args.ids)
+  const after = (count: number, id: string) => {
+    if (!args.cursor) return true
+    const value = args.cursor.v[0] as number
+    if (count === value) return id > args.cursor.id
+    return args.dir === 'asc' ? count > value : count < value
+  }
+  return rows
+    .filter((row) => row.organizationId === args.organizationId && wanted.has(row.id))
+    .map((row) => ({ id: row.id, count: countOf(row) }))
+    .filter((entry) => after(entry.count, entry.id))
+    .sort((a, b) =>
+      a.count !== b.count
+        ? args.dir === 'asc'
+          ? a.count - b.count
+          : b.count - a.count
+        : a.id < b.id
+          ? -1
+          : a.id > b.id
+            ? 1
+            : 0
+    )
+    .slice(0, args.take)
+}

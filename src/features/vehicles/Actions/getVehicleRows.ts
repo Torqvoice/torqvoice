@@ -4,13 +4,14 @@ import { z } from 'zod'
 import { gateFleetNumber, isFleetNumberEnabled } from '@/features/vehicles/Lib/fleetNumberSetting'
 import {
   VEHICLE_BATCH_SIZE,
-  vehicleCountOrderBy,
+  vehicleIdsByServiceCount,
   vehicleListInclude,
   vehicleListSort,
   vehicleListWhere,
 } from '@/features/vehicles/Lib/vehicleList.server'
 import { db } from '@/lib/db'
 import { type Cursor, cursorSchema, keysetAfter, keysetCursor, keysetOrderBy } from '@/lib/keyset'
+import { inIdOrder } from '@/lib/keyset-count'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { withAuth } from '@/lib/with-auth'
 
@@ -23,20 +24,6 @@ const inputSchema = z.object({
   /** Where the last batch ended; none for the first one. */
   cursor: cursorSchema.nullable().optional(),
 })
-
-/** How many rows the service-count sort has already shown, read off its cursor. */
-function offsetOf(cursor: Cursor | null | undefined): number {
-  if (!cursor) return 0
-  const [offset] = cursor.v
-  if (
-    cursor.v.length !== 1 ||
-    typeof offset !== 'number' ||
-    !Number.isInteger(offset) ||
-    offset < 0
-  )
-    throw new Error('Invalid cursor')
-  return offset
-}
 
 /**
  * One batch of the vehicle list. The first (no cursor) also carries the
@@ -51,22 +38,61 @@ export async function getVehicleRows(input: z.input<typeof inputSchema>) {
       const sort = vehicleListSort(params)
       const first = !params.cursor
 
-      // Sorted by service count the list pages by position: there is no
-      // filter for "vehicles with fewer jobs than this one" (see the builder).
-      const offset = sort ? 0 : offsetOf(params.cursor)
-      const batchWhere =
-        sort && params.cursor ? { AND: [where, keysetAfter(sort, params.cursor)] } : where
+      const loadByIds = async (ids: string[]) =>
+        ids.length
+          ? db.vehicle.findMany({
+              where: { organizationId, id: { in: ids } },
+              include: vehicleListInclude,
+            })
+          : []
 
-      const [found, total, archivedCount, inspectionDataCount, fleetNumberShown] =
-        await Promise.all([
-          db.vehicle.findMany({
+      /** One batch, and where the next one carries on. */
+      const loadBatch = async (): Promise<{
+        rows: Awaited<ReturnType<typeof loadByIds>>
+        nextCursor: Cursor | null
+      }> => {
+        if (sort) {
+          const batchWhere = params.cursor
+            ? { AND: [where, keysetAfter(sort, params.cursor)] }
+            : where
+          const found = await db.vehicle.findMany({
             where: batchWhere,
             include: vehicleListInclude,
-            orderBy: sort ? keysetOrderBy(sort) : vehicleCountOrderBy(params.sortOrder),
-            ...(offset ? { skip: offset } : {}),
+            orderBy: keysetOrderBy(sort),
             // One more than a batch says whether there is anything after it.
             take: VEHICLE_BATCH_SIZE + 1,
-          }),
+          })
+          const rows = found.slice(0, VEHICLE_BATCH_SIZE)
+          const last = rows[rows.length - 1]
+          return {
+            rows,
+            nextCursor: found.length > VEHICLE_BATCH_SIZE && last ? keysetCursor(sort, last) : null,
+          }
+        }
+
+        // By service count: the vehicles the filters find, ordered and cut
+        // after the cursor by Postgres, then loaded in that order.
+        const matching = await db.vehicle.findMany({ where, select: { id: true } })
+        const ordered = await vehicleIdsByServiceCount(
+          organizationId,
+          matching.map((vehicle) => vehicle.id),
+          params.sortOrder,
+          params.cursor,
+          VEHICLE_BATCH_SIZE + 1
+        )
+        const page = ordered.slice(0, VEHICLE_BATCH_SIZE)
+        const ids = page.map((entry) => entry.id)
+        const last = page[page.length - 1]
+        return {
+          rows: inIdOrder(ids, await loadByIds(ids)),
+          nextCursor:
+            ordered.length > VEHICLE_BATCH_SIZE && last ? { v: [last.count], id: last.id } : null,
+        }
+      }
+
+      const [{ rows, nextCursor }, total, archivedCount, inspectionDataCount, fleetNumberShown] =
+        await Promise.all([
+          loadBatch(),
           first ? db.vehicle.count({ where }) : null,
           first ? db.vehicle.count({ where: { organizationId, isArchived: true } }) : null,
           first
@@ -74,15 +100,6 @@ export async function getVehicleRows(input: z.input<typeof inputSchema>) {
             : null,
           isFleetNumberEnabled(organizationId),
         ])
-
-      const rows = found.slice(0, VEHICLE_BATCH_SIZE)
-      const last = rows[rows.length - 1]
-      let nextCursor: Cursor | null = null
-      if (found.length > VEHICLE_BATCH_SIZE && last) {
-        nextCursor = sort
-          ? keysetCursor(sort, last)
-          : { v: [offset + VEHICLE_BATCH_SIZE], id: last.id }
-      }
 
       return {
         rows: rows.map((vehicle) => gateFleetNumber(vehicle, fleetNumberShown)),

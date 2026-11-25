@@ -12,13 +12,19 @@ const NONE: ReadonlySet<string> = new Set()
  * that have not arrived, and a row that left the list (deleted elsewhere, no
  * longer matching after a refresh) drops out of the selection with it. Ticks
  * stay put while more rows load. Another search, filter or sort is another
- * list (`listKey`), and starts with nothing selected.
+ * list (`listKey`), and starts with nothing selected, as does going back to
+ * one seen before.
  */
 export function useLoadedRowSelection<Row extends { id: string }>(rows: Row[], listKey: string) {
   const [state, setState] = useState<{ key: string; ids: ReadonlySet<string> }>({
     key: listKey,
     ids: NONE,
   })
+  // Another list drops the old ticks for good, not just from view: coming
+  // back to the first list later starts with nothing selected, so a tick
+  // nobody can see is never handed to a bulk action. (Setting state while
+  // rendering is React's way to reset it when a prop changes.)
+  if (state.key !== listKey) setState({ key: listKey, ids: NONE })
   const ids = state.key === listKey ? state.ids : NONE
 
   const selectedRows = useMemo(() => rows.filter((row) => ids.has(row.id)), [rows, ids])

@@ -7,7 +7,7 @@
  * batch may ever reach another workshop's vehicles.
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { inMemoryTable, walkBatches } from '@/__tests__/helpers/in-memory-table'
+import { countKeysetIds, inMemoryTable, walkBatches } from '@/__tests__/helpers/in-memory-table'
 
 const state = vi.hoisted(() => ({ org: 'org-1', rows: [] as Record<string, any>[] }))
 
@@ -21,6 +21,33 @@ vi.mock('@/lib/db', async () => {
       },
       vehicleInspectionStatus: { count: vi.fn(async () => 3) },
     },
+  }
+})
+// The service-count sort's SQL, answered from the same rows (the query itself
+// is checked against Postgres). The cursor check is the real one.
+vi.mock('@/features/vehicles/Lib/vehicleList.server', async (original) => {
+  const real = await original<typeof import('@/features/vehicles/Lib/vehicleList.server')>()
+  const { countCursorValue } = await import('@/lib/keyset-count')
+  return {
+    ...real,
+    vehicleIdsByServiceCount: vi.fn(
+      async (
+        organizationId: string,
+        ids: string[],
+        sortOrder: 'asc' | 'desc' | undefined,
+        cursor: { v: (string | number | null)[]; id: string } | null | undefined,
+        take: number
+      ) => {
+        if (cursor) countCursorValue(cursor)
+        return countKeysetIds(state.rows as any[], (row) => row.serviceRecords.length, {
+          organizationId,
+          ids,
+          dir: sortOrder || 'desc',
+          cursor,
+          take,
+        })
+      }
+    ),
   }
 })
 vi.mock('@/features/vehicles/Lib/fleetNumberSetting', async (original) => ({
@@ -85,14 +112,21 @@ function fixture() {
   return rows
 }
 
-/** What one long read of the whole list returns, in its order. */
+/**
+ * What one long read of the whole list returns, in its order: the first
+ * query's where and orderBy over every row. The service count is ordered by
+ * Postgres, so its order is the relation count's, then the id.
+ */
 async function oneLongRead(input: Parameters<typeof getVehicleRows>[0]) {
   vi.mocked(db.vehicle.findMany).mockClear()
   await getVehicleRows(input)
   const args = vi.mocked(db.vehicle.findMany).mock.calls[0][0] as any
   const all = await inMemoryTable(() => state.rows).findMany({
     where: args.where,
-    orderBy: args.orderBy,
+    orderBy:
+      input.sortBy === 'services'
+        ? [{ serviceRecords: { _count: input.sortOrder || 'desc' } }, { id: 'asc' }]
+        : args.orderBy,
   })
   return all.map((row) => row.id)
 }
@@ -166,6 +200,27 @@ describe('reading the vehicle list batch by batch', () => {
         make: 'Tesla',
         isArchived: false,
       })
+    }
+  })
+
+  it('carries on from the last service count, so a vehicle deleted above it skips nothing', async () => {
+    for (const sortOrder of ['asc', 'desc'] as const) {
+      state.rows = fixture()
+      const first = await getVehicleRows({ sortBy: 'services', sortOrder })
+      const firstIds = first.data?.rows.map((row) => row.id) ?? []
+      expect(firstIds).toHaveLength(VEHICLE_BATCH_SIZE)
+      // Somebody deletes a vehicle the first batch already showed.
+      state.rows = state.rows.filter((row) => row.id !== firstIds[10])
+
+      const after = await walkBatches(getVehicleRows, (cursor) => ({
+        sortBy: 'services',
+        sortOrder,
+        cursor: cursor ?? first.data?.nextCursor,
+      }))
+      const seen = [...firstIds, ...after.ids]
+      const expected = await oneLongRead({ sortBy: 'services', sortOrder })
+      expect(new Set(seen).size).toBe(seen.length)
+      expect(seen.filter((id) => id !== firstIds[10])).toEqual(expected)
     }
   })
 
