@@ -3354,7 +3354,7 @@
       },
       "emptyFiltered": "Nessun link corrisponde alla ricerca.",
       "loadFailed": "Impossibile caricare i link. Ricarica la pagina per riprovare.",
-      "selectAll": "Seleziona tutti i link di questa pagina",
+      "selectAll": "Seleziona tutti i link mostrati",
       "selectRow": "Seleziona il link a {document}",
       "selectedCount": "{count, plural, one {# link selezionato} other {# link selezionati}}",
       "clearSelection": "Annulla selezione",

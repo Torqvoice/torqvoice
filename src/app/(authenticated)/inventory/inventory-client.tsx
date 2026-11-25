@@ -8,7 +8,7 @@ import { interactiveRow } from '@/lib/interactive-row'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
 import { isLow as isLowStock } from '@/features/inventory/Lib/lowStockAlerts'
 
-import { useState, useCallback, useTransition, useEffect, useRef } from 'react'
+import { useState, useCallback, useTransition, useEffect } from 'react'
 import { BarcodeScannerDialog } from '@/components/barcode-scanner-dialog'
 import { BarcodeScanActionDialog } from '@/features/inventory/Components/BarcodeScanActionDialog'
 import { useHardwareScanner } from '@/hooks/use-hardware-scanner'
@@ -42,7 +42,15 @@ import {
 } from '@/components/ui/context-menu'
 import { Badge } from '@/components/ui/badge'
 import { Checkbox } from '@/components/ui/checkbox'
-import { DataTablePagination } from '@/components/data-table-pagination'
+import { useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import {
+  InfiniteListCount,
+  InfiniteListFooter,
+  InfiniteTableFooter,
+} from '@/components/infinite-list/infinite-list-footer'
+import { getInventoryRows } from '@/features/inventory/Actions/getInventoryRows'
+import { useLoadedRowSelection } from '@/hooks/use-loaded-row-selection'
+import type { Cursor } from '@/lib/keyset'
 import { TableContextMenuHint } from '@/components/table-context-menu-hint'
 import { useGlassModal } from '@/components/glass-modal'
 import { useConfirm } from '@/components/confirm-dialog'
@@ -112,16 +120,16 @@ interface InventoryPart {
 /** The tag filter's "every tag" choice; not a value a tag can collide with. */
 const ALL_TAGS = '__all__'
 
-interface PaginatedData {
-  parts: InventoryPart[]
-  total: number
-  page: number
-  pageSize: number
-  totalPages: number
+/** One batch of the list; the first also carries the total. */
+interface InventoryBatch {
+  rows: InventoryPart[]
+  nextCursor: Cursor | null
+  total?: number
 }
 
 export function InventoryClient({
   data,
+  listScope = '',
   search,
   category,
   categories,
@@ -138,7 +146,10 @@ export function InventoryClient({
   lowStockOnly = false,
   hasAnyReorderPoint = false,
 }: {
-  data: PaginatedData
+  /** The first batch, rendered on the server. */
+  data: InventoryBatch
+  /** The workshop, so one workshop's cached rows never show in another's. */
+  listScope?: string
   search: string
   category: string
   categories: string[]
@@ -195,13 +206,25 @@ export function InventoryClient({
   } | null>(null)
   const [scannedBarcode, setScannedBarcode] = useState('')
   const [showScanActions, setShowScanActions] = useState(false)
-  const [selected, setSelected] = useState<Set<string>>(new Set())
-  // Selection outlives the page of rows it was made on, so every row shown is
-  // remembered: the delete prompt can still name what is selected elsewhere.
-  const seenRows = useRef(new Map<string, (typeof data.parts)[number]>())
-  useEffect(() => {
-    for (const row of data.parts) seenRows.current.set(row.id, row)
-  }, [data.parts])
+  // The same filters the page's first batch was read with, so every batch
+  // after it continues that list.
+  const filters = {
+    search: search || undefined,
+    category: category || undefined,
+    tag: tag || undefined,
+    sortBy: initialSortBy || undefined,
+    sortOrder: initialSortOrder,
+    lowStock: lowStockOnly || undefined,
+  }
+  const list = useInfiniteRows<InventoryPart, Cursor, InventoryBatch>({
+    queryKey: ['inventory', listScope, filters],
+    initial: data,
+    fetchPage: (cursor) => getInventoryRows({ ...filters, cursor }),
+  })
+  const parts = list.rows
+  // Only rows on screen can be ticked, and another search, filter or sort
+  // starts with none.
+  const selection = useLoadedRowSelection(parts, list.listKey)
   const [isBulkDeleting, setIsBulkDeleting] = useState(false)
 
   useEffect(() => {
@@ -239,12 +262,8 @@ export function InventoryClient({
           newParams.set(key, String(value))
         }
       }
-      if (
-        !('page' in params) &&
-        ('search' in params || 'category' in params || 'tag' in params || 'lowStock' in params)
-      ) {
-        newParams.delete('page')
-      }
+      // Pages are gone; an old link's ?page= means nothing now.
+      newParams.delete('page')
       startTransition(() => {
         router.push(`${pathname}?${newParams.toString()}`)
       })
@@ -296,45 +315,27 @@ export function InventoryClient({
     }
   }
 
-  const toggleSelect = (id: string) => {
-    setSelected((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
-  }
-
-  const toggleSelectAll = () => {
-    if (selected.size === data.parts.length) {
-      setSelected(new Set())
-    } else {
-      setSelected(new Set(data.parts.map((p) => p.id)))
-    }
-  }
-
   const handleBulkDelete = async () => {
-    if (selected.size === 0) return
+    // Only what is ticked on screen: a row that has not loaded is never in it.
+    const ids = selection.selectedIds
+    if (ids.length === 0) return
     // Name the first few parts so the count is not taken on trust.
-    const named = Array.from(selected)
-      .map((id) => seenRows.current.get(id))
-      .filter((row) => row !== undefined)
-      .slice(0, 3)
+    const named = selection.selectedRows.slice(0, 3)
     const ok = await confirm({
       title: t('bulkDelete.title'),
-      description: t('bulkDelete.description', { count: selected.size }),
+      description: t('bulkDelete.description', { count: ids.length }),
       subject: named.map((p) => ({ label: p.name, detail: p.partNumber ?? undefined })),
-      subjectMore: selected.size - named.length,
+      subjectMore: ids.length - named.length,
       confirmLabel: t('bulkDelete.confirm'),
       icon: Trash2,
       destructive: true,
     })
     if (!ok) return
     setIsBulkDeleting(true)
-    const result = await deleteInventoryParts(Array.from(selected)).catch(() => null)
+    const result = await deleteInventoryParts(ids).catch(() => null)
     if (result?.success) {
-      toast.success(t('bulkDelete.success', { count: result.data?.deleted ?? selected.size }))
-      setSelected(new Set())
+      toast.success(t('bulkDelete.success', { count: result.data?.deleted ?? ids.length }))
+      selection.clear()
       router.refresh()
     } else {
       modal.open('error', t('errors.error'), result?.error || t('errors.deleteFailed'))
@@ -388,12 +389,12 @@ export function InventoryClient({
     <div className="flex min-h-0 flex-1 flex-col gap-4">
       {/* Toolbar */}
       <div className="flex shrink-0 flex-col gap-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
-        {selected.size > 0 ? (
+        {selection.count > 0 ? (
           <div className="flex flex-1 items-center gap-2">
             <span className="text-sm text-muted-foreground">
-              {t('bulkDelete.selected', { count: selected.size })}
+              {t('bulkDelete.selected', { count: selection.count })}
             </span>
-            <Button size="sm" variant="ghost" onClick={() => setSelected(new Set())}>
+            <Button size="sm" variant="ghost" onClick={selection.clear}>
               <X className="mr-1 h-3.5 w-3.5" />
               {t('bulkDelete.clearSelection')}
             </Button>
@@ -462,10 +463,11 @@ export function InventoryClient({
               <span className="hidden md:inline">{t('table.low')}</span>
             </Button>
             {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+            <InfiniteListCount shown={parts.length} total={list.total} />
           </div>
         )}
         <div className="flex items-center justify-between gap-2">
-          {selected.size > 0 ? (
+          {selection.count > 0 ? (
             <Button
               size="sm"
               variant="destructive"
@@ -478,7 +480,7 @@ export function InventoryClient({
               ) : (
                 <Trash2 className="mr-1 h-3.5 w-3.5" />
               )}
-              {t('bulkDelete.deleteSelected', { count: selected.size })}
+              {t('bulkDelete.deleteSelected', { count: selection.count })}
             </Button>
           ) : (
             <>
@@ -523,7 +525,7 @@ export function InventoryClient({
 
       {/* Card list (phones + small tablets) - only this scrolls */}
       <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
-        {data.parts.length === 0 ? (
+        {parts.length === 0 ? (
           <div
             className={
               search || category || tag || lowStockOnly
@@ -534,7 +536,7 @@ export function InventoryClient({
             {emptyMessage}
           </div>
         ) : (
-          data.parts.map((part) => {
+          parts.map((part) => {
             const isLow = isLowStock(part, lowStockDefault)
             const effective = part.sellPrice > 0 ? part.sellPrice : part.unitCost
             const thumb = part.gallery[0]?.url || part.imageUrl
@@ -542,8 +544,8 @@ export function InventoryClient({
               <div key={part.id} className="flex items-start gap-3 rounded-lg border bg-card p-3">
                 <Checkbox
                   className="mt-1 shrink-0"
-                  checked={selected.has(part.id)}
-                  onCheckedChange={() => toggleSelect(part.id)}
+                  checked={selection.isSelected(part.id)}
+                  onCheckedChange={() => selection.toggle(part.id)}
                   aria-label={ta('selectRow', { name: part.name })}
                 />
                 <button
@@ -638,6 +640,9 @@ export function InventoryClient({
             )
           })
         )}
+        {parts.length > 0 && (
+          <InfiniteListFooter state={list} placeholderClassName="h-[104px] rounded-lg" />
+        )}
       </div>
 
       {/* Table (md and up) - only the rows scroll */}
@@ -651,15 +656,10 @@ export function InventoryClient({
             <TableRow>
               <TableHead className="w-[40px]">
                 <Checkbox
-                  checked={
-                    data.parts.length > 0 && selected.size === data.parts.length
-                      ? true
-                      : selected.size > 0
-                        ? 'indeterminate'
-                        : false
-                  }
-                  onCheckedChange={toggleSelectAll}
-                  aria-label={ta('selectAll')}
+                  checked={selection.headerState}
+                  onCheckedChange={selection.toggleAll}
+                  aria-label={t('bulkDelete.selectLoaded', { count: parts.length })}
+                  title={t('bulkDelete.selectLoaded', { count: parts.length })}
                   onClick={(e) => e.stopPropagation()}
                 />
               </TableHead>
@@ -748,7 +748,7 @@ export function InventoryClient({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.parts.length === 0 ? (
+            {parts.length === 0 ? (
               <TableRow>
                 <TableCell
                   colSpan={11}
@@ -762,7 +762,7 @@ export function InventoryClient({
                 </TableCell>
               </TableRow>
             ) : (
-              data.parts.map((part) => {
+              parts.map((part) => {
                 const isLow = isLowStock(part, lowStockDefault)
                 return (
                   <ContextMenu key={part.id} modal={false}>
@@ -776,8 +776,8 @@ export function InventoryClient({
                       >
                         <TableCell className="w-[40px]" onClick={(e) => e.stopPropagation()}>
                           <Checkbox
-                            checked={selected.has(part.id)}
-                            onCheckedChange={() => toggleSelect(part.id)}
+                            checked={selection.isSelected(part.id)}
+                            onCheckedChange={() => selection.toggle(part.id)}
                             aria-label={ta('selectRow', { name: part.name })}
                           />
                         </TableCell>
@@ -951,17 +951,10 @@ export function InventoryClient({
                 )
               })
             )}
+            {parts.length > 0 && <InfiniteTableFooter state={list} colSpan={11} />}
           </TableBody>
         </Table>
       </div>
-
-      <DataTablePagination
-        total={data.total}
-        page={data.page}
-        pageSize={data.pageSize}
-        totalPages={data.totalPages}
-        onNavigate={navigate}
-      />
 
       <InventoryPartForm
         key={editPart?.id ?? scannedBarcode ?? 'new'}
@@ -1015,7 +1008,7 @@ export function InventoryClient({
         part={scannedPart}
         barcode={scannedBarcode}
         onEditPart={(partId) => {
-          const part = data.parts.find((p) => p.id === partId)
+          const part = parts.find((p) => p.id === partId)
           if (part) {
             setEditPart(part)
             setShowForm(true)

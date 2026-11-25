@@ -29,6 +29,9 @@ vi.mock('@/features/customers/Actions/customerActions', () => ({
 vi.mock('@/features/customers/Components/CustomerForm', () => ({ CustomerForm: () => null }))
 vi.mock('@/features/import/Components/ImportWizard', () => ({ ImportWizard: () => null }))
 
+vi.mock('@/features/customers/Actions/getCustomerRows', () => ({ getCustomerRows: vi.fn() }))
+
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { CustomersClient } from '@/app/(authenticated)/customers/customers-client'
 
 const CUSTOMER = {
@@ -47,15 +50,17 @@ const CUSTOMER = {
 
 function renderList() {
   render(
-    <ConfirmProvider>
-      <CustomersClient
-        data={{ customers: [CUSTOMER], total: 1, page: 1, pageSize: 20, totalPages: 1 }}
-        search=""
-        sortBy="name"
-        sortOrder="asc"
-      />
-      <GlassModal />
-    </ConfirmProvider>
+    <QueryClientProvider client={new QueryClient()}>
+      <ConfirmProvider>
+        <CustomersClient
+          data={{ rows: [CUSTOMER], nextCursor: null, total: 1 }}
+          search=""
+          sortBy="name"
+          sortOrder="asc"
+        />
+        <GlassModal />
+      </ConfirmProvider>
+    </QueryClientProvider>
   )
 }
 
@@ -101,28 +106,5 @@ describe('customer list deletes', () => {
     // Hidden behind the message, but not left busy: the selection is still
     // there to try again once the message is closed.
     expect(screen.getByRole('button', { name: 'Delete (1)', hidden: true })).toBeEnabled()
-  })
-
-  it('still names a selected customer in the question after moving to another page', async () => {
-    const page = (customers: (typeof CUSTOMER)[], n: number) => (
-      <ConfirmProvider>
-        <CustomersClient
-          data={{ customers, total: 21, page: n, pageSize: 20, totalPages: 2 }}
-          search=""
-          sortBy="name"
-          sortOrder="asc"
-        />
-      </ConfirmProvider>
-    )
-    const { rerender } = render(page([CUSTOMER], 1))
-    fireEvent.click(screen.getAllByRole('checkbox')[0])
-
-    // Page two: Ada is no longer among the rows, but is still selected.
-    rerender(page([{ ...CUSTOMER, id: 'c2', customerNumber: '1002', name: 'Bo Lind' }], 2))
-    fireEvent.click(screen.getByRole('button', { name: 'Delete (1)' }))
-
-    const question = await screen.findByRole('alertdialog')
-    expect(within(question).getByText('Ada Berg')).toBeInTheDocument()
-    expect(within(question).queryByText('Bo Lind')).not.toBeInTheDocument()
   })
 })

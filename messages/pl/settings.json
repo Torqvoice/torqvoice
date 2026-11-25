@@ -3354,7 +3354,7 @@
       },
       "emptyFiltered": "Żaden link nie pasuje do wyszukiwania.",
       "loadFailed": "Nie udało się wczytać linków. Odśwież stronę, aby spróbować ponownie.",
-      "selectAll": "Zaznacz wszystkie linki na tej stronie",
+      "selectAll": "Zaznacz wszystkie wyświetlone linki",
       "selectRow": "Zaznacz link do {document}",
       "selectedCount": "{count, plural, one {Zaznaczono # link} few {Zaznaczono # linki} many {Zaznaczono # linków} other {Zaznaczono # linku}}",
       "clearSelection": "Wyczyść zaznaczenie",

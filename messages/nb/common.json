@@ -100,6 +100,13 @@
     "next": "Neste side",
     "last": "Siste side"
   },
+  "infiniteList": {
+    "count": "{shown, number} av {total, number}",
+    "countAll": "{total, plural, one {# treff} other {# treff}}",
+    "allShown": "Alle {total, number} vises",
+    "loadFailed": "Kunne ikke laste flere",
+    "retry": "Prøv igjen"
+  },
   "shared": {
     "close": "Lukk",
     "viewPlans": "Se abonnementer",

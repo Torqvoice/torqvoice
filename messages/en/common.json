@@ -100,6 +100,13 @@
     "next": "Next page",
     "last": "Last page"
   },
+  "infiniteList": {
+    "count": "{shown, number} of {total, number}",
+    "countAll": "{total, plural, one {# result} other {# results}}",
+    "allShown": "All {total, number} shown",
+    "loadFailed": "Couldn't load more",
+    "retry": "Retry"
+  },
   "shared": {
     "close": "Close",
     "viewPlans": "View Plans",

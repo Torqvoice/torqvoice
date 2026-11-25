@@ -1,10 +1,8 @@
 import { measureSystemIn } from '@/features/inventory/Lib/units'
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { notFound } from 'next/navigation'
-import {
-  getInventoryPart,
-  getStockMovementsPaginated,
-} from '@/features/inventory/Actions/getStockMovements'
+import { getInventoryPart } from '@/features/inventory/Actions/getStockMovements'
+import { getStockMovementRows } from '@/features/inventory/Actions/getStockMovementRows'
 import {
   getInventoryCategories,
   getInventoryTags,
@@ -12,7 +10,7 @@ import {
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { PageHeader } from '@/components/page-header'
-import { formatDateTime } from '@/lib/format'
+import { getAuthContext } from '@/lib/get-auth-context'
 import { PartDetailClient } from './part-detail-client'
 import { pageTitle } from '@/lib/page-title'
 
@@ -20,28 +18,22 @@ export function generateMetadata() {
   return pageTitle('inventory')
 }
 
-const PAGE_SIZE = 50
-
 export default async function InventoryPartDetailPage({
   params,
   searchParams,
 }: {
   params: Promise<{ id: string }>
-  searchParams: Promise<{ page?: string; reason?: string }>
+  // An old ?page= link is simply ignored: the history loads more as it scrolls.
+  searchParams: Promise<{ reason?: string }>
 }) {
   const { id } = await params
   const sp = await searchParams
-  const page = Math.max(1, Number(sp.page) || 1)
 
-  const [partResult, movementsResult, categoriesResult, tagsResult, settingsResult] =
+  const [partResult, movementsResult, categoriesResult, tagsResult, settingsResult, authCtx] =
     await Promise.all([
       getInventoryPart(id),
-      getStockMovementsPaginated({
-        inventoryPartId: id,
-        page,
-        pageSize: PAGE_SIZE,
-        reason: sp.reason,
-      }),
+      // The first batch; the rest load through the same action as the history scrolls.
+      getStockMovementRows({ inventoryPartId: id, reason: sp.reason }),
       getInventoryCategories(),
       getInventoryTags(),
       getDisplaySettings([
@@ -49,11 +41,9 @@ export default async function InventoryPartDetailPage({
         SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER,
         SETTING_KEYS.UNIT_SYSTEM,
         SETTING_KEYS.MEASURE_SYSTEM,
-        SETTING_KEYS.DATE_FORMAT,
-        SETTING_KEYS.TIME_FORMAT,
-        SETTING_KEYS.TIMEZONE,
         SETTING_KEYS.LOW_STOCK_DEFAULT_THRESHOLD,
       ]),
+      getAuthContext(),
     ])
 
   // Covers both "no such part" and "belongs to another organization", since
@@ -63,40 +53,17 @@ export default async function InventoryPartDetailPage({
   }
 
   const settings = settingsResult.success ? (settingsResult.data ?? {}) : {}
-  const movements = movementsResult.data ?? {
-    movements: [],
-    total: 0,
-    page,
-    pageSize: PAGE_SIZE,
-    totalPages: 1,
-  }
-
-  // Timestamps are formatted here, on the server, and shipped as strings.
-  // Formatting them in the client component instead would render the server's
-  // timezone during SSR and the browser's after hydration — a guaranteed
-  // mismatch for any viewer not on UTC, which React reports as a hydration
-  // error. The org's configured timezone (when set) is authoritative for a
-  // workshop's records anyway.
-  const movementsWithLabels = movements.movements.map((m) => ({
-    ...m,
-    createdAtLabel: formatDateTime(
-      m.createdAt,
-      settings[SETTING_KEYS.DATE_FORMAT],
-      (settings[SETTING_KEYS.TIME_FORMAT] as '12h' | '24h') || undefined,
-      settings[SETTING_KEYS.TIMEZONE] || undefined
-    ),
-  }))
+  // Each row's time comes already written out on the workshop's clock (see
+  // Lib/stockMovementList.server.ts), so the server render and hydration agree.
+  const movements = movementsResult.data ?? { rows: [], nextCursor: null, total: 0 }
 
   return (
     <>
       <PageHeader />
       <PartDetailClient
         part={partResult.data}
-        movements={movementsWithLabels}
-        total={movements.total}
-        page={movements.page}
-        pageSize={movements.pageSize}
-        totalPages={movements.totalPages}
+        movements={movements}
+        listScope={authCtx?.organizationId ?? ''}
         reason={sp.reason ?? ''}
         currencyCode={resolveCurrencyCode(settings[SETTING_KEYS.CURRENCY_CODE])}
         markupMultiplier={Number(settings[SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER]) || 1}

@@ -41,7 +41,8 @@
     "selected": "{count, plural, one {# деталь выбрана} few {# детали выбраны} other {# деталей выбрано}}",
     "clearSelection": "Сбросить",
     "deleteSelected": "Удалить ({count})",
-    "success": "{count, plural, one {# деталь удалена} few {# детали удалены} other {# деталей удалено}}"
+    "success": "{count, plural, one {# деталь удалена} few {# детали удалены} other {# деталей удалено}}",
+    "selectLoaded": "Выбрать все показанные ({count, number})"
   },
   "markup": {
     "title": "Применить наценку ко всем запчастям",

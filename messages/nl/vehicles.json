@@ -324,6 +324,7 @@
     "discoveredIn": "Ontdekt in",
     "resolvedIn": "Opgelost in",
     "createWorkOrder": "Werkorder aanmaken ({count})",
+    "selectAll": "Alle getoonde selecteren",
     "vehicleHasObservations": "Dit voertuig heeft {count} openstaande observaties",
     "addToWorkOrder": "Toevoegen aan werkorder ({count})",
     "dismiss": "Negeren",

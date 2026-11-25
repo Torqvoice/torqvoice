@@ -1,7 +1,8 @@
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { resolveListStatus } from '@/lib/list-status-preference.server'
-import { getQuotesPaginated } from '@/features/quotes/Actions/quoteActions'
+import { getQuoteRows } from '@/features/quotes/Actions/getQuoteRows'
+import { getAuthContext } from '@/lib/get-auth-context'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { QuotesClient } from '../quotes-client'
@@ -16,9 +17,8 @@ export function generateMetadata() {
 export default async function QuotesPage({
   searchParams,
 }: {
+  // An old ?page= link is simply ignored: the list loads more as it scrolls.
   searchParams: Promise<{
-    page?: string
-    pageSize?: string
     search?: string
     status?: string
     sortBy?: string
@@ -31,16 +31,16 @@ export default async function QuotesPage({
     sortOrder: 'desc',
   })
   const status = await resolveListStatus('quotes', params.status)
-  const [result, settingsResult] = await Promise.all([
-    getQuotesPaginated({
-      page: params.page ? parseInt(params.page) : 1,
-      pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
+  const [result, settingsResult, authCtx] = await Promise.all([
+    // The first batch; the rest load through the same action as the list scrolls.
+    getQuoteRows({
       search: params.search,
       status,
       sortBy: sort.sortBy,
       sortOrder: sort.sortOrder,
     }),
     getDisplaySettings([SETTING_KEYS.CURRENCY_CODE]),
+    getAuthContext(),
   ])
 
   if (!result.success || !result.data) {
@@ -63,6 +63,7 @@ export default async function QuotesPage({
       <ListPage>
         <QuotesClient
           data={result.data}
+          listScope={authCtx?.organizationId ?? ''}
           currencyCode={currencyCode}
           search={params.search || ''}
           statusFilter={status}

@@ -69,12 +69,19 @@ vi.mock('@/features/settings/Actions/settingsActions', () => ({
   setSetting: (...args: unknown[]) => setSetting(...args),
 }))
 
+vi.mock('@/features/inventory/Actions/getInventoryRows', () => ({ getInventoryRows: vi.fn() }))
+
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { InventoryClient } from '@/app/(authenticated)/inventory/inventory-client'
 
-const emptyList = { parts: [], total: 0, page: 1, pageSize: 25, totalPages: 0 }
+const emptyList = { rows: [], nextCursor: null, total: 0 }
 
 function renderList(props: Partial<React.ComponentProps<typeof InventoryClient>> = {}) {
-  render(<InventoryClient data={emptyList} search="" category="" categories={[]} {...props} />)
+  render(
+    <QueryClientProvider client={new QueryClient()}>
+      <InventoryClient data={emptyList} search="" category="" categories={[]} {...props} />
+    </QueryClientProvider>
+  )
 }
 
 /** Opens Apply Markup, types a percentage and presses the named button. */

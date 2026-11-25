@@ -27,7 +27,8 @@
     "batchDeleteTitle": "Удалить клиентов",
     "batchDeleteDescription": "Удалить клиентов ({count})? Транспортные средства будут отвязаны.",
     "batchDeleteSuccess": "Удалено клиентов: {count}",
-    "openMenu": "Открыть меню"
+    "openMenu": "Открыть меню",
+    "selectLoaded": "Выбрать все показанные ({count, number})"
   },
   "detail": {
     "backToCustomers": "К списку клиентов",

@@ -3354,7 +3354,7 @@
       },
       "emptyFiltered": "Aramanızla eşleşen bağlantı yok.",
       "loadFailed": "Bağlantılar yüklenemedi. Tekrar denemek için sayfayı yenileyin.",
-      "selectAll": "Bu sayfadaki tüm bağlantıları seç",
+      "selectAll": "Gösterilen tüm bağlantıları seç",
       "selectRow": "{document} bağlantısını seç",
       "selectedCount": "{count, plural, one {# bağlantı seçildi} other {# bağlantı seçildi}}",
       "clearSelection": "Seçimi temizle",

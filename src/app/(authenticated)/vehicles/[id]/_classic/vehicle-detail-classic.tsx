@@ -36,9 +36,9 @@ import { NoteForm } from '@/features/vehicles/Components/NoteForm'
 import { ReminderForm } from '@/features/vehicles/Components/ReminderForm'
 import { FindingForm } from '@/features/vehicles/Components/FindingForm'
 import { VehicleSafetyPanel } from '@/features/vehicles/Components/VehicleSafetyPanel'
-import { ServiceRecordsTable } from './service-records-table'
-import { NotesTable } from '../notes-table'
-import { FindingsTable } from '../findings-table'
+import { type ServiceRecordBatch, ServiceRecordsTable } from './service-records-table'
+import { type NoteBatch, NotesTable, type NoteRow } from '../notes-table'
+import { type FindingBatch, type FindingRow, FindingsTable } from '../findings-table'
 import {
   VehicleTireSets,
   type VehicleTireSet,
@@ -109,66 +109,6 @@ import { useTypeKeyEnabled } from '@/components/type-key-context'
 import { sanitizeHtml } from '@/lib/sanitize-html'
 import { useSwitchVehiclePageLayout } from '@/features/vehicles/Components/VehiclePageLayoutSwitch'
 import { vehicleName as vehicleNameOf } from '@/lib/vehicle-name'
-
-interface PaginatedServices {
-  records: {
-    id: string
-    title: string
-    description: string | null
-    type: string
-    status: string
-    cost: number
-    mileage: number | null
-    serviceDate: Date
-    startDateTime: Date | null
-    invoiceDate: Date | null
-    shopName: string | null
-    techName: string | null
-    totalAmount: number
-    invoiceNumber: string | null
-    warrantyMonths: number | null
-    warrantyMileage: number | null
-    warrantyExpiresAt: Date | null
-    warrantyNotes: string | null
-    _count: { partItems: number; laborItems: number; attachments: number }
-  }[]
-  total: number
-  page: number
-  pageSize: number
-  totalPages: number
-}
-
-interface PaginatedNotes {
-  records: {
-    id: string
-    title: string
-    content: string
-    isPinned: boolean
-    createdAt: Date
-  }[]
-  total: number
-  page: number
-  pageSize: number
-  totalPages: number
-}
-
-interface PaginatedFindings {
-  records: {
-    id: string
-    description: string
-    severity: string
-    status: string
-    notes: string | null
-    imageUrls: string[]
-    createdAt: Date
-    serviceRecord: { id: string; title: string } | null
-    resolvedServiceRecord: { id: string; title: string } | null
-  }[]
-  total: number
-  page: number
-  pageSize: number
-  totalPages: number
-}
 
 interface VehicleDetail {
   id: string
@@ -280,8 +220,8 @@ function InspectionProgress({
 
 export function VehicleDetailClassic({
   vehicle,
-  paginatedServices,
-  paginatedNotes,
+  serviceBatch,
+  noteBatch,
   serviceSearch,
   serviceRecordType,
   currencyCode = DEFAULT_CURRENCY_CODE,
@@ -292,7 +232,7 @@ export function VehicleDetailClassic({
   quotes = [],
   aiEnabled = false,
   safetyAvailable = false,
-  paginatedFindings,
+  findingBatch,
   tireSets = [],
   meterTypes = [],
   vehicleMeters = [],
@@ -300,9 +240,10 @@ export function VehicleDetailClassic({
   today = '',
 }: {
   vehicle: VehicleDetail
-  paginatedServices: PaginatedServices
-  paginatedNotes: PaginatedNotes
-  paginatedFindings: PaginatedFindings
+  /** The first batch of each list; the rest load as the list scrolls. */
+  serviceBatch: ServiceRecordBatch
+  noteBatch: NoteBatch
+  findingBatch: FindingBatch
   /** Empty unless the shop runs a tire hotel and this vehicle has sets in it. */
   tireSets?: VehicleTireSet[]
   /** The workshop's meters in use (empty while meters are off) and this vehicle's. */
@@ -391,18 +332,16 @@ export function VehicleDetailClassic({
   const inspectionsNav = useTableKeyboardNav()
   const [showEditForm, setShowEditForm] = useState(false)
   const [showNoteForm, setShowNoteForm] = useState(false)
-  const [editingNote, setEditingNote] = useState<PaginatedNotes['records'][number] | undefined>()
+  const [editingNote, setEditingNote] = useState<NoteRow | undefined>()
   const [showReminderForm, setShowReminderForm] = useState(false)
   const [editingReminder, setEditingReminder] = useState<
     VehicleDetail['reminders'][number] | undefined
   >()
   const [showFindingForm, setShowFindingForm] = useState(false)
-  const [editingFinding, setEditingFinding] = useState<
-    PaginatedFindings['records'][number] | undefined
-  >()
+  const [editingFinding, setEditingFinding] = useState<FindingRow | undefined>()
   const [reminderFilter, setReminderFilter] = useState<'active' | 'completed' | 'all'>('active')
   const [showImage, setShowImage] = useState(false)
-  const [selectedNote, setSelectedNote] = useState<PaginatedNotes['records'][number] | null>(null)
+  const [selectedNote, setSelectedNote] = useState<NoteRow | null>(null)
   const [showArchiveDialog, setShowArchiveDialog] = useState(false)
   const [showNewQuoteDialog, setShowNewQuoteDialog] = useState(false)
   const [showNewInspection, setShowNewInspection] = useState(false)
@@ -508,9 +447,9 @@ export function VehicleDetailClassic({
   }
 
   const [creatingWorkOrder, setCreatingWorkOrder] = useState(false)
-  const handleCreateWorkOrderFromFindings = async (findingIds: string[]) => {
+  const handleCreateWorkOrderFromFindings = async (selectedFindings: FindingRow[]) => {
     setCreatingWorkOrder(true)
-    const selectedFindings = paginatedFindings.records.filter((f) => findingIds.includes(f.id))
+    const findingIds = selectedFindings.map((f) => f.id)
     const vehicleName = `${vehicleNameOf(vehicle)}`
     // An action that cannot reach the server throws instead of answering, so
     // it is caught and reported the way a refusal is.
@@ -1292,7 +1231,7 @@ export function VehicleDetailClassic({
           make={vehicle.make}
           model={vehicle.model}
           year={vehicle.year}
-          existingFindings={paginatedFindings.records.map((f) => f.description)}
+          existingFindings={findingBatch.rows.map((f) => f.description)}
         />
       )}
 
@@ -1381,11 +1320,7 @@ export function VehicleDetailClassic({
         <TabsContent value="services" forceMount>
           <ServiceRecordsTable
             vehicleId={vehicle.id}
-            records={paginatedServices.records}
-            total={paginatedServices.total}
-            page={paginatedServices.page}
-            pageSize={paginatedServices.pageSize}
-            totalPages={paginatedServices.totalPages}
+            initial={serviceBatch}
             search={serviceSearch}
             type={serviceRecordType}
             currencyCode={currencyCode}
@@ -1624,11 +1559,7 @@ export function VehicleDetailClassic({
         <TabsContent value="findings" forceMount>
           <FindingsTable
             vehicleId={vehicle.id}
-            records={paginatedFindings.records}
-            total={paginatedFindings.total}
-            page={paginatedFindings.page}
-            pageSize={paginatedFindings.pageSize}
-            totalPages={paginatedFindings.totalPages}
+            initial={findingBatch}
             onAddFinding={() => {
               setEditingFinding(undefined)
               setShowFindingForm(true)
@@ -1647,11 +1578,7 @@ export function VehicleDetailClassic({
         <TabsContent value="notes" forceMount>
           <NotesTable
             vehicleId={vehicle.id}
-            records={paginatedNotes.records}
-            total={paginatedNotes.total}
-            page={paginatedNotes.page}
-            pageSize={paginatedNotes.pageSize}
-            totalPages={paginatedNotes.totalPages}
+            initial={noteBatch}
             onSelectNote={setSelectedNote}
             onAddNote={() => {
               setEditingNote(undefined)

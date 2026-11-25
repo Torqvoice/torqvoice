@@ -41,7 +41,8 @@
     "selected": "{count, plural, one {# dalis} other {# dalys}} pasirinkta",
     "clearSelection": "Valyti",
     "deleteSelected": "Ištrinti ({count})",
-    "success": "Ištrinta {count, plural, one {# dalis} other {# dalys}}"
+    "success": "Ištrinta {count, plural, one {# dalis} other {# dalys}}",
+    "selectLoaded": "Pažymėti visus {count, number} rodomus"
   },
   "markup": {
     "title": "Taikyti antkainį visoms dalims",

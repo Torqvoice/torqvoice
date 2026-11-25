@@ -41,7 +41,8 @@
     "selected": "{count, plural, one {# ricambio selezionato} other {# ricambi selezionati}}",
     "clearSelection": "Annulla selezione",
     "deleteSelected": "Elimina ({count})",
-    "success": "{count, plural, one {# ricambio eliminato} other {# ricambi eliminati}}"
+    "success": "{count, plural, one {# ricambio eliminato} other {# ricambi eliminati}}",
+    "selectLoaded": "Seleziona tutti i {count, number} visualizzati"
   },
   "markup": {
     "title": "Applica ricarico a tutti i ricambi",

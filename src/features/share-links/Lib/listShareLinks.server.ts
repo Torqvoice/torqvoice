@@ -1,5 +1,6 @@
 import 'server-only'
 import { db } from '@/lib/db'
+import type { Cursor } from '@/lib/keyset'
 import { shareExpiry } from '@/lib/share-expiry'
 import {
   INVOICE_PAYMENT_COLUMNS,
@@ -16,8 +17,11 @@ import { toExpiryView } from './shareLinkDocument.server'
  * Whether a link is open is worked out from the workshop's rule, the day the
  * document was paid and the workshop's clock, none of which the database can
  * filter on. So the links are read with a narrow select, sorted and filtered
- * here, and one page of them is returned.
+ * here, and one batch of them is returned.
  */
+
+/** Rows per batch: the page's first paint and each batch after it. */
+export const SHARE_LINK_BATCH_SIZE = 50
 
 export type ShareLinkRowKind = 'invoice' | 'quote' | 'inspection' | 'statusReport'
 export type ShareLinkStatusFilter = 'active' | 'expired' | 'all'
@@ -47,6 +51,24 @@ export interface ShareLinkPage {
   pageSize: number
   totalPages: number
   counts: { active: number; expired: number }
+}
+
+/** One batch of the list, as the infinite list loads it while scrolling. */
+export interface ShareLinkBatch {
+  /** The workshop the links belong to: every link's address starts with it. */
+  organizationId: string
+  rows: ShareLinkRow[]
+  /** Where the next batch starts; null at the end of the list. */
+  nextCursor: Cursor | null
+  /** Only the first batch carries these. */
+  total?: number
+  counts?: { active: number; expired: number }
+}
+
+export interface ShareLinkFilters {
+  status: ShareLinkStatusFilter
+  kind: ShareLinkRowKind | 'all'
+  search: string
 }
 
 export interface ShareLinkQuery {
@@ -81,10 +103,8 @@ function vehicleLabel(v: VehicleRow): string {
   return [name, v.licensePlate].filter(Boolean).join(' · ')
 }
 
-export async function listShareLinks(
-  organizationId: string,
-  query: ShareLinkQuery
-): Promise<ShareLinkPage> {
+/** Every link the workshop has handed out, in no particular order. */
+async function collectShareLinks(organizationId: string): Promise<ShareLinkRow[]> {
   const context = await loadShareExpiryContext(organizationId)
   const now = new Date()
   const shared = { organizationId, publicToken: { not: null } }
@@ -237,13 +257,44 @@ export async function listShareLinks(
     })
   }
 
-  const counts = {
+  return rows
+}
+
+function countShareLinks(rows: ShareLinkRow[]) {
+  return {
     active: rows.filter((r) => !r.expiry.expired).length,
     expired: rows.filter((r) => r.expiry.expired).length,
   }
+}
 
+/**
+ * A row's place among the links: its kind and id, since an id is only unique
+ * within its own kind's table.
+ */
+export function shareLinkKey(row: Pick<ShareLinkRow, 'kind' | 'id'>) {
+  return `${row.kind}:${row.id}`
+}
+
+/**
+ * Newest first; a link with no known day sorts last. Links shared at the same
+ * moment are told apart by kind and id, so a batch always ends at the same
+ * place in the list and the next one carries on from there.
+ */
+function compareShareLinks(
+  a: { sharedAt: string | null; key: string },
+  b: { sharedAt: string | null; key: string }
+) {
+  if (a.sharedAt !== b.sharedAt) {
+    if (a.sharedAt === null) return 1
+    if (b.sharedAt === null) return -1
+    return a.sharedAt < b.sharedAt ? 1 : -1
+  }
+  return a.key < b.key ? -1 : a.key > b.key ? 1 : 0
+}
+
+function filterShareLinks(rows: ShareLinkRow[], query: ShareLinkFilters) {
   const needle = query.search.trim().toLowerCase()
-  const filtered = rows
+  return rows
     .filter((r) => query.kind === 'all' || r.kind === query.kind)
     .filter((r) =>
       query.status === 'all'
@@ -256,8 +307,58 @@ export async function listShareLinks(
       (r) =>
         !needle || [r.label, r.detail, r.customer].some((s) => s.toLowerCase().includes(needle))
     )
-    // Newest first; a link with no known day sorts last.
-    .sort((a, b) => (b.sharedAt ?? '').localeCompare(a.sharedAt ?? ''))
+    .sort((a, b) =>
+      compareShareLinks(
+        { sharedAt: a.sharedAt, key: shareLinkKey(a) },
+        { sharedAt: b.sharedAt, key: shareLinkKey(b) }
+      )
+    )
+}
+
+/**
+ * One batch of the links, after `cursor` (the last row's shared date and key)
+ * or from the top. The first batch also carries the total and the counts the
+ * status buttons show.
+ */
+export async function listShareLinkBatch(
+  organizationId: string,
+  query: ShareLinkFilters & { cursor?: Cursor | null }
+): Promise<ShareLinkBatch> {
+  const rows = await collectShareLinks(organizationId)
+  const filtered = filterShareLinks(rows, query)
+  const cursor = query.cursor
+  let start = 0
+  if (cursor) {
+    const value = cursor.v[0]
+    if (cursor.v.length !== 1 || (value !== null && typeof value !== 'string')) {
+      throw new Error('Invalid cursor')
+    }
+    const after = { sharedAt: value, key: cursor.id }
+    start = filtered.findIndex(
+      (r) => compareShareLinks({ sharedAt: r.sharedAt, key: shareLinkKey(r) }, after) > 0
+    )
+    if (start === -1) start = filtered.length
+  }
+  const batch = filtered.slice(start, start + SHARE_LINK_BATCH_SIZE)
+  const last = batch[batch.length - 1]
+  const more = start + SHARE_LINK_BATCH_SIZE < filtered.length
+  return {
+    organizationId,
+    rows: batch,
+    nextCursor: more && last ? { v: [last.sharedAt], id: shareLinkKey(last) } : null,
+    total: cursor ? undefined : filtered.length,
+    counts: cursor ? undefined : countShareLinks(rows),
+  }
+}
+
+/** One numbered page of the links (the list before it loaded as it scrolled). */
+export async function listShareLinks(
+  organizationId: string,
+  query: ShareLinkQuery
+): Promise<ShareLinkPage> {
+  const rows = await collectShareLinks(organizationId)
+  const counts = countShareLinks(rows)
+  const filtered = filterShareLinks(rows, query)
 
   const pageSize = Math.min(Math.max(query.pageSize, 1), 100)
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize))

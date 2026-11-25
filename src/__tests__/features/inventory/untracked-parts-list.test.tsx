@@ -67,9 +67,12 @@ vi.mock('@/features/settings/Actions/settingsActions', () => ({
   setSetting: vi.fn(),
 }))
 
+vi.mock('@/features/inventory/Actions/getInventoryRows', () => ({ getInventoryRows: vi.fn() }))
+
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { InventoryClient } from '@/app/(authenticated)/inventory/inventory-client'
 
-type Part = React.ComponentProps<typeof InventoryClient>['data']['parts'][number]
+type Part = React.ComponentProps<typeof InventoryClient>['data']['rows'][number]
 
 function part(overrides: Partial<Part>): Part {
   return {
@@ -99,13 +102,15 @@ function part(overrides: Partial<Part>): Part {
 
 function renderList(parts: Part[]) {
   render(
-    <InventoryClient
-      data={{ parts, total: parts.length, page: 1, pageSize: 25, totalPages: 1 }}
-      search=""
-      category=""
-      categories={[]}
-      lowStockDefault={5}
-    />
+    <QueryClientProvider client={new QueryClient()}>
+      <InventoryClient
+        data={{ rows: parts, nextCursor: null, total: parts.length }}
+        search=""
+        category=""
+        categories={[]}
+        lowStockDefault={5}
+      />
+    </QueryClientProvider>
   )
 }
 

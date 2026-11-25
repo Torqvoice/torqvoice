@@ -100,6 +100,13 @@
     "next": "Kitas puslapis",
     "last": "Paskutinis puslapis"
   },
+  "infiniteList": {
+    "count": "{shown, number} iš {total, number}",
+    "countAll": "{total, plural, one {# rezultatas} few {# rezultatai} many {# rezultato} other {# rezultatų}}",
+    "allShown": "Rodomi visi {total, number}",
+    "loadFailed": "Nepavyko įkelti daugiau",
+    "retry": "Bandyti dar kartą"
+  },
   "shared": {
     "close": "Uždaryti",
     "viewPlans": "Peržiūrėti planus",

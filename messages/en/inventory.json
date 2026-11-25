@@ -41,7 +41,8 @@
     "selected": "{count, plural, one {# part} other {# parts}} selected",
     "clearSelection": "Clear",
     "deleteSelected": "Delete ({count})",
-    "success": "Deleted {count, plural, one {# part} other {# parts}}"
+    "success": "Deleted {count, plural, one {# part} other {# parts}}",
+    "selectLoaded": "Select all {count, number} shown"
   },
   "markup": {
     "title": "Apply Markup to All Parts",

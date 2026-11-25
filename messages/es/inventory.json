@@ -41,7 +41,8 @@
     "selected": "{count, plural, one {# pieza seleccionada} other {# piezas seleccionadas}}",
     "clearSelection": "Limpiar",
     "deleteSelected": "Eliminar ({count})",
-    "success": "{count, plural, one {# pieza eliminada} other {# piezas eliminadas}}"
+    "success": "{count, plural, one {# pieza eliminada} other {# piezas eliminadas}}",
+    "selectLoaded": "Seleccionar los {count, number} mostrados"
   },
   "markup": {
     "title": "Aplicar margen a todas las piezas",

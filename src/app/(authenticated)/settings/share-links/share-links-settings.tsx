@@ -19,11 +19,16 @@ import {
 import Link from 'next/link'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { useCallback, useEffect, useMemo, useState, useTransition } from 'react'
+import { useCallback, useMemo, useState, useTransition } from 'react'
 import { toast } from 'sonner'
 import { AppCard } from '@/components/app-card'
 import { useConfirm } from '@/components/confirm-dialog'
-import { DataTablePagination } from '@/components/data-table-pagination'
+import { useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import {
+  InfiniteListCount,
+  InfiniteListFooter,
+  InfiniteTableFooter,
+} from '@/components/infinite-list/infinite-list-footer'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
@@ -43,11 +48,13 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
+import { getShareLinkRows } from '@/features/share-links/Actions/getShareLinkRows'
 import { revokeShareLinks } from '@/features/share-links/Actions/revokeShareLinks'
 import { revokeInspectionPublicLink } from '@/features/inspections/Actions/inspectionShareActions'
 import { revokeQuotePublicLink } from '@/features/quotes/Actions/quoteShareActions'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
 import { revokePublicLink } from '@/features/vehicles/Actions/serviceActions'
+import { useLoadedRowSelection } from '@/hooks/use-loaded-row-selection'
 import {
   SHARE_EXPIRY_MAX_DAYS,
   SHARE_EXPIRY_MODES,
@@ -58,6 +65,7 @@ import {
   type ShareKind,
   shareExpiryDays,
 } from '@/lib/share-expiry'
+import type { Cursor } from '@/lib/keyset'
 import { useFormatDate } from '@/lib/use-format-date'
 import { cn } from '@/lib/utils'
 import {
@@ -65,7 +73,7 @@ import {
   useShareExpiryText,
 } from '@/features/share-links/Components/ShareExpiryControl'
 import type {
-  ShareLinkPage,
+  ShareLinkBatch,
   ShareLinkRow,
   ShareLinkRowKind,
 } from '@/features/share-links/Lib/listShareLinks.server'
@@ -324,7 +332,8 @@ function LinksCard({
   baseUrl,
   filters,
 }: {
-  links: ShareLinkPage
+  /** The first batch, rendered on the server. */
+  links: ShareLinkBatch
   baseUrl: string
   filters: Filters
 }) {
@@ -336,6 +345,16 @@ function LinksCard({
   const [isPending, startTransition] = useTransition()
   const [search, setSearch] = useState(filters.search)
 
+  // The same filters the page's first batch was read with, so every batch
+  // after it continues that list.
+  const list = useInfiniteRows<ShareLinkRow, Cursor, ShareLinkBatch>({
+    queryKey: ['share-links', links.organizationId, filters],
+    initial: links,
+    fetchPage: (cursor) => getShareLinkRows({ ...filters, cursor }),
+  })
+  const rows = list.rows
+  const counts = list.firstPage.counts ?? { active: 0, expired: 0 }
+
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
       const next = new URLSearchParams(searchParams.toString())
@@ -343,8 +362,9 @@ function LinksCard({
         if (value === undefined || value === '') next.delete(key)
         else next.set(key, String(value))
       }
-      // A new filter starts at its first page.
-      if (!('page' in params)) next.delete('page')
+      // An old ?page= means nothing now: the list loads more as it scrolls.
+      next.delete('page')
+      next.delete('pageSize')
       startTransition(() => router.push(`${pathname}?${next.toString()}`, { scroll: false }))
     },
     [pathname, router, searchParams]
@@ -358,34 +378,22 @@ function LinksCard({
   const confirm = useConfirm()
   const { canEdit } = useSettingsPermission()
   const keyOf = (row: ShareLinkRow) => `${row.kind}:${row.id}`
+  // An invoice and a quote can share an id, so a row is known by its kind
+  // as well. Only loaded rows can be ticked; another search, filter or sort
+  // is another list and starts with nothing ticked, as everywhere else.
   const selectable = useMemo(
-    () => (canEdit ? links.rows.filter((row) => row.kind !== 'statusReport') : []),
-    [canEdit, links.rows]
+    () =>
+      (canEdit ? rows.filter((row) => row.kind !== 'statusReport') : []).map((row) => ({
+        id: `${row.kind}:${row.id}`,
+        row,
+      })),
+    [canEdit, rows]
   )
-  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const selection = useLoadedRowSelection(selectable, list.listKey)
   const [removing, setRemoving] = useState(false)
-  // Another page or filter shows other rows; a tick on a row no longer on
-  // screen must not be removed with the rest.
-  useEffect(() => {
-    setSelected((prev) => {
-      const onScreen = new Set(selectable.map((row) => `${row.kind}:${row.id}`))
-      const kept = [...prev].filter((key) => onScreen.has(key))
-      return kept.length === prev.size ? prev : new Set(kept)
-    })
-  }, [selectable])
-
-  const toggle = (row: ShareLinkRow, on: boolean) =>
-    setSelected((prev) => {
-      const next = new Set(prev)
-      if (on) next.add(keyOf(row))
-      else next.delete(keyOf(row))
-      return next
-    })
-  const allSelected = selectable.length > 0 && selected.size === selectable.length
-  const toggleAll = (on: boolean) => setSelected(on ? new Set(selectable.map(keyOf)) : new Set())
 
   const removeSelected = async () => {
-    const chosen = selectable.filter((row) => selected.has(keyOf(row)))
+    const chosen = selection.selectedRows.map(({ row }) => row)
     if (chosen.length === 0) return
     const ok = await confirm({
       title: t('bulkRevokeTitle', { count: chosen.length }),
@@ -405,7 +413,7 @@ function LinksCard({
       toast.error(result ? t('bulkRevokeFailed') : tc('shareLink.revokeFailed'))
       return
     }
-    setSelected(new Set())
+    selection.clear()
     toast.success(t('bulkRevoked', { count: result.data.removed }))
     refresh()
   }
@@ -413,8 +421,8 @@ function LinksCard({
   const rowCheckbox = (row: ShareLinkRow) =>
     row.kind !== 'statusReport' && canEdit ? (
       <Checkbox
-        checked={selected.has(keyOf(row))}
-        onCheckedChange={(value) => toggle(row, value === true)}
+        checked={selection.isSelected(keyOf(row))}
+        onCheckedChange={() => selection.toggle(keyOf(row))}
         aria-label={t('selectRow', { document: row.label })}
       />
     ) : null
@@ -434,13 +442,23 @@ function LinksCard({
       icon={Link2}
       title={t('title')}
       description={t('description')}
-      contentClassName="space-y-4"
+      // The settings pane is narrow next to two sidebars (about 360px wide on
+      // a 1024px screen), so the layout follows the card's width, not the
+      // window's.
+      contentClassName="@container space-y-4"
+      // Clips its corners without hiding overflow, which would make the card
+      // the box the table's header sticks to instead of the settings pane.
+      className="overflow-clip"
     >
-      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+      {/* Where another filter, search or sort takes the pane back to. */}
+      <div
+        data-infinite-list=""
+        className="flex flex-col gap-3 @3xl:flex-row @3xl:items-center @3xl:justify-between"
+      >
         <div
           role="group"
           aria-label={t('statusLabel')}
-          className="-mx-1 flex gap-2 overflow-x-auto px-1 sm:flex-wrap sm:overflow-visible"
+          className="-mx-1 flex gap-2 overflow-x-auto px-1 @md:flex-wrap @md:overflow-visible"
         >
           {STATUS_FILTERS.map((status) => (
             <Button
@@ -454,17 +472,17 @@ function LinksCard({
             >
               {t(`status.${status}`)}
               {status !== 'all' && (
-                <span className="ml-1.5 tabular-nums opacity-70">{links.counts[status]}</span>
+                <span className="ml-1.5 tabular-nums opacity-70">{counts[status]}</span>
               )}
             </Button>
           ))}
         </div>
-        <div className="flex flex-col gap-2 sm:flex-row">
+        <div className="flex flex-col gap-2 @md:flex-row">
           <Select
             value={filters.kind}
             onValueChange={(kind) => navigate({ kind: kind === 'all' ? undefined : kind })}
           >
-            <SelectTrigger className="h-9 sm:w-44" aria-label={t('kindLabel')}>
+            <SelectTrigger className="h-9 @md:w-44" aria-label={t('kindLabel')}>
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -476,7 +494,7 @@ function LinksCard({
             </SelectContent>
           </Select>
           <form
-            className="relative sm:w-56"
+            className="relative @md:w-56"
             onSubmit={(e) => {
               e.preventDefault()
               navigate({ search: search.trim() || undefined })
@@ -495,20 +513,21 @@ function LinksCard({
               className="h-9 pl-9"
             />
           </form>
+          <InfiniteListCount shown={rows.length} total={list.total} className="self-center" />
         </div>
       </div>
 
-      {selected.size > 0 && (
+      {selection.count > 0 && (
         <div
           role="region"
-          aria-label={t('selectedCount', { count: selected.size })}
+          aria-label={t('selectedCount', { count: selection.count })}
           className="flex flex-wrap items-center justify-between gap-2 rounded-lg border bg-muted/50 px-3 py-2"
         >
           <span className="text-sm font-medium">
-            {t('selectedCount', { count: selected.size })}
+            {t('selectedCount', { count: selection.count })}
           </span>
           <div className="flex items-center gap-2">
-            <Button type="button" variant="ghost" size="sm" onClick={() => toggleAll(false)}>
+            <Button type="button" variant="ghost" size="sm" onClick={selection.clear}>
               {t('clearSelection')}
             </Button>
             <Button
@@ -530,11 +549,13 @@ function LinksCard({
       )}
 
       <div className={cn('space-y-4 transition-opacity', isPending && 'opacity-60')}>
-        {/* Phones and narrow tablets: one card per link. */}
-        <div className="space-y-2 md:hidden">
-          {links.rows.length === 0
+        {/* A narrow card: one card per link. The list grows in the settings
+            pane, which is what scrolls; another filter takes the pane back
+            to the list's top. */}
+        <div className="space-y-2 @2xl:hidden">
+          {rows.length === 0
             ? empty
-            : links.rows.map((row) => {
+            : rows.map((row) => {
                 const Icon = KIND_ICONS[row.kind]
                 return (
                   <div key={`${row.kind}-${row.id}`} className="rounded-lg border bg-card p-3">
@@ -561,37 +582,46 @@ function LinksCard({
                   </div>
                 )
               })}
+          {rows.length > 0 && <InfiniteListFooter state={list} />}
         </div>
 
-        {/* Wider screens: the table. */}
-        <div className="hidden overflow-hidden rounded-lg border md:block">
-          <Table>
-            <TableHeader>
+        {/* A wide card: the table. It grows in the settings pane too, and its
+            header sticks to the top of the pane. Nothing between them may
+            scroll or hide overflow, or the header sticks to that instead:
+            the rounded border clips with overflow-clip, which does not. */}
+        <div className="hidden overflow-clip rounded-lg border @2xl:block">
+          <Table containerClassName="overflow-visible" className="table-fixed">
+            <TableHeader sticky>
               <TableRow>
                 {canEdit && (
                   <TableHead className="w-10">
                     <Checkbox
-                      checked={allSelected ? true : selected.size > 0 ? 'indeterminate' : false}
-                      onCheckedChange={(value) => toggleAll(value === true)}
+                      checked={selection.headerState}
+                      onCheckedChange={selection.toggleAll}
                       disabled={selectable.length === 0}
                       aria-label={t('selectAll')}
                     />
                   </TableHead>
                 )}
+                {/* The document takes what the fixed columns leave. The
+                    customer gets its own column only when there is room for
+                    one; until then it is the document's third line. */}
                 <TableHead>{t('columns.document')}</TableHead>
-                <TableHead className="hidden lg:table-cell">{t('columns.customer')}</TableHead>
-                <TableHead className="w-[110px]">{t('columns.shared')}</TableHead>
-                <TableHead className="hidden w-[70px] text-right xl:table-cell">
+                <TableHead className="hidden w-[24%] @5xl:table-cell">
+                  {t('columns.customer')}
+                </TableHead>
+                <TableHead className="w-[104px]">{t('columns.shared')}</TableHead>
+                <TableHead className="hidden w-[64px] text-right @5xl:table-cell">
                   {t('columns.views')}
                 </TableHead>
-                <TableHead>{t('columns.expires')}</TableHead>
-                <TableHead className="w-[120px] text-right">
+                <TableHead className="w-[168px]">{t('columns.expires')}</TableHead>
+                <TableHead className="w-[116px] text-right">
                   <span className="sr-only">{t('columns.actions')}</span>
                 </TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {links.rows.length === 0 ? (
+              {rows.length === 0 ? (
                 <TableRow>
                   <TableCell
                     colSpan={canEdit ? 7 : 6}
@@ -603,15 +633,15 @@ function LinksCard({
                   </TableCell>
                 </TableRow>
               ) : (
-                links.rows.map((row) => {
+                rows.map((row) => {
                   const Icon = KIND_ICONS[row.kind]
                   return (
                     <TableRow
                       key={`${row.kind}-${row.id}`}
-                      data-state={selected.has(keyOf(row)) ? 'selected' : undefined}
+                      data-state={selection.isSelected(keyOf(row)) ? 'selected' : undefined}
                     >
                       {canEdit && <TableCell>{rowCheckbox(row)}</TableCell>}
-                      <TableCell className="max-w-[260px]">
+                      <TableCell>
                         <div className="flex items-start gap-2.5">
                           <Icon
                             className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground"
@@ -627,19 +657,19 @@ function LinksCard({
                             <p className="truncate text-xs text-muted-foreground">
                               {[t(`kindOne.${row.kind}`), row.detail].filter(Boolean).join(' · ')}
                             </p>
-                            <p className="truncate text-xs text-muted-foreground lg:hidden">
+                            <p className="truncate text-xs text-muted-foreground @5xl:hidden">
                               {row.customer}
                             </p>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="hidden max-w-[180px] truncate text-sm lg:table-cell">
+                      <TableCell className="hidden truncate text-sm @5xl:table-cell">
                         {row.customer || <span className="text-muted-foreground">{t('none')}</span>}
                       </TableCell>
                       <TableCell className="whitespace-nowrap text-sm text-muted-foreground">
                         {row.sharedAt ? formatDate(row.sharedAt) : t('none')}
                       </TableCell>
-                      <TableCell className="hidden text-right text-sm tabular-nums text-muted-foreground xl:table-cell">
+                      <TableCell className="hidden text-right text-sm tabular-nums text-muted-foreground @5xl:table-cell">
                         {row.viewCount ?? t('none')}
                       </TableCell>
                       <TableCell>
@@ -652,17 +682,10 @@ function LinksCard({
                   )
                 })
               )}
+              {rows.length > 0 && <InfiniteTableFooter state={list} colSpan={canEdit ? 7 : 6} />}
             </TableBody>
           </Table>
         </div>
-
-        <DataTablePagination
-          total={links.total}
-          page={links.page}
-          pageSize={links.pageSize}
-          totalPages={links.totalPages}
-          onNavigate={navigate}
-        />
       </div>
     </AppCard>
   )
@@ -675,7 +698,7 @@ export function ShareLinksSettings({
   filters,
 }: {
   rules: ShareExpiryRules
-  links: ShareLinkPage | null
+  links: ShareLinkBatch | null
   baseUrl: string
   filters: Filters
 }) {

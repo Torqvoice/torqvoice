@@ -100,6 +100,13 @@
     "next": "Page suivante",
     "last": "Dernière page"
   },
+  "infiniteList": {
+    "count": "{shown, number} sur {total, number}",
+    "countAll": "{total, plural, one {# résultat} other {# résultats}}",
+    "allShown": "Les {total, number} sont affichés",
+    "loadFailed": "Impossible de charger la suite",
+    "retry": "Réessayer"
+  },
   "shared": {
     "close": "Fermer",
     "viewPlans": "Voir les formules",

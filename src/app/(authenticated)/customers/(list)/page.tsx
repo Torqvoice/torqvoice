@@ -1,10 +1,11 @@
 import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { getTranslations } from 'next-intl/server'
-import { getCustomersPaginated } from '@/features/customers/Actions/customerActions'
+import { getCustomerRows } from '@/features/customers/Actions/getCustomerRows'
 import { CustomersClient } from '../customers-client'
 import { PageHeader } from '@/components/page-header'
 import { ListPage } from '@/components/list-page'
 import { countUnnumberedCustomers } from '@/features/customers/Actions/customerActions'
+import { getAuthContext } from '@/lib/get-auth-context'
 import { pageTitle } from '@/lib/page-title'
 
 export function generateMetadata() {
@@ -14,9 +15,8 @@ export function generateMetadata() {
 export default async function CustomersPage({
   searchParams,
 }: {
+  // An old ?page= link is simply ignored: the list loads more as it scrolls.
   searchParams: Promise<{
-    page?: string
-    pageSize?: string
     search?: string
     sortBy?: string
     sortOrder?: string
@@ -27,15 +27,15 @@ export default async function CustomersPage({
     sortBy: undefined,
     sortOrder: 'desc',
   })
-  const [result, unnumberedResult] = await Promise.all([
-    getCustomersPaginated({
-      page: params.page ? parseInt(params.page) : 1,
-      pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
+  const [result, unnumberedResult, authCtx] = await Promise.all([
+    // The first batch; the rest load through the same action as the list scrolls.
+    getCustomerRows({
       search: params.search,
       sortBy: sort.sortBy,
       sortOrder: sort.sortOrder,
     }),
     countUnnumberedCustomers(),
+    getAuthContext(),
   ])
   const unnumbered = unnumberedResult.success ? (unnumberedResult.data ?? 0) : 0
 
@@ -57,6 +57,7 @@ export default async function CustomersPage({
       <ListPage>
         <CustomersClient
           data={result.data}
+          listScope={authCtx?.organizationId ?? ''}
           search={params.search || ''}
           sortBy={sort.sortBy || ''}
           sortOrder={sort.sortOrder}

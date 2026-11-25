@@ -27,7 +27,8 @@
     "batchDeleteTitle": "Eliminar Clientes",
     "batchDeleteDescription": "Eliminar {count} cliente(s)? As viaturas associadas deixarão de estar ligadas a estes clientes.",
     "batchDeleteSuccess": "{count} cliente(s) eliminado(s)",
-    "openMenu": "Abrir menu"
+    "openMenu": "Abrir menu",
+    "selectLoaded": "Selecionar todos os {count, number} apresentados"
   },
   "detail": {
     "backToCustomers": "Voltar aos clientes",

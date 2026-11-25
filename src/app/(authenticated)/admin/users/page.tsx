@@ -1,4 +1,4 @@
-import { getUsers } from '@/features/admin/Actions/getUsers'
+import { getUserRows } from '@/features/admin/Actions/getUserRows'
 import { AdminUsers } from '@/features/admin/Components/admin-users'
 import { pageTitle } from '@/lib/page-title'
 
@@ -9,31 +9,21 @@ export function generateMetadata() {
 export default async function AdminUsersPage({
   searchParams,
 }: {
+  // An old ?page= link is simply ignored: the list loads more as it scrolls.
   searchParams: Promise<{
     search?: string
-    page?: string
-    pageSize?: string
     sortBy?: string
     sortOrder?: string
   }>
 }) {
   const params = await searchParams
-  const page = Number(params.page) || 1
-  const pageSize = Number(params.pageSize) || 20
   const search = params.search || ''
-  const sortBy = params.sortBy
-  const sortOrder = params.sortOrder
+  const sortBy = params.sortBy || 'lastSeen'
+  const sortOrder = params.sortOrder === 'asc' ? 'asc' : 'desc'
 
-  const result = await getUsers({ search, page, pageSize, sortBy, sortOrder })
+  // The first batch; the rest load through the same action as the list scrolls.
+  const result = await getUserRows({ search, sortBy, sortOrder })
+  const data = result.data ?? { rows: [], nextCursor: null, total: 0 }
 
-  const data = result.data ?? { users: [], total: 0, page: 1, pageSize: 20, totalPages: 0 }
-
-  return (
-    <AdminUsers
-      data={data}
-      search={search}
-      sortBy={sortBy ?? 'lastSeen'}
-      sortOrder={sortOrder === 'asc' ? 'asc' : 'desc'}
-    />
-  )
+  return <AdminUsers data={data} search={search} sortBy={sortBy} sortOrder={sortOrder} />
 }

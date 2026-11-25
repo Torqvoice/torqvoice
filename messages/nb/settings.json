@@ -3354,7 +3354,7 @@
       },
       "emptyFiltered": "Ingen lenker passer søket ditt.",
       "loadFailed": "Kunne ikke laste lenkene. Last inn siden på nytt for å prøve igjen.",
-      "selectAll": "Velg alle lenkene på denne siden",
+      "selectAll": "Velg alle lenkene som vises",
       "selectRow": "Velg lenken til {document}",
       "selectedCount": "{count, plural, one {# lenke valgt} other {# lenker valgt}}",
       "clearSelection": "Nullstill valg",

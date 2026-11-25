@@ -324,6 +324,7 @@
     "discoveredIn": "Discovered in",
     "resolvedIn": "Resolved in",
     "createWorkOrder": "Create Work Order ({count})",
+    "selectAll": "Select all shown",
     "vehicleHasObservations": "This vehicle has {count} open observations",
     "addToWorkOrder": "Add to Work Order ({count})",
     "dismiss": "Dismiss",

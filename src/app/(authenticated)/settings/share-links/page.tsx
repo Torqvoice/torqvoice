@@ -1,6 +1,6 @@
 import { getSettings } from '@/features/settings/Actions/settingsActions'
 import type { SettingKey } from '@/features/settings/Schema/settingsSchema'
-import { getShareLinksPage } from '@/features/share-links/Actions/getShareLinksPage'
+import { getShareLinkRows } from '@/features/share-links/Actions/getShareLinkRows'
 import { getAppBaseUrl } from '@/lib/app-url'
 import { settingsPageTitle } from '@/lib/page-title'
 import { ALL_SHARE_EXPIRY_SETTING_KEYS, readShareExpiryRules } from '@/lib/share-expiry'
@@ -13,6 +13,7 @@ export function generateMetadata() {
 export default async function ShareLinksSettingsPage({
   searchParams,
 }: {
+  // An old ?page= link is simply ignored: the list loads more as it scrolls.
   searchParams: Promise<Record<string, string | string[] | undefined>>
 }) {
   const params = await searchParams
@@ -23,12 +24,11 @@ export default async function ShareLinksSettingsPage({
 
   const [settingsResult, linksResult] = await Promise.all([
     getSettings(ALL_SHARE_EXPIRY_SETTING_KEYS as SettingKey[]),
-    getShareLinksPage({
+    // The first batch; the rest load through the same action as the list scrolls.
+    getShareLinkRows({
       status: one('status'),
       kind: one('kind'),
       search: one('search'),
-      page: one('page'),
-      pageSize: one('pageSize'),
     }),
   ])
 

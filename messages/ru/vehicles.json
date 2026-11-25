@@ -324,6 +324,7 @@
     "discoveredIn": "Обнаружено в",
     "resolvedIn": "Решено в",
     "createWorkOrder": "Создать заказ-наряд ({count})",
+    "selectAll": "Выбрать все показанные",
     "vehicleHasObservations": "У этого транспортного средства {count} открытых наблюдений",
     "addToWorkOrder": "Добавить в заказ-наряд ({count})",
     "dismiss": "Скрыть",

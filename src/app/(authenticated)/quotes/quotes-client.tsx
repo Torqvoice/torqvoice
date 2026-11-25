@@ -36,7 +36,14 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import { DataTablePagination } from '@/components/data-table-pagination'
+import { useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import {
+  InfiniteListCount,
+  InfiniteListFooter,
+  InfiniteTableFooter,
+} from '@/components/infinite-list/infinite-list-footer'
+import { getQuoteRows } from '@/features/quotes/Actions/getQuoteRows'
+import type { Cursor } from '@/lib/keyset'
 import { TableContextMenuHint } from '@/components/table-context-menu-hint'
 import { TableCellLink } from '@/components/table-cell-link'
 import {
@@ -76,13 +83,12 @@ interface QuoteRecord {
   } | null
 }
 
-interface PaginatedData {
-  records: QuoteRecord[]
-  total: number
-  page: number
-  pageSize: number
-  totalPages: number
-  statusCounts: Record<string, number>
+/** One batch of the list; the first also carries the total and the tab counts. */
+interface QuoteBatch {
+  rows: QuoteRecord[]
+  nextCursor: Cursor | null
+  total?: number
+  statusCounts?: Record<string, number>
 }
 
 const statusTitleKeys: Record<ListStatus<'quotes'>, string> = {
@@ -99,13 +105,17 @@ const statusTabs = LIST_STATUS_TABS.quotes.map((key) => ({ key, titleKey: status
 
 export function QuotesClient({
   data,
+  listScope = '',
   currencyCode = DEFAULT_CURRENCY_CODE,
   search,
   statusFilter,
   sortBy = '',
   sortOrder = 'desc',
 }: {
-  data: PaginatedData
+  /** The first batch, rendered on the server. */
+  data: QuoteBatch
+  /** The workshop, so one workshop's cached rows never show in another's. */
+  listScope?: string
   currencyCode?: string
   search: string
   statusFilter: string
@@ -123,6 +133,22 @@ export function QuotesClient({
   const t = useTranslations('quotes')
   const tStatus = useTranslations('quotes.statusLabels')
   const tcm = useTranslations('common.contextMenu')
+
+  // The same filters the page's first batch was read with, so every batch
+  // after it continues that list.
+  const filters = {
+    search: search || undefined,
+    status: statusFilter || undefined,
+    sortBy: sortBy || undefined,
+    sortOrder,
+  }
+  const list = useInfiniteRows<QuoteRecord, Cursor, QuoteBatch>({
+    queryKey: ['quotes', listScope, filters],
+    initial: data,
+    fetchPage: (cursor) => getQuoteRows({ ...filters, cursor }),
+  })
+  const records = list.rows
+  const statusCounts = list.firstPage.statusCounts ?? {}
 
   // New quote dialog state
   const [showNewDialog, setShowNewDialog] = useState(false)
@@ -147,7 +173,9 @@ export function QuotesClient({
           newParams.set(key, String(value))
         }
       }
-      if (!('page' in params)) newParams.delete('page')
+      // The list loads more as it scrolls; an old page number means nothing.
+      newParams.delete('page')
+      newParams.delete('pageSize')
       startTransition(() => {
         router.push(`${pathname}?${newParams.toString()}`)
       })
@@ -176,7 +204,7 @@ export function QuotesClient({
   const numberLabel = t('list.columnQuoteNumber')
   const numberColumnWidth = fitColumnWidth(
     numberLabel,
-    data.records.map((q) => q.quoteNumber),
+    records.map((q) => q.quoteNumber),
     0.85
   )
 
@@ -212,7 +240,7 @@ export function QuotesClient({
       <div className="-mx-1 flex shrink-0 gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
         {statusTabs.map((tab) => {
           const isActive = statusFilter === tab.key
-          const count = tab.key === 'all' ? undefined : data.statusCounts[tab.key] || 0
+          const count = tab.key === 'all' ? undefined : statusCounts[tab.key] || 0
           return (
             <Button
               key={tab.key}
@@ -251,6 +279,7 @@ export function QuotesClient({
             />
           </form>
           {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+          <InfiniteListCount shown={records.length} total={list.total} />
         </div>
         <Button
           size="sm"
@@ -266,9 +295,9 @@ export function QuotesClient({
 
       {/* Card list (phones + small tablets) - only this scrolls */}
       <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
-        {data.records.length === 0
+        {records.length === 0
           ? emptyState(false)
-          : data.records.map((q) => (
+          : records.map((q) => (
               <button
                 key={q.id}
                 type="button"
@@ -316,6 +345,7 @@ export function QuotesClient({
                 </div>
               </button>
             ))}
+        {records.length > 0 && <InfiniteListFooter state={list} />}
       </div>
 
       {/* Table (md and up) - only the rows scroll */}
@@ -387,7 +417,11 @@ export function QuotesClient({
                   <SortIcon column="createdAt" />
                 </button>
               </TableHead>
-              <TableHead className="w-22.5">
+              {/* The last column of a fixed table: an amount wider than it
+                  spills past the table's edge and gives the whole list a
+                  sideways scroll bar, so it is sized for a five-figure total
+                  with a currency code and the cell truncates beyond that. */}
+              <TableHead className="w-[120px]">
                 <button
                   type="button"
                   className="ml-auto flex items-center hover:text-foreground"
@@ -400,14 +434,14 @@ export function QuotesClient({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.records.length === 0 ? (
+            {records.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={7} className="p-0">
                   {emptyState(true)}
                 </TableCell>
               </TableRow>
             ) : (
-              data.records.map((q) => (
+              records.map((q) => (
                 <ContextMenu key={q.id} modal={false}>
                   <ContextMenuTrigger asChild>
                     <TableRow
@@ -464,7 +498,10 @@ export function QuotesClient({
                       <TableCell className="font-mono text-xs">
                         {formatDate(new Date(q.createdAt))}
                       </TableCell>
-                      <TableCell className="text-right font-semibold">
+                      <TableCell
+                        className="truncate text-right font-semibold"
+                        title={formatCurrency(q.totalAmount, currencyCode)}
+                      >
                         {formatCurrency(q.totalAmount, currencyCode)}
                       </TableCell>
                     </TableRow>
@@ -490,17 +527,10 @@ export function QuotesClient({
                 </ContextMenu>
               ))
             )}
+            {records.length > 0 && <InfiniteTableFooter state={list} colSpan={7} />}
           </TableBody>
         </Table>
       </div>
-
-      <DataTablePagination
-        total={data.total}
-        page={data.page}
-        pageSize={data.pageSize}
-        totalPages={data.totalPages}
-        onNavigate={navigate}
-      />
 
       <NewQuoteDialog open={showNewDialog} onOpenChange={setShowNewDialog} />
     </div>

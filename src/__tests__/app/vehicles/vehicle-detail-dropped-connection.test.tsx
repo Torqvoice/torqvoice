@@ -83,16 +83,18 @@ vi.mock('@/app/(authenticated)/vehicles/[id]/vehicle-activity-feed', () => ({
 vi.mock('@/app/(authenticated)/vehicles/[id]/notes-table', () => ({ NotesTable: () => null }))
 vi.mock('@/app/(authenticated)/vehicles/[id]/findings-table', () => ({
   FindingsTable: ({
+    initial,
     onCreateWorkOrder,
     isCreatingWorkOrder,
   }: {
-    onCreateWorkOrder: (ids: string[]) => void
+    initial: { rows: { id: string }[] }
+    onCreateWorkOrder: (findings: { id: string }[]) => void
     isCreatingWorkOrder: boolean
   }) => (
     <button
       type="button"
       disabled={isCreatingWorkOrder}
-      onClick={() => onCreateWorkOrder(['f1', 'f2'])}
+      onClick={() => onCreateWorkOrder(initial.rows)}
     >
       Create Work Order (2)
     </button>
@@ -164,13 +166,11 @@ function renderPage() {
       <VehicleDetailClient
         vehicle={VEHICLE}
         paginatedServices={empty}
-        paginatedNotes={empty}
-        paginatedFindings={{
-          records: [finding('f1', 'Front pads worn'), finding('f2', 'Wiper blades torn')],
+        noteBatch={{ rows: [], nextCursor: null, total: 0 }}
+        findingBatch={{
+          rows: [finding('f1', 'Front pads worn'), finding('f2', 'Wiper blades torn')],
+          nextCursor: null,
           total: 2,
-          page: 1,
-          pageSize: 20,
-          totalPages: 1,
         }}
         serviceSearch=""
         serviceRecordType=""

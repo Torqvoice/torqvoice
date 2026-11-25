@@ -1,9 +1,10 @@
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { getInventoryPartsList } from '@/features/inventory/Actions/inventoryActions'
-import { getLaborPresetsPaginated } from '@/features/labor-presets/Actions/laborPresetActions'
+import { getLaborPresetRows } from '@/features/labor-presets/Actions/getLaborPresetRows'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
+import { getAuthContext } from '@/lib/get-auth-context'
 import { LaborPresetsClient } from './labor-presets-client'
 import { PageHeader } from '@/components/page-header'
 import { ListPage } from '@/components/list-page'
@@ -16,9 +17,8 @@ export function generateMetadata() {
 export default async function LaborPresetsPage({
   searchParams,
 }: {
+  // An old ?page= link is simply ignored: the list loads more as it scrolls.
   searchParams: Promise<{
-    page?: string
-    pageSize?: string
     search?: string
     sortBy?: string
     sortOrder?: string
@@ -29,10 +29,9 @@ export default async function LaborPresetsPage({
     sortBy: 'updatedAt',
     sortOrder: 'desc',
   })
-  const [result, settingsResult, inventoryResult] = await Promise.all([
-    getLaborPresetsPaginated({
-      page: params.page ? parseInt(params.page) : 1,
-      pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
+  const [result, settingsResult, inventoryResult, authCtx] = await Promise.all([
+    // The first batch; the rest load through the same action as the list scrolls.
+    getLaborPresetRows({
       search: params.search,
       sortBy: sort.sortBy,
       sortOrder: sort.sortOrder,
@@ -41,6 +40,7 @@ export default async function LaborPresetsPage({
     // For the "import from inventory" picker in the preset form. A user
     // without inventory read permission simply gets no picker.
     getInventoryPartsList(),
+    getAuthContext(),
   ])
 
   if (!result.success || !result.data) {
@@ -78,6 +78,7 @@ export default async function LaborPresetsPage({
       <ListPage>
         <LaborPresetsClient
           data={result.data}
+          listScope={authCtx?.organizationId ?? ''}
           search={params.search || ''}
           sortBy={sort.sortBy || ''}
           sortOrder={sort.sortOrder}

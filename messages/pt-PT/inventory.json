@@ -41,7 +41,8 @@
     "selected": "{count, plural, one {# peça selecionada} other {# peças selecionadas}}",
     "clearSelection": "Limpar",
     "deleteSelected": "Eliminar ({count})",
-    "success": "{count, plural, one {# peça eliminada} other {# peças eliminadas}}"
+    "success": "{count, plural, one {# peça eliminada} other {# peças eliminadas}}",
+    "selectLoaded": "Selecionar todos os {count, number} apresentados"
   },
   "markup": {
     "title": "Aplicar margem a todas as peças",

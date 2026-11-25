@@ -3354,7 +3354,7 @@
       },
       "emptyFiltered": "Geen links gevonden voor je zoekopdracht.",
       "loadFailed": "Kon de links niet laden. Herlaad de pagina om het opnieuw te proberen.",
-      "selectAll": "Alle links op deze pagina selecteren",
+      "selectAll": "Alle getoonde links selecteren",
       "selectRow": "De link naar {document} selecteren",
       "selectedCount": "{count, plural, one {# link geselecteerd} other {# links geselecteerd}}",
       "clearSelection": "Selectie wissen",

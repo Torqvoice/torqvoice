@@ -4,7 +4,7 @@ import { resolveListStatus } from '@/lib/list-status-preference.server'
 import { resolveListColumns } from '@/lib/list-columns.server'
 import { WORK_ORDER_COLUMNS } from '@/lib/list-columns'
 import { getTranslations } from 'next-intl/server'
-import { getWorkOrders } from '@/features/vehicles/Actions/serviceActions'
+import { getWorkOrderRows } from '@/features/vehicles/Actions/getWorkOrderRows'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { getAuthContext } from '@/lib/get-auth-context'
@@ -22,9 +22,8 @@ export function generateMetadata() {
 export default async function WorkOrdersPage({
   searchParams,
 }: {
+  // An old ?page= link is simply ignored: the list loads more as it scrolls.
   searchParams: Promise<{
-    page?: string
-    pageSize?: string
     search?: string
     status?: string
     sortBy?: string
@@ -41,9 +40,8 @@ export default async function WorkOrdersPage({
   const columns = await resolveListColumns('workOrders', WORK_ORDER_COLUMNS)
   const status = await resolveListStatus('workOrders', params.status)
   const [result, settingsResult, authCtx] = await Promise.all([
-    getWorkOrders({
-      page: params.page ? parseInt(params.page) : 1,
-      pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
+    // The first batch; the rest load through the same action as the list scrolls.
+    getWorkOrderRows({
       search: params.search,
       status,
       sortBy: sort.sortBy,
@@ -79,6 +77,7 @@ export default async function WorkOrdersPage({
       <ListPage>
         <WorkOrdersClient
           data={result.data}
+          listScope={authCtx?.organizationId ?? ''}
           currencyCode={currencyCode}
           search={params.search || ''}
           statusFilter={status}

@@ -41,7 +41,8 @@
     "selected": "{count, plural, one {# Teil} other {# Teile}} ausgewählt",
     "clearSelection": "Auswahl aufheben",
     "deleteSelected": "Löschen ({count})",
-    "success": "{count, plural, one {# Teil} other {# Teile}} gelöscht"
+    "success": "{count, plural, one {# Teil} other {# Teile}} gelöscht",
+    "selectLoaded": "Alle {count, number} angezeigten auswählen"
   },
   "markup": {
     "title": "Aufschlag auf alle Teile anwenden",

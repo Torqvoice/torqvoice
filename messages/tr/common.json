@@ -100,6 +100,13 @@
     "next": "Sonraki sayfa",
     "last": "Son sayfa"
   },
+  "infiniteList": {
+    "count": "{shown, number} / {total, number}",
+    "countAll": "{total, plural, one {# sonuç} other {# sonuç}}",
+    "allShown": "{total, number} kaydın tümü gösteriliyor",
+    "loadFailed": "Daha fazlası yüklenemedi",
+    "retry": "Tekrar dene"
+  },
   "shared": {
     "close": "Kapat",
     "viewPlans": "Planlara bak",

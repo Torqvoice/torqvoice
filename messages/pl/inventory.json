@@ -41,7 +41,8 @@
     "selected": "{count, plural, one {# część zaznaczona} few {# części zaznaczone} other {# części zaznaczonych}}",
     "clearSelection": "Wyczyść",
     "deleteSelected": "Usuń ({count})",
-    "success": "Usunięto {count, plural, one {# część} few {# części} other {# części}}"
+    "success": "Usunięto {count, plural, one {# część} few {# części} other {# części}}",
+    "selectLoaded": "Zaznacz wszystkie wyświetlone ({count, number})"
   },
   "markup": {
     "title": "Zastosuj marżę do wszystkich części",

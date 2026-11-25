@@ -3354,7 +3354,7 @@
       },
       "emptyFiltered": "No links match your search.",
       "loadFailed": "Couldn't load the links. Reload the page to try again.",
-      "selectAll": "Select all links on this page",
+      "selectAll": "Select all links shown",
       "selectRow": "Select the link to {document}",
       "selectedCount": "{count, plural, one {# link selected} other {# links selected}}",
       "clearSelection": "Clear selection",

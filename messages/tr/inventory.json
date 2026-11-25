@@ -41,7 +41,8 @@
     "selected": "{count, plural, one {# parça} other {# parça}} seçili",
     "clearSelection": "Temizle",
     "deleteSelected": "Sil ({count})",
-    "success": "{count, plural, one {# parça} other {# parça}} silindi"
+    "success": "{count, plural, one {# parça} other {# parça}} silindi",
+    "selectLoaded": "Gösterilen {count, number} öğenin tümünü seç"
   },
   "markup": {
     "title": "Tüm parçalara kâr marjı uygula",

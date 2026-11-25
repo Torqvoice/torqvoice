@@ -37,7 +37,7 @@ function resolve(obj: unknown, keyPath: string): string | undefined {
  */
 function interpolate(tpl: string, values?: Record<string, unknown>): string {
   if (!values) return tpl
-  if (/\{\s*\w+\s*,\s*(plural|select|selectordinal)\s*,/.test(tpl)) {
+  if (/\{\s*\w+\s*,\s*(plural|select|selectordinal|number)\s*[,}]/.test(tpl)) {
     try {
       return String(new IntlMessageFormat(tpl, 'en').format(values as Record<string, never>))
     } catch {

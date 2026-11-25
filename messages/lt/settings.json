@@ -3354,7 +3354,7 @@
       },
       "emptyFiltered": "Paieškos atitinkančių nuorodų nėra.",
       "loadFailed": "Nepavyko įkelti nuorodų. Įkelkite puslapį iš naujo ir bandykite dar kartą.",
-      "selectAll": "Pasirinkti visas šio puslapio nuorodas",
+      "selectAll": "Pasirinkti visas rodomas nuorodas",
       "selectRow": "Pasirinkti nuorodą į {document}",
       "selectedCount": "{count, plural, one {Pasirinkta # nuoroda} few {Pasirinktos # nuorodos} many {Pasirinkta # nuorodos} other {Pasirinkta # nuorodų}}",
       "clearSelection": "Išvalyti pasirinkimą",

@@ -324,6 +324,7 @@
     "discoveredIn": "Découvert dans",
     "resolvedIn": "Résolu dans",
     "createWorkOrder": "Créer un ordre de travail ({count})",
+    "selectAll": "Sélectionner toutes celles affichées",
     "vehicleHasObservations": "Ce véhicule a {count} observations en cours",
     "addToWorkOrder": "Ajouter à l'ordre de travail ({count})",
     "dismiss": "Ignorer",

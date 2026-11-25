@@ -29,7 +29,14 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import { DataTablePagination } from '@/components/data-table-pagination'
+import { useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import {
+  InfiniteListCount,
+  InfiniteListFooter,
+  InfiniteTableFooter,
+} from '@/components/infinite-list/infinite-list-footer'
+import { getWorkOrderRows } from '@/features/vehicles/Actions/getWorkOrderRows'
+import type { Cursor } from '@/lib/keyset'
 import { TableContextMenuHint } from '@/components/table-context-menu-hint'
 import { TableCellLink } from '@/components/table-cell-link'
 import { CustomStatusChip, StatusBadge } from '@/components/status-badge'
@@ -99,13 +106,12 @@ interface WorkOrder {
   } | null
 }
 
-interface PaginatedData {
-  records: WorkOrder[]
-  total: number
-  page: number
-  pageSize: number
-  totalPages: number
-  statusCounts: Record<string, number>
+/** One batch of the list; the first also carries the total and the tab counts. */
+interface WorkOrderBatch {
+  rows: WorkOrder[]
+  nextCursor: Cursor | null
+  total?: number
+  statusCounts?: Record<string, number>
 }
 
 const statusTabKeys = LIST_STATUS_TABS.workOrders
@@ -140,6 +146,7 @@ const statusTransitions: Record<string, { actionKey: string; target: string }[]>
 
 export function WorkOrdersClient({
   data,
+  listScope = '',
   currencyCode = DEFAULT_CURRENCY_CODE,
   search,
   statusFilter,
@@ -150,7 +157,10 @@ export function WorkOrdersClient({
   smsEnabled = false,
   emailEnabled = false,
 }: {
-  data: PaginatedData
+  /** The first batch, rendered on the server. */
+  data: WorkOrderBatch
+  /** The workshop, so one workshop's cached rows never show in another's. */
+  listScope?: string
   currencyCode?: string
   search: string
   statusFilter: string
@@ -221,6 +231,23 @@ export function WorkOrdersClient({
   const [notifyVehicle, setNotifyVehicle] = useState<WorkOrder['vehicle']>(null)
   const [notifyMessage, setNotifyMessage] = useState('')
   const [notifyStatus, setNotifyStatus] = useState('')
+
+  // The same filters the page's first batch was read with, so every batch
+  // after it continues that list.
+  const filters = {
+    search: search || undefined,
+    status: statusFilter || undefined,
+    sortBy: sortBy || undefined,
+    sortOrder,
+    due: dueFilter || undefined,
+  }
+  const list = useInfiniteRows<WorkOrder, Cursor, WorkOrderBatch>({
+    queryKey: ['work-orders', listScope, filters],
+    initial: data,
+    fetchPage: (cursor) => getWorkOrderRows({ ...filters, cursor }),
+  })
+  const records = list.rows
+  const statusCounts = list.firstPage.statusCounts ?? {}
 
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
@@ -339,7 +366,7 @@ export function WorkOrdersClient({
       <div className="-mx-1 flex shrink-0 gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
         {statusTabKeys.map((key) => {
           const isActive = statusFilter === key
-          const count = key === 'all' || key === 'active' ? undefined : data.statusCounts[key] || 0
+          const count = key === 'all' || key === 'active' ? undefined : statusCounts[key] || 0
           return (
             <Button
               key={key}
@@ -391,6 +418,7 @@ export function WorkOrdersClient({
             />
           </form>
           {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+          <InfiniteListCount shown={records.length} total={list.total} />
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -435,9 +463,9 @@ export function WorkOrdersClient({
 
       {/* Card list (phones + small tablets) - only this scrolls */}
       <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
-        {data.records.length === 0
+        {records.length === 0
           ? emptyState(false)
-          : data.records.map((r) => {
+          : records.map((r) => {
               const displayTotal = r.totalAmount > 0 ? r.totalAmount : r.cost
               const recordHref = r.vehicle
                 ? `/vehicles/${r.vehicle.id}/service/${r.id}`
@@ -507,11 +535,12 @@ export function WorkOrdersClient({
                 </button>
               )
             })}
+        {records.length > 0 && <InfiniteListFooter state={list} />}
       </div>
 
       {/* Table (md and up) - only the rows scroll */}
       <div
-        className="hidden min-h-0 flex-1 flex-col overflow-hidden rounded-lg border md:flex"
+        className="@container hidden min-h-0 flex-1 flex-col overflow-hidden rounded-lg border md:flex"
         {...tableNav.containerProps}
       >
         <TableContextMenuHint />
@@ -522,7 +551,7 @@ export function WorkOrdersClient({
           <TableHeader sticky>
             <TableRow>
               {shows('invoice') && (
-                <TableHead className="hidden sm:table-cell w-[100px]">
+                <TableHead className="hidden sm:table-cell w-[96px]">
                   <button
                     type="button"
                     className="flex items-center hover:text-foreground"
@@ -533,7 +562,10 @@ export function WorkOrdersClient({
                   </button>
                 </TableHead>
               )}
-              <TableHead className="w-[18%]">
+              {/* The title takes what the others leave. The customer gets a
+                  column once the table is about 900px wide (until then it is
+                  the title's second line), the technician at about 1000px. */}
+              <TableHead className="w-[16%]">
                 <button
                   type="button"
                   className="flex items-center hover:text-foreground"
@@ -544,7 +576,7 @@ export function WorkOrdersClient({
                 </button>
               </TableHead>
               {shows('customer') && (
-                <TableHead className="hidden w-[14%] md:table-cell">
+                <TableHead className="hidden w-[20%] @4xl:table-cell">
                   <button
                     type="button"
                     className="flex items-center hover:text-foreground"
@@ -576,7 +608,7 @@ export function WorkOrdersClient({
                 </button>
               </TableHead>
               {shows('tech') && (
-                <TableHead className="hidden w-[12%] lg:table-cell">
+                <TableHead className="hidden w-[11%] @5xl:table-cell">
                   <button
                     type="button"
                     className="flex items-center hover:text-foreground"
@@ -626,7 +658,11 @@ export function WorkOrdersClient({
                   </button>
                 </TableHead>
               )}
-              <TableHead className="w-[90px] text-right">
+              {/* The last column of a fixed table: an amount wider than it
+                  spills past the table's edge and gives the whole list a
+                  sideways scroll bar, so it is sized for a five-figure total
+                  with a currency code and the cell truncates beyond that. */}
+              <TableHead className="w-[120px] text-right">
                 <button
                   type="button"
                   className="flex items-center justify-end hover:text-foreground ml-auto"
@@ -639,14 +675,14 @@ export function WorkOrdersClient({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.records.length === 0 ? (
+            {records.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5 + visibleColumns} className="p-0">
                   {emptyState(true)}
                 </TableCell>
               </TableRow>
             ) : (
-              data.records.map((r) => {
+              records.map((r) => {
                 const displayTotal = r.totalAmount > 0 ? r.totalAmount : r.cost
                 const transitions = statusTransitions[r.status] || []
                 const recordHref = r.vehicle
@@ -687,7 +723,7 @@ export function WorkOrdersClient({
                           )}
                         </TableCell>
                         {shows('customer') && (
-                          <TableCell className="hidden truncate md:table-cell text-muted-foreground">
+                          <TableCell className="hidden truncate @4xl:table-cell text-muted-foreground">
                             {rowCustomer ? (
                               <TableCellLink href={`/customers/${rowCustomer.id}`}>
                                 {rowCustomer.name}
@@ -697,16 +733,23 @@ export function WorkOrdersClient({
                             )}
                           </TableCell>
                         )}
-                        <TableCell className="truncate">
-                          <span className="font-medium">{r.title}</span>
-                          {/* What a search by PO number matched, beside the job it found. */}
-                          {r.customerReference && (
-                            <span
-                              className="ml-2 font-mono text-xs text-muted-foreground"
-                              data-testid="row-reference"
-                            >
-                              {r.customerReference}
-                            </span>
+                        <TableCell>
+                          <p className="truncate">
+                            <span className="font-medium">{r.title}</span>
+                            {/* What a search by PO number matched, beside the job it found. */}
+                            {r.customerReference && (
+                              <span
+                                className="ml-2 font-mono text-xs text-muted-foreground"
+                                data-testid="row-reference"
+                              >
+                                {r.customerReference}
+                              </span>
+                            )}
+                          </p>
+                          {shows('customer') && rowCustomer && (
+                            <p className="truncate text-xs text-muted-foreground @4xl:hidden">
+                              {rowCustomer.name}
+                            </p>
                           )}
                         </TableCell>
                         <TableCell>
@@ -718,7 +761,7 @@ export function WorkOrdersClient({
                           </div>
                         </TableCell>
                         {shows('tech') && (
-                          <TableCell className="hidden lg:table-cell text-sm text-muted-foreground">
+                          <TableCell className="hidden truncate @5xl:table-cell text-sm text-muted-foreground">
                             {r.techName || '-'}
                           </TableCell>
                         )}
@@ -754,13 +797,14 @@ export function WorkOrdersClient({
                             </span>
                           </TableCell>
                         )}
-                        <TableCell className="text-right font-semibold">
-                          <span className="inline-flex items-center gap-2">
-                            {navigatingId === r.id && (
-                              <Loader2 className="h-3.5 w-3.5 animate-spin text-muted-foreground" />
-                            )}
-                            {formatCurrency(displayTotal, currencyCode)}
-                          </span>
+                        <TableCell
+                          className="truncate text-right font-semibold"
+                          title={formatCurrency(displayTotal, currencyCode)}
+                        >
+                          {navigatingId === r.id && (
+                            <Loader2 className="mr-2 inline h-3.5 w-3.5 animate-spin align-[-2px] text-muted-foreground" />
+                          )}
+                          {formatCurrency(displayTotal, currencyCode)}
                         </TableCell>
                       </TableRow>
                     </ContextMenuTrigger>
@@ -806,17 +850,12 @@ export function WorkOrdersClient({
                 )
               })
             )}
+            {records.length > 0 && (
+              <InfiniteTableFooter state={list} colSpan={5 + visibleColumns} />
+            )}
           </TableBody>
         </Table>
       </div>
-
-      <DataTablePagination
-        total={data.total}
-        page={data.page}
-        pageSize={data.pageSize}
-        totalPages={data.totalPages}
-        onNavigate={navigate}
-      />
 
       <VehiclePickerDialog
         open={showPicker}

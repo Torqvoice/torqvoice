@@ -24,9 +24,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-import { DataTablePagination } from '@/components/data-table-pagination'
+import { useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import {
+  InfiniteListCount,
+  InfiniteListFooter,
+  InfiniteTableFooter,
+} from '@/components/infinite-list/infinite-list-footer'
+import type { Cursor } from '@/lib/keyset'
 import { Building2, Loader2, MoreHorizontal, Search, Trash2 } from 'lucide-react'
 import { deleteOrganization } from '../Actions/deleteOrganization'
+import { getOrganizationRows } from '../Actions/getOrganizationRows'
 
 type OrgRow = {
   id: string
@@ -39,21 +46,37 @@ type OrgRow = {
   subscriptionPlan: string | null
 }
 
-type PaginatedData = {
-  organizations: OrgRow[]
-  total: number
-  page: number
-  pageSize: number
-  totalPages: number
+/** One batch of the list; the first also carries the total. */
+type OrgBatch = {
+  rows: OrgRow[]
+  nextCursor: Cursor | null
+  total?: number
 }
 
-export function AdminOrganizations({ data, search }: { data: PaginatedData; search: string }) {
+export function AdminOrganizations({
+  data,
+  search,
+}: {
+  /** The first batch, rendered on the server. */
+  data: OrgBatch
+  search: string
+}) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const confirm = useConfirm()
   const t = useTranslations('admin')
   const [isPending, startTransition] = useTransition()
+
+  // The same search the page's first batch was read with, so every batch
+  // after it continues that list. The list is the whole platform's.
+  const filters = { search: search || undefined }
+  const list = useInfiniteRows<OrgRow, Cursor, OrgBatch>({
+    queryKey: ['admin-organizations', filters],
+    initial: data,
+    fetchPage: (cursor) => getOrganizationRows({ ...filters, cursor }),
+  })
+  const organizations = list.rows
 
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
@@ -65,9 +88,9 @@ export function AdminOrganizations({ data, search }: { data: PaginatedData; sear
           newParams.set(key, String(value))
         }
       }
-      if (!('page' in params) && 'search' in params) {
-        newParams.delete('page')
-      }
+      // An old ?page= means nothing now: the list loads more as it scrolls.
+      newParams.delete('page')
+      newParams.delete('pageSize')
       startTransition(() => {
         router.push(`${pathname}?${newParams.toString()}`)
       })
@@ -137,16 +160,17 @@ export function AdminOrganizations({ data, search }: { data: PaginatedData; sear
           />
         </form>
         {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+        <InfiniteListCount shown={organizations.length} total={list.total} />
       </div>
 
       {/* Card list (phones + small tablets) */}
       <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
-        {data.organizations.length === 0 ? (
+        {organizations.length === 0 ? (
           <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
             {search ? t('organizations.noResults') : t('organizations.noOrganizations')}
           </div>
         ) : (
-          data.organizations.map((org) => (
+          organizations.map((org) => (
             <div key={org.id} className="flex items-start gap-2 rounded-lg border bg-card p-3">
               <div className="min-w-0 flex-1">
                 <div className="flex items-start justify-between gap-3">
@@ -193,6 +217,7 @@ export function AdminOrganizations({ data, search }: { data: PaginatedData; sear
             </div>
           ))
         )}
+        {organizations.length > 0 && <InfiniteListFooter state={list} />}
       </div>
 
       {/* Table (md and up) - only the rows scroll */}
@@ -209,14 +234,14 @@ export function AdminOrganizations({ data, search }: { data: PaginatedData; sear
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.organizations.length === 0 ? (
+            {organizations.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={6} className="h-32 text-center text-muted-foreground">
                   {search ? t('organizations.noResults') : t('organizations.noOrganizations')}
                 </TableCell>
               </TableRow>
             ) : (
-              data.organizations.map((org) => (
+              organizations.map((org) => (
                 <TableRow key={org.id}>
                   <TableCell className="font-medium">{org.name}</TableCell>
                   <TableCell>
@@ -272,17 +297,10 @@ export function AdminOrganizations({ data, search }: { data: PaginatedData; sear
                 </TableRow>
               ))
             )}
+            {organizations.length > 0 && <InfiniteTableFooter state={list} colSpan={6} />}
           </TableBody>
         </Table>
       </div>
-
-      <DataTablePagination
-        total={data.total}
-        page={data.page}
-        pageSize={data.pageSize}
-        totalPages={data.totalPages}
-        onNavigate={navigate}
-      />
     </div>
   )
 }

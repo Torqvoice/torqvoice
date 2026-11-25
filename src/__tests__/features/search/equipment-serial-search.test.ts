@@ -56,7 +56,8 @@ import { getCachedMembership, getCachedSession } from '@/lib/cached-session'
 import { db } from '@/lib/db'
 import { equipmentEnabled } from '@/features/equipment/Lib/equipmentGate.server'
 import { globalSearch } from '@/features/search/Actions/searchActions'
-import { getVehiclesPaginated, searchVehicles } from '@/features/vehicles/Actions/vehicleActions'
+import { searchVehicles } from '@/features/vehicles/Actions/vehicleActions'
+import { getVehicleRows } from '@/features/vehicles/Actions/getVehicleRows'
 
 const ORG = 'org-a'
 
@@ -151,7 +152,7 @@ describe('a serial number of equipment', () => {
   })
 
   it('finds its vehicle in the vehicle list', async () => {
-    const { off, on } = await vehicleQueries(() => getVehiclesPaginated({ search: 'SN-4471' }))
+    const { off, on } = await vehicleQueries(() => getVehicleRows({ search: 'SN-4471' }))
     expect(JSON.stringify(off)).not.toContain('equipment')
     const before = (off?.where?.OR ?? []) as unknown[]
     expect(on?.where?.OR).toEqual([...before.slice(0, -1), serialOn('SN-4471'), before.at(-1)])
@@ -166,7 +167,7 @@ describe('a serial number of equipment', () => {
   it('is not searched at all while the workshop records no equipment', async () => {
     vi.mocked(equipmentEnabled).mockResolvedValue(false)
     await globalSearch('HX4471')
-    await getVehiclesPaginated({ search: '4471' })
+    await getVehicleRows({ search: '4471' })
     await searchVehicles('4471')
     for (const [args] of vi.mocked(db.vehicle.findMany).mock.calls) {
       expect(JSON.stringify(args)).not.toContain('equipment')
