@@ -1,6 +1,7 @@
 import { stampServerRender } from '@/components/infinite-list/server-render'
 import { getUserRows } from '@/features/admin/Actions/getUserRows'
 import { AdminUsers } from '@/features/admin/Components/admin-users'
+import { ADMIN_USER_DEFAULT_SORT } from '@/features/admin/Lib/adminUserList.server'
 import { pageTitle } from '@/lib/page-title'
 
 export function generateMetadata() {
@@ -19,7 +20,7 @@ export default async function AdminUsersPage({
 }) {
   const params = await searchParams
   const search = params.search || ''
-  const sortBy = params.sortBy || 'lastSeen'
+  const sortBy = params.sortBy || ADMIN_USER_DEFAULT_SORT
   const sortOrder = params.sortOrder === 'asc' ? 'asc' : 'desc'
 
   // The first batch; the rest load through the same action as the list scrolls.

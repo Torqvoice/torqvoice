@@ -3362,7 +3362,8 @@
       "bulkRevokeTitle": "{count, plural, one {# bağlantı} other {# bağlantı}} kaldırılsın mı?",
       "bulkRevokeDescription": "Bu bağlantılar, onlara sahip olan herkes için çalışmayı bırakır. Yeni bir bağlantı oluşturmak için bir belgeyi yeniden paylaşabilirsiniz.",
       "bulkRevoked": "{count, plural, one {# bağlantı kaldırıldı} other {# bağlantı kaldırıldı}}",
-      "bulkRevokeFailed": "Bağlantılar kaldırılamadı. Tekrar deneyin."
+      "bulkRevokeFailed": "Bağlantılar kaldırılamadı. Tekrar deneyin.",
+      "bulkRevokePartial": "{total} bağlantıdan {removed} tanesi kaldırıldı. Kalanları kaldırmak için tekrar deneyin."
     }
   },
   "meters": {

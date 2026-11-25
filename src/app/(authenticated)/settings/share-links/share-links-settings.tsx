@@ -50,6 +50,7 @@ import {
 } from '@/components/ui/table'
 import { getShareLinkRows } from '@/features/share-links/Actions/getShareLinkRows'
 import { revokeShareLinks } from '@/features/share-links/Actions/revokeShareLinks'
+import { MAX_REVOKE_LINKS } from '@/features/share-links/Schema/shareLinkSchema'
 import { revokeInspectionPublicLink } from '@/features/inspections/Actions/inspectionShareActions'
 import { revokeQuotePublicLink } from '@/features/quotes/Actions/quoteShareActions'
 import { setSettings } from '@/features/settings/Actions/settingsActions'
@@ -411,17 +412,39 @@ function LinksCard({
     })
     if (!ok) return
     setRemoving(true)
-    const result = await revokeShareLinks({
-      links: chosen.map((row) => ({ kind: row.kind, id: row.id })),
-    }).catch(() => null)
+    // The action takes at most MAX_REVOKE_LINKS links a call, and Select all can
+    // tick more than that, so they go in batches, one after the other.
+    let removed = 0
+    const revoked: string[] = []
+    let failure: 'refused' | 'unanswered' | null = null
+    for (let start = 0; start < chosen.length; start += MAX_REVOKE_LINKS) {
+      const batch = chosen.slice(start, start + MAX_REVOKE_LINKS)
+      const result = await revokeShareLinks({
+        links: batch.map((row) => ({ kind: row.kind, id: row.id })),
+      }).catch(() => null)
+      if (!result?.success || !result.data) {
+        failure = result ? 'refused' : 'unanswered'
+        break
+      }
+      removed += result.data.removed
+      revoked.push(...batch.map(keyOf))
+    }
     setRemoving(false)
-    if (!result?.success || !result.data) {
+    if (failure && revoked.length === 0) {
       // Refused or unanswered: the links may still work, so say so.
-      toast.error(result ? t('bulkRevokeFailed') : tc('shareLink.revokeFailed'))
+      toast.error(failure === 'refused' ? t('bulkRevokeFailed') : tc('shareLink.revokeFailed'))
+      return
+    }
+    if (failure) {
+      // Some batches went through: those links are gone, the rest still work
+      // and stay ticked for another try.
+      selection.deselect(revoked)
+      toast.error(t('bulkRevokePartial', { removed, total: chosen.length }))
+      refresh()
       return
     }
     selection.clear()
-    toast.success(t('bulkRevoked', { count: result.data.removed }))
+    toast.success(t('bulkRevoked', { count: removed }))
     refresh()
   }
 

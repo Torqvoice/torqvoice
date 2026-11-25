@@ -3362,7 +3362,8 @@
       "bulkRevokeTitle": "Remover {count, plural, one {# link} other {# links}}?",
       "bulkRevokeDescription": "Estes links deixam de funcionar para todos os que os têm. Pode voltar a partilhar um documento para criar um novo link.",
       "bulkRevoked": "{count, plural, one {# link removido} other {# links removidos}}",
-      "bulkRevokeFailed": "Não foi possível remover os links. Tente novamente."
+      "bulkRevokeFailed": "Não foi possível remover os links. Tente novamente.",
+      "bulkRevokePartial": "{removed} de {total} links removidos. Tente novamente para remover os restantes."
     }
   },
   "meters": {

@@ -3362,7 +3362,8 @@
       "bulkRevokeTitle": "Usunąć {count, plural, one {# link} few {# linki} many {# linków} other {# linku}}?",
       "bulkRevokeDescription": "Te linki przestaną działać dla wszystkich, którzy je mają. Możesz udostępnić dokument ponownie, aby utworzyć nowy link.",
       "bulkRevoked": "{count, plural, one {Usunięto # link} few {Usunięto # linki} many {Usunięto # linków} other {Usunięto # linku}}",
-      "bulkRevokeFailed": "Nie udało się usunąć linków. Spróbuj ponownie."
+      "bulkRevokeFailed": "Nie udało się usunąć linków. Spróbuj ponownie.",
+      "bulkRevokePartial": "Usunięto linki: {removed} z {total}. Spróbuj ponownie, aby usunąć pozostałe."
     }
   },
   "meters": {

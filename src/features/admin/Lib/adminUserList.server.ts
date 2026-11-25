@@ -48,10 +48,18 @@ function booleanColumn(column: string, dir: 'asc' | 'desc'): KeysetPart {
   }
 }
 
+/** The order the list opens in. */
+export const ADMIN_USER_DEFAULT_SORT: UserSortField = 'createdAt'
+
 /**
- * What the list is sorted by. Last seen puts accounts that never signed in at
- * the end either way round, so the people actually using the platform come
- * first. The id breaks the last tie (lib/keyset.ts adds it).
+ * What the list is sorted by. The default is newest account first: a column
+ * nothing changes behind the list's back, so loading more as it scrolls
+ * neither skips nor repeats anyone. Last seen is there when the admin picks
+ * it, and puts accounts that never signed in at the end either way round. It
+ * is a moving key (every open tab pings it each minute), so an account can
+ * jump past the cursor mid-scroll: one that moves up is missed until the next
+ * refresh, and one that moves down comes again in a later batch, which the
+ * list hook drops as a repeat. The id breaks the last tie (lib/keyset.ts adds it).
  */
 export function adminUserListSort(sortBy: UserSortField, sortOrder: 'asc' | 'desc'): KeysetPart[] {
   switch (sortBy) {
@@ -59,12 +67,12 @@ export function adminUserListSort(sortBy: UserSortField, sortOrder: 'asc' | 'des
       return [keysetColumn(['name'], sortOrder, 'string')]
     case 'email':
       return [keysetColumn(['email'], sortOrder, 'string')]
-    case 'createdAt':
-      return [keysetColumn(['createdAt'], sortOrder, 'date')]
     case 'isSuperAdmin':
       return [booleanColumn('isSuperAdmin', sortOrder)]
-    default:
+    case 'lastSeen':
       return [keysetColumn(['lastSeen'], sortOrder, 'date', { nullable: true, nulls: 'last' })]
+    default:
+      return [keysetColumn(['createdAt'], sortOrder, 'date')]
   }
 }
 

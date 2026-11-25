@@ -3362,7 +3362,8 @@
       "bulkRevokeTitle": "Fjerne {count, plural, one {# lenke} other {# lenker}}?",
       "bulkRevokeDescription": "Disse lenkene slutter å virke for alle som har dem. Du kan dele et dokument på nytt for å lage en ny lenke.",
       "bulkRevoked": "{count, plural, one {# lenke er fjernet} other {# lenker er fjernet}}",
-      "bulkRevokeFailed": "Kunne ikke fjerne lenkene. Prøv igjen."
+      "bulkRevokeFailed": "Kunne ikke fjerne lenkene. Prøv igjen.",
+      "bulkRevokePartial": "Fjernet {removed} av {total} lenker. Prøv igjen for å fjerne resten."
     }
   },
   "meters": {

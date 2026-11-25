@@ -6,6 +6,7 @@
  */
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import { toast } from 'sonner'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { ConfirmProvider } from '@/components/confirm-dialog'
 
@@ -131,6 +132,9 @@ beforeEach(() => {
   vi.stubGlobal('IntersectionObserver', FakeObserver)
   getShareLinkRows.mockReset()
   revokeShareLinks.mockReset()
+  router.refresh.mockReset()
+  vi.mocked(toast.success).mockReset()
+  vi.mocked(toast.error).mockReset()
   getShareLinkRows.mockResolvedValue({ success: true, data: second })
   revokeShareLinks.mockResolvedValue({ success: true, data: { removed: 50 } })
 })
@@ -255,4 +259,56 @@ describe('an invoice and a quote with the same id', () => {
       ],
     })
   }, 20_000)
+})
+
+describe('more links ticked than one call takes', () => {
+  // Select all on a long list can tick more than the 200 the action accepts.
+  const many = {
+    ...first,
+    rows: Array.from({ length: 250 }, (_, i) => link(i)),
+    nextCursor: null,
+    total: 250,
+    counts: { active: 250, expired: 0 },
+  }
+
+  async function removeAll() {
+    renderPage(many as unknown as typeof first)
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Select all links shown' }))
+    expect(screen.getByText('250 links selected')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Remove selected' }))
+    const question = await screen.findByRole('alertdialog')
+    await act(async () => {
+      fireEvent.click(within(question).getByRole('button', { name: 'Remove selected' }))
+    })
+  }
+
+  it('removes them all, two hundred at a time', async () => {
+    revokeShareLinks
+      .mockResolvedValueOnce({ success: true, data: { removed: 200 } })
+      .mockResolvedValueOnce({ success: true, data: { removed: 50 } })
+    await removeAll()
+
+    const sent = revokeShareLinks.mock.calls.map(([input]) => (input as { links: unknown[] }).links)
+    expect(sent.map((links) => links.length)).toEqual([200, 50])
+    expect(toast.success).toHaveBeenCalledWith('250 links removed')
+    expect(toast.error).not.toHaveBeenCalled()
+    expect(screen.queryByText(/links? selected/)).not.toBeInTheDocument()
+    expect(router.refresh).toHaveBeenCalled()
+  }, 30_000)
+
+  it('says how many went when a later batch fails, and keeps the rest ticked', async () => {
+    revokeShareLinks
+      .mockResolvedValueOnce({ success: true, data: { removed: 200 } })
+      .mockResolvedValueOnce({ success: false, error: 'nope' })
+    await removeAll()
+
+    expect(revokeShareLinks).toHaveBeenCalledTimes(2)
+    expect(toast.error).toHaveBeenCalledWith(
+      'Removed 200 of 250 links. Try again to remove the rest.'
+    )
+    expect(toast.success).not.toHaveBeenCalled()
+    // The removed ones are unticked; the fifty that still work stay ticked.
+    expect(screen.getByText('50 links selected')).toBeInTheDocument()
+    expect(router.refresh).toHaveBeenCalled()
+  }, 30_000)
 })

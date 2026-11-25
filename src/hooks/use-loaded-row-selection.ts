@@ -10,10 +10,10 @@ const NONE: ReadonlySet<string> = new Set()
  * Only rows on screen can be ticked, and only those are handed to a bulk
  * action: the header box selects the rows loaded so far, never the ones below
  * that have not arrived, and a row that left the list (deleted elsewhere, no
- * longer matching after a refresh) drops out of the selection with it. Ticks
- * stay put while more rows load. Another search, filter or sort is another
- * list (`listKey`), and starts with nothing selected, as does going back to
- * one seen before.
+ * longer matching after a refresh) drops out of the selection for good, and
+ * is not ticked again if it comes back. Ticks stay put while more rows load.
+ * Another search, filter or sort is another list (`listKey`), and starts with
+ * nothing selected, as does going back to one seen before.
  */
 export function useLoadedRowSelection<Row extends { id: string }>(rows: Row[], listKey: string) {
   const [state, setState] = useState<{ key: string; ids: ReadonlySet<string> }>({
@@ -25,6 +25,14 @@ export function useLoadedRowSelection<Row extends { id: string }>(rows: Row[], l
   // nobody can see is never handed to a bulk action. (Setting state while
   // rendering is React's way to reset it when a prop changes.)
   if (state.key !== listKey) setState({ key: listKey, ids: NONE })
+  // A ticked row that left the loaded rows (removed, or no longer matching
+  // after a refresh) is unticked for good, so it does not come back ticked
+  // if it returns later. Only set when something was dropped, so this settles.
+  const present =
+    state.key === listKey && state.ids.size > 0 ? new Set(rows.map((r) => r.id)) : null
+  if (present && [...state.ids].some((id) => !present.has(id))) {
+    setState({ key: listKey, ids: new Set([...state.ids].filter((id) => present.has(id))) })
+  }
   const ids = state.key === listKey ? state.ids : NONE
 
   const selectedRows = useMemo(() => rows.filter((row) => ids.has(row.id)), [rows, ids])
@@ -47,6 +55,19 @@ export function useLoadedRowSelection<Row extends { id: string }>(rows: Row[], l
 
   const clear = useCallback(() => setState({ key: listKey, ids: NONE }), [listKey])
 
+  /** Unticks these rows and leaves the others ticked. */
+  const deselect = useCallback(
+    (drop: readonly string[]) => {
+      setState((current) => {
+        if (current.key !== listKey) return current
+        const next = new Set(current.ids)
+        for (const id of drop) next.delete(id)
+        return { key: listKey, ids: next }
+      })
+    },
+    [listKey]
+  )
+
   const toggleAll = useCallback(() => {
     setState({ key: listKey, ids: allSelected ? NONE : new Set(rows.map((row) => row.id)) })
   }, [listKey, allSelected, rows])
@@ -61,6 +82,7 @@ export function useLoadedRowSelection<Row extends { id: string }>(rows: Row[], l
     toggle,
     toggleAll,
     clear,
+    deselect,
     /** The header box: ticked when every loaded row is, a dash when some are. */
     headerState: (allSelected ? true : count > 0 ? 'indeterminate' : false) as
       | boolean

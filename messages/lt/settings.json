@@ -3362,7 +3362,8 @@
       "bulkRevokeTitle": "Pašalinti {count, plural, one {# nuorodą} few {# nuorodas} many {# nuorodos} other {# nuorodų}}?",
       "bulkRevokeDescription": "Šios nuorodos nustos veikti visiems, kurie jas turi. Norėdami sukurti naują nuorodą, galite dokumentą bendrinti dar kartą.",
       "bulkRevoked": "{count, plural, one {Pašalinta # nuoroda} few {Pašalintos # nuorodos} many {Pašalinta # nuorodos} other {Pašalinta # nuorodų}}",
-      "bulkRevokeFailed": "Nepavyko pašalinti nuorodų. Bandykite dar kartą."
+      "bulkRevokeFailed": "Nepavyko pašalinti nuorodų. Bandykite dar kartą.",
+      "bulkRevokePartial": "Pašalinta nuorodų: {removed} iš {total}. Bandykite dar kartą, kad pašalintumėte likusias."
     }
   },
   "meters": {

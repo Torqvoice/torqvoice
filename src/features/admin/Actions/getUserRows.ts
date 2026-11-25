@@ -6,6 +6,7 @@ import { cursorSchema, keysetAfter, keysetCursor, keysetOrderBy } from '@/lib/ke
 import { withSuperAdmin } from '@/lib/with-super-admin'
 import {
   ADMIN_USER_BATCH_SIZE,
+  ADMIN_USER_DEFAULT_SORT,
   adminUserListSelect,
   adminUserListSort,
   adminUserListWhere,
@@ -31,7 +32,7 @@ export async function getUserRows(input?: z.input<typeof inputSchema>) {
     // An unknown column (an old link, a hand-typed URL) is the default sort.
     const sortBy: UserSortField = userSortFields.includes(params.sortBy as UserSortField)
       ? (params.sortBy as UserSortField)
-      : 'lastSeen'
+      : ADMIN_USER_DEFAULT_SORT
     const sort = adminUserListSort(sortBy, params.sortOrder ?? 'desc')
     const batchWhere = params.cursor ? { AND: [where, keysetAfter(sort, params.cursor)] } : where
 

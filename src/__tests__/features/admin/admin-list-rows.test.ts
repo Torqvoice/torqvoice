@@ -157,12 +157,19 @@ describe('the platform user list in batches', () => {
     expect(second.data?.total).toBeUndefined()
   })
 
+  // Newest account first, a column nothing changes on its own; last seen is
+  // bumped by every open tab's ping and would move people past the cursor.
+  it('opens newest account first', async () => {
+    const { ids: seen } = await walkBatches(getUserRows, (cursor) => ({ cursor }))
+    expect(seen).toEqual(expectedUsers('createdAt', 'desc'))
+  })
+
   it('treats an unknown column as the default sort', async () => {
     const { ids: seen } = await walkBatches(getUserRows, (cursor) => ({
       sortBy: 'password',
       cursor,
     }))
-    expect(seen).toEqual(expectedUsers('lastSeen', 'desc'))
+    expect(seen).toEqual(expectedUsers('createdAt', 'desc'))
   })
 
   it('is refused to anyone but a super admin', async () => {

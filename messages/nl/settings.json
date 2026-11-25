@@ -3362,7 +3362,8 @@
       "bulkRevokeTitle": "{count, plural, one {# link} other {# links}} verwijderen?",
       "bulkRevokeDescription": "Deze links werken niet meer voor iedereen die ze heeft. Je kunt een document opnieuw delen om een nieuwe link te maken.",
       "bulkRevoked": "{count, plural, one {# link verwijderd} other {# links verwijderd}}",
-      "bulkRevokeFailed": "Kon de links niet verwijderen. Probeer het opnieuw."
+      "bulkRevokeFailed": "Kon de links niet verwijderen. Probeer het opnieuw.",
+      "bulkRevokePartial": "{removed} van {total} links verwijderd. Probeer het opnieuw om de rest te verwijderen."
     }
   },
   "meters": {

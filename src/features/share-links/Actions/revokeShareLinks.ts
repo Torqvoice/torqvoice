@@ -8,9 +8,9 @@ import { PermissionAction } from '@/lib/permissions'
 import { FRESH_SHARE_LINK, SHARE_KINDS } from '@/lib/share-expiry'
 import { type ActionResult, withAuth } from '@/lib/with-auth'
 import { SHARE_KIND_SUBJECT } from '../Lib/shareLinkDocument.server'
-import { shareLinkRefSchema } from '../Schema/shareLinkSchema'
+import { MAX_REVOKE_LINKS, shareLinkRefSchema } from '../Schema/shareLinkSchema'
 
-const inputSchema = z.object({ links: z.array(shareLinkRefSchema).min(1).max(200) })
+const inputSchema = z.object({ links: z.array(shareLinkRefSchema).min(1).max(MAX_REVOKE_LINKS) })
 
 /**
  * Removes several share links at once, from the list in Settings. Each link

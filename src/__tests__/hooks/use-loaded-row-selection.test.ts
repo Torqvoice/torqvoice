@@ -51,4 +51,22 @@ describe('useLoadedRowSelection', () => {
     rerender({ listKey: 'A' })
     expect(result.current.selectedIds).toEqual(['b'])
   })
+
+  it('does not tick a row again when it leaves the list and comes back', () => {
+    const { result, rerender } = renderHook(
+      ({ shown }: { shown: { id: string }[] }) => useLoadedRowSelection(shown, 'A'),
+      { initialProps: { shown: rows } }
+    )
+    act(() => result.current.toggle('a'))
+    act(() => result.current.toggle('b'))
+    expect(result.current.selectedIds).toEqual(['a', 'b'])
+
+    // 'b' is removed or filtered out by a refresh, then shows up again.
+    rerender({ shown: [{ id: 'a' }, { id: 'c' }] })
+    expect(result.current.selectedIds).toEqual(['a'])
+    rerender({ shown: rows })
+    expect(result.current.selectedIds).toEqual(['a'])
+    expect(result.current.isSelected('b')).toBe(false)
+    expect(result.current.count).toBe(1)
+  })
 })
