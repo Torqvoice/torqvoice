@@ -8,6 +8,9 @@ export const shareLinkRefSchema = z.object({
   id: z.string().min(1),
 })
 
+/** The most links one call to revokeShareLinks takes; the screen sends more in batches. */
+export const MAX_REVOKE_LINKS = 200
+
 /**
  * What the workshop says about one document's link: follow the workshop's
  * rule, never expire, or expire at the end of a day (YYYY-MM-DD, a day on

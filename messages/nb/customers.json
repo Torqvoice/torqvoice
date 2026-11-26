@@ -27,7 +27,8 @@
     "batchDeleteTitle": "Slett kunder",
     "batchDeleteDescription": "Slette {count} kunde(r)? Dette vil koble fra tilknyttede kjøretøy.",
     "batchDeleteSuccess": "{count} kunde(r) slettet",
-    "openMenu": "Åpne meny"
+    "openMenu": "Åpne meny",
+    "selectLoaded": "Velg alle {count, number} som vises"
   },
   "detail": {
     "backToCustomers": "Tilbake til kunder",

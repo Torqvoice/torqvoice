@@ -1,9 +1,10 @@
+import { stampServerRender } from '@/components/infinite-list/server-render'
 import { initialCatalogMarkupPercent } from '@/features/inventory/Lib/partPricing'
 import { measureSystemIn } from '@/features/inventory/Lib/units'
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { resolveListSort } from '@/lib/list-sort-preference.server'
+import { getInventoryRows } from '@/features/inventory/Actions/getInventoryRows'
 import {
-  getInventoryPartsPaginated,
   getInventoryCategories,
   getInventoryTags,
   hasAnyReorderPoint,
@@ -13,6 +14,7 @@ import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { InventoryClient } from '../inventory-client'
 import { PageHeader } from '@/components/page-header'
 import { ListPage } from '@/components/list-page'
+import { getAuthContext } from '@/lib/get-auth-context'
 import { pageTitle } from '@/lib/page-title'
 
 export function generateMetadata() {
@@ -22,9 +24,8 @@ export function generateMetadata() {
 export default async function InventoryPage({
   searchParams,
 }: {
+  // An old ?page= link is simply ignored: the list loads more as it scrolls.
   searchParams: Promise<{
-    page?: string
-    pageSize?: string
     search?: string
     category?: string
     tag?: string
@@ -38,30 +39,31 @@ export default async function InventoryPage({
     sortBy: 'updatedAt',
     sortOrder: 'desc',
   })
-  const [result, categoriesResult, tagsResult, settingsResult, reorderResult] = await Promise.all([
-    getInventoryPartsPaginated({
-      page: params.page ? parseInt(params.page) : 1,
-      pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
-      search: params.search,
-      category: params.category,
-      tag: params.tag,
-      sortBy: sort.sortBy,
-      sortOrder: sort.sortOrder,
-      lowStock: params.lowStock === '1',
-    }),
-    getInventoryCategories(),
-    getInventoryTags(),
-    getDisplaySettings([
-      SETTING_KEYS.CURRENCY_CODE,
-      SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER,
-      SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT,
-      SETTING_KEYS.INVENTORY_DEFAULT_UNIT,
-      SETTING_KEYS.UNIT_SYSTEM,
-      SETTING_KEYS.MEASURE_SYSTEM,
-      SETTING_KEYS.LOW_STOCK_DEFAULT_THRESHOLD,
-    ]),
-    hasAnyReorderPoint(),
-  ])
+  const [result, categoriesResult, tagsResult, settingsResult, reorderResult, authCtx] =
+    await Promise.all([
+      // The first batch; the rest load through the same action as the list scrolls.
+      getInventoryRows({
+        search: params.search,
+        category: params.category,
+        tag: params.tag,
+        sortBy: sort.sortBy,
+        sortOrder: sort.sortOrder,
+        lowStock: params.lowStock === '1',
+      }),
+      getInventoryCategories(),
+      getInventoryTags(),
+      getDisplaySettings([
+        SETTING_KEYS.CURRENCY_CODE,
+        SETTING_KEYS.INVENTORY_MARKUP_MULTIPLIER,
+        SETTING_KEYS.PARTS_DEFAULT_MARKUP_PERCENT,
+        SETTING_KEYS.INVENTORY_DEFAULT_UNIT,
+        SETTING_KEYS.UNIT_SYSTEM,
+        SETTING_KEYS.MEASURE_SYSTEM,
+        SETTING_KEYS.LOW_STOCK_DEFAULT_THRESHOLD,
+      ]),
+      hasAnyReorderPoint(),
+      getAuthContext(),
+    ])
 
   if (!result.success || !result.data) {
     return (
@@ -90,7 +92,8 @@ export default async function InventoryPage({
       <PageHeader />
       <ListPage>
         <InventoryClient
-          data={result.data}
+          data={stampServerRender(result.data)}
+          listScope={authCtx?.organizationId ?? ''}
           search={params.search || ''}
           category={params.category || ''}
           categories={categories}

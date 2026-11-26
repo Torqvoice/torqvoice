@@ -5,6 +5,7 @@
  * email has been typed.
  */
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
@@ -21,6 +22,9 @@ vi.mock('@/features/admin/Actions/grantSuperAdmin', () => ({
 vi.mock('@/features/admin/Actions/revokeSuperAdmin', () => ({
   revokeSuperAdmin: (input: unknown) => revokeSuperAdmin(input),
 }))
+
+// The list's first batch is all there is here; nothing more is asked for.
+vi.mock('@/features/admin/Actions/getUserRows', () => ({ getUserRows: vi.fn() }))
 
 const push = vi.fn()
 const refresh = vi.fn()
@@ -97,14 +101,16 @@ describe('the account list', () => {
   it('offers nothing that changes an account, and a tap only opens it', async () => {
     const actor = userEvent.setup({ pointerEventsCheck: 0 })
     render(
-      <ConfirmProvider>
-        <AdminUsers
-          data={{ users: [row], total: 1, page: 1, pageSize: 20, totalPages: 1 }}
-          search=""
-          sortBy="lastSeen"
-          sortOrder="desc"
-        />
-      </ConfirmProvider>
+      <QueryClientProvider client={new QueryClient()}>
+        <ConfirmProvider>
+          <AdminUsers
+            data={{ rows: [row], nextCursor: null, total: 1, renderId: 'render-1' }}
+            search=""
+            sortBy="lastSeen"
+            sortOrder="desc"
+          />
+        </ConfirmProvider>
+      </QueryClientProvider>
     )
 
     expect(screen.queryByRole('button', { name: 'Open menu' })).not.toBeInTheDocument()

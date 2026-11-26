@@ -1,4 +1,5 @@
-import { getOrganizations } from '@/features/admin/Actions/getOrganizations'
+import { stampServerRender } from '@/components/infinite-list/server-render'
+import { getOrganizationRows } from '@/features/admin/Actions/getOrganizationRows'
 import { AdminOrganizations } from '@/features/admin/Components/admin-organizations'
 import { pageTitle } from '@/lib/page-title'
 
@@ -9,22 +10,15 @@ export function generateMetadata() {
 export default async function AdminOrganizationsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ search?: string; page?: string; pageSize?: string }>
+  // An old ?page= link is simply ignored: the list loads more as it scrolls.
+  searchParams: Promise<{ search?: string }>
 }) {
   const params = await searchParams
-  const page = Number(params.page) || 1
-  const pageSize = Number(params.pageSize) || 20
   const search = params.search || ''
 
-  const result = await getOrganizations({ search, page, pageSize })
+  // The first batch; the rest load through the same action as the list scrolls.
+  const result = await getOrganizationRows({ search })
+  const data = result.data ?? { rows: [], nextCursor: null, total: 0 }
 
-  const data = result.data ?? {
-    organizations: [],
-    total: 0,
-    page: 1,
-    pageSize: 20,
-    totalPages: 0,
-  }
-
-  return <AdminOrganizations data={data} search={search} />
+  return <AdminOrganizations data={stampServerRender(data)} search={search} />
 }

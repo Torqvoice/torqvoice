@@ -41,7 +41,8 @@
     "selected": "{count, plural, one {# del} other {# deler}} valgt",
     "clearSelection": "Fjern valg",
     "deleteSelected": "Slett ({count})",
-    "success": "{count, plural, one {# del} other {# deler}} slettet"
+    "success": "{count, plural, one {# del} other {# deler}} slettet",
+    "selectLoaded": "Velg alle {count, number} som vises"
   },
   "markup": {
     "title": "Bruk påslag på alle deler",

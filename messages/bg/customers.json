@@ -27,7 +27,8 @@
     "batchDeleteTitle": "Изтриване на клиенти",
     "batchDeleteDescription": "Да се изтрият ли {count} клиента? Връзката с превозните им средства ще бъде премахната.",
     "batchDeleteSuccess": "Изтрити клиенти: {count}",
-    "openMenu": "Отвори менюто"
+    "openMenu": "Отвори менюто",
+    "selectLoaded": "Избери всички {count, number} показани"
   },
   "detail": {
     "backToCustomers": "Обратно към клиентите",

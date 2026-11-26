@@ -21,7 +21,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { DataTablePagination } from '@/components/data-table-pagination'
+import { type ServerBatch, useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import {
+  InfiniteListCount,
+  InfiniteListFooter,
+  InfiniteTableFooter,
+} from '@/components/infinite-list/infinite-list-footer'
+import { getStockMovementRows } from '@/features/inventory/Actions/getStockMovementRows'
+import type { Cursor } from '@/lib/keyset'
 import { InventoryPartForm } from '@/features/inventory/Components/InventoryPartForm'
 import { PartTagChips } from '@/features/inventory/Components/PartTagChips'
 import { STOCK_MOVEMENT_REASONS } from '@/features/inventory/Lib/stockMovementReasons'
@@ -46,16 +53,20 @@ interface Movement {
   vehicle: string | null
 }
 
+/** One batch of the history; the first also carries the total. */
+interface MovementBatch {
+  rows: Movement[]
+  nextCursor: Cursor | null
+  total?: number
+}
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type Part = any
 
 export function PartDetailClient({
   part,
-  movements,
-  total,
-  page,
-  pageSize,
-  totalPages,
+  movements: firstBatch,
+  listScope = '',
   reason,
   currencyCode,
   markupMultiplier,
@@ -65,11 +76,10 @@ export function PartDetailClient({
   unitSystem,
 }: {
   part: Part
-  movements: Movement[]
-  total: number
-  page: number
-  pageSize: number
-  totalPages: number
+  /** The history's first batch, rendered on the server. */
+  movements: ServerBatch<MovementBatch>
+  /** The workshop, so one workshop's cached rows never show in another's. */
+  listScope?: string
   reason: string
   currencyCode: string
   markupMultiplier: number
@@ -94,13 +104,23 @@ export function PartDetailClient({
         if (value === undefined || value === '') next.delete(key)
         else next.set(key, String(value))
       }
-      // Changing the filter invalidates the current page offset.
-      if (!('page' in params) && 'reason' in params) next.delete('page')
+      // Pages are gone; an old link's ?page= means nothing now.
+      next.delete('page')
       const qs = next.toString()
       router.push(qs ? `${pathname}?${qs}` : pathname)
     },
     [router, pathname, searchParams]
   )
+
+  // The same part and reason the page's first batch was read with, so every
+  // batch after it continues that history.
+  const filters = { inventoryPartId: part.id as string, reason: reason || undefined }
+  const list = useInfiniteRows<Movement, Cursor, MovementBatch>({
+    queryKey: ['stock-movements', listScope, filters],
+    initial: firstBatch,
+    fetchPage: (cursor) => getStockMovementRows({ ...filters, cursor }),
+  })
+  const movements = list.rows
 
   // Same rule as the alert engine, so the badge never disagrees with alerts.
   const isLow = isLowStock(part, lowStockDefault)
@@ -196,6 +216,7 @@ export function PartDetailClient({
             <p className="text-sm text-muted-foreground">
               {t('history.description', { name: part.name })}
             </p>
+            <InfiniteListCount shown={movements.length} total={list.total} className="mt-1" />
           </div>
           <Select
             value={reason || 'all'}
@@ -272,12 +293,14 @@ export function PartDetailClient({
               </div>
             ))
           )}
+          {movements.length > 0 && <InfiniteListFooter state={list} />}
         </div>
 
-        {/* Table (md and up) */}
-        <div className="hidden rounded-lg border md:block">
-          <Table>
-            <TableHeader>
+        {/* Table (md and up) - the rows scroll in their own box, under a header
+            that stays put */}
+        <div className="hidden overflow-hidden rounded-lg border md:block">
+          <Table containerClassName="max-h-[calc(100dvh-12rem)]">
+            <TableHeader sticky>
               <TableRow>
                 <TableHead>{t('history.when')}</TableHead>
                 <TableHead>{t('history.change')}</TableHead>
@@ -345,17 +368,10 @@ export function PartDetailClient({
                   </TableRow>
                 ))
               )}
+              {movements.length > 0 && <InfiniteTableFooter state={list} colSpan={6} />}
             </TableBody>
           </Table>
         </div>
-
-        <DataTablePagination
-          total={total}
-          page={page}
-          pageSize={pageSize}
-          totalPages={totalPages}
-          onNavigate={navigate}
-        />
       </div>
 
       {/* Same form the list uses for quick edits — one component, two places. */}

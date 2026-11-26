@@ -27,7 +27,8 @@
     "batchDeleteTitle": "Ištrinti klientus",
     "batchDeleteDescription": "Ištrinti {count} klientą(-ų)? Bus atsiejamos jų transporto priemonės.",
     "batchDeleteSuccess": "{count} klientas(-ų) ištrintas",
-    "openMenu": "Atidaryti meniu"
+    "openMenu": "Atidaryti meniu",
+    "selectLoaded": "Pažymėti visus {count, number} rodomus"
   },
   "detail": {
     "backToCustomers": "Grįžti prie klientų",

@@ -1,7 +1,9 @@
+import { stampServerRender } from '@/components/infinite-list/server-render'
 import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { cookies } from 'next/headers'
 import { getTranslations } from 'next-intl/server'
-import { getVehiclesPaginated } from '@/features/vehicles/Actions/vehicleActions'
+import { getVehicleRows } from '@/features/vehicles/Actions/getVehicleRows'
+import { getAuthContext } from '@/lib/get-auth-context'
 import { VehiclesClient } from '../vehicles-client'
 import { PageHeader } from '@/components/page-header'
 import { ListPage } from '@/components/list-page'
@@ -14,9 +16,8 @@ export function generateMetadata() {
 export default async function VehiclesPage({
   searchParams,
 }: {
+  // An old ?page= link is simply ignored: the list loads more as it scrolls.
   searchParams: Promise<{
-    page?: string
-    pageSize?: string
     search?: string
     archived?: string
     sortBy?: string
@@ -41,16 +42,16 @@ export default async function VehiclesPage({
   const cookieStore = await cookies()
   const viewCookie = cookieStore.get('torqvoice-vehicles-view')?.value
   const initialView = viewCookie === 'table' ? 'table' : viewCookie === 'grid6' ? 'grid6' : 'grid'
-  const [result] = await Promise.all([
-    getVehiclesPaginated({
-      page: params.page ? parseInt(params.page) : 1,
-      pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
+  const [result, authCtx] = await Promise.all([
+    // The first batch; the rest load through the same action as the list scrolls.
+    getVehicleRows({
       search: params.search,
       archived: isArchived,
       sortBy: sort.sortBy,
       sortOrder: sort.sortOrder,
       inspectionDue,
     }),
+    getAuthContext(),
   ])
 
   if (!result.success || !result.data) {
@@ -71,15 +72,16 @@ export default async function VehiclesPage({
       <PageHeader />
       <ListPage>
         <VehiclesClient
-          data={result.data}
+          data={stampServerRender(result.data)}
+          listScope={authCtx?.organizationId ?? ''}
           search={params.search || ''}
           sortBy={sort.sortBy || ''}
           sortOrder={sort.sortOrder}
           initialView={initialView}
           isArchived={isArchived}
-          archivedCount={result.data.archivedCount}
+          archivedCount={result.data.archivedCount ?? 0}
           inspectionDue={inspectionDue}
-          hasInspectionData={result.data.hasInspectionData}
+          hasInspectionData={result.data.hasInspectionData ?? false}
         />
       </ListPage>
     </>

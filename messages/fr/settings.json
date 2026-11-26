@@ -3354,7 +3354,7 @@
       },
       "emptyFiltered": "Aucun lien ne correspond à votre recherche.",
       "loadFailed": "Impossible de charger les liens. Rechargez la page pour réessayer.",
-      "selectAll": "Sélectionner tous les liens de cette page",
+      "selectAll": "Sélectionner tous les liens affichés",
       "selectRow": "Sélectionner le lien vers {document}",
       "selectedCount": "{count, plural, one {# lien sélectionné} other {# liens sélectionnés}}",
       "clearSelection": "Effacer la sélection",
@@ -3362,7 +3362,8 @@
       "bulkRevokeTitle": "Supprimer {count, plural, one {# lien} other {# liens}} ?",
       "bulkRevokeDescription": "Ces liens cessent de fonctionner pour toutes les personnes qui les ont. Vous pouvez partager de nouveau un document pour créer un nouveau lien.",
       "bulkRevoked": "{count, plural, one {# lien supprimé} other {# liens supprimés}}",
-      "bulkRevokeFailed": "Impossible de supprimer les liens. Réessayez."
+      "bulkRevokeFailed": "Impossible de supprimer les liens. Réessayez.",
+      "bulkRevokePartial": "{removed} liens sur {total} supprimés. Réessayez pour supprimer les autres."
     }
   },
   "meters": {

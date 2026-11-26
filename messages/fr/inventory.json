@@ -41,7 +41,8 @@
     "selected": "{count, plural, one {# pièce sélectionnée} other {# pièces sélectionnées}}",
     "clearSelection": "Effacer",
     "deleteSelected": "Supprimer ({count})",
-    "success": "{count, plural, one {# pièce supprimée} other {# pièces supprimées}}"
+    "success": "{count, plural, one {# pièce supprimée} other {# pièces supprimées}}",
+    "selectLoaded": "Sélectionner les {count, number} affichés"
   },
   "markup": {
     "title": "Appliquer la marge à toutes les pièces",

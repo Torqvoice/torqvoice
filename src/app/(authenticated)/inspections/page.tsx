@@ -1,6 +1,8 @@
+import { stampServerRender } from '@/components/infinite-list/server-render'
 import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { resolveListStatus } from '@/lib/list-status-preference.server'
-import { getInspectionsPaginated } from '@/features/inspections/Actions/inspectionActions'
+import { getInspectionRows } from '@/features/inspections/Actions/getInspectionRows'
+import { getAuthContext } from '@/lib/get-auth-context'
 import { getTemplates } from '@/features/inspections/Actions/templateActions'
 import { InspectionsClient } from './inspections-client'
 import { PageHeader } from '@/components/page-header'
@@ -14,9 +16,8 @@ export function generateMetadata() {
 export default async function InspectionsPage({
   searchParams,
 }: {
+  // An old ?page= link is simply ignored: the list loads more as it scrolls.
   searchParams: Promise<{
-    page?: string
-    pageSize?: string
     search?: string
     status?: string
     sortBy?: string
@@ -29,16 +30,16 @@ export default async function InspectionsPage({
     sortOrder: 'desc',
   })
   const status = await resolveListStatus('inspections', params.status)
-  const [result, templatesResult] = await Promise.all([
-    getInspectionsPaginated({
-      page: params.page ? parseInt(params.page) : 1,
-      pageSize: params.pageSize ? parseInt(params.pageSize) : 20,
+  const [result, templatesResult, authCtx] = await Promise.all([
+    // The first batch; the rest load through the same action as the list scrolls.
+    getInspectionRows({
       search: params.search,
       status,
       sortBy: sort.sortBy,
       sortOrder: sort.sortOrder,
     }),
     getTemplates(),
+    getAuthContext(),
   ])
 
   if (!result.success || !result.data) {
@@ -59,7 +60,8 @@ export default async function InspectionsPage({
       <PageHeader />
       <ListPage>
         <InspectionsClient
-          data={result.data}
+          data={stampServerRender(result.data)}
+          listScope={authCtx?.organizationId ?? ''}
           templates={templates}
           search={params.search || ''}
           statusFilter={status}

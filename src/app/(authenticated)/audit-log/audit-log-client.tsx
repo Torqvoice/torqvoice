@@ -29,38 +29,48 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import { DataTablePagination } from '@/components/data-table-pagination'
+import { type ServerBatch, useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import {
+  InfiniteListCount,
+  InfiniteListFooter,
+  InfiniteTableFooter,
+} from '@/components/infinite-list/infinite-list-footer'
 import { TableContextMenuHint } from '@/components/table-context-menu-hint'
+import { getAuditLogRows } from '@/features/audit/Actions/getAuditLogRows'
+import type { Cursor } from '@/lib/keyset'
 import { useFormatDate } from '@/lib/use-format-date'
 import { useFormatCurrency } from '@/components/currency-settings-context'
 import { auditSummaryParams } from '@/features/audit/Lib/summaryParams'
 import { cn } from '@/lib/utils'
 import { ExternalLink, Search, Loader2 } from 'lucide-react'
 
-type AuditLogData = {
-  logs: {
-    id: string
-    timestamp: Date
-    action: string
-    entity: string | null
-    entityId: string | null
-    message: string | null
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    metadata: any
-    ip: string | null
-    userAgent: string | null
-    user: { id: string; name: string | null; email: string | null } | null
-  }[]
-  total: number
-  page: number
-  pageSize: number
-  totalPages: number
-  filters: {
+type AuditLogRow = {
+  id: string
+  timestamp: Date
+  action: string
+  entity: string | null
+  entityId: string | null
+  message: string | null
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  metadata: any
+  ip: string | null
+  userAgent: string | null
+  user: { id: string; name: string | null; email: string | null } | null
+}
+
+/** One batch of the log; the first also carries the total and the filter choices. */
+type AuditLogBatch = {
+  rows: AuditLogRow[]
+  nextCursor: Cursor | null
+  total?: number
+  filters?: {
     actions: string[]
     entities: string[]
     users: { id: string; name: string | null; email: string | null }[]
   }
 }
+
+const NO_FILTERS: NonNullable<AuditLogBatch['filters']> = { actions: [], entities: [], users: [] }
 
 function getActionColor(action: string): string {
   if (action.includes('delete') || action.includes('remove')) return 'destructive'
@@ -73,12 +83,16 @@ function getActionColor(action: string): string {
 
 export function AuditLogClient({
   data,
+  listScope = '',
   search,
   actionFilter,
   entityFilter,
   userFilter,
 }: {
-  data: AuditLogData
+  /** The first batch, rendered on the server. */
+  data: ServerBatch<AuditLogBatch>
+  /** The workshop, so one workshop's cached rows never show in another's. */
+  listScope?: string
   search: string
   actionFilter: string
   entityFilter: string
@@ -89,11 +103,27 @@ export function AuditLogClient({
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
   const tableNav = useTableKeyboardNav()
-  const [selectedLog, setSelectedLog] = useState<AuditLogData['logs'][number] | null>(null)
+  const [selectedLog, setSelectedLog] = useState<AuditLogRow | null>(null)
   const { formatDateTime } = useFormatDate()
   const formatCurrency = useFormatCurrency()
   const t = useTranslations('audit')
   const ti = useTranslations('integrations')
+
+  // The same filters the page's first batch was read with, so every batch
+  // after it continues that list.
+  const filters = {
+    search: search || undefined,
+    action: actionFilter === 'all' ? undefined : actionFilter,
+    entity: entityFilter === 'all' ? undefined : entityFilter,
+    userId: userFilter === 'all' ? undefined : userFilter,
+  }
+  const list = useInfiniteRows<AuditLogRow, Cursor, AuditLogBatch>({
+    queryKey: ['audit-log', listScope, filters],
+    initial: data,
+    fetchPage: (cursor) => getAuditLogRows({ ...filters, cursor }),
+  })
+  const logs = list.rows
+  const filterOptions = list.firstPage.filters ?? NO_FILTERS
 
   const getActionLabel = (action: string) => {
     // next-intl returns a placeholder for a missing message rather than
@@ -111,7 +141,7 @@ export function AuditLogClient({
    * the fallback rather than a blank cell: a log entry nobody can read is
    * worse than one in the wrong language.
    */
-  const getSummary = (log: AuditLogData['logs'][number]) => {
+  const getSummary = (log: AuditLogRow) => {
     const details = log.metadata?.details as
       | { key?: string; params?: Record<string, string | number> }
       | undefined
@@ -140,12 +170,9 @@ export function AuditLogClient({
           newParams.set(key, String(value))
         }
       }
-      if (
-        !('page' in params) &&
-        ('search' in params || 'action' in params || 'entity' in params || 'userId' in params)
-      ) {
-        newParams.delete('page')
-      }
+      // An old ?page= means nothing now: the list loads more as it scrolls.
+      newParams.delete('page')
+      newParams.delete('pageSize')
       startTransition(() => {
         router.push(`${pathname}?${newParams.toString()}`)
       })
@@ -182,7 +209,7 @@ export function AuditLogClient({
             className="w-[180px]"
             options={[
               { value: 'all', label: t('allActions') },
-              ...data.filters.actions.map((a) => ({
+              ...filterOptions.actions.map((a) => ({
                 value: a,
                 label: getActionLabel(a),
                 keywords: a,
@@ -195,7 +222,7 @@ export function AuditLogClient({
             className="w-[160px]"
             options={[
               { value: 'all', label: t('allEntities') },
-              ...data.filters.entities.map((e) => ({ value: e, label: e })),
+              ...filterOptions.entities.map((e) => ({ value: e, label: e })),
             ]}
           />
           <SearchableSelect
@@ -204,24 +231,25 @@ export function AuditLogClient({
             className="w-[160px]"
             options={[
               { value: 'all', label: t('allUsers') },
-              ...data.filters.users.map((u) => ({
+              ...filterOptions.users.map((u) => ({
                 value: u.id,
                 label: u.name || u.email || u.id.substring(0, 8),
                 keywords: u.email ?? '',
               })),
             ]}
           />
+          <InfiniteListCount shown={logs.length} total={list.total} className="self-center" />
         </div>
       </div>
 
       {/* Card list (phones + small tablets) */}
       <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
-        {data.logs.length === 0 ? (
+        {logs.length === 0 ? (
           <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
             {t('noLogsFound')}
           </div>
         ) : (
-          data.logs.map((log) => (
+          logs.map((log) => (
             <button
               key={log.id}
               type="button"
@@ -254,6 +282,7 @@ export function AuditLogClient({
             </button>
           ))
         )}
+        {logs.length > 0 && <InfiniteListFooter state={list} />}
       </div>
 
       {/* Table (md and up) - only the rows scroll */}
@@ -273,14 +302,14 @@ export function AuditLogClient({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.logs.length === 0 ? (
+            {logs.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
                   {t('noLogsFound')}
                 </TableCell>
               </TableRow>
             ) : (
-              data.logs.map((log) => (
+              logs.map((log) => (
                 <ContextMenu key={log.id} modal={false}>
                   <ContextMenuTrigger asChild>
                     <TableRow
@@ -326,18 +355,10 @@ export function AuditLogClient({
                 </ContextMenu>
               ))
             )}
+            {logs.length > 0 && <InfiniteTableFooter state={list} colSpan={5} />}
           </TableBody>
         </Table>
       </div>
-
-      {/* Pagination */}
-      <DataTablePagination
-        total={data.total}
-        page={data.page}
-        pageSize={data.pageSize}
-        totalPages={data.totalPages}
-        onNavigate={navigate}
-      />
 
       {/* Detail Dialog */}
       <Dialog open={!!selectedLog} onOpenChange={(open) => !open && setSelectedLog(null)}>

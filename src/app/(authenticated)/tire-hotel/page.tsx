@@ -1,9 +1,10 @@
+import { stampServerRender } from '@/components/infinite-list/server-render'
 import { notFound } from 'next/navigation'
 import { db } from '@/lib/db'
 import { getCachedMembership, getCachedSession } from '@/lib/cached-session'
 import { getTireHotelSettings } from '@/features/tire-hotel/Lib/tireHotelSettings'
 import { getLocationOptions } from '@/features/tire-hotel/Actions/storageActions'
-import { getTireSetsPaginated } from '@/features/tire-hotel/Actions/tireSetActions'
+import { getTireSetRows } from '@/features/tire-hotel/Actions/getTireSetRows'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { totalFree as sumFree } from '@/features/tire-hotel/Lib/capacity'
@@ -36,16 +37,13 @@ export default async function TireHotelPage({
 
   const search = single('search') ?? ''
   const status = single('status') ?? 'all'
+  const sortBy = single('sortBy')
+  const sortOrder = single('sortOrder') === 'asc' ? 'asc' : 'desc'
 
   const [listResult, locationResult, unitResult, vehicles] = await Promise.all([
-    getTireSetsPaginated({
-      page: Number(single('page')) || 1,
-      pageSize: Number(single('pageSize')) || 20,
-      search,
-      status,
-      sortBy: single('sortBy'),
-      sortOrder: single('sortOrder') === 'asc' ? 'asc' : 'desc',
-    }),
+    // The first batch; the rest load through the same action as the list
+    // scrolls. An old ?page= link is simply ignored.
+    getTireSetRows({ search, status, sortBy, sortOrder }),
     getLocationOptions(),
     getDisplaySettings([SETTING_KEYS.UNIT_SYSTEM]),
     db.vehicle.findMany({
@@ -69,7 +67,7 @@ export default async function TireHotelPage({
   const data =
     listResult.success && listResult.data
       ? listResult.data
-      : { records: [], total: 0, page: 1, pageSize: 20, totalPages: 0, statusCounts: {} }
+      : { rows: [], nextCursor: null, total: 0, statusCounts: {} }
 
   const locations = locationResult.success && locationResult.data ? locationResult.data : []
   const imperial = unitResult.success && unitResult.data?.[SETTING_KEYS.UNIT_SYSTEM] === 'imperial'
@@ -79,7 +77,8 @@ export default async function TireHotelPage({
       <PageHeader />
       <ListPage>
         <TireHotelClient
-          data={data}
+          data={stampServerRender(data)}
+          listScope={organizationId}
           locations={locations}
           vehicles={vehicles}
           imperial={imperial}
@@ -90,6 +89,8 @@ export default async function TireHotelPage({
           }}
           search={search}
           statusFilter={status}
+          sortBy={sortBy ?? ''}
+          sortOrder={sortOrder}
           totalFree={sumFree(locations)}
         />
       </ListPage>

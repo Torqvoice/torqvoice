@@ -1,8 +1,8 @@
 'use client'
 
-import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { useCallback, useState, useTransition } from 'react'
+import { useState } from 'react'
 import { useFormatDate } from '@/lib/use-format-date'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -27,12 +27,19 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import { DataTablePagination } from '@/components/data-table-pagination'
+import { type ServerBatch, useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import {
+  InfiniteListCount,
+  InfiniteListFooter,
+  InfiniteTableFooter,
+} from '@/components/infinite-list/infinite-list-footer'
+import { getFindingRows } from '@/features/vehicles/Actions/getFindingRows'
+import type { Cursor } from '@/lib/keyset'
 import { cn } from '@/lib/utils'
 import { Loader2, MoreVertical, Pencil, Plus, Trash2, Wrench, ExternalLink } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
-interface FindingRow {
+export interface FindingRow {
   id: string
   description: string
   severity: string
@@ -44,18 +51,28 @@ interface FindingRow {
   resolvedServiceRecord: { id: string; title: string } | null
 }
 
+/** One batch of the list; the first also carries the total. */
+export interface FindingBatch {
+  rows: FindingRow[]
+  nextCursor: Cursor | null
+  total?: number
+}
+
 interface FindingsTableProps {
   vehicleId: string
-  records: FindingRow[]
-  total: number
-  page: number
-  pageSize: number
-  totalPages: number
+  /** The first batch, rendered on the server; the rest load as the list scrolls. */
+  initial: ServerBatch<FindingBatch>
+  /**
+   * Where the sticky header stops: under the page header while the window
+   * scrolls, at the top of the box when the list sits in one.
+   */
+  stickyHeaderClassName?: string
   /** Leave out where the page has its own button for adding an observation. */
   onAddFinding?: () => void
   onEditFinding: (finding: FindingRow) => void
   onDeleteFinding: (id: string) => void
-  onCreateWorkOrder: (findingIds: string[]) => void
+  /** The selected observations, out of every row loaded so far. */
+  onCreateWorkOrder: (findings: FindingRow[]) => void
   isCreatingWorkOrder?: boolean
 }
 
@@ -67,11 +84,8 @@ const severityColors: Record<string, string> = {
 
 export function FindingsTable({
   vehicleId,
-  records,
-  total,
-  page,
-  pageSize,
-  totalPages,
+  initial,
+  stickyHeaderClassName = 'top-16',
   onAddFinding,
   onEditFinding,
   onDeleteFinding,
@@ -80,11 +94,18 @@ export function FindingsTable({
 }: FindingsTableProps) {
   const router = useRouter()
   const { formatDate } = useFormatDate()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
-  const [isPending, startTransition] = useTransition()
   const t = useTranslations('vehicles.findings')
   const [selected, setSelected] = useState<Set<string>>(new Set())
+
+  const list = useInfiniteRows<FindingRow, Cursor, FindingBatch>({
+    queryKey: ['vehicle-findings', vehicleId],
+    initial,
+    fetchPage: (cursor) => getFindingRows({ vehicleId, cursor }),
+  })
+  const records = list.rows
+  // Only rows still in the list count: one deleted since it was ticked is gone.
+  const chosen = records.filter((r) => selected.has(r.id))
+  const allChosen = records.length > 0 && chosen.length === records.length
 
   const toggleSelect = (id: string) => {
     setSelected((prev) => {
@@ -95,41 +116,10 @@ export function FindingsTable({
     })
   }
 
+  // The header box covers the rows loaded so far; ticks stay as more arrive.
   const toggleAll = () => {
-    if (selected.size === records.length) {
-      setSelected(new Set())
-    } else {
-      setSelected(new Set(records.map((r) => r.id)))
-    }
+    setSelected(allChosen ? new Set() : new Set(records.map((r) => r.id)))
   }
-
-  const createUrl = useCallback(
-    (params: Record<string, string | number | undefined>) => {
-      const newParams = new URLSearchParams(searchParams.toString())
-      newParams.set('tab', 'findings')
-      for (const [key, value] of Object.entries(params)) {
-        if (value === undefined || value === '') {
-          newParams.delete(key)
-        } else {
-          newParams.set(key, String(value))
-        }
-      }
-      if (!('findingsPage' in params) && 'findingsPageSize' in params) {
-        newParams.delete('findingsPage')
-      }
-      return `${pathname}?${newParams.toString()}`
-    },
-    [pathname, searchParams]
-  )
-
-  const navigate = useCallback(
-    (params: Record<string, string | number | undefined>) => {
-      startTransition(() => {
-        router.push(createUrl(params))
-      })
-    },
-    [router, createUrl]
-  )
 
   return (
     <div className="space-y-4">
@@ -137,16 +127,15 @@ export function FindingsTable({
       <div
         className={cn(
           'flex items-center justify-between gap-2',
-          !onAddFinding && !isPending && selected.size === 0 && 'hidden'
+          !onAddFinding && list.total === 0 && 'hidden'
         )}
       >
         <div className="flex items-center gap-2">
-          {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
-          {selected.size > 0 && (
+          {chosen.length > 0 ? (
             <Button
               size="sm"
               className="h-9 md:h-8"
-              onClick={() => onCreateWorkOrder(Array.from(selected))}
+              onClick={() => onCreateWorkOrder(chosen)}
               disabled={isCreatingWorkOrder}
             >
               {isCreatingWorkOrder ? (
@@ -154,8 +143,10 @@ export function FindingsTable({
               ) : (
                 <Wrench className="mr-1 h-3.5 w-3.5" />
               )}
-              {t('createWorkOrder', { count: selected.size })}
+              {t('createWorkOrder', { count: chosen.length })}
             </Button>
+          ) : (
+            <InfiniteListCount shown={records.length} total={list.total} />
           )}
         </div>
         {onAddFinding && (
@@ -245,18 +236,21 @@ export function FindingsTable({
             </div>
           ))
         )}
+        {records.length > 0 && <InfiniteListFooter state={list} />}
       </div>
 
-      {/* Table (md and up) */}
+      {/* Table (md and up). The rows scroll with the page (or the box the page
+          puts the list in), so the table's own box must not clip them. */}
       <div className="hidden rounded-lg border md:block">
-        <Table>
-          <TableHeader>
+        <Table containerClassName="overflow-visible">
+          <TableHeader sticky className={stickyHeaderClassName}>
             <TableRow>
               <TableHead className="w-10 px-2">
                 {records.length > 0 && (
                   <Checkbox
-                    checked={selected.size === records.length && records.length > 0}
+                    checked={allChosen ? true : chosen.length > 0 ? 'indeterminate' : false}
                     onCheckedChange={toggleAll}
+                    aria-label={t('selectAll')}
                   />
                 )}
               </TableHead>
@@ -374,21 +368,10 @@ export function FindingsTable({
                 </ContextMenu>
               ))
             )}
+            {records.length > 0 && <InfiniteTableFooter state={list} colSpan={5} />}
           </TableBody>
         </Table>
       </div>
-
-      {/* Pagination */}
-      <DataTablePagination
-        total={total}
-        page={page}
-        pageSize={pageSize}
-        totalPages={totalPages}
-        pageParam="findingsPage"
-        pageSizeParam="findingsPageSize"
-        pageSizes={['5', '10', '20', '50']}
-        onNavigate={navigate}
-      />
     </div>
   )
 }

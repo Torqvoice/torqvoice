@@ -31,7 +31,14 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import { DataTablePagination } from '@/components/data-table-pagination'
+import { type ServerBatch, useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import {
+  InfiniteListCount,
+  InfiniteListFooter,
+  InfiniteTableFooter,
+} from '@/components/infinite-list/infinite-list-footer'
+import { getLaborPresetRows } from '@/features/labor-presets/Actions/getLaborPresetRows'
+import type { Cursor } from '@/lib/keyset'
 import { TableContextMenuHint } from '@/components/table-context-menu-hint'
 import { useGlassModal } from '@/components/glass-modal'
 import { useConfirm } from '@/components/confirm-dialog'
@@ -61,16 +68,16 @@ interface LaborPresetRow {
   items: { hours: number; pricingType: string }[]
 }
 
-interface PaginatedData {
-  presets: LaborPresetRow[]
-  total: number
-  page: number
-  pageSize: number
-  totalPages: number
+/** One batch of the list; the first also carries the total. */
+interface LaborPresetBatch {
+  rows: LaborPresetRow[]
+  nextCursor: Cursor | null
+  total?: number
 }
 
 export function LaborPresetsClient({
   data,
+  listScope = '',
   search,
   sortBy,
   sortOrder,
@@ -78,7 +85,10 @@ export function LaborPresetsClient({
   defaultLaborRate = 0,
   inventoryParts = [],
 }: {
-  data: PaginatedData
+  /** The first batch, rendered on the server. */
+  data: ServerBatch<LaborPresetBatch>
+  /** The workshop, so one workshop's cached rows never show in another's. */
+  listScope?: string
   search: string
   sortBy: string
   sortOrder: 'asc' | 'desc'
@@ -119,6 +129,16 @@ export function LaborPresetsClient({
   const modal = useGlassModal()
   const confirm = useConfirm()
 
+  // The same filters the page's first batch was read with, so every batch
+  // after it continues that list.
+  const filters = { search: search || undefined, sortBy: sortBy || undefined, sortOrder }
+  const list = useInfiniteRows<LaborPresetRow, Cursor, LaborPresetBatch>({
+    queryKey: ['labor-presets', listScope, filters],
+    initial: data,
+    fetchPage: (cursor) => getLaborPresetRows({ ...filters, cursor }),
+  })
+  const presets = list.rows
+
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
       const newParams = new URLSearchParams(searchParams.toString())
@@ -129,9 +149,9 @@ export function LaborPresetsClient({
           newParams.set(key, String(value))
         }
       }
-      if (!('page' in params) && 'search' in params) {
-        newParams.delete('page')
-      }
+      // An old ?page= means nothing now: the list loads more as it scrolls.
+      newParams.delete('page')
+      newParams.delete('pageSize')
       startTransition(() => {
         router.push(`${pathname}?${newParams.toString()}`)
       })
@@ -210,6 +230,7 @@ export function LaborPresetsClient({
             />
           </form>
           {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+          <InfiniteListCount shown={presets.length} total={list.total} />
         </div>
         <Button
           size="sm"
@@ -225,12 +246,12 @@ export function LaborPresetsClient({
 
       {/* Card list (phones + small tablets) */}
       <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
-        {data.presets.length === 0 ? (
+        {presets.length === 0 ? (
           <div className="rounded-lg border border-dashed p-8 text-center text-sm text-muted-foreground">
             {search ? t('empty.noMatch') : t('empty.noPresets')}
           </div>
         ) : (
-          data.presets.map((preset) => {
+          presets.map((preset) => {
             const { totalHours, totalUnits } = presetTotals(preset.items)
             return (
               <div key={preset.id} className="flex items-start gap-2 rounded-lg border bg-card p-3">
@@ -290,6 +311,7 @@ export function LaborPresetsClient({
             )
           })
         )}
+        {presets.length > 0 && <InfiniteListFooter state={list} />}
       </div>
 
       {/* Table (md and up) - only the rows scroll */}
@@ -327,14 +349,14 @@ export function LaborPresetsClient({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.presets.length === 0 ? (
+            {presets.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="h-32 text-center text-muted-foreground">
                   {search ? t('empty.noMatch') : t('empty.noPresets')}
                 </TableCell>
               </TableRow>
             ) : (
-              data.presets.map((preset) => (
+              presets.map((preset) => (
                 <ContextMenu key={preset.id} modal={false}>
                   <ContextMenuTrigger asChild>
                     <TableRow
@@ -410,17 +432,10 @@ export function LaborPresetsClient({
                 </ContextMenu>
               ))
             )}
+            {presets.length > 0 && <InfiniteTableFooter state={list} colSpan={5} />}
           </TableBody>
         </Table>
       </div>
-
-      <DataTablePagination
-        total={data.total}
-        page={data.page}
-        pageSize={data.pageSize}
-        totalPages={data.totalPages}
-        onNavigate={navigate}
-      />
 
       <LaborPresetForm
         key={editPreset?.id ?? 'new'}

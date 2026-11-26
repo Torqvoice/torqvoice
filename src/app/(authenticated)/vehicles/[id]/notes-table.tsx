@@ -2,11 +2,16 @@
 
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { interactiveRow } from '@/lib/interactive-row'
-import { useRouter, usePathname, useSearchParams } from 'next/navigation'
-import { useCallback, useTransition } from 'react'
 import { useFormatDate } from '@/lib/use-format-date'
 import { Button } from '@/components/ui/button'
-import { DataTablePagination } from '@/components/data-table-pagination'
+import { type ServerBatch, useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import {
+  InfiniteListCount,
+  InfiniteListFooter,
+  InfiniteTableFooter,
+} from '@/components/infinite-list/infinite-list-footer'
+import { getNoteRows } from '@/features/vehicles/Actions/getNoteRows'
+import type { Cursor } from '@/lib/keyset'
 import {
   Table,
   TableBody,
@@ -27,10 +32,10 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import { Loader2, MoreVertical, Pin, PinOff, Plus, Trash2 } from 'lucide-react'
+import { MoreVertical, Pin, PinOff, Plus, Trash2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
-interface NoteRow {
+export interface NoteRow {
   id: string
   title: string
   content: string
@@ -38,13 +43,22 @@ interface NoteRow {
   createdAt: Date
 }
 
+/** One batch of the list; the first also carries the total. */
+export interface NoteBatch {
+  rows: NoteRow[]
+  nextCursor: Cursor | null
+  total?: number
+}
+
 interface NotesTableProps {
   vehicleId: string
-  records: NoteRow[]
-  total: number
-  page: number
-  pageSize: number
-  totalPages: number
+  /** The first batch, rendered on the server; the rest load as the list scrolls. */
+  initial: ServerBatch<NoteBatch>
+  /**
+   * Where the sticky header stops: under the page header while the window
+   * scrolls, at the top of the box when the list sits in one.
+   */
+  stickyHeaderClassName?: string
   onSelectNote: (note: NoteRow) => void
   /** Leave out where the page has its own button for adding a note. */
   onAddNote?: () => void
@@ -54,59 +68,30 @@ interface NotesTableProps {
 
 export function NotesTable({
   vehicleId,
-  records,
-  total,
-  page,
-  pageSize,
-  totalPages,
+  initial,
+  stickyHeaderClassName = 'top-16',
   onSelectNote,
   onAddNote,
   onTogglePin,
   onDeleteNote,
 }: NotesTableProps) {
-  const router = useRouter()
   const { formatDate } = useFormatDate()
-  const pathname = usePathname()
-  const searchParams = useSearchParams()
-  const [isPending, startTransition] = useTransition()
   const tableNav = useTableKeyboardNav()
   const t = useTranslations('vehicles.notes')
 
-  const createUrl = useCallback(
-    (params: Record<string, string | number | undefined>) => {
-      const newParams = new URLSearchParams(searchParams.toString())
-      newParams.set('tab', 'notes')
-      for (const [key, value] of Object.entries(params)) {
-        if (value === undefined || value === '') {
-          newParams.delete(key)
-        } else {
-          newParams.set(key, String(value))
-        }
-      }
-      // Reset to page 1 when page size changes (unless explicitly setting page)
-      if (!('notesPage' in params) && 'notesPageSize' in params) {
-        newParams.delete('notesPage')
-      }
-      return `${pathname}?${newParams.toString()}`
-    },
-    [pathname, searchParams]
-  )
-
-  const navigate = useCallback(
-    (params: Record<string, string | number | undefined>) => {
-      startTransition(() => {
-        router.push(createUrl(params))
-      })
-    },
-    [router, createUrl]
-  )
+  const list = useInfiniteRows<NoteRow, Cursor, NoteBatch>({
+    queryKey: ['vehicle-notes', vehicleId],
+    initial,
+    fetchPage: (cursor) => getNoteRows({ vehicleId, cursor }),
+  })
+  const records = list.rows
 
   return (
     <div className="space-y-4">
       {/* Toolbar */}
-      {(onAddNote || isPending) && (
+      {(onAddNote || list.total > 0) && (
         <div className="flex items-center justify-between">
-          {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+          <InfiniteListCount shown={records.length} total={list.total} />
           {onAddNote && (
             <div className="ml-auto">
               <Button
@@ -178,12 +163,14 @@ export function NotesTable({
             </div>
           ))
         )}
+        {records.length > 0 && <InfiniteListFooter state={list} />}
       </div>
 
-      {/* Table (md and up) */}
+      {/* Table (md and up). The rows scroll with the page (or the box the page
+          puts the list in), so the table's own box must not clip them. */}
       <div className="hidden rounded-lg border md:block" {...tableNav.containerProps}>
-        <Table>
-          <TableHeader>
+        <Table containerClassName="overflow-visible">
+          <TableHeader sticky className={stickyHeaderClassName}>
             <TableRow>
               <TableHead className="w-7.5"></TableHead>
               <TableHead className="w-40">{t('table.title')}</TableHead>
@@ -266,21 +253,10 @@ export function NotesTable({
                 </ContextMenu>
               ))
             )}
+            {records.length > 0 && <InfiniteTableFooter state={list} colSpan={5} />}
           </TableBody>
         </Table>
       </div>
-
-      {/* Pagination */}
-      <DataTablePagination
-        total={total}
-        page={page}
-        pageSize={pageSize}
-        totalPages={totalPages}
-        pageParam="notesPage"
-        pageSizeParam="notesPageSize"
-        pageSizes={['5', '10', '20', '50']}
-        onNavigate={navigate}
-      />
     </div>
   )
 }

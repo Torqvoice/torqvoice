@@ -198,7 +198,8 @@ import {
   updateVehicle,
 } from '@/features/vehicles/Actions/vehicleActions'
 import { getCustomers } from '@/features/customers/Actions/customerActions'
-import { getWorkOrders, getServiceRecords } from '@/features/vehicles/Actions/serviceActions'
+import { getServiceRecords } from '@/features/vehicles/Actions/serviceActions'
+import { getWorkOrderRows } from '@/features/vehicles/Actions/getWorkOrderRows'
 import { getQuotesPaginated } from '@/features/quotes/Actions/quoteActions'
 import { getBillingHistory } from '@/features/billing/Actions/billingActions'
 import { getInventoryPartsPaginated } from '@/features/inventory/Actions/inventoryActions'
@@ -303,7 +304,7 @@ describe('Permission denial — restricted custom role with no permissions', () 
     ['DASHBOARD', 'READ', () => getDashboardStats()],
     ['VEHICLES', 'READ', () => getVehicles()],
     ['CUSTOMERS', 'READ', () => getCustomers()],
-    ['WORK_ORDERS', 'READ', () => getWorkOrders({})],
+    ['WORK_ORDERS', 'READ', () => getWorkOrderRows({})],
     ['QUOTES', 'READ', () => getQuotesPaginated({})],
     ['SERVICES', 'READ', () => getServiceRecords('any-vehicle-id')],
     ['BILLING', 'READ', () => getBillingHistory({})],
@@ -343,7 +344,7 @@ describe('Permission grant — correct permission allows access past the gate', 
     ['VEHICLES (UPDATE)', { action: 'update', subject: 'vehicles' }, () => updateVehicle({})],
     ['VEHICLES (DELETE)', { action: 'delete', subject: 'vehicles' }, () => deleteVehicle('any-id')],
     ['CUSTOMERS (READ)', { action: 'read', subject: 'customers' }, () => getCustomers()],
-    ['WORK_ORDERS (READ)', { action: 'read', subject: 'work_orders' }, () => getWorkOrders({})],
+    ['WORK_ORDERS (READ)', { action: 'read', subject: 'work_orders' }, () => getWorkOrderRows({})],
     ['QUOTES (READ)', { action: 'read', subject: 'quotes' }, () => getQuotesPaginated({})],
     ['SERVICES (READ)', { action: 'read', subject: 'services' }, () => getServiceRecords('any-id')],
     ['BILLING (READ)', { action: 'read', subject: 'billing' }, () => getBillingHistory({})],
@@ -580,7 +581,7 @@ describe('Unauthenticated access — all actions require authentication', () => 
     ['getDashboardStats', () => getDashboardStats()],
     ['getVehicles', () => getVehicles()],
     ['getCustomers', () => getCustomers()],
-    ['getWorkOrders', () => getWorkOrders({})],
+    ['getWorkOrderRows', () => getWorkOrderRows({})],
     ['getQuotesPaginated', () => getQuotesPaginated({})],
     ['getServiceRecords', () => getServiceRecords('any-id')],
     ['getBillingHistory', () => getBillingHistory({})],

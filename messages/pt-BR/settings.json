@@ -3354,7 +3354,7 @@
       },
       "emptyFiltered": "Nenhum link corresponde à sua busca.",
       "loadFailed": "Não foi possível carregar os links. Recarregue a página para tentar novamente.",
-      "selectAll": "Selecionar todos os links desta página",
+      "selectAll": "Selecionar todos os links exibidos",
       "selectRow": "Selecionar o link para {document}",
       "selectedCount": "{count, plural, one {# link selecionado} other {# links selecionados}}",
       "clearSelection": "Limpar seleção",
@@ -3362,7 +3362,8 @@
       "bulkRevokeTitle": "Remover {count, plural, one {# link} other {# links}}?",
       "bulkRevokeDescription": "Esses links deixam de funcionar para todos que os têm. Você pode compartilhar um documento de novo para criar um novo link.",
       "bulkRevoked": "{count, plural, one {# link removido} other {# links removidos}}",
-      "bulkRevokeFailed": "Não foi possível remover os links. Tente novamente."
+      "bulkRevokeFailed": "Não foi possível remover os links. Tente novamente.",
+      "bulkRevokePartial": "{removed} de {total} links removidos. Tente novamente para remover os restantes."
     }
   },
   "meters": {

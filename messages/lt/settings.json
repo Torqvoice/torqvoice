@@ -3354,7 +3354,7 @@
       },
       "emptyFiltered": "Paieškos atitinkančių nuorodų nėra.",
       "loadFailed": "Nepavyko įkelti nuorodų. Įkelkite puslapį iš naujo ir bandykite dar kartą.",
-      "selectAll": "Pasirinkti visas šio puslapio nuorodas",
+      "selectAll": "Pasirinkti visas rodomas nuorodas",
       "selectRow": "Pasirinkti nuorodą į {document}",
       "selectedCount": "{count, plural, one {Pasirinkta # nuoroda} few {Pasirinktos # nuorodos} many {Pasirinkta # nuorodos} other {Pasirinkta # nuorodų}}",
       "clearSelection": "Išvalyti pasirinkimą",
@@ -3362,7 +3362,8 @@
       "bulkRevokeTitle": "Pašalinti {count, plural, one {# nuorodą} few {# nuorodas} many {# nuorodos} other {# nuorodų}}?",
       "bulkRevokeDescription": "Šios nuorodos nustos veikti visiems, kurie jas turi. Norėdami sukurti naują nuorodą, galite dokumentą bendrinti dar kartą.",
       "bulkRevoked": "{count, plural, one {Pašalinta # nuoroda} few {Pašalintos # nuorodos} many {Pašalinta # nuorodos} other {Pašalinta # nuorodų}}",
-      "bulkRevokeFailed": "Nepavyko pašalinti nuorodų. Bandykite dar kartą."
+      "bulkRevokeFailed": "Nepavyko pašalinti nuorodų. Bandykite dar kartą.",
+      "bulkRevokePartial": "Pašalinta nuorodų: {removed} iš {total}. Bandykite dar kartą, kad pašalintumėte likusias."
     }
   },
   "meters": {

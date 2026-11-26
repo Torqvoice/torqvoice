@@ -27,7 +27,14 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import { DataTablePagination } from '@/components/data-table-pagination'
+import { type ServerBatch, useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import {
+  InfiniteListCount,
+  InfiniteListFooter,
+  InfiniteTableFooter,
+} from '@/components/infinite-list/infinite-list-footer'
+import { getInspectionRows } from '@/features/inspections/Actions/getInspectionRows'
+import type { Cursor } from '@/lib/keyset'
 import { TableContextMenuHint } from '@/components/table-context-menu-hint'
 import { TableCellLink } from '@/components/table-cell-link'
 import {
@@ -66,13 +73,12 @@ interface InspectionRecord {
   items: { id: string; condition: string }[]
 }
 
-interface PaginatedData {
-  records: InspectionRecord[]
-  total: number
-  page: number
-  pageSize: number
-  totalPages: number
-  statusCounts: Record<string, number>
+/** One batch of the list; the first also carries the total and the tab counts. */
+interface InspectionBatch {
+  rows: InspectionRecord[]
+  nextCursor: Cursor | null
+  total?: number
+  statusCounts?: Record<string, number>
 }
 
 interface TemplateOption {
@@ -179,13 +185,17 @@ function InspectionProgress({
 
 export function InspectionsClient({
   data,
+  listScope = '',
   templates,
   search,
   statusFilter,
   sortBy = '',
   sortOrder = 'desc',
 }: {
-  data: PaginatedData
+  /** The first batch, rendered on the server. */
+  data: ServerBatch<InspectionBatch>
+  /** The workshop, so one workshop's cached rows never show in another's. */
+  listScope?: string
   templates: TemplateOption[]
   search: string
   statusFilter: string
@@ -203,6 +213,22 @@ export function InspectionsClient({
   const tcm = useTranslations('common.contextMenu')
   const t = useTranslations('inspections.list')
 
+  // The same filters the page's first batch was read with, so every batch
+  // after it continues that list.
+  const filters = {
+    search: search || undefined,
+    status: statusFilter || undefined,
+    sortBy: sortBy || undefined,
+    sortOrder,
+  }
+  const list = useInfiniteRows<InspectionRecord, Cursor, InspectionBatch>({
+    queryKey: ['inspections', listScope, filters],
+    initial: data,
+    fetchPage: (cursor) => getInspectionRows({ ...filters, cursor }),
+  })
+  const records = list.rows
+  const statusCounts = list.firstPage.statusCounts ?? {}
+
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
       const newParams = new URLSearchParams(searchParams.toString())
@@ -213,7 +239,9 @@ export function InspectionsClient({
           newParams.set(key, String(value))
         }
       }
-      if (!('page' in params)) newParams.delete('page')
+      // The list loads more as it scrolls; an old page number means nothing.
+      newParams.delete('page')
+      newParams.delete('pageSize')
       startTransition(() => {
         router.push(`${pathname}?${newParams.toString()}`)
       })
@@ -269,7 +297,7 @@ export function InspectionsClient({
       <div className="-mx-1 flex shrink-0 gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
         {statusTabs.map((tab) => {
           const isActive = statusFilter === tab.key
-          const count = tab.key === 'all' ? undefined : data.statusCounts[tab.key] || 0
+          const count = tab.key === 'all' ? undefined : statusCounts[tab.key] || 0
           return (
             <Button
               key={tab.key}
@@ -308,6 +336,7 @@ export function InspectionsClient({
             />
           </form>
           {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+          <InfiniteListCount shown={records.length} total={list.total} />
         </div>
         <Button
           size="sm"
@@ -323,9 +352,9 @@ export function InspectionsClient({
 
       {/* Card list (phones + small tablets) - only this scrolls */}
       <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
-        {data.records.length === 0
+        {records.length === 0
           ? emptyState(false)
-          : data.records.map((insp) => (
+          : records.map((insp) => (
               <button
                 key={insp.id}
                 type="button"
@@ -361,6 +390,7 @@ export function InspectionsClient({
                 </div>
               </button>
             ))}
+        {records.length > 0 && <InfiniteListFooter state={list} />}
       </div>
 
       {/* Table (md and up) - only the rows scroll */}
@@ -416,14 +446,14 @@ export function InspectionsClient({
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.records.length === 0 ? (
+            {records.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={5} className="p-0">
                   {emptyState(true)}
                 </TableCell>
               </TableRow>
             ) : (
-              data.records.map((insp) => (
+              records.map((insp) => (
                 <ContextMenu key={insp.id} modal={false}>
                   <ContextMenuTrigger asChild>
                     <TableRow
@@ -478,17 +508,10 @@ export function InspectionsClient({
                 </ContextMenu>
               ))
             )}
+            {records.length > 0 && <InfiniteTableFooter state={list} colSpan={5} />}
           </TableBody>
         </Table>
       </div>
-
-      <DataTablePagination
-        total={data.total}
-        page={data.page}
-        pageSize={data.pageSize}
-        totalPages={data.totalPages}
-        onNavigate={navigate}
-      />
 
       <NewInspectionDialog
         open={showNewDialog}

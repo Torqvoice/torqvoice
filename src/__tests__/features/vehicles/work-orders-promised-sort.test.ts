@@ -41,7 +41,7 @@ vi.mock('@/lib/with-auth', () => ({
   }),
 }))
 
-import { getWorkOrders } from '@/features/vehicles/Actions/serviceActions'
+import { getWorkOrderRows as getWorkOrders } from '@/features/vehicles/Actions/getWorkOrderRows'
 
 /** The where the list's query was built with. */
 async function whereFor(params: Parameters<typeof getWorkOrders>[0]) {
@@ -67,34 +67,41 @@ beforeEach(() => {
 
 describe('the updated column', () => {
   it('sorts by when the job was last saved, either way round', async () => {
-    expect(await orderByFor('updatedAt', 'desc')).toEqual({ updatedAt: 'desc' })
-    expect(await orderByFor('updatedAt', 'asc')).toEqual({ updatedAt: 'asc' })
+    // The id always breaks the last tie, so batches loaded while scrolling
+    // never repeat or skip a row.
+    expect(await orderByFor('updatedAt', 'desc')).toEqual([{ updatedAt: 'desc' }, { id: 'asc' }])
+    expect(await orderByFor('updatedAt', 'asc')).toEqual([{ updatedAt: 'asc' }, { id: 'asc' }])
   })
 })
 
 describe('the promised column', () => {
   it('sorts by the promise, soonest first when ascending', async () => {
-    expect(await orderByFor('promisedAt', 'asc')).toEqual({
-      promisedAt: { sort: 'asc', nulls: 'last' },
-    })
+    expect(await orderByFor('promisedAt', 'asc')).toEqual([
+      { promisedAt: { sort: 'asc', nulls: 'last' } },
+      { id: 'asc' },
+    ])
   })
 
   it('keeps jobs with no promise at the end, whichever way it is sorted', async () => {
     // Ascending they would otherwise lead the list, and the answer to "what is
     // promised soonest" would be a page of jobs nobody promised anything.
     for (const direction of ['asc', 'desc'] as const) {
-      expect(await orderByFor('promisedAt', direction)).toMatchObject({
+      expect(((await orderByFor('promisedAt', direction)) as unknown[])[0]).toMatchObject({
         promisedAt: { nulls: 'last' },
       })
     }
   })
 
   it('leaves the other columns as they were', async () => {
-    expect(await orderByFor('totalAmount', 'desc')).toEqual({ totalAmount: 'desc' })
+    expect(await orderByFor('totalAmount', 'desc')).toEqual([
+      { totalAmount: 'desc' },
+      { id: 'asc' },
+    ])
     // The default is still the date the job is presented with.
     expect(await orderByFor('serviceDate', 'desc')).toEqual([
       { startDateTime: { sort: 'desc', nulls: 'last' } },
       { serviceDate: 'desc' },
+      { id: 'asc' },
     ])
   })
 })

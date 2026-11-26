@@ -324,6 +324,7 @@
     "discoveredIn": "Descoberto em",
     "resolvedIn": "Resolvido em",
     "createWorkOrder": "Criar ordem de serviço ({count})",
+    "selectAll": "Selecionar todas as exibidas",
     "vehicleHasObservations": "Este veículo tem {count} observações em aberto",
     "addToWorkOrder": "Adicionar à ordem de serviço ({count})",
     "dismiss": "Dispensar",

@@ -25,7 +25,14 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import { DataTablePagination } from '@/components/data-table-pagination'
+import { type ServerBatch, useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import {
+  InfiniteListCount,
+  InfiniteListFooter,
+  InfiniteTableFooter,
+} from '@/components/infinite-list/infinite-list-footer'
+import { getTireSetRows } from '@/features/tire-hotel/Actions/getTireSetRows'
+import type { Cursor } from '@/lib/keyset'
 import { TableContextMenuHint } from '@/components/table-context-menu-hint'
 import { TableCellLink } from '@/components/table-cell-link'
 import { CheckInDialog } from '@/features/tire-hotel/Components/CheckInDialog'
@@ -76,13 +83,12 @@ type TireSetRecord = {
   treatments: { type: string; status: string }[]
 }
 
-type PaginatedData = {
-  records: TireSetRecord[]
-  total: number
-  page: number
-  pageSize: number
-  totalPages: number
-  statusCounts: Record<string, number>
+/** One batch of the list; the first also carries the total and the tab counts. */
+type TireSetBatch = {
+  rows: TireSetRecord[]
+  nextCursor: Cursor | null
+  total?: number
+  statusCounts?: Record<string, number>
 }
 
 const statusTabs = [
@@ -99,15 +105,21 @@ const statusTabs = [
 
 export function TireHotelClient({
   data,
+  listScope = '',
   locations,
   vehicles,
   imperial,
   thresholds,
   search,
   statusFilter,
+  sortBy = '',
+  sortOrder = 'desc',
   totalFree,
 }: {
-  data: PaginatedData
+  /** The first batch, rendered on the server. */
+  data: ServerBatch<TireSetBatch>
+  /** The workshop, so one workshop's cached rows never show in another's. */
+  listScope?: string
   locations: PickerLocation[]
   vehicles: {
     id: string
@@ -122,6 +134,8 @@ export function TireHotelClient({
   thresholds: { summerReplace: number; winterReplace: number; warnMargin: number }
   search: string
   statusFilter: string
+  sortBy?: string
+  sortOrder?: 'asc' | 'desc'
   totalFree: number
 }) {
   const router = useRouter()
@@ -139,6 +153,22 @@ export function TireHotelClient({
   // empty shelf picker.
   const hasShelves = locations.length > 0
 
+  // The same filters the page's first batch was read with, so every batch
+  // after it continues that list.
+  const filters = {
+    search: search || undefined,
+    status: statusFilter || undefined,
+    sortBy: sortBy || undefined,
+    sortOrder,
+  }
+  const list = useInfiniteRows<TireSetRecord, Cursor, TireSetBatch>({
+    queryKey: ['tire-sets', listScope, filters],
+    initial: data,
+    fetchPage: (cursor) => getTireSetRows({ ...filters, cursor }),
+  })
+  const records = list.rows
+  const statusCounts = list.firstPage.statusCounts ?? {}
+
   const navigate = useCallback(
     (params: Record<string, string | number | undefined>) => {
       const newParams = new URLSearchParams(searchParams.toString())
@@ -146,7 +176,9 @@ export function TireHotelClient({
         if (value === undefined || value === '') newParams.delete(key)
         else newParams.set(key, String(value))
       }
-      if (!('page' in params)) newParams.delete('page')
+      // The list loads more as it scrolls; an old page number means nothing.
+      newParams.delete('page')
+      newParams.delete('pageSize')
       startTransition(() => {
         router.push(`${pathname}?${newParams.toString()}`)
       })
@@ -165,7 +197,7 @@ export function TireHotelClient({
       <div className="-mx-1 flex shrink-0 gap-2 overflow-x-auto px-1 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
         {statusTabs.map((tab) => {
           const isActive = statusFilter === tab.key
-          const count = tab.key === 'all' ? undefined : data.statusCounts[tab.key] || 0
+          const count = tab.key === 'all' ? undefined : statusCounts[tab.key] || 0
           return (
             <Button
               key={tab.key}
@@ -219,6 +251,7 @@ export function TireHotelClient({
             />
           </form>
           {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+          <InfiniteListCount shown={records.length} total={list.total} />
         </div>
         {hasShelves ? (
           <Button
@@ -243,10 +276,10 @@ export function TireHotelClient({
 
       {/* Card list (phones and small tablets) */}
       <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
-        {data.records.length === 0 ? (
+        {records.length === 0 ? (
           <EmptyState message={hasShelves ? t('list.empty') : t('list.emptyNoShelves')} />
         ) : (
-          data.records.map((set) => (
+          records.map((set) => (
             <button
               key={set.id}
               type="button"
@@ -293,42 +326,46 @@ export function TireHotelClient({
             </button>
           ))
         )}
+        {records.length > 0 && <InfiniteListFooter state={list} />}
       </div>
 
       {/* Table (md and up) - only the rows scroll */}
       <div
-        className="hidden min-h-0 flex-1 flex-col overflow-hidden rounded-lg border md:flex"
+        className="@container hidden min-h-0 flex-1 flex-col overflow-hidden rounded-lg border md:flex"
         {...tableNav.containerProps}
       >
         <TableContextMenuHint />
         <Table containerClassName="min-h-0 flex-1" className="table-fixed">
           <TableHeader sticky>
             <TableRow>
-              <TableHead className="w-14">{t('list.reference')}</TableHead>
+              {/* Wide enough for a whole reference such as "ZZS-T001". */}
+              <TableHead className="w-20">{t('list.reference')}</TableHead>
               {/* Vehicle takes what is left rather than a share of the table:
                   a plate and a model need far less room than an even split
-                  gives them, and the shelf code needs more than it got. */}
-              <TableHead className="w-[26%] min-w-0">{t('list.vehicle')}</TableHead>
-              <TableHead className="hidden w-[16%] lg:table-cell">{t('list.tires')}</TableHead>
+                  gives them, and the shelf code needs more than it got. A
+                  share here as well made the columns add up to more than a
+                  laptop's table, which scrolled the whole list sideways. */}
+              <TableHead className="min-w-0">{t('list.vehicle')}</TableHead>
+              <TableHead className="hidden w-[16%] @4xl:table-cell">{t('list.tires')}</TableHead>
               {/* Shelf codes are workshop-defined and can run long
                   ("Room B-Rack 04-Shelf 2"), so the cell truncates and carries
                   the full code as its title. */}
-              <TableHead className="w-40">{t('list.location')}</TableHead>
+              <TableHead className="w-32">{t('list.location')}</TableHead>
               <TableHead className="w-20">{t('list.prep')}</TableHead>
               <TableHead className="w-24">{t('list.condition')}</TableHead>
               <TableHead className="w-24">{t('list.status')}</TableHead>
-              <TableHead className="hidden w-24 lg:table-cell">{t('list.storedSince')}</TableHead>
+              <TableHead className="hidden w-24 @4xl:table-cell">{t('list.storedSince')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.records.length === 0 ? (
+            {records.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="h-32 text-center text-muted-foreground">
                   {hasShelves ? t('list.empty') : t('list.emptyNoShelves')}
                 </TableCell>
               </TableRow>
             ) : (
-              data.records.map((set) => (
+              records.map((set) => (
                 <ContextMenu key={set.id} modal={false}>
                   <ContextMenuTrigger asChild>
                     <TableRow
@@ -356,7 +393,7 @@ export function TireHotelClient({
                           </div>
                         )}
                       </TableCell>
-                      <TableCell className="hidden truncate text-muted-foreground lg:table-cell">
+                      <TableCell className="hidden truncate text-muted-foreground @4xl:table-cell">
                         <span className="text-xs">
                           {t(`seasons.${set.season}`)}
                           {set.studded ? ` · ${t('list.studded')}` : ''}
@@ -390,7 +427,7 @@ export function TireHotelClient({
                           {t(`statuses.${set.status}`)}
                         </Badge>
                       </TableCell>
-                      <TableCell className="hidden font-mono text-xs lg:table-cell">
+                      <TableCell className="hidden font-mono text-xs @4xl:table-cell">
                         {set.checkedInAt ? formatDate(new Date(set.checkedInAt)) : '-'}
                       </TableCell>
                     </TableRow>
@@ -410,17 +447,10 @@ export function TireHotelClient({
                 </ContextMenu>
               ))
             )}
+            {records.length > 0 && <InfiniteTableFooter state={list} colSpan={8} />}
           </TableBody>
         </Table>
       </div>
-
-      <DataTablePagination
-        total={data.total}
-        page={data.page}
-        pageSize={data.pageSize}
-        totalPages={data.totalPages}
-        onNavigate={navigate}
-      />
 
       <CheckInDialog
         thresholds={thresholds}

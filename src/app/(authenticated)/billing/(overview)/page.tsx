@@ -1,10 +1,12 @@
+import { stampServerRender } from '@/components/infinite-list/server-render'
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { resolveListSort } from '@/lib/list-sort-preference.server'
 import { resolveListStatus } from '@/lib/list-status-preference.server'
-import { getBillingHistory } from '@/features/billing/Actions/billingActions'
+import { getBillingRows } from '@/features/billing/Actions/getBillingRows'
 import { getDisplaySettings } from '@/features/settings/Actions/settingsActions'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { PageHeader } from '@/components/page-header'
+import { getAuthContext } from '@/lib/get-auth-context'
 import { ListPage } from '@/components/list-page'
 import { cookies } from 'next/headers'
 import { COMPLETED_ONLY_COOKIE, parseCompletedOnlyCookie } from '@/lib/completed-only-preference'
@@ -18,9 +20,8 @@ export function generateMetadata() {
 export default async function BillingPage({
   searchParams,
 }: {
+  // An old ?page= link is simply ignored: the list loads more as it scrolls.
   searchParams: Promise<{
-    page?: string
-    pageSize?: string
     search?: string
     status?: string
     delivery?: string
@@ -30,8 +31,6 @@ export default async function BillingPage({
   }>
 }) {
   const params = await searchParams
-  const page = Number(params.page) || 1
-  const pageSize = Number(params.pageSize) || 20
   const search = params.search || ''
   const statusFilter = await resolveListStatus('billing', params.status)
   const deliveryFilter = params.delivery === 'unviewed' ? 'unviewed' : ''
@@ -41,15 +40,14 @@ export default async function BillingPage({
       ? params.completed === '1'
       : parseCompletedOnlyCookie((await cookies()).get(COMPLETED_ONLY_COOKIE)?.value).has('billing')
   // No column asked for anywhere means the list keeps its own default, which
-  // getBillingHistory reads as newest first.
+  // getBillingRows reads as newest first.
   const sort = await resolveListSort('billing', params, { sortBy: undefined, sortOrder: 'desc' })
   const sortBy = sort.sortBy || ''
   const sortOrder = sort.sortOrder
 
-  const [result, settingsResult] = await Promise.all([
-    getBillingHistory({
-      page,
-      pageSize,
+  const [result, settingsResult, authCtx] = await Promise.all([
+    // The first batch; the rest load through the same action as the list scrolls.
+    getBillingRows({
       search,
       status: statusFilter,
       delivery: deliveryFilter,
@@ -58,6 +56,7 @@ export default async function BillingPage({
       sortOrder,
     }),
     getDisplaySettings([SETTING_KEYS.CURRENCY_CODE]),
+    getAuthContext(),
   ])
 
   const settings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
@@ -79,7 +78,8 @@ export default async function BillingPage({
       <PageHeader />
       <ListPage>
         <BillingClient
-          data={result.data}
+          data={stampServerRender(result.data)}
+          listScope={authCtx?.organizationId ?? ''}
           currencyCode={currencyCode}
           search={search}
           statusFilter={statusFilter}

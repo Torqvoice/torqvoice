@@ -1,3 +1,4 @@
+import { stampServerRender } from '@/components/infinite-list/server-render'
 import { resolveCurrencyCode } from '@/lib/currencies'
 import { activeMeterTypes, vehicleMeterViews } from '@/features/meters/Lib/meters.server'
 import { vehicleEquipmentView } from '@/features/equipment/Lib/equipment.server'
@@ -13,7 +14,9 @@ import { getVehiclePredictedMileage } from '@/features/vehicles/Actions/predicte
 import { getVehicleInspections } from '@/features/inspections/Actions/inspectionActions'
 import { getTemplates } from '@/features/inspections/Actions/templateActions'
 import { getVehicleQuotes } from '@/features/quotes/Actions/quoteActions'
-import { getVehicleFindings } from '@/features/vehicles/Actions/findingActions'
+import { getFindingRows } from '@/features/vehicles/Actions/getFindingRows'
+import { getNoteRows } from '@/features/vehicles/Actions/getNoteRows'
+import { getVehicleServiceRows } from '@/features/vehicles/Actions/getVehicleServiceRows'
 import { getVehicleJobWarnings } from '@/features/vehicles/Actions/getVehicleJobWarnings'
 import { getVehicleGlance } from '@/features/vehicles/Actions/getVehicleGlance'
 import { getVehicleAppointments } from '@/features/calendar/Actions/getVehicleAppointments'
@@ -60,16 +63,11 @@ export default async function VehicleDetailPage({
   }
 
   const search = typeof sp.search === 'string' ? sp.search : ''
-  // The classic page pages and filters its service table; the new one shows
-  // the whole history as a feed. See lib/vehicle-page-layout.ts for which.
-  const page = Number(sp.page) || 1
-  const pageSize = Number(sp.pageSize) || 10
+  // The classic page filters its service table; the new one shows the whole
+  // history as a feed. See lib/vehicle-page-layout.ts for which. The tables
+  // load more as they scroll, so an old ?page= (or notesPage, findingsPage)
+  // link is simply ignored.
   const type = typeof sp.type === 'string' ? sp.type : 'all'
-
-  const notesPage = Number(sp.notesPage) || 1
-  const notesPageSize = Number(sp.notesPageSize) || 10
-  const findingsPage = Number(sp.findingsPage) || 1
-  const findingsPageSize = Number(sp.findingsPageSize) || 10
 
   // The inspections and tire hotel panels belong to permissions of their own.
   // A role without them is not shown the panels, and is not asked for their
@@ -87,6 +85,7 @@ export default async function VehicleDetailPage({
   const [
     result,
     serviceResult,
+    serviceBatchResult,
     notesResult,
     settingsResult,
     maintenanceSettingsResult,
@@ -105,10 +104,10 @@ export default async function VehicleDetailPage({
     getVehicle(id),
     // The new page shows the vehicle's history as one feed, so it asks for all
     // of it; a car with more work orders than this is shown its latest ones.
-    classic
-      ? getServiceRecordsPaginated(id, { page, pageSize, search, type })
-      : getServiceRecordsPaginated(id, { page: 1, pageSize: 250, search }),
-    getNotesPaginated(id, { page: notesPage, pageSize: notesPageSize }),
+    classic ? null : getServiceRecordsPaginated(id, { page: 1, pageSize: 250, search }),
+    // The classic page's table: its first batch, the rest as it scrolls.
+    classic ? getVehicleServiceRows({ vehicleId: id, search: search || undefined, type }) : null,
+    getNoteRows({ vehicleId: id }),
     getDisplaySettings([SETTING_KEYS.CURRENCY_CODE, SETTING_KEYS.UNIT_SYSTEM]),
     getDisplaySettings([
       SETTING_KEYS.PREDICTED_MAINTENANCE_ENABLED,
@@ -118,7 +117,7 @@ export default async function VehicleDetailPage({
     readIfAllowed(access, S.INSPECTIONS, () => getVehicleInspections(id)),
     readIfAllowed(access, S.INSPECTIONS, () => getTemplates()),
     getVehicleQuotes(id),
-    getVehicleFindings(id, { page: findingsPage, pageSize: findingsPageSize }),
+    getFindingRows({ vehicleId: id }),
     readIfAllowed(access, S.TIRE_HOTEL, () => getTireSetsForVehicle(id)),
     // Asked alongside the rest rather than after it: neither needs the others.
     getVehiclePredictedMileage(id),
@@ -127,7 +126,7 @@ export default async function VehicleDetailPage({
     // the new page's feed so nobody has to open each job to find out.
     classic ? null : readIfAllowed(access, S.WORK_ORDERS, () => getVehicleJobWarnings(id)),
     // The feed searches and shows every note, newest first, so it is not
-    // handed the notes table's current page; the table keeps its paging.
+    // handed the notes table's first batch; the table loads more as it scrolls.
     classic ? null : getNotesPaginated(id, { page: 1, pageSize: FEED_NOTES }),
     // Last visit, next booking and what is owed, over every work order and
     // not only the ones a search has left in the list.
@@ -151,19 +150,22 @@ export default async function VehicleDetailPage({
   }
 
   const paginatedServices =
-    serviceResult.success && serviceResult.data
+    serviceResult?.success && serviceResult.data
       ? serviceResult.data
       : { records: [], total: 0, page: 1, pageSize: 10, totalPages: 0 }
 
-  const paginatedNotes =
-    notesResult.success && notesResult.data
-      ? notesResult.data
-      : { records: [], total: 0, page: 1, pageSize: 10, totalPages: 0 }
-
-  const paginatedFindings =
-    findingsResult.success && findingsResult.data
-      ? findingsResult.data
-      : { records: [], total: 0, page: 1, pageSize: 10, totalPages: 0 }
+  const noBatch = { rows: [], nextCursor: null, total: 0 }
+  // Stamped with this render, so the tables re-read what they have loaded
+  // after a refresh (stampServerRender).
+  const serviceBatch = stampServerRender(
+    serviceBatchResult?.success && serviceBatchResult.data ? serviceBatchResult.data : noBatch
+  )
+  const noteBatch = stampServerRender(
+    notesResult.success && notesResult.data ? notesResult.data : noBatch
+  )
+  const findingBatch = stampServerRender(
+    findingsResult.success && findingsResult.data ? findingsResult.data : noBatch
+  )
 
   const currencySettings = settingsResult.success && settingsResult.data ? settingsResult.data : {}
   const currencyCode = resolveCurrencyCode(currencySettings[SETTING_KEYS.CURRENCY_CODE])
@@ -261,8 +263,7 @@ export default async function VehicleDetailPage({
   // filter, the new one the booking warnings.
   const viewProps = {
     vehicle: result.data,
-    paginatedServices,
-    paginatedNotes,
+    noteBatch,
     serviceSearch: search,
     currencyCode,
     unitSystem,
@@ -273,7 +274,7 @@ export default async function VehicleDetailPage({
     quotes: quotesResult.success && quotesResult.data ? quotesResult.data : [],
     aiEnabled,
     safetyAvailable,
-    paginatedFindings,
+    findingBatch,
     tireSets: tireSetsResult.success && tireSetsResult.data ? tireSetsResult.data : [],
     serviceRecordType: type,
     meterTypes,
@@ -292,11 +293,12 @@ export default async function VehicleDetailPage({
         {classic ? (
           <>
             <TryNewVehiclePageBanner />
-            <VehicleDetailClassic {...viewProps} />
+            <VehicleDetailClassic {...viewProps} serviceBatch={serviceBatch} />
           </>
         ) : (
           <VehicleDetailClient
             {...viewProps}
+            paginatedServices={paginatedServices}
             jobWarnings={
               jobWarningsResult?.success && jobWarningsResult.data ? jobWarningsResult.data : []
             }
@@ -307,7 +309,7 @@ export default async function VehicleDetailPage({
             feedNotes={
               feedNotesResult?.success && feedNotesResult.data
                 ? feedNotesResult.data.records
-                : paginatedNotes.records
+                : noteBatch.rows
             }
           />
         )}

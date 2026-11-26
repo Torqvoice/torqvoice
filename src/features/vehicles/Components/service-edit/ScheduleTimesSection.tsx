@@ -993,7 +993,7 @@ export function ScheduleTimesSection({
           two fields, so it belongs with them rather than under the promise,
           where it read as a way of promising a time. */}
       <div className="space-y-3">
-        <div className="space-y-1.5">
+        <div className="space-y-1.5" data-testid="schedule-start">
           <Label className="text-xs">{t('startTime')}</Label>
           {mounted ? (
             <DateTimePicker

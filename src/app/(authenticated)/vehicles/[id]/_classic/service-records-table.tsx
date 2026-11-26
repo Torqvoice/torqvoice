@@ -33,7 +33,14 @@ import {
   ContextMenuItem,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import { DataTablePagination } from '@/components/data-table-pagination'
+import { type ServerBatch, useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import {
+  InfiniteListCount,
+  InfiniteListFooter,
+  InfiniteTableFooter,
+} from '@/components/infinite-list/infinite-list-footer'
+import { getVehicleServiceRows } from '@/features/vehicles/Actions/getVehicleServiceRows'
+import type { Cursor } from '@/lib/keyset'
 import { typeColors } from '@/lib/table-utils'
 import { StatusBadge } from '@/components/status-badge'
 import { useFormatCurrency } from '@/components/currency-settings-context'
@@ -60,7 +67,7 @@ function WarrantyBadge({ status, t }: { status: WarrantyStatus; t: (key: string)
   )
 }
 
-interface ServiceRecordRow {
+export interface ServiceRecordRow {
   id: string
   title: string
   description: string | null
@@ -83,13 +90,17 @@ interface ServiceRecordRow {
   laborItems?: { description: string }[]
 }
 
+/** One batch of the list; the first also carries the total. */
+export interface ServiceRecordBatch {
+  rows: ServiceRecordRow[]
+  nextCursor: Cursor | null
+  total?: number
+}
+
 interface ServiceRecordsTableProps {
   vehicleId: string
-  records: ServiceRecordRow[]
-  total: number
-  page: number
-  pageSize: number
-  totalPages: number
+  /** The first batch, rendered on the server; the rest load as the list scrolls. */
+  initial: ServerBatch<ServiceRecordBatch>
   search: string
   type: string
   currencyCode?: string
@@ -98,11 +109,7 @@ interface ServiceRecordsTableProps {
 
 export function ServiceRecordsTable({
   vehicleId,
-  records,
-  total,
-  page,
-  pageSize,
-  totalPages,
+  initial,
   search,
   type,
   currencyCode = DEFAULT_CURRENCY_CODE,
@@ -123,6 +130,17 @@ export function ServiceRecordsTable({
   const tcm = useTranslations('common.contextMenu')
   const serviceType = useServiceType()
 
+  // The same filters the page's first batch was read with, so every batch
+  // after it continues that list.
+  const filters = { search: search || undefined, type: type && type !== 'all' ? type : undefined }
+  const list = useInfiniteRows<ServiceRecordRow, Cursor, ServiceRecordBatch>({
+    queryKey: ['vehicle-service-records', vehicleId, filters],
+    initial,
+    fetchPage: (cursor) => getVehicleServiceRows({ vehicleId, ...filters, cursor }),
+  })
+  const records = list.rows
+  const total = list.total
+
   const createUrl = useCallback(
     (params: Record<string, string | number | undefined>) => {
       const newParams = new URLSearchParams(searchParams.toString())
@@ -135,10 +153,9 @@ export function ServiceRecordsTable({
           newParams.set(key, String(value))
         }
       }
-      // Reset to page 1 when filters change (unless explicitly setting page)
-      if (!('page' in params) && ('search' in params || 'type' in params)) {
-        newParams.delete('page')
-      }
+      // The list loads more as it scrolls; a page from an old link means nothing.
+      newParams.delete('page')
+      newParams.delete('pageSize')
       return `${pathname}?${newParams.toString()}`
     },
     [pathname, searchParams]
@@ -217,6 +234,7 @@ export function ServiceRecordsTable({
             </SelectContent>
           </Select>
           {isPending && <Loader2 className="h-4 w-4 shrink-0 animate-spin text-muted-foreground" />}
+          <InfiniteListCount shown={records.length} total={total} />
           <Button
             size="sm"
             variant="outline"
@@ -331,12 +349,14 @@ export function ServiceRecordsTable({
             )
           })
         )}
+        {records.length > 0 && <InfiniteListFooter state={list} />}
       </div>
 
-      {/* Table (md and up) */}
+      {/* Table (md and up). The rows scroll with the page, under its sticky
+          header, so the table's own box must not clip them. */}
       <div className="hidden rounded-lg border md:block" {...tableNav.containerProps}>
-        <Table>
-          <TableHeader>
+        <Table containerClassName="overflow-visible">
+          <TableHeader sticky className="top-16">
             <TableRow>
               <TableHead className="w-[100px]">{t('table.date')}</TableHead>
               <TableHead>{t('table.title')}</TableHead>
@@ -454,21 +474,10 @@ export function ServiceRecordsTable({
                 )
               })
             )}
+            {records.length > 0 && <InfiniteTableFooter state={list} colSpan={9} />}
           </TableBody>
         </Table>
       </div>
-
-      {/* Pagination */}
-      <DataTablePagination
-        total={total}
-        page={page}
-        pageSize={pageSize}
-        totalPages={totalPages}
-        pageParam="page"
-        pageSizeParam="pageSize"
-        pageSizes={['5', '10', '20', '50']}
-        onNavigate={navigate}
-      />
     </div>
   )
 }

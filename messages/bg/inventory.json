@@ -41,7 +41,8 @@
     "selected": "Избрани: {count, plural, one {# резервна част} other {# резервни части}}",
     "clearSelection": "Изчисти",
     "deleteSelected": "Изтрий ({count})",
-    "success": "Изтрити: {count, plural, one {# резервна част} other {# резервни части}}"
+    "success": "Изтрити: {count, plural, one {# резервна част} other {# резервни части}}",
+    "selectLoaded": "Избери всички {count, number} показани"
   },
   "markup": {
     "title": "Прилагане на надценка към всички резервни части",

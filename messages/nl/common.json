@@ -100,6 +100,13 @@
     "next": "Volgende pagina",
     "last": "Laatste pagina"
   },
+  "infiniteList": {
+    "count": "{shown, number} van {total, number}",
+    "countAll": "{total, plural, one {# resultaat} other {# resultaten}}",
+    "allShown": "Alle {total, number} getoond",
+    "loadFailed": "Kon niet meer laden",
+    "retry": "Opnieuw proberen"
+  },
   "shared": {
     "close": "Sluiten",
     "viewPlans": "Abonnementen bekijken",

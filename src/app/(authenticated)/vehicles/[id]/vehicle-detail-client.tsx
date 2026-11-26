@@ -1,5 +1,6 @@
 'use client'
 
+import type { ServerBatch } from '@/components/infinite-list/use-infinite-rows'
 import { VehicleMeters } from '@/features/meters/Components/VehicleMeters'
 import { VehicleEquipment } from '@/features/equipment/Components/VehicleEquipment'
 import type { VehicleEquipmentView } from '@/features/equipment/Lib/equipment.server'
@@ -44,8 +45,8 @@ import { VehicleActivityFeed, type FeedFilter } from './vehicle-activity-feed'
 import type { VehicleGlance } from '@/features/vehicles/Actions/getVehicleGlance'
 import { quoteStatusLabel } from '@/features/quotes/Lib/quoteStatus'
 import type { VehicleJobWarning } from '@/features/vehicles/Lib/vehicleJobWarnings'
-import { NotesTable } from './notes-table'
-import { FindingsTable } from './findings-table'
+import { type NoteBatch, NotesTable, type NoteRow } from './notes-table'
+import { type FindingBatch, type FindingRow, FindingsTable } from './findings-table'
 import {
   VehicleTireSets,
   type VehicleTireSet,
@@ -151,38 +152,6 @@ interface PaginatedServices {
     laborItems?: { description: string }[]
     partItems?: { name: string }[]
     customStatus?: { name: string; color: string } | null
-  }[]
-  total: number
-  page: number
-  pageSize: number
-  totalPages: number
-}
-
-interface PaginatedNotes {
-  records: {
-    id: string
-    title: string
-    content: string
-    isPinned: boolean
-    createdAt: Date
-  }[]
-  total: number
-  page: number
-  pageSize: number
-  totalPages: number
-}
-
-interface PaginatedFindings {
-  records: {
-    id: string
-    description: string
-    severity: string
-    status: string
-    notes: string | null
-    imageUrls: string[]
-    createdAt: Date
-    serviceRecord: { id: string; title: string } | null
-    resolvedServiceRecord: { id: string; title: string } | null
   }[]
   total: number
   page: number
@@ -432,7 +401,7 @@ function DetailRow({
 export function VehicleDetailClient({
   vehicle,
   paginatedServices,
-  paginatedNotes,
+  noteBatch,
   serviceSearch,
   currencyCode = DEFAULT_CURRENCY_CODE,
   unitSystem = 'imperial',
@@ -442,7 +411,7 @@ export function VehicleDetailClient({
   quotes = [],
   aiEnabled = false,
   safetyAvailable = false,
-  paginatedFindings,
+  findingBatch,
   tireSets = [],
   jobWarnings = NO_WARNINGS,
   feedNotes,
@@ -455,8 +424,9 @@ export function VehicleDetailClient({
 }: {
   vehicle: VehicleDetail
   paginatedServices: PaginatedServices
-  paginatedNotes: PaginatedNotes
-  paginatedFindings: PaginatedFindings
+  /** The first batch of each list; the rest load as the list scrolls. */
+  noteBatch: ServerBatch<NoteBatch>
+  findingBatch: ServerBatch<FindingBatch>
   /** Empty unless the shop runs a tire hotel and this vehicle has sets in it. */
   tireSets?: VehicleTireSet[]
   /** The workshop's meters in use (empty while meters are off) and this vehicle's. */
@@ -472,7 +442,7 @@ export function VehicleDetailClient({
   /** Booking problems on the vehicle's open jobs: a technician away, a clash, a closed day. */
   jobWarnings?: VehicleJobWarning[]
   /** Every note for the feed, rather than the notes table's current page. */
-  feedNotes?: PaginatedNotes['records']
+  feedNotes?: NoteRow[]
   /** Last visit, next booking, what is owed; null for a role that may not read work orders. */
   glance?: VehicleGlance | null
   /** Coming appointments, then the last few; empty for a role that may not read the calendar. */
@@ -589,18 +559,16 @@ export function VehicleDetailClient({
     setShowEditForm(true)
   }
   const [showNoteForm, setShowNoteForm] = useState(false)
-  const [editingNote, setEditingNote] = useState<PaginatedNotes['records'][number] | undefined>()
+  const [editingNote, setEditingNote] = useState<NoteRow | undefined>()
   const [showReminderForm, setShowReminderForm] = useState(false)
   const [editingReminder, setEditingReminder] = useState<
     VehicleDetail['reminders'][number] | undefined
   >()
   const [showFindingForm, setShowFindingForm] = useState(false)
-  const [editingFinding, setEditingFinding] = useState<
-    PaginatedFindings['records'][number] | undefined
-  >()
+  const [editingFinding, setEditingFinding] = useState<FindingRow | undefined>()
   const [reminderFilter, setReminderFilter] = useState<'active' | 'completed' | 'all'>('active')
   const [showImage, setShowImage] = useState(false)
-  const [selectedNote, setSelectedNote] = useState<PaginatedNotes['records'][number] | null>(null)
+  const [selectedNote, setSelectedNote] = useState<NoteRow | null>(null)
   const [showArchiveDialog, setShowArchiveDialog] = useState(false)
   const [showNewQuoteDialog, setShowNewQuoteDialog] = useState(false)
   const [showNewInspection, setShowNewInspection] = useState(false)
@@ -714,7 +682,7 @@ export function VehicleDetailClient({
     vehicle.lifetimeSpend ??
     vehicle.serviceRecords.reduce((sum, s) => sum + (s.totalAmount > 0 ? s.totalAmount : s.cost), 0)
 
-  const openFindings = paginatedFindings.records.filter((f) => f.status === 'open')
+  const openFindings = findingBatch.rows.filter((f) => f.status === 'open')
   const activeReminders = vehicle.reminders.filter((r) => !r.isCompleted)
   // An appointment with no job behind it is a booking too: "Next booking"
   // shows it when it comes before the next booked work order.
@@ -778,7 +746,7 @@ export function VehicleDetailClient({
         : null
   // Notes are about the car, not something that happened to it on a day, so
   // they sit with the vehicle instead of in its history, the pinned ones first.
-  const railNotes = [...(feedNotes ?? paginatedNotes.records)].sort(
+  const railNotes = [...(feedNotes ?? noteBatch.rows)].sort(
     (a, b) => Number(b.isPinned) - Number(a.isPinned)
   )
   // What is waiting on somebody: a quote the customer has not answered, an
@@ -900,9 +868,9 @@ export function VehicleDetailClient({
   }
 
   const [creatingWorkOrder, setCreatingWorkOrder] = useState(false)
-  const handleCreateWorkOrderFromFindings = async (findingIds: string[]) => {
+  const handleCreateWorkOrderFromFindings = async (selectedFindings: FindingRow[]) => {
     setCreatingWorkOrder(true)
-    const selectedFindings = paginatedFindings.records.filter((f) => findingIds.includes(f.id))
+    const findingIds = selectedFindings.map((f) => f.id)
     const vehicleName = `${vehicleNameOf(vehicle)}`
     // An action that cannot reach the server throws instead of answering, so
     // it is caught and reported the way a refusal is.
@@ -2258,7 +2226,7 @@ export function VehicleDetailClient({
                 make={vehicle.make}
                 model={vehicle.model}
                 year={vehicle.year}
-                existingFindings={paginatedFindings.records.map((f) => f.description)}
+                existingFindings={findingBatch.rows.map((f) => f.description)}
               />
             )}
 
@@ -2377,11 +2345,8 @@ export function VehicleDetailClient({
             {activeTab === 'findings' && (
               <FindingsTable
                 vehicleId={vehicle.id}
-                records={paginatedFindings.records}
-                total={paginatedFindings.total}
-                page={paginatedFindings.page}
-                pageSize={paginatedFindings.pageSize}
-                totalPages={paginatedFindings.totalPages}
+                initial={findingBatch}
+                stickyHeaderClassName="top-16 xl:top-0"
                 onEditFinding={(f) => {
                   setEditingFinding(f)
                   setShowFindingForm(true)
@@ -2395,11 +2360,8 @@ export function VehicleDetailClient({
             {activeTab === 'notes' && (
               <NotesTable
                 vehicleId={vehicle.id}
-                records={paginatedNotes.records}
-                total={paginatedNotes.total}
-                page={paginatedNotes.page}
-                pageSize={paginatedNotes.pageSize}
-                totalPages={paginatedNotes.totalPages}
+                initial={noteBatch}
+                stickyHeaderClassName="top-16 xl:top-0"
                 onSelectNote={setSelectedNote}
                 onTogglePin={handleTogglePin}
                 onDeleteNote={handleDeleteNote}

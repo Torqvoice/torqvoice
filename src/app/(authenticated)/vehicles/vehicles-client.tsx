@@ -33,7 +33,14 @@ import {
   ContextMenuSeparator,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import { DataTablePagination } from '@/components/data-table-pagination'
+import { type ServerBatch, useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import {
+  InfiniteListCount,
+  InfiniteListFooter,
+  InfiniteTableFooter,
+} from '@/components/infinite-list/infinite-list-footer'
+import { getVehicleRows } from '@/features/vehicles/Actions/getVehicleRows'
+import type { Cursor } from '@/lib/keyset'
 import { TableContextMenuHint } from '@/components/table-context-menu-hint'
 import { TableCellLink } from '@/components/table-cell-link'
 import { useGlassModal } from '@/components/glass-modal'
@@ -97,13 +104,12 @@ interface Vehicle {
   _count: { serviceRecords: number }
 }
 
-interface PaginatedData {
-  vehicles: Vehicle[]
-  total: number
-  page: number
-  pageSize: number
-  totalPages: number
-  archivedCount: number
+/** One batch of the list; the first also carries the total and the counts. */
+interface VehicleBatch {
+  rows: Vehicle[]
+  nextCursor: Cursor | null
+  total?: number
+  archivedCount?: number
   hasInspectionData?: boolean
 }
 
@@ -127,6 +133,7 @@ const INSPECTION_TONE_CLASS: Record<ReturnType<typeof inspectionTone>, string> =
 
 export function VehiclesClient({
   data,
+  listScope = '',
   search,
   sortBy = '',
   sortOrder = 'desc',
@@ -136,7 +143,10 @@ export function VehiclesClient({
   inspectionDue,
   hasInspectionData = false,
 }: {
-  data: PaginatedData
+  /** The first batch, rendered on the server. */
+  data: ServerBatch<VehicleBatch>
+  /** The workshop, so one workshop's cached rows never show in another's. */
+  listScope?: string
   search: string
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
@@ -180,6 +190,22 @@ export function VehiclesClient({
     }
   }, [searchParams, pathname])
 
+  // The same filters the page's first batch was read with, so every batch
+  // after it continues that list.
+  const filters = {
+    search: search || undefined,
+    archived: isArchived,
+    sortBy: sortBy || undefined,
+    sortOrder,
+    inspectionDue,
+  }
+  const list = useInfiniteRows<Vehicle, Cursor, VehicleBatch>({
+    queryKey: ['vehicles', listScope, filters],
+    initial: data,
+    fetchPage: (cursor) => getVehicleRows({ ...filters, cursor }),
+  })
+  const vehicles = list.rows
+
   const toggleView = (v: 'table' | 'grid' | 'grid6') => {
     setView(v)
     document.cookie = `${VIEW_COOKIE}=${v};path=/;max-age=${60 * 60 * 24 * 365}`
@@ -195,9 +221,9 @@ export function VehiclesClient({
           newParams.set(key, String(value))
         }
       }
-      if (!('page' in params) && ('search' in params || 'sortBy' in params)) {
-        newParams.delete('page')
-      }
+      // The list loads more as it scrolls; an old page number means nothing.
+      newParams.delete('page')
+      newParams.delete('pageSize')
       startTransition(() => {
         router.push(`${pathname}?${newParams.toString()}`)
       })
@@ -217,15 +243,15 @@ export function VehiclesClient({
   const columnWidths = {
     plate: fitColumnWidth(
       t('table.plate'),
-      data.vehicles.map((v) => v.licensePlate)
+      vehicles.map((v) => v.licensePlate)
     ),
     mileage: fitColumnWidth(
       mileageLabel,
-      data.vehicles.map((v) => new Intl.NumberFormat('en-US').format(v.mileage))
+      vehicles.map((v) => new Intl.NumberFormat('en-US').format(v.mileage))
     ),
     services: fitColumnWidth(
       t('table.services'),
-      data.vehicles.map((v) => v._count.serviceRecords)
+      vehicles.map((v) => v._count.serviceRecords)
     ),
   }
 
@@ -396,6 +422,7 @@ export function VehiclesClient({
             />
           </div>
           {isPending && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+          <InfiniteListCount shown={vehicles.length} total={list.total} />
         </div>
         <div className="flex items-center justify-between gap-2 shrink-0 flex-1 sm:flex-none">
           <div className="flex items-center rounded-md border">
@@ -455,13 +482,13 @@ export function VehiclesClient({
         </div>
       </div>
 
-      {data.vehicles.length === 0 ? (
+      {vehicles.length === 0 ? (
         emptyState
       ) : view === 'table' ? (
         <>
           {/* Card list (phones + small tablets) - only this scrolls */}
           <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
-            {data.vehicles.map((v) => (
+            {vehicles.map((v) => (
               <div key={v.id} className="flex items-start gap-2 rounded-lg border bg-card p-3">
                 <button
                   type="button"
@@ -543,6 +570,7 @@ export function VehiclesClient({
                 </DropdownMenu>
               </div>
             ))}
+            <InfiniteListFooter state={list} />
           </div>
 
           {/* Table (md and up) - only the rows scroll */}
@@ -611,7 +639,7 @@ export function VehiclesClient({
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {data.vehicles.map((v) => (
+                {vehicles.map((v) => (
                   <ContextMenu key={v.id} modal={false}>
                     <ContextMenuTrigger asChild>
                       <TableRow
@@ -762,6 +790,7 @@ export function VehiclesClient({
                     </ContextMenuContent>
                   </ContextMenu>
                 ))}
+                <InfiniteTableFooter state={list} colSpan={6} />
               </TableBody>
             </Table>
           </div>
@@ -791,7 +820,7 @@ export function VehiclesClient({
         <div
           className={`-m-1 grid min-h-0 flex-1 auto-rows-max content-start gap-4 overflow-y-auto p-1 sm:grid-cols-2 lg:grid-cols-3 ${view === 'grid6' ? 'xl:grid-cols-4 2xl:grid-cols-6' : 'xl:grid-cols-4'}`}
         >
-          {data.vehicles.map((v) => (
+          {vehicles.map((v) => (
             <ContextMenu key={v.id} modal={false}>
               <ContextMenuTrigger asChild>
                 <Card className="group overflow-hidden border-0 py-0 gap-0 shadow-sm transition-all hover:shadow-lg hover:-translate-y-0.5">
@@ -969,16 +998,13 @@ export function VehiclesClient({
               </ContextMenuContent>
             </ContextMenu>
           ))}
+          {/* The end of the grid spans every column, so its placeholders and
+              last line sit under the cards rather than in one cell. */}
+          <div className="col-span-full space-y-2">
+            <InfiniteListFooter state={list} slot="grid" placeholderClassName="h-24 rounded-xl" />
+          </div>
         </div>
       )}
-
-      <DataTablePagination
-        total={data.total}
-        page={data.page}
-        pageSize={data.pageSize}
-        totalPages={data.totalPages}
-        onNavigate={navigate}
-      />
 
       <ImportWizard open={showImport} onOpenChange={setShowImport} entity="vehicles" lockEntity />
 

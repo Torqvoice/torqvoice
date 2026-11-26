@@ -56,7 +56,10 @@ export default async function SettingsLayout({ children }: { children: React.Rea
       <Suspense fallback={null}>
         <SettingsSpotlight />
       </Suspense>
-      <div className="flex h-svh flex-col">
+      {/* On a phone the app layout keeps 3.5rem under the page for the bottom
+          tab bar; a full-height column on top of that put the end of every
+          settings page under the bar and made the window scroll as well. */}
+      <div className="flex h-[calc(100svh-3.5rem)] flex-col md:h-svh">
         <PageHeader />
         <div className="flex min-h-0 flex-1 flex-col gap-4 p-4 pt-0">
           <div className="shrink-0">

@@ -22,7 +22,14 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import { DataTablePagination } from '@/components/data-table-pagination'
+import { type ServerBatch, useInfiniteRows } from '@/components/infinite-list/use-infinite-rows'
+import {
+  InfiniteListCount,
+  InfiniteListFooter,
+  InfiniteTableFooter,
+} from '@/components/infinite-list/infinite-list-footer'
+import { getBillingRows } from '@/features/billing/Actions/getBillingRows'
+import type { Cursor } from '@/lib/keyset'
 import { TableCellLink } from '@/components/table-cell-link'
 import {
   Loader2,
@@ -74,13 +81,12 @@ interface BillingRecord {
   } | null
 }
 
-interface PaginatedBillingData {
-  records: BillingRecord[]
-  total: number
-  page: number
-  pageSize: number
-  totalPages: number
-  summary: {
+/** One batch of the list; the first also carries the total and the summary. */
+interface BillingBatch {
+  rows: BillingRecord[]
+  nextCursor: Cursor | null
+  total?: number
+  summary?: {
     totalRevenue: number
     totalPaid: number
     outstanding: number
@@ -91,7 +97,10 @@ interface PaginatedBillingData {
 }
 
 interface BillingClientProps {
-  data: PaginatedBillingData
+  /** The first batch, rendered on the server. */
+  data: ServerBatch<BillingBatch>
+  /** The workshop, so one workshop's cached rows never show in another's. */
+  listScope?: string
   currencyCode?: string
   search: string
   statusFilter: string
@@ -114,8 +123,18 @@ const STATUS_TABS = LIST_STATUS_TABS.billing.map((value) => ({
   titleKey: STATUS_TITLE_KEYS[value],
 }))
 
+const NO_SUMMARY = {
+  totalRevenue: 0,
+  totalPaid: 0,
+  outstanding: 0,
+  paidCount: 0,
+  unpaidCount: 0,
+  partialCount: 0,
+}
+
 export default function BillingClient({
   data,
+  listScope = '',
   currencyCode = DEFAULT_CURRENCY_CODE,
   search,
   statusFilter,
@@ -135,6 +154,24 @@ export default function BillingClient({
   const tableNav = useTableKeyboardNav()
   useRememberedSort('billing')
 
+  // The same filters the page's first batch was read with, so every batch
+  // after it continues that list.
+  const filters = {
+    search: search || undefined,
+    status: statusFilter || undefined,
+    delivery: deliveryFilter || undefined,
+    completedOnly,
+    sortBy: sortBy || undefined,
+    sortOrder,
+  }
+  const list = useInfiniteRows<BillingRecord, Cursor, BillingBatch>({
+    queryKey: ['billing', listScope, filters],
+    initial: data,
+    fetchPage: (cursor) => getBillingRows({ ...filters, cursor }),
+  })
+  const records = list.rows
+  const summary = list.firstPage.summary ?? NO_SUMMARY
+
   const createQueryString = useCallback(
     (params: Record<string, string>) => {
       const newParams = new URLSearchParams(searchParams.toString())
@@ -145,6 +182,9 @@ export default function BillingClient({
           newParams.delete(key)
         }
       }
+      // The list loads more as it scrolls; a page from an old link means nothing.
+      newParams.delete('page')
+      newParams.delete('pageSize')
       return newParams.toString()
     },
     [searchParams]
@@ -154,9 +194,7 @@ export default function BillingClient({
     (column: string) => {
       const newOrder = sortBy === column && sortOrder === 'asc' ? 'desc' : 'asc'
       startTransition(() => {
-        router.push(
-          `${pathname}?${createQueryString({ sortBy: column, sortOrder: newOrder, page: '1' })}`
-        )
+        router.push(`${pathname}?${createQueryString({ sortBy: column, sortOrder: newOrder })}`)
       })
     },
     [createQueryString, pathname, router, sortBy, sortOrder]
@@ -176,7 +214,7 @@ export default function BillingClient({
   const handleStatusChange = (status: ListStatus<'billing'>) => {
     rememberListStatus('billing', status)
     startTransition(() => {
-      router.push(`${pathname}?${createQueryString({ status, page: '1' })}`)
+      router.push(`${pathname}?${createQueryString({ status })}`)
     })
   }
 
@@ -191,23 +229,10 @@ export default function BillingClient({
       router.push(
         `${pathname}?${createQueryString({
           search: term ?? '',
-          page: '1',
         })}`
       )
     })
   })
-
-  const handleNavigate = (params: Record<string, string | number | undefined>) => {
-    const merged: Record<string, string> = {}
-    for (const [key, value] of Object.entries(params)) {
-      if (value !== undefined && value !== '') {
-        merged[key] = String(value)
-      }
-    }
-    startTransition(() => {
-      router.push(`${pathname}?${createQueryString(merged)}`)
-    })
-  }
 
   const handleRowClick = (record: BillingRecord) => {
     router.push(
@@ -224,7 +249,6 @@ export default function BillingClient({
       router.push(
         `${pathname}?${createQueryString({
           delivery: deliveryFilter === 'unviewed' ? '' : 'unviewed',
-          page: '1',
         })}`
       )
     })
@@ -236,7 +260,7 @@ export default function BillingClient({
     const next = !completedOnly
     rememberCompletedOnly('billing', next)
     startTransition(() => {
-      router.push(`${pathname}?${createQueryString({ completed: next ? '1' : '0', page: '1' })}`)
+      router.push(`${pathname}?${createQueryString({ completed: next ? '1' : '0' })}`)
     })
   }
 
@@ -353,7 +377,7 @@ export default function BillingClient({
             </div>
             <div className="min-w-0">
               <p className="text-xs text-muted-foreground">{t('history.totalRevenue')}</p>
-              <p className="text-lg font-bold leading-tight">{fmt(data.summary.totalRevenue)}</p>
+              <p className="text-lg font-bold leading-tight">{fmt(summary.totalRevenue)}</p>
             </div>
           </CardContent>
         </Card>
@@ -365,7 +389,7 @@ export default function BillingClient({
             </div>
             <div className="min-w-0">
               <p className="text-xs text-muted-foreground">{t('history.collected')}</p>
-              <p className="text-lg font-bold leading-tight">{fmt(data.summary.totalPaid)}</p>
+              <p className="text-lg font-bold leading-tight">{fmt(summary.totalPaid)}</p>
             </div>
           </CardContent>
         </Card>
@@ -377,7 +401,7 @@ export default function BillingClient({
             </div>
             <div className="min-w-0">
               <p className="text-xs text-muted-foreground">{t('history.outstanding')}</p>
-              <p className="text-lg font-bold leading-tight">{fmt(data.summary.outstanding)}</p>
+              <p className="text-lg font-bold leading-tight">{fmt(summary.outstanding)}</p>
             </div>
           </CardContent>
         </Card>
@@ -402,14 +426,12 @@ export default function BillingClient({
               disabled={isPending}
             >
               {t(tab.titleKey)}
-              {tab.value === 'paid' && (
-                <span className="ml-1 text-xs">({data.summary.paidCount})</span>
-              )}
+              {tab.value === 'paid' && <span className="ml-1 text-xs">({summary.paidCount})</span>}
               {tab.value === 'partial' && (
-                <span className="ml-1 text-xs">({data.summary.partialCount})</span>
+                <span className="ml-1 text-xs">({summary.partialCount})</span>
               )}
               {tab.value === 'unpaid' && (
-                <span className="ml-1 text-xs">({data.summary.unpaidCount})</span>
+                <span className="ml-1 text-xs">({summary.unpaidCount})</span>
               )}
             </Button>
           ))}
@@ -442,7 +464,8 @@ export default function BillingClient({
           </Button>
         </div>
 
-        <form onSubmit={handleSearch} className="flex gap-2">
+        <form onSubmit={handleSearch} className="flex items-center gap-2">
+          <InfiniteListCount shown={records.length} total={list.total} />
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -476,9 +499,9 @@ export default function BillingClient({
 
       {/* Card list (phones + small tablets) - only this scrolls */}
       <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
-        {data.records.length === 0
+        {records.length === 0
           ? emptyState(false)
-          : data.records.map((record) => {
+          : records.map((record) => {
               // Nothing is owed on a cancelled invoice.
               const balance =
                 record.status === 'cancelled' ? 0 : record.totalAmount - record.totalPaid
@@ -520,17 +543,23 @@ export default function BillingClient({
                 </button>
               )
             })}
+        {records.length > 0 && <InfiniteListFooter state={list} />}
       </div>
 
       {/* Table (md and up) - only the rows scroll */}
       <div
-        className="hidden min-h-0 flex-1 flex-col overflow-hidden rounded-md border md:flex"
+        className="@container hidden min-h-0 flex-1 flex-col overflow-hidden rounded-md border md:flex"
         {...tableNav.containerProps}
       >
         <Table containerClassName="min-h-0 flex-1" className="table-fixed">
           <TableHeader sticky>
             <TableRow>
-              <TableHead className="w-[110px]">
+              {/* The title takes what the others leave. The amounts keep room
+                  for a seven-figure sum; the rest join as the table widens
+                  (customer at about 900px, paid and delivery at 1000px,
+                  vehicle at 1300px), and until then the customer or the
+                  vehicle is the title's second line. */}
+              <TableHead className="w-[104px]">
                 <button
                   type="button"
                   className="flex items-center hover:text-foreground"
@@ -550,7 +579,7 @@ export default function BillingClient({
                   <SortIcon column="title" />
                 </button>
               </TableHead>
-              <TableHead className="w-[16%]">
+              <TableHead className="hidden w-[15%] @7xl:table-cell">
                 <button
                   type="button"
                   className="flex items-center hover:text-foreground"
@@ -560,7 +589,7 @@ export default function BillingClient({
                   <SortIcon column="vehicle" />
                 </button>
               </TableHead>
-              <TableHead className="w-[14%]">
+              <TableHead className="hidden w-[20%] @4xl:table-cell">
                 <button
                   type="button"
                   className="flex items-center hover:text-foreground"
@@ -570,7 +599,7 @@ export default function BillingClient({
                   <SortIcon column="customer" />
                 </button>
               </TableHead>
-              <TableHead className="w-[110px]">
+              <TableHead className="w-[100px]">
                 <button
                   type="button"
                   className="flex items-center hover:text-foreground"
@@ -580,7 +609,7 @@ export default function BillingClient({
                   <SortIcon column="date" />
                 </button>
               </TableHead>
-              <TableHead className="w-[100px]">
+              <TableHead className="w-[120px]">
                 <button
                   type="button"
                   className="ml-auto flex items-center hover:text-foreground"
@@ -590,7 +619,7 @@ export default function BillingClient({
                   <SortIcon column="total" />
                 </button>
               </TableHead>
-              <TableHead className="w-[110px]">
+              <TableHead className="hidden w-[104px] @5xl:table-cell">
                 <button
                   type="button"
                   className="flex items-center hover:text-foreground"
@@ -600,19 +629,21 @@ export default function BillingClient({
                   <SortIcon column="delivery" />
                 </button>
               </TableHead>
-              <TableHead className="w-[100px] text-right">{t('history.columnPaid')}</TableHead>
+              <TableHead className="hidden w-[120px] text-right @5xl:table-cell">
+                {t('history.columnPaid')}
+              </TableHead>
               <TableHead className="w-[180px] text-right">{t('history.columnBalance')}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {data.records.length === 0 ? (
+            {records.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={9} className="p-0">
                   {emptyState(true)}
                 </TableCell>
               </TableRow>
             ) : (
-              data.records.map((record) => {
+              records.map((record) => {
                 // Nothing is owed on a cancelled invoice.
                 const balance =
                   record.status === 'cancelled' ? 0 : record.totalAmount - record.totalPaid
@@ -625,8 +656,20 @@ export default function BillingClient({
                     <TableCell className="truncate font-medium">
                       {record.invoiceNumber || '\u2014'}
                     </TableCell>
-                    <TableCell className="truncate">{record.title}</TableCell>
-                    <TableCell className="truncate">
+                    <TableCell>
+                      <p className="truncate">{record.title}</p>
+                      {record.customer && (
+                        <p className="truncate text-xs text-muted-foreground @4xl:hidden">
+                          {record.customer.name}
+                        </p>
+                      )}
+                      {record.vehicle && (
+                        <p className="hidden truncate text-xs text-muted-foreground @4xl:block @7xl:hidden">
+                          {vehicleName(record.vehicle)}
+                        </p>
+                      )}
+                    </TableCell>
+                    <TableCell className="hidden truncate @7xl:table-cell">
                       {record.vehicle ? (
                         <TableCellLink href={`/vehicles/${record.vehicle.id}`}>
                           {vehicleName(record.vehicle)}
@@ -635,7 +678,7 @@ export default function BillingClient({
                         '\u2014'
                       )}
                     </TableCell>
-                    <TableCell className="truncate">
+                    <TableCell className="hidden truncate @4xl:table-cell">
                       {record.customer ? (
                         <TableCellLink href={`/customers/${record.customer.id}`}>
                           {record.customer.name}
@@ -645,9 +688,13 @@ export default function BillingClient({
                       )}
                     </TableCell>
                     <TableCell>{formatDate(new Date(record.serviceDate))}</TableCell>
-                    <TableCell className="text-right">{fmt(record.totalAmount)}</TableCell>
-                    <TableCell>{getDeliveryBadge(record)}</TableCell>
-                    <TableCell className="text-right">{fmt(record.totalPaid)}</TableCell>
+                    <TableCell className="truncate text-right">{fmt(record.totalAmount)}</TableCell>
+                    <TableCell className="hidden @5xl:table-cell">
+                      {getDeliveryBadge(record)}
+                    </TableCell>
+                    <TableCell className="hidden truncate text-right @5xl:table-cell">
+                      {fmt(record.totalPaid)}
+                    </TableCell>
                     <TableCell
                       className={cn(
                         'whitespace-nowrap text-right font-medium',
@@ -661,20 +708,10 @@ export default function BillingClient({
                 )
               })
             )}
+            {records.length > 0 && <InfiniteTableFooter state={list} colSpan={9} />}
           </TableBody>
         </Table>
       </div>
-
-      {/* Pagination */}
-      {data.totalPages > 0 && (
-        <DataTablePagination
-          page={data.page}
-          pageSize={data.pageSize}
-          total={data.total}
-          totalPages={data.totalPages}
-          onNavigate={handleNavigate}
-        />
-      )}
 
       {/* Loading overlay */}
       {isPending && (

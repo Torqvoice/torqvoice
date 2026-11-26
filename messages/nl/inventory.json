@@ -41,7 +41,8 @@
     "selected": "{count, plural, one {# onderdeel} other {# onderdelen}} geselecteerd",
     "clearSelection": "Wissen",
     "deleteSelected": "Verwijderen ({count})",
-    "success": "{count, plural, one {# onderdeel} other {# onderdelen}} verwijderd"
+    "success": "{count, plural, one {# onderdeel} other {# onderdelen}} verwijderd",
+    "selectLoaded": "Alle {count, number} getoonde selecteren"
   },
   "markup": {
     "title": "Opslag toepassen op alle onderdelen",

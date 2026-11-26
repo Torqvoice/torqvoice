@@ -32,6 +32,16 @@ const FAR_AWAY = 'Pacific/Auckland'
 let offered = ''
 let jobUrl = ''
 
+/** The work order's start-time field, the one place its start is printed. */
+function startField(page: Page) {
+  return page.getByTestId('schedule-start')
+}
+
+/** The offered time as a pattern, whether the locale writes 10:30 or 10.30. */
+function offeredClock() {
+  return new RegExp(offered.replace('.', '[:.]'))
+}
+
 /** The day column for a date the grid is showing, in day or week view. */
 async function dayColumn(page: Page) {
   const columns = page.locator('[data-testid^="timegrid-day-"]')
@@ -131,10 +141,10 @@ test.describe('booking a job from the calendar', () => {
     jobUrl = page.url()
 
     // The schedule card prints the start as a date and a 24-hour clock, and
-    // the clock has to be the one the calendar offered.
-    await expect(page.getByText(new RegExp(offered.replace('.', '[:.]')))).toBeVisible({
-      timeout: 30_000,
-    })
+    // the clock has to be the one the calendar offered. Read from the start
+    // field itself: the hero's "Opened <date> <time>" is when the job was
+    // created, and a run at that hour of the Auckland day prints the same clock.
+    await expect(startField(page)).toContainText(offeredClock(), { timeout: 30_000 })
 
     await setTitle(page, `E2E booking ${stamp}`)
     await saveWorkOrder(page)
@@ -145,7 +155,7 @@ test.describe('booking a job from the calendar', () => {
     await settle(page)
     // The round trip through the database and back out again, which is where a
     // wall clock gets converted twice and comes back wrong.
-    await expect(page.getByText(new RegExp(offered.replace('.', '[:.]')))).toBeVisible()
+    await expect(startField(page)).toContainText(offeredClock())
   })
 
   test('and the calendar shows it where it put it', async ({ page }) => {
@@ -171,7 +181,9 @@ test.describe('booking a job from the calendar', () => {
 
     await page.goto(jobUrl)
     await settle(page)
-    const shown = await page.locator('body').innerText()
+    const start = startField(page)
+    await expect(start).toContainText(/\d{1,2}[:.]\d{2}/)
+    const shown = await start.innerText()
     expect(
       shown.includes(offered),
       `the start reads differently in another timezone (was ${offered})`
@@ -181,6 +193,6 @@ test.describe('booking a job from the calendar', () => {
     await page.goto(jobUrl)
     await settle(page)
     // And back again: the stored instant never moved.
-    await expect(page.getByText(new RegExp(offered.replace('.', '[:.]')))).toBeVisible()
+    await expect(startField(page)).toContainText(offeredClock())
   })
 })

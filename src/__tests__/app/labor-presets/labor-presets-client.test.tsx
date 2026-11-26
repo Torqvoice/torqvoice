@@ -6,6 +6,7 @@
  * The list only read the answer, so on a weak connection Delete did nothing
  * anyone could see and people pressed it again and again.
  */
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { act, fireEvent, render, screen, within } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { ConfirmProvider } from '@/components/confirm-dialog'
@@ -25,6 +26,11 @@ vi.mock('next/navigation', () => ({
 vi.mock('@/features/labor-presets/Actions/laborPresetActions', () => ({
   deleteLaborPreset: (id: string) => deleteLaborPreset(id),
   getLaborPreset: (id: string) => getLaborPreset(id),
+}))
+
+// The list's first batch is all there is here; nothing more is asked for.
+vi.mock('@/features/labor-presets/Actions/getLaborPresetRows', () => ({
+  getLaborPresetRows: vi.fn(),
 }))
 
 // The form is its own screen; here it only has to show that it opened.
@@ -51,15 +57,17 @@ const PRESET = {
 
 function renderList() {
   render(
-    <ConfirmProvider>
-      <LaborPresetsClient
-        data={{ presets: [PRESET], total: 1, page: 1, pageSize: 20, totalPages: 1 }}
-        search=""
-        sortBy="name"
-        sortOrder="asc"
-      />
-      <GlassModal />
-    </ConfirmProvider>
+    <QueryClientProvider client={new QueryClient()}>
+      <ConfirmProvider>
+        <LaborPresetsClient
+          data={{ rows: [PRESET], nextCursor: null, total: 1, renderId: 'render-1' }}
+          search=""
+          sortBy="name"
+          sortOrder="asc"
+        />
+        <GlassModal />
+      </ConfirmProvider>
+    </QueryClientProvider>
   )
 }
 

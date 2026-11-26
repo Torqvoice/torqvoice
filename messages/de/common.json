@@ -100,6 +100,13 @@
     "next": "Nächste Seite",
     "last": "Letzte Seite"
   },
+  "infiniteList": {
+    "count": "{shown, number} von {total, number}",
+    "countAll": "{total, plural, one {# Ergebnis} other {# Ergebnisse}}",
+    "allShown": "Alle {total, number} angezeigt",
+    "loadFailed": "Weitere konnten nicht geladen werden",
+    "retry": "Erneut versuchen"
+  },
   "shared": {
     "close": "Schließen",
     "viewPlans": "Tarife ansehen",

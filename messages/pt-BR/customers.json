@@ -27,7 +27,8 @@
     "batchDeleteTitle": "Excluir Clientes",
     "batchDeleteDescription": "Excluir {count} cliente(s)? Os veículos vinculados serão desassociados.",
     "batchDeleteSuccess": "{count} cliente(s) excluído(s)",
-    "openMenu": "Abrir menu"
+    "openMenu": "Abrir menu",
+    "selectLoaded": "Selecionar todos os {count, number} exibidos"
   },
   "detail": {
     "backToCustomers": "Voltar para clientes",

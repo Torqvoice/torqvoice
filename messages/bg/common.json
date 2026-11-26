@@ -93,6 +93,13 @@
     "next": "Следваща страница",
     "last": "Последна страница"
   },
+  "infiniteList": {
+    "count": "{shown, number} от {total, number}",
+    "countAll": "{total, plural, one {# резултат} other {# резултата}}",
+    "allShown": "Показани са всички {total, number}",
+    "loadFailed": "Не можа да се зареди още",
+    "retry": "Опитай отново"
+  },
   "shared": {
     "close": "Затвори",
     "viewPlans": "Преглед на плановете",

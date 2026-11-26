@@ -324,6 +324,7 @@
     "discoveredIn": "Aptikta",
     "resolvedIn": "Išspręsta",
     "createWorkOrder": "Sukurti darbo užsakymą ({count})",
+    "selectAll": "Pažymėti visus rodomus",
     "vehicleHasObservations": "Ši transporto priemonė turi {count} atvirų pastebėjimų",
     "addToWorkOrder": "Pridėti prie darbo užsakymo ({count})",
     "dismiss": "Atmesti",
