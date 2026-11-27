@@ -101,6 +101,8 @@ import { cn } from '@/lib/utils'
 import { openSupport } from '@/features/support/Lib/supportVisibility'
 import { useTouchScreen } from '@/features/support/Lib/useTouchScreen'
 import { handleGated } from '@/components/upgrade-gate'
+import { SidebarPlan } from '@/features/subscription/Components/SidebarPlan'
+import type { SidebarPlan as SidebarPlanData } from '@/features/subscription/Lib/sidebarPlan.server'
 
 type OrgInfo = { id: string; name: string; role: string }
 
@@ -160,6 +162,7 @@ export function AppSidebar({
   counts,
   isTechnician = false,
   supportEnabled = false,
+  plan = null,
   ...props
 }: React.ComponentProps<typeof Sidebar> & {
   companyLogo?: string
@@ -180,6 +183,8 @@ export function AppSidebar({
   /** Linked to a technician row: the dashboard is their job list even without the figures. */
   isTechnician?: boolean
   supportEnabled?: boolean
+  /** The plan row above the account menu, worked out on the server; null hides it. */
+  plan?: SidebarPlanData | null
 }) {
   const pathname = usePathname()
   const { openHelp: openShortcutsHelp } = useShortcuts()
@@ -668,6 +673,9 @@ export function AppSidebar({
       </SidebarContent>
       <SidebarFooter className="border-t border-sidebar-border p-2">
         <SidebarMenu>
+          {/* At the foot, where it is always in sight but never in the way of
+              the pages above. Only someone who can buy is shown it. */}
+          {plan && <SidebarPlan plan={plan} />}
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>

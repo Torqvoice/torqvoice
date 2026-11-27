@@ -150,6 +150,13 @@
       "inspections": "{count} проверок в работе",
       "reminders": "{count} напоминаний просрочено"
     },
-    "faultCodes": "Коды неисправностей"
+    "faultCodes": "Коды неисправностей",
+    "plan": {
+      "free": "Бесплатный тариф",
+      "demo": "{plan} (демо)",
+      "customers": "{used} из {limit, plural, one {# клиента} few {# клиентов} many {# клиентов} other {# клиента}}",
+      "endsIn": "Закончится через {days, plural, =0 {меньше дня} one {# день} few {# дня} many {# дней} other {# дня}}",
+      "upgrade": "Обновить тариф"
+    }
   }
 }

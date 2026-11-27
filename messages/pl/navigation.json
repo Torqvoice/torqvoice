@@ -150,6 +150,13 @@
       "inspections": "{count} przeglądy w toku",
       "reminders": "{count} zaległe przypomnienia"
     },
-    "faultCodes": "Kody usterek"
+    "faultCodes": "Kody usterek",
+    "plan": {
+      "free": "Plan darmowy",
+      "demo": "{plan} (demo)",
+      "customers": "{used} z {limit, plural, one {# klienta} few {# klientów} many {# klientów} other {# klienta}}",
+      "endsIn": "Kończy się za {days, plural, =0 {mniej niż dzień} one {# dzień} few {# dni} many {# dni} other {# dnia}}",
+      "upgrade": "Zmień plan"
+    }
   }
 }

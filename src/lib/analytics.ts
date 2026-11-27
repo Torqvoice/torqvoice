@@ -67,6 +67,11 @@ export type AnalyticsEvent =
   /** The upgrade dialog's button to the plans. */
   | 'plan:upgrade_click'
   /**
+   * The plan row at the foot of the sidebar followed to the plans: `kind` free
+   * or demo, and on free how many `customers` of the `customer_limit` were used.
+   */
+  | 'plan:sidebar_upgrade_click'
+  /**
    * A fault code opened, on its page or in the sheet beside a job: `kind` obd or make,
    * `make` for a make's own code, and `found`, whether we had a meaning for it. The misses
    * say which codes and makes to add next.

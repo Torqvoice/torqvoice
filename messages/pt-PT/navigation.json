@@ -150,6 +150,13 @@
       "inspections": "{count} inspeções em curso",
       "reminders": "{count} lembretes pendentes"
     },
-    "faultCodes": "Códigos de avaria"
+    "faultCodes": "Códigos de avaria",
+    "plan": {
+      "free": "Plano gratuito",
+      "demo": "Demonstração do {plan}",
+      "customers": "{used} / {limit, plural, one {# cliente} other {# clientes}}",
+      "endsIn": "Termina em {days, plural, =0 {menos de um dia} one {# dia} other {# dias}}",
+      "upgrade": "Mudar de plano"
+    }
   }
 }

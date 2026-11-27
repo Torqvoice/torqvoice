@@ -150,6 +150,13 @@
       "inspections": "{count} devam eden muayene",
       "reminders": "{count} vadesi gelen hatırlatma"
     },
-    "faultCodes": "Arıza kodları"
+    "faultCodes": "Arıza kodları",
+    "plan": {
+      "free": "Ücretsiz plan",
+      "demo": "{plan} demosu",
+      "customers": "{used} / {limit} müşteri",
+      "endsIn": "{days, plural, =0 {Bir günden kısa sürede} other {# gün içinde}} sona erer",
+      "upgrade": "Yükselt"
+    }
   }
 }

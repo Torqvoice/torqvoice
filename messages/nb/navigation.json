@@ -150,6 +150,13 @@
       "inspections": "{count} pågående inspeksjoner",
       "reminders": "{count} forfalte påminnelser"
     },
-    "faultCodes": "Feilkoder"
+    "faultCodes": "Feilkoder",
+    "plan": {
+      "free": "Gratisplan",
+      "demo": "{plan}-demo",
+      "customers": "{used} / {limit, plural, one {# kunde} other {# kunder}}",
+      "endsIn": "Utløper om {days, plural, =0 {mindre enn én dag} one {# dag} other {# dager}}",
+      "upgrade": "Oppgrader"
+    }
   }
 }

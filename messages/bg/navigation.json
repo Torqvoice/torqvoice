@@ -150,6 +150,13 @@
       "inspections": "{count} текущи инспекции",
       "reminders": "{count} предстоящи напомняния"
     },
-    "faultCodes": "Кодове за грешки"
+    "faultCodes": "Кодове за грешки",
+    "plan": {
+      "free": "Безплатен план",
+      "demo": "{plan} (демо)",
+      "customers": "{used} / {limit, plural, one {# клиент} other {# клиенти}}",
+      "endsIn": "Изтича след {days, plural, =0 {по-малко от ден} one {# ден} other {# дни}}",
+      "upgrade": "Надстрой"
+    }
   }
 }

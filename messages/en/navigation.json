@@ -150,6 +150,13 @@
       "inspections": "{count} inspections in progress",
       "reminders": "{count} reminders due"
     },
-    "faultCodes": "Fault codes"
+    "faultCodes": "Fault codes",
+    "plan": {
+      "free": "Free plan",
+      "demo": "{plan} demo",
+      "customers": "{used} / {limit, plural, one {# customer} other {# customers}}",
+      "endsIn": "Ends in {days, plural, =0 {less than a day} one {# day} other {# days}}",
+      "upgrade": "Upgrade"
+    }
   }
 }
