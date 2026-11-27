@@ -150,6 +150,13 @@
       "inspections": "{count} inspections en cours",
       "reminders": "{count} rappels à échéance"
     },
-    "faultCodes": "Codes défaut"
+    "faultCodes": "Codes défaut",
+    "plan": {
+      "free": "Plan gratuit",
+      "demo": "Démo {plan}",
+      "customers": "{used} / {limit, plural, one {# client} other {# clients}}",
+      "endsIn": "Se termine dans {days, plural, =0 {moins d'un jour} one {# jour} other {# jours}}",
+      "upgrade": "Améliorer"
+    }
   }
 }

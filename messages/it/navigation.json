@@ -150,6 +150,13 @@
       "inspections": "{count} ispezioni in corso",
       "reminders": "{count} promemoria in scadenza"
     },
-    "faultCodes": "Codici di errore"
+    "faultCodes": "Codici di errore",
+    "plan": {
+      "free": "Piano gratuito",
+      "demo": "Demo di {plan}",
+      "customers": "{used} / {limit, plural, one {# cliente} other {# clienti}}",
+      "endsIn": "Termina tra {days, plural, =0 {meno di un giorno} one {# giorno} other {# giorni}}",
+      "upgrade": "Aggiorna piano"
+    }
   }
 }

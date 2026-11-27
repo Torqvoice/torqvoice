@@ -150,6 +150,13 @@
       "inspections": "{count} lopende inspecties",
       "reminders": "{count} herinneringen vervallen"
     },
-    "faultCodes": "Foutcodes"
+    "faultCodes": "Foutcodes",
+    "plan": {
+      "free": "Gratis plan",
+      "demo": "{plan}-demo",
+      "customers": "{used} / {limit, plural, one {# klant} other {# klanten}}",
+      "endsIn": "Eindigt over {days, plural, =0 {minder dan een dag} one {# dag} other {# dagen}}",
+      "upgrade": "Upgraden"
+    }
   }
 }

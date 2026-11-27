@@ -150,6 +150,13 @@
       "inspections": "{count} vykdomos apžiūros",
       "reminders": "{count} priminimai, kurių terminas suėjo"
     },
-    "faultCodes": "Gedimų kodai"
+    "faultCodes": "Gedimų kodai",
+    "plan": {
+      "free": "Nemokamas planas",
+      "demo": "{plan} (demo)",
+      "customers": "{used} iš {limit, plural, one {# kliento} few {# klientų} many {# kliento} other {# klientų}}",
+      "endsIn": "Baigsis po {days, plural, =0 {mažiau nei dienos} one {# dienos} few {# dienų} many {# dienos} other {# dienų}}",
+      "upgrade": "Atnaujinti"
+    }
   }
 }

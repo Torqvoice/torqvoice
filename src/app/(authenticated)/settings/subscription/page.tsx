@@ -1,12 +1,13 @@
 import { getAuthContext } from '@/lib/get-auth-context'
 import { db } from '@/lib/db'
 import { redirect } from 'next/navigation'
-import { getFeatures, PLAN_FEATURES, type Plan } from '@/lib/features'
+import { getFeatures, PLAN_FEATURES } from '@/lib/features'
 import { isCloudLinked } from '@/lib/torqvoice-com-link'
 import { SubscriptionSettings } from '@/features/subscription/Components/subscription-settings'
 import { countCustomersTowardLimit } from '@/lib/customer-limit'
 import { fetchBillingPrices, isTorqvoiceComBillingConfigured } from '@/lib/torqvoice-com'
 import { settingsPageTitle } from '@/lib/page-title'
+import { currentPlan } from '@/features/subscription/Lib/currentPlan'
 
 export function generateMetadata() {
   return settingsPageTitle('subscription')
@@ -35,18 +36,8 @@ export default async function SubscriptionPage({
     include: { plan: true },
   })
 
-  // Plan rows are named per price ("Torq Pro (monthly)", "Enterprise
-  // (annual)"), so the plan is the word in the name, as getFeatures reads it.
-  const plan: Plan =
-    subscription?.status === 'active' || subscription?.status === 'trialing'
-      ? subscription.plan.name.toLowerCase().includes('enterprise')
-        ? 'enterprise'
-        : 'pro'
-      : 'free'
-
-  // A demo is a trialing subscription not backed by Stripe (granted from the
-  // admin panel). It carries full plan features but expires at currentPeriodEnd.
-  const isDemo = subscription?.status === 'trialing' && !subscription?.stripeSubscriptionId
+  // The same reading the sidebar's plan row makes, so the two cannot disagree.
+  const { plan, isDemo } = currentPlan(subscription)
 
   // The member meter shows the limit that is enforced, which for a workshop
   // with a team size agreed by hand is higher than its plan's.

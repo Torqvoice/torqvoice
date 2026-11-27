@@ -51,6 +51,7 @@ import { isAiConfigured } from '@/features/integrations/Lib/ai'
 import { WORKSHOP_CHAT_ENABLED } from '@/features/ai/constants'
 import { getManifest, listManifests } from '@/integrations/registry'
 import { isCloudLinked } from '@/lib/torqvoice-com-link'
+import { getSidebarPlan } from '@/features/subscription/Lib/sidebarPlan.server'
 import { PlateLookupProvider } from '@/components/plate-lookup-context'
 import { PlateLookupCommand } from '@/features/vehicles/Components/PlateLookupCommand'
 import { BookingAccessProvider } from '@/components/booking-launcher'
@@ -304,6 +305,9 @@ export default async function DashboardLayout({ children }: { children: React.Re
   // settings pages exist on this install, and the connectors the catalog
   // offers, trimmed to a name and a logo.
   const cloudLinked = await isCloudLinked()
+  // The plan row at the foot of the sidebar: cloud only, free or demo, and
+  // only for someone who can buy.
+  const sidebarPlan = cloudLinked ? await getSidebarPlan() : null
   const ti = await getTranslations('integrations')
   const ta = await getTranslations('common.a11y')
   const searchConnectors = listManifests().map((m) => ({
@@ -477,6 +481,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
                                       counts={sidebarCounts}
                                       isTechnician={technicianIds.length > 0}
                                       supportEnabled={supportEnabled}
+                                      plan={sidebarPlan}
                                     />
                                     <SidebarInset
                                       id="main-content"
