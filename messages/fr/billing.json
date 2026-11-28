@@ -28,7 +28,15 @@
     "filterUnviewedHint": "Factures envoyées mais jamais ouvertes",
     "filterCompleted": "Terminés uniquement",
     "filterCompletedHint": "Afficher uniquement les ordres de réparation marqués comme terminés. Mémorisé pour la prochaine fois.",
-    "statusCancelled": "Annulée"
+    "statusCancelled": "Annulée",
+    "dateRange": "Date de facture",
+    "allDates": "Toutes les dates",
+    "clearDates": "Effacer la période",
+    "columns": "Colonnes",
+    "columnsReset": "Rétablir par défaut",
+    "groupBy": "Grouper par",
+    "groupNone": "Aucun regroupement",
+    "groupSums": "Total {invoiced} · Payé {paid} · En attente {outstanding}"
   },
   "recurring": {
     "title": "Récurrent",
@@ -92,5 +100,88 @@
     "resume": "Reprendre",
     "delete": "Supprimer",
     "removeRow": "Supprimer la ligne"
+  },
+  "report": {
+    "generate": "Générer un rapport",
+    "generateShort": "Rapport",
+    "defaultTitle": "Rapport de facturation",
+    "dialogTitle": "Générer un rapport",
+    "dialogDescription": "Le rapport reprend les filtres, la période, le regroupement et les colonnes affichés à l'écran, et inclut toutes les factures correspondantes, pas seulement celles chargées.",
+    "includes": "{count, plural, one {# facture} other {# factures}} : {description}",
+    "columnCount": "{count, plural, one {# colonne} other {# colonnes}}, selon le choix dans Colonnes",
+    "overLimit": "Seules les {limit} premières factures tiennent dans un rapport. Les totaux couvrent quand même toutes les factures.",
+    "format": "Format",
+    "formats": {
+      "print": "Imprimer",
+      "pdf": "PDF",
+      "xlsx": "Excel",
+      "csv": "CSV"
+    },
+    "formatHints": {
+      "print": "Ouvre la boîte de dialogue d'impression du navigateur",
+      "pdf": "Un fichier à envoyer ou à conserver",
+      "xlsx": "Un classeur avec des totaux justes",
+      "csv": "Pour la comptabilité et d'autres imports"
+    },
+    "titleLabel": "Titre du rapport",
+    "cancel": "Annuler",
+    "generatePrint": "Imprimer",
+    "generateDownload": "Télécharger",
+    "failed": "Le rapport n'a pas pu être généré. Réessayez.",
+    "columns": {
+      "invoice": "Facture N°",
+      "title": "Titre",
+      "vehicle": "Véhicule",
+      "plate": "Plaque",
+      "customer": "Client",
+      "date": "Date",
+      "age": "Ancienneté (jours)",
+      "status": "Statut",
+      "delivery": "Envoi",
+      "total": "Total",
+      "paid": "Payé",
+      "balance": "Solde"
+    },
+    "status": {
+      "all": "Tous",
+      "paid": "Payé",
+      "partial": "Partiel",
+      "unpaid": "Impayé",
+      "cancelled": "Annulée"
+    },
+    "delivery": {
+      "sent": "Envoyée",
+      "viewed": "Consultée"
+    },
+    "groupBy": {
+      "customer": "Client",
+      "month": "Mois",
+      "status": "Statut"
+    },
+    "chips": {
+      "invoiceDate": "Date de facture",
+      "allDates": "Toutes les dates",
+      "status": "Statut",
+      "notViewed": "Non consultée",
+      "completedOnly": "Terminés uniquement",
+      "search": "Recherche",
+      "groupedBy": "Groupé par",
+      "sortedBy": "Trié par",
+      "ascending": "croissant",
+      "descending": "décroissant"
+    },
+    "noCustomer": "Aucun client",
+    "noDate": "Aucune date",
+    "invoiceCount": "{count, plural, one {# facture} other {# factures}}",
+    "generated": "Généré le {date} ({zone})",
+    "summary": {
+      "invoices": "Factures",
+      "invoiced": "Facturé",
+      "paid": "Payé",
+      "outstanding": "En attente"
+    },
+    "totalLine": "Total, {count, plural, one {# facture} other {# factures}}",
+    "truncated": "Affichage des {shown} premières factures sur {count}. Les totaux les couvrent toutes ; affinez le filtre pour voir le reste.",
+    "pageOf": "Page {page} sur {pages}"
   }
 }

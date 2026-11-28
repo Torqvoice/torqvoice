@@ -11,6 +11,9 @@ import { ListPage } from '@/components/list-page'
 import { cookies } from 'next/headers'
 import { COMPLETED_ONLY_COOKIE, parseCompletedOnlyCookie } from '@/lib/completed-only-preference'
 import BillingClient from '../billing-client'
+import { billingDayKey, billingGroupBy } from '@/features/billing/Lib/billingList.server'
+import { BILLING_COLUMNS_COOKIE } from '@/features/billing/Lib/billingColumnsCookie'
+import { parseBillingColumns } from '@/features/billing/Schema/billingListSchema'
 import { pageTitle } from '@/lib/page-title'
 
 export function generateMetadata() {
@@ -28,17 +31,26 @@ export default async function BillingPage({
     completed?: string
     sortBy?: string
     sortOrder?: string
+    from?: string
+    to?: string
+    group?: string
   }>
 }) {
   const params = await searchParams
   const search = params.search || ''
   const statusFilter = await resolveListStatus('billing', params.status)
   const deliveryFilter = params.delivery === 'unviewed' ? 'unviewed' : ''
+  const cookieStore = await cookies()
   // The URL wins, as with sorting; otherwise the switch as this browser left it.
   const completedOnly =
     params.completed !== undefined
       ? params.completed === '1'
-      : parseCompletedOnlyCookie((await cookies()).get(COMPLETED_ONLY_COOKIE)?.value).has('billing')
+      : parseCompletedOnlyCookie(cookieStore.get(COMPLETED_ONLY_COOKIE)?.value).has('billing')
+  // Invoice days on the workshop's calendar; a half range is open at that end.
+  const from = billingDayKey(params.from) ?? ''
+  const to = billingDayKey(params.to) ?? ''
+  const groupBy = billingGroupBy(params.group) ?? ''
+  const columns = parseBillingColumns(cookieStore.get(BILLING_COLUMNS_COOKIE)?.value)
   // No column asked for anywhere means the list keeps its own default, which
   // getBillingRows reads as newest first.
   const sort = await resolveListSort('billing', params, { sortBy: undefined, sortOrder: 'desc' })
@@ -54,6 +66,9 @@ export default async function BillingPage({
       completedOnly,
       sortBy,
       sortOrder,
+      from: from || undefined,
+      to: to || undefined,
+      groupBy: groupBy || undefined,
     }),
     getDisplaySettings([SETTING_KEYS.CURRENCY_CODE]),
     getAuthContext(),
@@ -87,6 +102,10 @@ export default async function BillingPage({
           completedOnly={completedOnly}
           sortBy={sortBy}
           sortOrder={sortOrder}
+          from={from}
+          to={to}
+          groupBy={groupBy}
+          columns={columns}
         />
       </ListPage>
     </>

@@ -3,129 +3,111 @@
 import { z } from 'zod'
 import {
   BILLING_BATCH_SIZE,
+  type BillingTotals,
+  billingBaseSql,
   billingCursor,
+  billingDateRangeSql,
+  billingGroupBy,
+  billingGroupKeySql,
   billingKeysetAfter,
   billingListConditions,
   billingListSort,
   billingOrderBySql,
   billingRowFromSql,
+  billingRowGroupKey,
   billingSortKeysSql,
+  billingTotalsFromSql,
+  billingTotalsSelectSql,
   keyConditionSql,
 } from '@/features/billing/Lib/billingList.server'
+import { billingListInputSchema } from '@/features/billing/Schema/billingListSchema'
 import { getBillingSummary } from '@/features/billing/Lib/billingSummary.server'
 import { Prisma } from '@/generated/prisma/client'
 import { db } from '@/lib/db'
 import { cursorSchema } from '@/lib/keyset'
 import { PermissionAction, PermissionSubject } from '@/lib/permissions'
 import { withAuth } from '@/lib/with-auth'
+import { workshopTimeZone } from '@/lib/workshop-timezone'
 
-const inputSchema = z.object({
-  search: z.string().max(200).optional(),
-  status: z.string().max(50).optional(),
-  delivery: z.string().max(20).optional(),
-  completedOnly: z.boolean().optional(),
-  sortBy: z.string().max(50).optional(),
-  sortOrder: z.enum(['asc', 'desc']).optional(),
+const inputSchema = billingListInputSchema.extend({
   /** Where the last batch ended; none for the first one. */
   cursor: cursorSchema.nullable().optional(),
 })
 
 type BatchRow = Parameters<typeof billingRowFromSql>[0] & Record<string, unknown>
+type TotalsRow = { cnt: bigint; invoiced: unknown; paid: unknown }
 
 /**
  * One batch of the billing list. The first (no cursor) also carries the total
  * and the summary the cards and tabs show; the rest carry rows only, since
  * counting the whole list again for every batch would buy nothing.
+ *
+ * Grouped, every batch also carries the subtotals of the groups its rows fall
+ * in, over the whole filter rather than the rows loaded so far, so a group's
+ * heading shows what it really adds up to.
  */
 export async function getBillingRows(input: z.input<typeof inputSchema>) {
   return withAuth(
     async ({ organizationId }) => {
       const params = inputSchema.parse(input)
-      const sort = billingListSort(params.sortBy, params.sortOrder)
+      const timeZone = await workshopTimeZone(organizationId)
+      const groupBy = billingGroupBy(params.groupBy)
+      const sort = billingListSort(params.sortBy, params.sortOrder, groupBy)
       const first = !params.cursor
-      const cond = billingListConditions(params)
+      const cond = billingListConditions(params, timeZone)
+      const base = billingBaseSql(organizationId, cond, timeZone)
       const after = params.cursor
         ? Prisma.sql`AND ${keyConditionSql(sort, billingKeysetAfter(sort, params.cursor))}`
         : Prisma.empty
 
-      const countQuery = first
-        ? db.$queryRaw<{ cnt: bigint }[]>(Prisma.sql`
-          SELECT COUNT(*) AS cnt FROM (
-            SELECT
-              sr.id,
-              sr."manuallyPaid" AS manually_paid,
-              CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END AS effective_total,
-              CASE WHEN sr."manuallyPaid" = true
-                THEN CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END
-                ELSE COALESCE((SELECT SUM(p.amount) FROM "public"."payments" p WHERE p."serviceRecordId" = sr.id), 0)
-              END AS paid_amount,
-              sr."sentAt" AS sent_at,
-              sr."viewCount" AS view_count,
-              sr.status AS job_status
-            FROM "public"."service_records" sr
-            LEFT JOIN "public"."vehicles" v ON v.id = sr."vehicleId"
-            WHERE sr."organizationId" = ${organizationId}
-            ${cond.search}
-            ${cond.completed}
-          ) sub
+      const totalsQuery = first
+        ? db.$queryRaw<TotalsRow[]>(Prisma.sql`
+          SELECT ${billingTotalsSelectSql} FROM (${base}) sub
           WHERE 1=1 ${cond.status} ${cond.delivery}
         `)
         : null
 
       const rowsQuery = db.$queryRaw<BatchRow[]>(Prisma.sql`
         SELECT sub.*, ${billingSortKeysSql(sort)}
-        FROM (
-          SELECT
-            sr.id,
-            sr.title,
-            sr."invoiceNumber",
-            sr."serviceDate",
-            sr."startDateTime",
-            sr."invoiceDate",
-            sr."manuallyPaid" AS manually_paid,
-            CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END AS effective_total,
-            CASE WHEN sr."manuallyPaid" = true
-              THEN CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END
-              ELSE COALESCE((SELECT SUM(p.amount) FROM "public"."payments" p WHERE p."serviceRecordId" = sr.id), 0)
-            END AS paid_amount,
-            v.id AS vehicle_id,
-            v.make AS vehicle_make,
-            v.model AS vehicle_model,
-            v.year AS vehicle_year,
-            v."licensePlate" AS vehicle_license_plate,
-            c.id AS customer_id,
-            c.name AS customer_name,
-            sr."sentAt" AS sent_at,
-            sr."viewCount" AS view_count,
-            sr."lastViewedAt" AS last_viewed_at,
-            sr.status AS job_status
-          FROM "public"."service_records" sr
-          LEFT JOIN "public"."vehicles" v ON v.id = sr."vehicleId"
-          LEFT JOIN "public"."customers" c ON c.id = COALESCE(sr."customerId", v."customerId")
-          WHERE sr."organizationId" = ${organizationId}
-          ${cond.search}
-          ${cond.completed}
-        ) sub
+        FROM (${base}) sub
         WHERE 1=1 ${cond.status} ${cond.delivery} ${after}
         ORDER BY ${billingOrderBySql(sort)}
         LIMIT ${BILLING_BATCH_SIZE + 1}
       `)
 
-      const [found, countRows, summary] = await Promise.all([
+      const [found, totalsRows, summary] = await Promise.all([
         rowsQuery,
-        countQuery,
-        first ? getBillingSummary(organizationId) : null,
+        totalsQuery,
+        first ? getBillingSummary(organizationId, billingDateRangeSql(params, timeZone)) : null,
       ])
 
-      const rows = found.slice(0, BILLING_BATCH_SIZE)
-      const last = rows[rows.length - 1]
+      const rows = found.slice(0, BILLING_BATCH_SIZE).map(billingRowFromSql)
+      const last = found[Math.min(found.length, BILLING_BATCH_SIZE) - 1]
       const nextCursor =
         found.length > BILLING_BATCH_SIZE && last ? billingCursor(sort, last) : null
 
+      let groups: Record<string, BillingTotals> | undefined
+      if (groupBy && rows.length > 0) {
+        const keys = [...new Set(rows.map((row) => billingRowGroupKey(row, groupBy)))]
+        const key = billingGroupKeySql(groupBy)
+        const groupRows = await db.$queryRaw<(TotalsRow & { group_key: string })[]>(Prisma.sql`
+          SELECT ${key} AS group_key, ${billingTotalsSelectSql}
+          FROM (${base}) sub
+          WHERE 1=1 ${cond.status} ${cond.delivery} AND ${key} IN (${Prisma.join(keys)})
+          GROUP BY 1
+        `)
+        groups = Object.fromEntries(
+          groupRows.map((g) => [g.group_key ?? '', billingTotalsFromSql(g)])
+        )
+      }
+
+      const totals = totalsRows ? billingTotalsFromSql(totalsRows[0]) : undefined
       return {
-        rows: rows.map(billingRowFromSql),
+        rows,
         nextCursor,
-        total: countRows ? Number(countRows[0]?.cnt ?? 0) : undefined,
+        total: totals?.count,
+        totals,
+        groups,
         summary: summary ?? undefined,
       }
     },

@@ -28,7 +28,15 @@
     "filterUnviewedHint": "Счета, которые отправлены, но ни разу не открыты",
     "filterCompleted": "Только завершённые",
     "filterCompletedHint": "Показывать только заказ-наряды со статусом «завершён». Запоминается на следующий раз.",
-    "statusCancelled": "Аннулирован"
+    "statusCancelled": "Аннулирован",
+    "dateRange": "Дата счёта",
+    "allDates": "Все даты",
+    "clearDates": "Сбросить период",
+    "columns": "Столбцы",
+    "columnsReset": "Восстановить по умолчанию",
+    "groupBy": "Группировать по",
+    "groupNone": "Без группировки",
+    "groupSums": "Итого {invoiced} · Оплачено {paid} · Задолженность {outstanding}"
   },
   "recurring": {
     "title": "Периодические",
@@ -92,5 +100,88 @@
     "resume": "Возобновить",
     "delete": "Удалить",
     "removeRow": "Удалить строку"
+  },
+  "report": {
+    "generate": "Создать отчёт",
+    "generateShort": "Отчёт",
+    "defaultTitle": "Отчёт по счетам",
+    "dialogTitle": "Создать отчёт",
+    "dialogDescription": "Отчёт использует фильтры, период, группировку и столбцы, выбранные на экране, и включает все подходящие счета, а не только загруженные.",
+    "includes": "{count, plural, one {# счёт} few {# счёта} many {# счетов} other {# счёта}}: {description}",
+    "columnCount": "{count, plural, one {# столбец} few {# столбца} many {# столбцов} other {# столбца}}, как выбрано в меню «Столбцы»",
+    "overLimit": "В один отчёт помещаются только первые {limit} счетов. Итоги всё равно учитывают все счета.",
+    "format": "Формат",
+    "formats": {
+      "print": "Печать",
+      "pdf": "PDF",
+      "xlsx": "Excel",
+      "csv": "CSV"
+    },
+    "formatHints": {
+      "print": "Открывает окно печати браузера",
+      "pdf": "Файл для отправки или хранения",
+      "xlsx": "Книга с итогами, которые сходятся",
+      "csv": "Для бухгалтерии и другого импорта"
+    },
+    "titleLabel": "Название отчёта",
+    "cancel": "Отмена",
+    "generatePrint": "Печать",
+    "generateDownload": "Скачать",
+    "failed": "Не удалось создать отчёт. Попробуйте ещё раз.",
+    "columns": {
+      "invoice": "Счёт №",
+      "title": "Название",
+      "vehicle": "Транспортное средство",
+      "plate": "Госномер",
+      "customer": "Клиент",
+      "date": "Дата",
+      "age": "Возраст (дни)",
+      "status": "Статус",
+      "delivery": "Отправка",
+      "total": "Итого",
+      "paid": "Оплачено",
+      "balance": "Остаток"
+    },
+    "status": {
+      "all": "Все",
+      "paid": "Оплачено",
+      "partial": "Частично",
+      "unpaid": "Не оплачено",
+      "cancelled": "Аннулирован"
+    },
+    "delivery": {
+      "sent": "Отправлен",
+      "viewed": "Открыт"
+    },
+    "groupBy": {
+      "customer": "Клиент",
+      "month": "Месяц",
+      "status": "Статус"
+    },
+    "chips": {
+      "invoiceDate": "Дата счёта",
+      "allDates": "Все даты",
+      "status": "Статус",
+      "notViewed": "Не открыты",
+      "completedOnly": "Только завершённые",
+      "search": "Поиск",
+      "groupedBy": "Группировка",
+      "sortedBy": "Сортировка",
+      "ascending": "по возрастанию",
+      "descending": "по убыванию"
+    },
+    "noCustomer": "Без клиента",
+    "noDate": "Без даты",
+    "invoiceCount": "{count, plural, one {# счёт} few {# счёта} many {# счетов} other {# счёта}}",
+    "generated": "Создан {date} ({zone})",
+    "summary": {
+      "invoices": "Счета",
+      "invoiced": "Выставлено",
+      "paid": "Оплачено",
+      "outstanding": "Задолженность"
+    },
+    "totalLine": "Итого, {count, plural, one {# счёт} few {# счёта} many {# счетов} other {# счёта}}",
+    "truncated": "Показаны первые {shown} из {count} счетов. Итоги учитывают все; сузьте фильтр, чтобы увидеть остальные.",
+    "pageOf": "Страница {page} из {pages}"
   }
 }

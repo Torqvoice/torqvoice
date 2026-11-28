@@ -10,8 +10,15 @@ export interface BillingSummary {
   partialCount: number
 }
 
-/** The cards and tab counts over the billing list: every invoice the workshop has. */
-export async function getBillingSummary(organizationId: string): Promise<BillingSummary> {
+/**
+ * The cards and tab counts over the billing list: every invoice the workshop
+ * has, or those in the date range the list is showing (`range`, a condition
+ * over `sr` from billingDateRangeSql).
+ */
+export async function getBillingSummary(
+  organizationId: string,
+  range: Prisma.Sql = Prisma.empty
+): Promise<BillingSummary> {
   // A cancelled invoice was never charged: it is out of revenue, of what is
   // owed and of the paid / partial / unpaid counts. The money that moved on
   // it is real, though, so collected keeps what the workshop kept of it:
@@ -54,6 +61,7 @@ export async function getBillingSummary(organizationId: string): Promise<Billing
         END AS paid
       FROM "public"."service_records" sr
       WHERE sr."organizationId" = ${organizationId}
+      ${range}
     ) sub
   `)
 

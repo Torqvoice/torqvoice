@@ -28,7 +28,15 @@
     "filterUnviewedHint": "Фактури, които са изпратени, но никога не са отваряни",
     "filterCompleted": "Само завършени",
     "filterCompletedHint": "Показва само работните поръчки, отбелязани като завършени. Изборът се запазва за следващия път.",
-    "statusCancelled": "Анулирана"
+    "statusCancelled": "Анулирана",
+    "dateRange": "Дата на фактурата",
+    "allDates": "Всички дати",
+    "clearDates": "Изчистване на периода",
+    "columns": "Колони",
+    "columnsReset": "Връщане по подразбиране",
+    "groupBy": "Групиране по",
+    "groupNone": "Без групиране",
+    "groupSums": "Общо {invoiced} · Платено {paid} · Неплатено {outstanding}"
   },
   "recurring": {
     "title": "Периодични фактури",
@@ -92,5 +100,88 @@
     "resume": "Възобнови",
     "delete": "Изтрий",
     "removeRow": "Премахни реда"
+  },
+  "report": {
+    "generate": "Създаване на отчет",
+    "generateShort": "Отчет",
+    "defaultTitle": "Отчет за фактурирането",
+    "dialogTitle": "Създаване на отчет",
+    "dialogDescription": "Отчетът използва филтрите, периода, групирането и колоните, които виждате на екрана, и включва всички съвпадащи фактури, не само заредените.",
+    "includes": "{count, plural, one {# фактура} other {# фактури}}: {description}",
+    "columnCount": "{count, plural, one {# колона} other {# колони}}, както са избрани в Колони",
+    "overLimit": "В един отчет се побират само първите {limit} фактури. Сумите все пак обхващат всички фактури.",
+    "format": "Формат",
+    "formats": {
+      "print": "Печат",
+      "pdf": "PDF",
+      "xlsx": "Excel",
+      "csv": "CSV"
+    },
+    "formatHints": {
+      "print": "Отваря прозореца за печат на браузъра",
+      "pdf": "Файл за изпращане или съхранение",
+      "xlsx": "Работна книга с точни суми",
+      "csv": "За счетоводство и други импорти"
+    },
+    "titleLabel": "Заглавие на отчета",
+    "cancel": "Отказ",
+    "generatePrint": "Печат",
+    "generateDownload": "Изтегляне",
+    "failed": "Отчетът не можа да бъде създаден. Опитайте отново.",
+    "columns": {
+      "invoice": "Фактура №",
+      "title": "Заглавие",
+      "vehicle": "Превозно средство",
+      "plate": "Рег. номер",
+      "customer": "Клиент",
+      "date": "Дата",
+      "age": "Възраст (дни)",
+      "status": "Статус",
+      "delivery": "Доставяне",
+      "total": "Общо",
+      "paid": "Платено",
+      "balance": "Оставаща сума"
+    },
+    "status": {
+      "all": "Всички",
+      "paid": "Платена",
+      "partial": "Частично платена",
+      "unpaid": "Неплатена",
+      "cancelled": "Анулирана"
+    },
+    "delivery": {
+      "sent": "Изпратена",
+      "viewed": "Прегледана"
+    },
+    "groupBy": {
+      "customer": "Клиент",
+      "month": "Месец",
+      "status": "Статус"
+    },
+    "chips": {
+      "invoiceDate": "Дата на фактурата",
+      "allDates": "Всички дати",
+      "status": "Статус",
+      "notViewed": "Непрегледани",
+      "completedOnly": "Само завършени",
+      "search": "Търсене",
+      "groupedBy": "Групирани по",
+      "sortedBy": "Сортирани по",
+      "ascending": "възходящо",
+      "descending": "низходящо"
+    },
+    "noCustomer": "Без клиент",
+    "noDate": "Без дата",
+    "invoiceCount": "{count, plural, one {# фактура} other {# фактури}}",
+    "generated": "Създаден на {date} ({zone})",
+    "summary": {
+      "invoices": "Фактури",
+      "invoiced": "Фактурирано",
+      "paid": "Платено",
+      "outstanding": "Неплатено"
+    },
+    "totalLine": "Общо, {count, plural, one {# фактура} other {# фактури}}",
+    "truncated": "Показани са първите {shown} от {count} фактури. Сумите обхващат всички; стеснете филтъра, за да видите останалите.",
+    "pageOf": "Страница {page} от {pages}"
   }
 }

@@ -28,7 +28,15 @@
     "filterUnviewedHint": "Gönderilen ancak hiç açılmayan faturalar",
     "filterCompleted": "Yalnızca tamamlananlar",
     "filterCompletedHint": "Yalnızca tamamlandı olarak işaretlenen iş emirlerini göster. Bir sonraki sefer için hatırlanır.",
-    "statusCancelled": "İptal edildi"
+    "statusCancelled": "İptal edildi",
+    "dateRange": "Fatura tarihi",
+    "allDates": "Tüm tarihler",
+    "clearDates": "Tarih aralığını temizle",
+    "columns": "Sütunlar",
+    "columnsReset": "Varsayılana sıfırla",
+    "groupBy": "Grupla",
+    "groupNone": "Gruplama yok",
+    "groupSums": "Toplam {invoiced} · Ödenen {paid} · Bekleyen {outstanding}"
   },
   "recurring": {
     "title": "Tekrarlayan",
@@ -92,5 +100,88 @@
     "resume": "Devam Et",
     "delete": "Sil",
     "removeRow": "Satırı kaldır"
+  },
+  "report": {
+    "generate": "Rapor oluştur",
+    "generateShort": "Rapor",
+    "defaultTitle": "Fatura raporu",
+    "dialogTitle": "Rapor oluştur",
+    "dialogDescription": "Rapor, ekrandaki filtreleri, tarih aralığını, gruplamayı ve sütunları kullanır ve yalnızca yüklenenleri değil, eşleşen tüm faturaları içerir.",
+    "includes": "{count, plural, one {# fatura} other {# fatura}}: {description}",
+    "columnCount": "{count, plural, one {# sütun} other {# sütun}}, Sütunlar menüsünde seçildiği gibi",
+    "overLimit": "Bir rapora yalnızca ilk {limit} fatura sığar. Toplamlar yine de tüm faturaları kapsar.",
+    "format": "Biçim",
+    "formats": {
+      "print": "Yazdır",
+      "pdf": "PDF",
+      "xlsx": "Excel",
+      "csv": "CSV"
+    },
+    "formatHints": {
+      "print": "Tarayıcınızın yazdırma penceresini açar",
+      "pdf": "Göndermek veya saklamak için bir dosya",
+      "xlsx": "Toplamları tutan bir çalışma kitabı",
+      "csv": "Muhasebe ve diğer içe aktarmalar için"
+    },
+    "titleLabel": "Rapor başlığı",
+    "cancel": "İptal",
+    "generatePrint": "Yazdır",
+    "generateDownload": "İndir",
+    "failed": "Rapor oluşturulamadı. Tekrar deneyin.",
+    "columns": {
+      "invoice": "Fatura No",
+      "title": "Başlık",
+      "vehicle": "Araç",
+      "plate": "Plaka",
+      "customer": "Müşteri",
+      "date": "Tarih",
+      "age": "Geçen süre (gün)",
+      "status": "Durum",
+      "delivery": "Teslim",
+      "total": "Toplam",
+      "paid": "Ödenen",
+      "balance": "Bakiye"
+    },
+    "status": {
+      "all": "Tümü",
+      "paid": "Ödendi",
+      "partial": "Kısmi",
+      "unpaid": "Ödenmedi",
+      "cancelled": "İptal edildi"
+    },
+    "delivery": {
+      "sent": "Gönderildi",
+      "viewed": "Görüntülendi"
+    },
+    "groupBy": {
+      "customer": "Müşteri",
+      "month": "Ay",
+      "status": "Durum"
+    },
+    "chips": {
+      "invoiceDate": "Fatura tarihi",
+      "allDates": "Tüm tarihler",
+      "status": "Durum",
+      "notViewed": "Görüntülenmeyen",
+      "completedOnly": "Yalnızca tamamlananlar",
+      "search": "Arama",
+      "groupedBy": "Gruplama",
+      "sortedBy": "Sıralama",
+      "ascending": "artan",
+      "descending": "azalan"
+    },
+    "noCustomer": "Müşteri yok",
+    "noDate": "Tarih yok",
+    "invoiceCount": "{count, plural, one {# fatura} other {# fatura}}",
+    "generated": "Oluşturulma: {date} ({zone})",
+    "summary": {
+      "invoices": "Faturalar",
+      "invoiced": "Faturalanan",
+      "paid": "Ödenen",
+      "outstanding": "Bekleyen"
+    },
+    "totalLine": "Toplam, {count, plural, one {# fatura} other {# fatura}}",
+    "truncated": "{count} faturanın ilk {shown} tanesi gösteriliyor. Toplamlar hepsini kapsar; geri kalanları listelemek için filtreyi daraltın.",
+    "pageOf": "Sayfa {page} / {pages}"
   }
 }

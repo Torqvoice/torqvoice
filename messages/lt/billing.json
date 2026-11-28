@@ -28,7 +28,15 @@
     "filterUnviewedHint": "Sąskaitos, kurios išsiųstos, bet niekada neatidarytos",
     "filterCompleted": "Tik užbaigti",
     "filterCompletedHint": "Rodyti tik užsakymus, pažymėtus kaip užbaigti. Įsimenama kitam kartui.",
-    "statusCancelled": "Atšaukta"
+    "statusCancelled": "Atšaukta",
+    "dateRange": "Sąskaitos data",
+    "allDates": "Visos datos",
+    "clearDates": "Išvalyti datų intervalą",
+    "columns": "Stulpeliai",
+    "columnsReset": "Atkurti numatytuosius",
+    "groupBy": "Grupuoti pagal",
+    "groupNone": "Be grupavimo",
+    "groupSums": "Suma {invoiced} · Apmokėta {paid} · Nesumokėta {outstanding}"
   },
   "recurring": {
     "title": "Periodinės",
@@ -92,5 +100,88 @@
     "resume": "Tęsti",
     "delete": "Ištrinti",
     "removeRow": "Pašalinti eilutę"
+  },
+  "report": {
+    "generate": "Sukurti ataskaitą",
+    "generateShort": "Ataskaita",
+    "defaultTitle": "Atsiskaitymų ataskaita",
+    "dialogTitle": "Sukurti ataskaitą",
+    "dialogDescription": "Ataskaitoje naudojami ekrane matomi filtrai, datų intervalas, grupavimas ir stulpeliai, ir įtraukiamos visos atitinkančios sąskaitos, ne tik įkeltos.",
+    "includes": "{count, plural, one {# sąskaita} few {# sąskaitos} many {# sąskaitos} other {# sąskaitų}}: {description}",
+    "columnCount": "{count, plural, one {# stulpelis} few {# stulpeliai} many {# stulpelio} other {# stulpelių}}, kaip pasirinkta meniu Stulpeliai",
+    "overLimit": "Į vieną ataskaitą telpa tik {limit} pirmųjų sąskaitų. Sumos vis tiek apima visas sąskaitas.",
+    "format": "Formatas",
+    "formats": {
+      "print": "Spausdinti",
+      "pdf": "PDF",
+      "xlsx": "Excel",
+      "csv": "CSV"
+    },
+    "formatHints": {
+      "print": "Atidaro naršyklės spausdinimo langą",
+      "pdf": "Failas išsiųsti arba išsaugoti",
+      "xlsx": "Darbaknygė su sutampančiomis sumomis",
+      "csv": "Buhalterijai ir kitiems importams"
+    },
+    "titleLabel": "Ataskaitos pavadinimas",
+    "cancel": "Atšaukti",
+    "generatePrint": "Spausdinti",
+    "generateDownload": "Atsisiųsti",
+    "failed": "Nepavyko sukurti ataskaitos. Bandykite dar kartą.",
+    "columns": {
+      "invoice": "Sąskaita Nr.",
+      "title": "Pavadinimas",
+      "vehicle": "Transporto priemonė",
+      "plate": "Valst. Nr.",
+      "customer": "Klientas",
+      "date": "Data",
+      "age": "Amžius (dienos)",
+      "status": "Būsena",
+      "delivery": "Pristatymas",
+      "total": "Suma",
+      "paid": "Apmokėta",
+      "balance": "Likutis"
+    },
+    "status": {
+      "all": "Visos",
+      "paid": "Apmokėtos",
+      "partial": "Dalinai",
+      "unpaid": "Neapmokėtos",
+      "cancelled": "Atšaukta"
+    },
+    "delivery": {
+      "sent": "Išsiųsta",
+      "viewed": "Peržiūrėta"
+    },
+    "groupBy": {
+      "customer": "Klientas",
+      "month": "Mėnuo",
+      "status": "Būsena"
+    },
+    "chips": {
+      "invoiceDate": "Sąskaitos data",
+      "allDates": "Visos datos",
+      "status": "Būsena",
+      "notViewed": "Neperžiūrėtos",
+      "completedOnly": "Tik užbaigti",
+      "search": "Paieška",
+      "groupedBy": "Sugrupuota pagal",
+      "sortedBy": "Surikiuota pagal",
+      "ascending": "didėjančiai",
+      "descending": "mažėjančiai"
+    },
+    "noCustomer": "Be kliento",
+    "noDate": "Be datos",
+    "invoiceCount": "{count, plural, one {# sąskaita} few {# sąskaitos} many {# sąskaitos} other {# sąskaitų}}",
+    "generated": "Sukurta {date} ({zone})",
+    "summary": {
+      "invoices": "Sąskaitos",
+      "invoiced": "Išrašyta",
+      "paid": "Apmokėta",
+      "outstanding": "Nesumokėta"
+    },
+    "totalLine": "Suma, {count, plural, one {# sąskaita} few {# sąskaitos} many {# sąskaitos} other {# sąskaitų}}",
+    "truncated": "Rodomos pirmosios {shown} iš {count} sąskaitų. Sumos apima visas; susiaurinkite filtrą, kad pamatytumėte likusias.",
+    "pageOf": "Puslapis {page} iš {pages}"
   }
 }

@@ -1,6 +1,22 @@
 import { Prisma } from '@/generated/prisma/client'
+import { roundMoney } from '@/lib/money'
 import { effectiveDateSql } from '@/lib/date-sort'
 import type { Cursor, KeyValue } from '@/lib/keyset'
+import { addZonedDays, startOfZonedDay } from '@/lib/timezone'
+import { toSafeWorkshopDate } from '@/lib/workshop-datetime'
+import {
+  type BillingGroupBy,
+  billingDayKey,
+  billingGroupBy,
+} from '@/features/billing/Schema/billingListSchema'
+
+export {
+  BILLING_GROUPS,
+  type BillingGroupBy,
+  billingDayKey,
+  billingGroupBy,
+  billingRowGroupKey,
+} from '@/features/billing/Schema/billingListSchema'
 
 /**
  * The billing list's query, in one place: the page's first batch and every
@@ -28,6 +44,12 @@ export type BillingListFilters = {
   completedOnly?: boolean
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
+  /** First invoice day, YYYY-MM-DD on the workshop's calendar. */
+  from?: string
+  /** Last invoice day, inclusive. */
+  to?: string
+  /** customer, month or status; anything else is one ungrouped list. */
+  groupBy?: string
 }
 
 type Direction = 'asc' | 'desc'
@@ -47,7 +69,60 @@ function part(expr: Prisma.Sql, dir: Direction, kind: Kind, nulls?: 'first' | 'l
   return { expr, dir, kind, nulls: nulls ?? (dir === 'asc' ? 'last' : 'first') }
 }
 
-export function billingListSort(sortBy?: string, sortOrder?: Direction): BillingSortPart[] {
+/**
+ * The payment status as SQL over the `sub` query, the same reading as
+ * billingRowFromSql: cancelled whatever was paid, then paid, partial, unpaid.
+ */
+export const billingStatusSql = Prisma.sql`(CASE
+  WHEN sub.job_status = 'cancelled' THEN 'cancelled'
+  WHEN sub.manually_paid = true OR (sub.paid_amount >= sub.effective_total AND sub.effective_total > 0) THEN 'paid'
+  WHEN sub.paid_amount > 0 THEN 'partial'
+  ELSE 'unpaid' END)`
+
+/** Which group a row of the `sub` query falls in, as the text the list keys groups by. */
+export function billingGroupKeySql(groupBy: BillingGroupBy): Prisma.Sql {
+  if (groupBy === 'customer') return Prisma.sql`COALESCE(sub.customer_id, '')`
+  if (groupBy === 'month') return Prisma.sql`sub.group_month`
+  return billingStatusSql
+}
+
+/**
+ * The sort parts that keep a group's rows together, ahead of the column the
+ * list is sorted by: customers A to Z (the id parts two of the same name),
+ * months newest first unless the dates run oldest first, and the statuses in
+ * the order a workshop chases them.
+ */
+function groupParts(groupBy: BillingGroupBy, sortBy?: string, sortOrder?: Direction) {
+  if (groupBy === 'customer') {
+    return [
+      part(Prisma.sql`sub.customer_name`, 'asc', 'string', 'last'),
+      part(Prisma.sql`sub.customer_id`, 'asc', 'string', 'last'),
+    ]
+  }
+  if (groupBy === 'month') {
+    const dir: Direction = sortBy === 'date' && sortOrder === 'asc' ? 'asc' : 'desc'
+    return [part(Prisma.sql`sub.group_month`, dir, 'string', 'last')]
+  }
+  return [
+    part(
+      Prisma.sql`(CASE ${billingStatusSql} WHEN 'unpaid' THEN 0 WHEN 'partial' THEN 1 WHEN 'paid' THEN 2 ELSE 3 END)`,
+      'asc',
+      'number'
+    ),
+  ]
+}
+
+export function billingListSort(
+  sortBy?: string,
+  sortOrder?: Direction,
+  groupBy?: string | null
+): BillingSortPart[] {
+  const group = billingGroupBy(groupBy)
+  const columns = columnSort(sortBy, sortOrder)
+  return group ? [...groupParts(group, sortBy, sortOrder), ...columns] : columns
+}
+
+function columnSort(sortBy?: string, sortOrder?: Direction): BillingSortPart[] {
   const dir: Direction = sortOrder === 'asc' ? 'asc' : 'desc'
   switch (sortBy) {
     case 'invoiceNumber':
@@ -206,8 +281,46 @@ export function billingCursor(
   return { v: parts.map((_, i) => keyValue(row[`k${i}`])), id: row.id }
 }
 
+/**
+ * The invoice days a range covers, as instants: from the start of the first
+ * day to the start of the day after the last, on the workshop's clock. A day
+ * that is missing or not a day leaves that end open.
+ */
+export function billingDateWindow(
+  params: Pick<BillingListFilters, 'from' | 'to'>,
+  timeZone: string
+): { gte?: Date; lt?: Date } {
+  const from = toSafeWorkshopDate(billingDayKey(params.from), timeZone)
+  const to = toSafeWorkshopDate(billingDayKey(params.to), timeZone)
+  return {
+    gte: from ? startOfZonedDay(from, timeZone) : undefined,
+    lt: to ? addZonedDays(startOfZonedDay(to, timeZone), 1, timeZone) : undefined,
+  }
+}
+
+/**
+ * The range as SQL over the `sr` table, on the date the list shows. The
+ * columns hold UTC wall-clock timestamps without a zone.
+ */
+export function billingDateRangeSql(
+  params: Pick<BillingListFilters, 'from' | 'to'>,
+  timeZone: string
+): Prisma.Sql {
+  const { gte, lt } = billingDateWindow(params, timeZone)
+  const date = effectiveDateSql('sr')
+  return Prisma.sql`${
+    gte
+      ? Prisma.sql`AND ${date} >= (CAST(${gte.toISOString()} AS timestamptz) AT TIME ZONE 'UTC')`
+      : Prisma.empty
+  } ${
+    lt
+      ? Prisma.sql`AND ${date} < (CAST(${lt.toISOString()} AS timestamptz) AT TIME ZONE 'UTC')`
+      : Prisma.empty
+  }`
+}
+
 /** The filters every batch and the count share, over the `sr` / `v` tables and the `sub` query. */
-export function billingListConditions(params: BillingListFilters) {
+export function billingListConditions(params: BillingListFilters, timeZone = 'UTC') {
   const search = params.search
     ? Prisma.sql`AND (
         sr.title ILIKE ${`%${params.search}%`}
@@ -238,7 +351,83 @@ export function billingListConditions(params: BillingListFilters) {
       ? Prisma.sql`AND sent_at IS NOT NULL AND view_count = 0`
       : Prisma.empty
 
-  return { search, status, completed, delivery }
+  const range = billingDateRangeSql(params, timeZone)
+
+  return { search, status, completed, delivery, range }
+}
+
+export type BillingConditions = ReturnType<typeof billingListConditions>
+
+/**
+ * Every invoice of the workshop that the search, the completed switch and the
+ * date range keep, with what the list, its totals and the report read off
+ * it. Payment status and delivery are filtered over this, as `sub`.
+ */
+export function billingBaseSql(
+  organizationId: string,
+  cond: BillingConditions,
+  timeZone: string
+): Prisma.Sql {
+  return Prisma.sql`
+    SELECT
+      sr.id,
+      sr.title,
+      sr."invoiceNumber",
+      sr."serviceDate",
+      sr."startDateTime",
+      sr."invoiceDate",
+      sr."manuallyPaid" AS manually_paid,
+      CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END AS effective_total,
+      CASE WHEN sr."manuallyPaid" = true
+        THEN CASE WHEN sr."totalAmount" > 0 THEN sr."totalAmount" ELSE sr.cost END
+        ELSE COALESCE((SELECT SUM(p.amount) FROM "public"."payments" p WHERE p."serviceRecordId" = sr.id), 0)
+      END AS paid_amount,
+      v.id AS vehicle_id,
+      v.make AS vehicle_make,
+      v.model AS vehicle_model,
+      v.year AS vehicle_year,
+      v."licensePlate" AS vehicle_license_plate,
+      c.id AS customer_id,
+      c.name AS customer_name,
+      sr."sentAt" AS sent_at,
+      sr."viewCount" AS view_count,
+      sr."lastViewedAt" AS last_viewed_at,
+      sr.status AS job_status,
+      to_char((${effectiveDateSql('sr')} AT TIME ZONE 'UTC') AT TIME ZONE ${timeZone}, 'YYYY-MM') AS group_month
+    FROM "public"."service_records" sr
+    LEFT JOIN "public"."vehicles" v ON v.id = sr."vehicleId"
+    LEFT JOIN "public"."customers" c ON c.id = COALESCE(sr."customerId", v."customerId")
+    WHERE sr."organizationId" = ${organizationId}
+    ${cond.search}
+    ${cond.completed}
+    ${cond.range}
+  `
+}
+
+/**
+ * Count and money over the rows a filter keeps. A cancelled invoice is
+ * listed but owes nothing and was never charged, so it is counted and left
+ * out of the sums, the same as the summary cards.
+ */
+export const billingTotalsSelectSql = Prisma.sql`
+  COUNT(*) AS cnt,
+  COALESCE(SUM(sub.effective_total) FILTER (WHERE sub.job_status <> 'cancelled'), 0) AS invoiced,
+  COALESCE(SUM(sub.paid_amount) FILTER (WHERE sub.job_status <> 'cancelled'), 0) AS paid
+`
+
+export interface BillingTotals {
+  count: number
+  invoiced: number
+  paid: number
+  outstanding: number
+}
+
+export function billingTotalsFromSql(
+  r: { cnt?: unknown; invoiced?: unknown; paid?: unknown } | undefined
+): BillingTotals {
+  const invoiced = roundMoney(r?.invoiced ?? 0)
+  const paid = roundMoney(r?.paid ?? 0)
+  return { count: Number(r?.cnt ?? 0), invoiced, paid, outstanding: roundMoney(invoiced - paid) }
 }
 
 /** One invoice as the list shows it, from a row of the batch query. */
@@ -263,6 +452,7 @@ export function billingRowFromSql(r: {
   view_count: unknown
   last_viewed_at: Date | null
   job_status: string
+  group_month?: string | null
 }) {
   const effectiveTotal = Number(r.effective_total)
   const paidAmount = Number(r.paid_amount)
@@ -298,5 +488,7 @@ export function billingRowFromSql(r: {
     sentAt: r.sent_at,
     viewCount: Number(r.view_count ?? 0),
     lastViewedAt: r.last_viewed_at,
+    /** YYYY-MM of the shown date on the workshop's calendar, for grouping by month. */
+    month: r.group_month ?? null,
   }
 }

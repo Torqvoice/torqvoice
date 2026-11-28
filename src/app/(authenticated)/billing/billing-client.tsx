@@ -4,10 +4,10 @@ import { DEFAULT_CURRENCY_CODE } from '@/lib/currencies'
 import { useTableKeyboardNav } from '@/hooks/use-table-keyboard-nav'
 import { interactiveRow } from '@/lib/interactive-row'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
-import { useCallback, useTransition } from 'react'
+import { Fragment, useCallback, useEffect, useMemo, useState, useTransition } from 'react'
 import Link from 'next/link'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
-import { useTranslations } from 'next-intl'
+import { useLocale, useTranslations } from 'next-intl'
 import { useFormatDate } from '@/lib/use-format-date'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -45,6 +45,7 @@ import {
   EyeOff,
   Receipt,
   Plus,
+  FileText,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { deliveryState } from '@/features/billing/Lib/deliveryState'
@@ -54,6 +55,25 @@ import { LIST_STATUS_TABS, type ListStatus, rememberListStatus } from '@/lib/lis
 import { rememberCompletedOnly } from '@/lib/completed-only-preference'
 import { ListEmpty } from '@/components/list-empty'
 import { vehicleName } from '@/lib/vehicle-name'
+import { BillingDateRange, type DayRange } from '@/features/billing/Components/BillingDateRange'
+import {
+  BILLING_COLUMN_KEYS,
+  BillingColumnsMenu,
+  BillingGroupMenu,
+} from '@/features/billing/Components/BillingViewMenus'
+import { GenerateReportDialog } from '@/features/billing/Components/GenerateReportDialog'
+import { BREAKPOINT_CLASS, fittingColumns } from '@/features/billing/Lib/billingColumnFit'
+import { rememberBillingColumns } from '@/features/billing/Lib/billingColumnsCookie'
+import { daysBetween, monthName } from '@/features/billing/Lib/billingReportModel'
+import { useDateSettings } from '@/components/date-settings-context'
+import { zonedDayKey } from '@/lib/timezone'
+import { workshopTodayKey } from '@/lib/workshop-datetime'
+import {
+  type BillingColumn,
+  type BillingGroupBy,
+  billingRowGroupKey,
+  DEFAULT_BILLING_COLUMNS,
+} from '@/features/billing/Schema/billingListSchema'
 
 interface BillingRecord {
   id: string
@@ -68,6 +88,8 @@ interface BillingRecord {
   sentAt: string | Date | null
   viewCount: number
   lastViewedAt: string | Date | null
+  /** YYYY-MM of the shown date on the workshop's calendar. */
+  month: string | null
   vehicle: {
     id: string
     make: string
@@ -81,11 +103,20 @@ interface BillingRecord {
   } | null
 }
 
+interface GroupTotals {
+  count: number
+  invoiced: number
+  paid: number
+  outstanding: number
+}
+
 /** One batch of the list; the first also carries the total and the summary. */
 interface BillingBatch {
   rows: BillingRecord[]
   nextCursor: Cursor | null
   total?: number
+  /** Subtotals of the groups this batch's rows fall in, when the list is grouped. */
+  groups?: Record<string, GroupTotals>
   summary?: {
     totalRevenue: number
     totalPaid: number
@@ -109,6 +140,12 @@ interface BillingClientProps {
   completedOnly?: boolean
   sortBy?: string
   sortOrder?: 'asc' | 'desc'
+  /** First and last invoice day (YYYY-MM-DD), empty for an open end. */
+  from?: string
+  to?: string
+  groupBy?: BillingGroupBy | ''
+  /** The columns this browser chose. */
+  columns?: BillingColumn[]
 }
 
 const STATUS_TITLE_KEYS: Record<ListStatus<'billing'>, string> = {
@@ -142,12 +179,18 @@ export default function BillingClient({
   completedOnly = false,
   sortBy = '',
   sortOrder = 'desc',
+  from = '',
+  to = '',
+  groupBy = '',
+  columns: initialColumns = DEFAULT_BILLING_COLUMNS,
 }: BillingClientProps) {
   const formatCurrency = useFormatCurrency()
   const router = useRouter()
   const t = useTranslations('billing')
   const tWorkOrders = useTranslations('workOrders.list')
-  const { formatDate } = useFormatDate()
+  const locale = useLocale()
+  const { formatDate, formatDay } = useFormatDate()
+  const { timezone } = useDateSettings()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [isPending, startTransition] = useTransition()
@@ -163,6 +206,9 @@ export default function BillingClient({
     completedOnly,
     sortBy: sortBy || undefined,
     sortOrder,
+    from: from || undefined,
+    to: to || undefined,
+    groupBy: groupBy || undefined,
   }
   const list = useInfiniteRows<BillingRecord, Cursor, BillingBatch>({
     queryKey: ['billing', listScope, filters],
@@ -171,6 +217,51 @@ export default function BillingClient({
   })
   const records = list.rows
   const summary = list.firstPage.summary ?? NO_SUMMARY
+
+  // Each batch brings the subtotals of the groups its rows fall in.
+  const groupTotals = useMemo(
+    () =>
+      Object.assign({}, ...list.pages.map((page) => page.groups ?? {})) as Record<
+        string,
+        GroupTotals
+      >,
+    [list.pages]
+  )
+
+  // Chosen per browser and remembered, like the sort; the report prints the same.
+  const [columns, setColumns] = useState<BillingColumn[]>(initialColumns)
+  const show = new Set(columns)
+  const handleColumnsChange = (next: BillingColumn[]) => {
+    setColumns(next)
+    rememberBillingColumns(next)
+  }
+  const [reportOpen, setReportOpen] = useState(false)
+
+  const [tableWidth, setTableWidth] = useState<number | null>(null)
+  const tableRef = tableNav.containerProps.ref
+  useEffect(() => {
+    const el = tableRef.current
+    if (!el) return
+    const observer = new ResizeObserver(([entry]) => setTableWidth(entry.contentRect.width))
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [tableRef])
+  const fitting = tableWidth === null ? null : fittingColumns(columns, tableWidth)
+  const spanColumns = fitting ? fitting.size : columns.length
+  /** A column's cell class: hidden when it does not fit (or, before measuring, by breakpoint). */
+  const fit = (column: BillingColumn) =>
+    fitting ? (fitting.has(column) ? '' : 'hidden') : (BREAKPOINT_CLASS[column] ?? '')
+  // A column that made way shows under the title instead: the customer, else the vehicle.
+  const customerUnderTitle = fitting
+    ? show.has('customer') && !fitting.has('customer')
+      ? ''
+      : 'hidden'
+    : '@4xl:hidden'
+  const vehicleUnderTitle = fitting
+    ? show.has('vehicle') && !fitting.has('vehicle') && customerUnderTitle === 'hidden'
+      ? ''
+      : 'hidden'
+    : 'hidden @4xl:block @7xl:hidden'
 
   const createQueryString = useCallback(
     (params: Record<string, string>) => {
@@ -241,6 +332,49 @@ export default function BillingClient({
   }
 
   const fmt = (amount: number) => formatCurrency(amount, currencyCode)
+
+  const handleDateRange = (range: DayRange | null) => {
+    startTransition(() => {
+      router.push(
+        `${pathname}?${createQueryString({ from: range?.from ?? '', to: range?.to ?? '' })}`
+      )
+    })
+  }
+
+  const handleGroupBy = (next: BillingGroupBy | '') => {
+    startTransition(() => {
+      router.push(`${pathname}?${createQueryString({ group: next })}`)
+    })
+  }
+
+  const groupLabel = (record: BillingRecord) => {
+    if (groupBy === 'customer') return record.customer?.name || t('report.noCustomer')
+    if (groupBy === 'month')
+      return record.month ? monthName(record.month, locale) : t('report.noDate')
+    return t(`report.status.${record.status}`)
+  }
+
+  /** The record's group key when it opens a new group in the list, else null. */
+  const groupStart = (record: BillingRecord, index: number) => {
+    if (!groupBy) return null
+    const key = billingRowGroupKey(record, groupBy)
+    const previous = records[index - 1]
+    return previous && billingRowGroupKey(previous, groupBy) === key ? null : key
+  }
+
+  // What the list is showing, in words, for the report dialog.
+  const viewDescription = [
+    t(STATUS_TITLE_KEYS[(statusFilter || 'all') as ListStatus<'billing'>] ?? 'history.statusAll'),
+    from || to
+      ? `${from ? formatDay(from) : ''} – ${to ? formatDay(to) : ''}`.trim()
+      : t('history.allDates'),
+    deliveryFilter === 'unviewed' ? t('history.filterUnviewed') : '',
+    completedOnly ? t('history.filterCompleted') : '',
+    search ? `"${search}"` : '',
+    groupBy ? `${t('history.groupBy')}: ${t(`report.groupBy.${groupBy}`)}` : '',
+  ]
+    .filter(Boolean)
+    .join(' · ')
 
   // Its own axis, kept out of the payment tabs: "unpaid" and "never opened"
   // are different questions and a workshop chasing one often wants both.
@@ -335,6 +469,26 @@ export default function BillingClient({
     }
   }
 
+  // Days since the shown date, on the workshop's calendar.
+  const today = workshopTodayKey(timezone || '')
+  const ageDays = (record: BillingRecord) =>
+    Math.max(0, daysBetween(zonedDayKey(new Date(record.serviceDate), timezone || 'UTC'), today))
+
+  const groupHeading = (record: BillingRecord, key: string) => {
+    const totals = groupTotals[key]
+    return {
+      label: groupLabel(record),
+      count: totals ? t('report.invoiceCount', { count: totals.count }) : '',
+      sums: totals
+        ? t('history.groupSums', {
+            invoiced: fmt(totals.invoiced),
+            paid: fmt(totals.paid),
+            outstanding: fmt(totals.outstanding),
+          })
+        : '',
+    }
+  }
+
   // Invoices come from work orders, so the empty list points at making one.
   const emptyState = (bare: boolean) =>
     search ? (
@@ -356,7 +510,7 @@ export default function BillingClient({
   return (
     <div className="flex min-h-0 flex-1 flex-col gap-6">
       {/* Navigation */}
-      <div className="flex shrink-0 items-center gap-3">
+      <div className="flex shrink-0 flex-wrap items-center gap-x-3 gap-y-2">
         <Button variant="outline" size="sm" disabled>
           {t('history.title')}
         </Button>
@@ -365,7 +519,38 @@ export default function BillingClient({
             {t('history.recurring')}
           </Button>
         </Link>
+        {/* The view: which invoice days, how they are grouped, which columns,
+            and a report of exactly that. Its own line on a phone. */}
+        <div className="flex w-full min-w-0 items-center gap-2 sm:ml-auto sm:w-auto">
+          <BillingDateRange
+            from={from}
+            to={to}
+            onChange={handleDateRange}
+            disabled={isPending}
+            className="flex-1 sm:flex-none"
+          />
+          <BillingGroupMenu groupBy={groupBy} onChange={handleGroupBy} disabled={isPending} />
+          <BillingColumnsMenu columns={columns} onChange={handleColumnsChange} />
+          <Button
+            size="sm"
+            className="h-9 shrink-0 sm:h-8"
+            onClick={() => setReportOpen(true)}
+            aria-label={t('report.generate')}
+          >
+            <FileText className="h-3.5 w-3.5" />
+            <span className="sm:hidden">{t('report.generateShort')}</span>
+            <span className="hidden sm:inline">{t('report.generate')}</span>
+          </Button>
+        </div>
       </div>
+      <GenerateReportDialog
+        open={reportOpen}
+        onOpenChange={setReportOpen}
+        filters={filters}
+        columns={columns}
+        count={list.total}
+        description={viewDescription}
+      />
 
       {/* Summary Cards — hidden below md so the invoice list is what a phone
           or portrait tablet opens on. */}
@@ -501,46 +686,94 @@ export default function BillingClient({
       <div className="min-h-0 flex-1 space-y-2 overflow-y-auto md:hidden">
         {records.length === 0
           ? emptyState(false)
-          : records.map((record) => {
+          : records.map((record, index) => {
               // Nothing is owed on a cancelled invoice.
               const balance =
                 record.status === 'cancelled' ? 0 : record.totalAmount - record.totalPaid
+              const groupKey = groupStart(record, index)
+              const heading = groupKey === null ? null : groupHeading(record, groupKey)
               return (
-                <button
-                  key={record.id}
-                  type="button"
-                  onClick={() => handleRowClick(record)}
-                  className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <span className="min-w-0 flex-1 truncate font-medium">{record.title}</span>
-                    <span className="shrink-0 font-semibold">{fmt(record.totalAmount)}</span>
-                  </div>
-                  <div className="mt-1 space-y-0.5 text-xs text-muted-foreground">
-                    {record.vehicle && (
-                      <p className="truncate">
-                        {vehicleName(record.vehicle)}
-                        {record.vehicle.licensePlate && ` · ${record.vehicle.licensePlate}`}
+                <Fragment key={record.id}>
+                  {heading && (
+                    <div className="px-1 pt-3 first:pt-0">
+                      <p className="truncate text-sm font-semibold">
+                        {heading.label}
+                        {heading.count && (
+                          <span className="font-normal text-muted-foreground">
+                            {' '}
+                            · {heading.count}
+                          </span>
+                        )}
                       </p>
-                    )}
-                    {record.customer && <p className="truncate">{record.customer.name}</p>}
-                  </div>
-                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
-                    {getStatusBadge(record.status)}
-                    {getDeliveryBadge(record)}
-                    <span className={cn('font-medium', getBalanceColor(record.status))}>
-                      {t('history.columnBalance')}: {fmt(balance)}
-                    </span>
-                    <span className="font-mono text-muted-foreground">
-                      {formatDate(new Date(record.serviceDate))}
-                    </span>
-                    {record.invoiceNumber && (
-                      <span className="font-mono text-muted-foreground">
-                        {record.invoiceNumber}
+                      {heading.sums && (
+                        <p className="truncate text-xs text-muted-foreground">{heading.sums}</p>
+                      )}
+                    </div>
+                  )}
+                  <button
+                    type="button"
+                    onClick={() => handleRowClick(record)}
+                    className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
+                  >
+                    {/* The chosen columns only, as on the table and in the report. */}
+                    <div className="flex items-start justify-between gap-3">
+                      <span className="min-w-0 flex-1 truncate font-medium">
+                        {show.has('title')
+                          ? record.title
+                          : show.has('invoice')
+                            ? record.invoiceNumber || '\u2014'
+                            : (record.customer?.name ?? '\u2014')}
                       </span>
-                    )}
-                  </div>
-                </button>
+                      {show.has('total') && (
+                        <span className="shrink-0 font-semibold">{fmt(record.totalAmount)}</span>
+                      )}
+                    </div>
+                    <div className="mt-1 space-y-0.5 text-xs text-muted-foreground">
+                      {(show.has('vehicle') || show.has('plate')) && record.vehicle && (
+                        <p className="truncate">
+                          {[
+                            show.has('vehicle') && vehicleName(record.vehicle),
+                            show.has('plate') && record.vehicle.licensePlate,
+                          ]
+                            .filter(Boolean)
+                            .join(' · ')}
+                        </p>
+                      )}
+                      {show.has('customer') &&
+                        (show.has('title') || show.has('invoice')) &&
+                        record.customer && <p className="truncate">{record.customer.name}</p>}
+                    </div>
+                    <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
+                      {show.has('status') && getStatusBadge(record.status)}
+                      {show.has('delivery') && getDeliveryBadge(record)}
+                      {show.has('paid') && (
+                        <span className="text-muted-foreground">
+                          {t(BILLING_COLUMN_KEYS.paid)}: {fmt(record.totalPaid)}
+                        </span>
+                      )}
+                      {show.has('balance') && (
+                        <span className={cn('font-medium', getBalanceColor(record.status))}>
+                          {t('history.columnBalance')}: {fmt(balance)}
+                        </span>
+                      )}
+                      {show.has('date') && (
+                        <span className="font-mono text-muted-foreground">
+                          {formatDate(new Date(record.serviceDate))}
+                        </span>
+                      )}
+                      {show.has('age') && (
+                        <span className="text-muted-foreground">
+                          {t(BILLING_COLUMN_KEYS.age)}: {ageDays(record)}
+                        </span>
+                      )}
+                      {show.has('invoice') && show.has('title') && record.invoiceNumber && (
+                        <span className="font-mono text-muted-foreground">
+                          {record.invoiceNumber}
+                        </span>
+                      )}
+                    </div>
+                  </button>
+                </Fragment>
               )
             })}
         {records.length > 0 && <InfiniteListFooter state={list} />}
@@ -556,159 +789,261 @@ export default function BillingClient({
             <TableRow>
               {/* The title takes what the others leave. The amounts keep room
                   for a seven-figure sum; the rest join as the table widens
-                  (customer at about 900px, paid and delivery at 1000px,
-                  vehicle at 1300px), and until then the customer or the
-                  vehicle is the title's second line. */}
-              <TableHead className="w-[104px]">
-                <button
-                  type="button"
-                  className="flex items-center hover:text-foreground"
-                  onClick={() => handleSort('invoiceNumber')}
-                >
-                  {t('history.columnInvoice')}
-                  <SortIcon column="invoiceNumber" />
-                </button>
-              </TableHead>
-              <TableHead>
-                <button
-                  type="button"
-                  className="flex items-center hover:text-foreground"
-                  onClick={() => handleSort('title')}
-                >
-                  {t('history.columnTitle')}
-                  <SortIcon column="title" />
-                </button>
-              </TableHead>
-              <TableHead className="hidden w-[15%] @7xl:table-cell">
-                <button
-                  type="button"
-                  className="flex items-center hover:text-foreground"
-                  onClick={() => handleSort('vehicle')}
-                >
-                  {t('history.columnVehicle')}
-                  <SortIcon column="vehicle" />
-                </button>
-              </TableHead>
-              <TableHead className="hidden w-[20%] @4xl:table-cell">
-                <button
-                  type="button"
-                  className="flex items-center hover:text-foreground"
-                  onClick={() => handleSort('customer')}
-                >
-                  {t('history.columnCustomer')}
-                  <SortIcon column="customer" />
-                </button>
-              </TableHead>
-              <TableHead className="w-[100px]">
-                <button
-                  type="button"
-                  className="flex items-center hover:text-foreground"
-                  onClick={() => handleSort('date')}
-                >
-                  {t('history.columnDate')}
-                  <SortIcon column="date" />
-                </button>
-              </TableHead>
-              <TableHead className="w-[120px]">
-                <button
-                  type="button"
-                  className="ml-auto flex items-center hover:text-foreground"
-                  onClick={() => handleSort('total')}
-                >
-                  {t('history.columnTotal')}
-                  <SortIcon column="total" />
-                </button>
-              </TableHead>
-              <TableHead className="hidden w-[104px] @5xl:table-cell">
-                <button
-                  type="button"
-                  className="flex items-center hover:text-foreground"
-                  onClick={() => handleSort('delivery')}
-                >
-                  {t('history.columnDelivery')}
-                  <SortIcon column="delivery" />
-                </button>
-              </TableHead>
-              <TableHead className="hidden w-[120px] text-right @5xl:table-cell">
-                {t('history.columnPaid')}
-              </TableHead>
-              <TableHead className="w-[180px] text-right">{t('history.columnBalance')}</TableHead>
+                  while they fit (see fittingColumns), and a column that made
+                  way, the customer or else the vehicle, is the title's second
+                  line. Columns left out in the Columns menu never show. */}
+              {show.has('invoice') && (
+                <TableHead className="w-[104px]">
+                  <button
+                    type="button"
+                    className="flex items-center hover:text-foreground"
+                    onClick={() => handleSort('invoiceNumber')}
+                  >
+                    {t(BILLING_COLUMN_KEYS.invoice)}
+                    <SortIcon column="invoiceNumber" />
+                  </button>
+                </TableHead>
+              )}
+              {show.has('title') && (
+                <TableHead className="">
+                  <button
+                    type="button"
+                    className="flex items-center hover:text-foreground"
+                    onClick={() => handleSort('title')}
+                  >
+                    {t(BILLING_COLUMN_KEYS.title)}
+                    <SortIcon column="title" />
+                  </button>
+                </TableHead>
+              )}
+              {show.has('vehicle') && (
+                <TableHead className={cn('w-[15%]', fit('vehicle'))}>
+                  <button
+                    type="button"
+                    className="flex items-center hover:text-foreground"
+                    onClick={() => handleSort('vehicle')}
+                  >
+                    {t(BILLING_COLUMN_KEYS.vehicle)}
+                    <SortIcon column="vehicle" />
+                  </button>
+                </TableHead>
+              )}
+              {show.has('plate') && (
+                <TableHead className={cn('w-[96px]', fit('plate'))}>
+                  {t(BILLING_COLUMN_KEYS.plate)}
+                </TableHead>
+              )}
+              {show.has('customer') && (
+                <TableHead className={cn('w-[18%]', fit('customer'))}>
+                  <button
+                    type="button"
+                    className="flex items-center hover:text-foreground"
+                    onClick={() => handleSort('customer')}
+                  >
+                    {t(BILLING_COLUMN_KEYS.customer)}
+                    <SortIcon column="customer" />
+                  </button>
+                </TableHead>
+              )}
+              {show.has('date') && (
+                <TableHead className="w-[100px]">
+                  <button
+                    type="button"
+                    className="flex items-center hover:text-foreground"
+                    onClick={() => handleSort('date')}
+                  >
+                    {t(BILLING_COLUMN_KEYS.date)}
+                    <SortIcon column="date" />
+                  </button>
+                </TableHead>
+              )}
+              {show.has('age') && (
+                <TableHead className={cn('w-[96px] text-right', fit('age'))}>
+                  {t(BILLING_COLUMN_KEYS.age)}
+                </TableHead>
+              )}
+              {show.has('total') && (
+                <TableHead className="w-[120px]">
+                  <button
+                    type="button"
+                    className="ml-auto flex items-center hover:text-foreground"
+                    onClick={() => handleSort('total')}
+                  >
+                    {t(BILLING_COLUMN_KEYS.total)}
+                    <SortIcon column="total" />
+                  </button>
+                </TableHead>
+              )}
+              {show.has('delivery') && (
+                <TableHead className={cn('w-[96px]', fit('delivery'))}>
+                  <button
+                    type="button"
+                    className="flex items-center hover:text-foreground"
+                    onClick={() => handleSort('delivery')}
+                  >
+                    {t(BILLING_COLUMN_KEYS.delivery)}
+                    <SortIcon column="delivery" />
+                  </button>
+                </TableHead>
+              )}
+              {show.has('paid') && (
+                <TableHead className={cn('w-[120px] text-right', fit('paid'))}>
+                  {t(BILLING_COLUMN_KEYS.paid)}
+                </TableHead>
+              )}
+              {show.has('balance') && (
+                <TableHead className="w-[120px] text-right">
+                  {t(BILLING_COLUMN_KEYS.balance)}
+                </TableHead>
+              )}
+              {show.has('status') && (
+                <TableHead className={cn('w-[96px]', fit('status'))}>
+                  {t(BILLING_COLUMN_KEYS.status)}
+                </TableHead>
+              )}
             </TableRow>
           </TableHeader>
           <TableBody>
             {records.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={9} className="p-0">
+                <TableCell colSpan={spanColumns} className="p-0">
                   {emptyState(true)}
                 </TableCell>
               </TableRow>
             ) : (
-              records.map((record) => {
+              records.map((record, index) => {
                 // Nothing is owed on a cancelled invoice.
                 const balance =
                   record.status === 'cancelled' ? 0 : record.totalAmount - record.totalPaid
+                const groupKey = groupStart(record, index)
+                const heading = groupKey === null ? null : groupHeading(record, groupKey)
                 return (
-                  <TableRow
-                    key={record.id}
-                    className="cursor-pointer hover:bg-muted/50"
-                    {...interactiveRow(() => handleRowClick(record))}
-                  >
-                    <TableCell className="truncate font-medium">
-                      {record.invoiceNumber || '\u2014'}
-                    </TableCell>
-                    <TableCell>
-                      <p className="truncate">{record.title}</p>
-                      {record.customer && (
-                        <p className="truncate text-xs text-muted-foreground @4xl:hidden">
-                          {record.customer.name}
-                        </p>
-                      )}
-                      {record.vehicle && (
-                        <p className="hidden truncate text-xs text-muted-foreground @4xl:block @7xl:hidden">
-                          {vehicleName(record.vehicle)}
-                        </p>
-                      )}
-                    </TableCell>
-                    <TableCell className="hidden truncate @7xl:table-cell">
-                      {record.vehicle ? (
-                        <TableCellLink href={`/vehicles/${record.vehicle.id}`}>
-                          {vehicleName(record.vehicle)}
-                        </TableCellLink>
-                      ) : (
-                        '\u2014'
-                      )}
-                    </TableCell>
-                    <TableCell className="hidden truncate @4xl:table-cell">
-                      {record.customer ? (
-                        <TableCellLink href={`/customers/${record.customer.id}`}>
-                          {record.customer.name}
-                        </TableCellLink>
-                      ) : (
-                        '\u2014'
-                      )}
-                    </TableCell>
-                    <TableCell>{formatDate(new Date(record.serviceDate))}</TableCell>
-                    <TableCell className="truncate text-right">{fmt(record.totalAmount)}</TableCell>
-                    <TableCell className="hidden @5xl:table-cell">
-                      {getDeliveryBadge(record)}
-                    </TableCell>
-                    <TableCell className="hidden truncate text-right @5xl:table-cell">
-                      {fmt(record.totalPaid)}
-                    </TableCell>
-                    <TableCell
-                      className={cn(
-                        'whitespace-nowrap text-right font-medium',
-                        getBalanceColor(record.status)
-                      )}
+                  <Fragment key={record.id}>
+                    {heading && (
+                      <TableRow className="bg-muted/40 hover:bg-muted/40">
+                        <TableCell colSpan={spanColumns} className="py-2">
+                          <div className="flex items-baseline justify-between gap-4">
+                            <span className="truncate font-semibold">
+                              {heading.label}
+                              {heading.count && (
+                                <span className="font-normal text-muted-foreground">
+                                  {' '}
+                                  · {heading.count}
+                                </span>
+                              )}
+                            </span>
+                            <span className="shrink-0 truncate text-xs text-muted-foreground">
+                              {heading.sums}
+                            </span>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    )}
+                    <TableRow
+                      className="cursor-pointer hover:bg-muted/50"
+                      {...interactiveRow(() => handleRowClick(record))}
                     >
-                      {fmt(balance)}
-                      <span className="ml-2 inline-block">{getStatusBadge(record.status)}</span>
-                    </TableCell>
-                  </TableRow>
+                      {show.has('invoice') && (
+                        <TableCell className="truncate font-medium">
+                          {record.invoiceNumber || '\u2014'}
+                        </TableCell>
+                      )}
+                      {show.has('title') && (
+                        <TableCell>
+                          <p className="truncate">{record.title}</p>
+                          {show.has('customer') && record.customer && (
+                            <p
+                              className={cn(
+                                'truncate text-xs text-muted-foreground',
+                                customerUnderTitle
+                              )}
+                            >
+                              {record.customer.name}
+                            </p>
+                          )}
+                          {show.has('vehicle') && record.vehicle && (
+                            <p
+                              className={cn(
+                                'truncate text-xs text-muted-foreground',
+                                vehicleUnderTitle
+                              )}
+                            >
+                              {vehicleName(record.vehicle)}
+                            </p>
+                          )}
+                        </TableCell>
+                      )}
+                      {show.has('vehicle') && (
+                        <TableCell className={cn('truncate', fit('vehicle'))}>
+                          {record.vehicle ? (
+                            <TableCellLink href={`/vehicles/${record.vehicle.id}`}>
+                              {vehicleName(record.vehicle)}
+                            </TableCellLink>
+                          ) : (
+                            '\u2014'
+                          )}
+                        </TableCell>
+                      )}
+                      {show.has('plate') && (
+                        <TableCell className={cn('truncate font-mono text-xs', fit('plate'))}>
+                          {record.vehicle?.licensePlate || '\u2014'}
+                        </TableCell>
+                      )}
+                      {show.has('customer') && (
+                        <TableCell className={cn('truncate', fit('customer'))}>
+                          {record.customer ? (
+                            <TableCellLink href={`/customers/${record.customer.id}`}>
+                              {record.customer.name}
+                            </TableCellLink>
+                          ) : (
+                            '\u2014'
+                          )}
+                        </TableCell>
+                      )}
+                      {show.has('date') && (
+                        <TableCell>{formatDate(new Date(record.serviceDate))}</TableCell>
+                      )}
+                      {show.has('age') && (
+                        <TableCell className={cn('text-right tabular-nums', fit('age'))}>
+                          {ageDays(record)}
+                        </TableCell>
+                      )}
+                      {show.has('total') && (
+                        <TableCell className="truncate text-right">
+                          {fmt(record.totalAmount)}
+                        </TableCell>
+                      )}
+                      {show.has('delivery') && (
+                        <TableCell className={fit('delivery')}>
+                          {getDeliveryBadge(record)}
+                        </TableCell>
+                      )}
+                      {show.has('paid') && (
+                        <TableCell className={cn('truncate text-right', fit('paid'))}>
+                          {fmt(record.totalPaid)}
+                        </TableCell>
+                      )}
+                      {show.has('balance') && (
+                        <TableCell
+                          className={cn(
+                            'whitespace-nowrap text-right font-medium',
+                            getBalanceColor(record.status)
+                          )}
+                        >
+                          {fmt(balance)}
+                        </TableCell>
+                      )}
+                      {show.has('status') && (
+                        <TableCell className={fit('status')}>
+                          {getStatusBadge(record.status)}
+                        </TableCell>
+                      )}
+                    </TableRow>
+                  </Fragment>
                 )
               })
             )}
-            {records.length > 0 && <InfiniteTableFooter state={list} colSpan={9} />}
+            {records.length > 0 && <InfiniteTableFooter state={list} colSpan={spanColumns} />}
           </TableBody>
         </Table>
       </div>

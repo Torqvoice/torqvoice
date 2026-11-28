@@ -28,7 +28,15 @@
     "filterUnviewedHint": "Rechnungen, die gesendet, aber nie geöffnet wurden",
     "filterCompleted": "Nur abgeschlossene",
     "filterCompletedHint": "Nur als abgeschlossen markierte Aufträge anzeigen. Wird für das nächste Mal gespeichert.",
-    "statusCancelled": "Storniert"
+    "statusCancelled": "Storniert",
+    "dateRange": "Rechnungsdatum",
+    "allDates": "Alle Daten",
+    "clearDates": "Zeitraum zurücksetzen",
+    "columns": "Spalten",
+    "columnsReset": "Auf Standard zurücksetzen",
+    "groupBy": "Gruppieren nach",
+    "groupNone": "Keine Gruppierung",
+    "groupSums": "Gesamt {invoiced} · Bezahlt {paid} · Ausstehend {outstanding}"
   },
   "recurring": {
     "title": "Wiederkehrend",
@@ -92,5 +100,88 @@
     "resume": "Fortsetzen",
     "delete": "Löschen",
     "removeRow": "Zeile entfernen"
+  },
+  "report": {
+    "generate": "Bericht erstellen",
+    "generateShort": "Bericht",
+    "defaultTitle": "Abrechnungsbericht",
+    "dialogTitle": "Bericht erstellen",
+    "dialogDescription": "Der Bericht übernimmt die Filter, den Zeitraum, die Gruppierung und die Spalten, die Sie auf dem Bildschirm sehen, und enthält alle passenden Rechnungen, nicht nur die geladenen.",
+    "includes": "{count, plural, one {# Rechnung} other {# Rechnungen}}: {description}",
+    "columnCount": "{count, plural, one {# Spalte} other {# Spalten}}, wie unter Spalten gewählt",
+    "overLimit": "Nur die ersten {limit} Rechnungen passen in einen Bericht. Die Summen umfassen trotzdem alle Rechnungen.",
+    "format": "Format",
+    "formats": {
+      "print": "Drucken",
+      "pdf": "PDF",
+      "xlsx": "Excel",
+      "csv": "CSV"
+    },
+    "formatHints": {
+      "print": "Öffnet den Druckdialog Ihres Browsers",
+      "pdf": "Eine Datei zum Versenden oder Aufbewahren",
+      "xlsx": "Eine Arbeitsmappe mit stimmigen Summen",
+      "csv": "Für die Buchhaltung und andere Importe"
+    },
+    "titleLabel": "Berichtstitel",
+    "cancel": "Abbrechen",
+    "generatePrint": "Drucken",
+    "generateDownload": "Herunterladen",
+    "failed": "Der Bericht konnte nicht erstellt werden. Bitte erneut versuchen.",
+    "columns": {
+      "invoice": "Rechnung Nr.",
+      "title": "Titel",
+      "vehicle": "Fahrzeug",
+      "plate": "Kennzeichen",
+      "customer": "Kunde",
+      "date": "Datum",
+      "age": "Alter (Tage)",
+      "status": "Status",
+      "delivery": "Zustellung",
+      "total": "Gesamt",
+      "paid": "Bezahlt",
+      "balance": "Saldo"
+    },
+    "status": {
+      "all": "Alle",
+      "paid": "Bezahlt",
+      "partial": "Teilweise",
+      "unpaid": "Unbezahlt",
+      "cancelled": "Storniert"
+    },
+    "delivery": {
+      "sent": "Gesendet",
+      "viewed": "Geöffnet"
+    },
+    "groupBy": {
+      "customer": "Kunde",
+      "month": "Monat",
+      "status": "Status"
+    },
+    "chips": {
+      "invoiceDate": "Rechnungsdatum",
+      "allDates": "Alle Daten",
+      "status": "Status",
+      "notViewed": "Nicht geöffnet",
+      "completedOnly": "Nur abgeschlossene",
+      "search": "Suche",
+      "groupedBy": "Gruppiert nach",
+      "sortedBy": "Sortiert nach",
+      "ascending": "aufsteigend",
+      "descending": "absteigend"
+    },
+    "noCustomer": "Kein Kunde",
+    "noDate": "Kein Datum",
+    "invoiceCount": "{count, plural, one {# Rechnung} other {# Rechnungen}}",
+    "generated": "Erstellt am {date} ({zone})",
+    "summary": {
+      "invoices": "Rechnungen",
+      "invoiced": "Berechnet",
+      "paid": "Bezahlt",
+      "outstanding": "Ausstehend"
+    },
+    "totalLine": "Gesamt, {count, plural, one {# Rechnung} other {# Rechnungen}}",
+    "truncated": "Die ersten {shown} von {count} Rechnungen werden angezeigt. Die Summen umfassen alle; grenzen Sie den Filter ein, um den Rest aufzulisten.",
+    "pageOf": "Seite {page} von {pages}"
   }
 }
