@@ -82,7 +82,8 @@ const s = StyleSheet.create({
   },
   boxStrong: { borderWidth: 1.5, borderColor: '#111' },
   boxValue: { fontSize: 11, fontWeight: 700, marginTop: 2 },
-  notice: { marginTop: 6, fontStyle: 'italic' },
+  // Roboto is registered upright only; an italic face would stop the PDF.
+  notice: { marginTop: 6, color: '#555' },
   table: { marginTop: 10 },
   headRow: {
     flexDirection: 'row',

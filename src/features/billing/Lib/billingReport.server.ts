@@ -1,4 +1,5 @@
 import { readFile } from 'node:fs/promises'
+import sharp from 'sharp'
 import {
   type BillingGroupBy,
   type BillingTotals,
@@ -14,6 +15,7 @@ import {
   billingTotalsSelectSql,
 } from '@/features/billing/Lib/billingList.server'
 import { daysBetween } from '@/features/billing/Lib/billingReportModel'
+import { isPrintableImage } from '@/features/invoices/Lib/printableImage'
 import type { BillingColumn, BillingListInput } from '@/features/billing/Schema/billingListSchema'
 import { SETTING_KEYS } from '@/features/settings/Schema/settingsSchema'
 import { Prisma } from '@/generated/prisma/client'
@@ -82,14 +84,21 @@ const MIME_BY_EXT: Record<string, string> = {
   webp: 'image/webp',
 }
 
-/** The workshop logo as a data URI. A missing file prints the name alone. */
-async function logoDataUri(logoPath: string | undefined): Promise<string | undefined> {
+/**
+ * The workshop logo as a data URI the PDF renderer can draw. It reads PNG
+ * and JPEG only, and a damaged file stops the whole PDF, so a WebP logo (or
+ * any file that does not hold together) is redrawn as PNG first. A missing
+ * or unreadable file prints the name alone.
+ */
+export async function logoDataUri(logoPath: string | undefined): Promise<string | undefined> {
   if (!logoPath) return undefined
   const mime = MIME_BY_EXT[logoPath.split('.').pop()?.toLowerCase() ?? '']
   if (!mime) return undefined
   try {
     const bytes = await readFile(resolveUploadPath(logoPath))
-    return `data:${mime};base64,${bytes.toString('base64')}`
+    if (isPrintableImage(bytes, mime)) return `data:${mime};base64,${bytes.toString('base64')}`
+    const png = await sharp(bytes, { failOn: 'error' }).png().toBuffer()
+    return `data:image/png;base64,${png.toString('base64')}`
   } catch {
     return undefined
   }
@@ -120,22 +129,32 @@ export async function loadBillingReport(
   const where = Prisma.sql`WHERE 1=1 ${cond.status} ${cond.delivery}`
 
   const groupKey = groupBy ? billingGroupKeySql(groupBy) : null
-  const [found, totalsRows, groupRows, organization, settings] = await Promise.all([
-    db.$queryRaw<ReportSqlRow[]>(Prisma.sql`
-      SELECT sub.* FROM (${base}) sub ${where}
-      ORDER BY ${billingOrderBySql(sort)}
-      LIMIT ${BILLING_REPORT_ROW_LIMIT + 1}
-    `),
-    db.$queryRaw<TotalsRow[]>(Prisma.sql`
-      SELECT ${billingTotalsSelectSql} FROM (${base}) sub ${where}
-    `),
-    groupKey
-      ? db.$queryRaw<(TotalsRow & { group_key: string; group_name: string | null })[]>(Prisma.sql`
-          SELECT ${groupKey} AS group_key, MAX(sub.customer_name) AS group_name, ${billingTotalsSelectSql}
-          FROM (${base}) sub ${where}
-          GROUP BY 1
-        `)
-      : Promise.resolve([]),
+  // Rows, totals and subtotals from one snapshot, so a payment recorded
+  // while the report is read cannot land in one and not the others.
+  const [found, totalsRows, groupRows] = await db.$transaction(
+    async (tx) =>
+      [
+        await tx.$queryRaw<ReportSqlRow[]>(Prisma.sql`
+        SELECT sub.* FROM (${base}) sub ${where}
+        ORDER BY ${billingOrderBySql(sort)}
+        LIMIT ${BILLING_REPORT_ROW_LIMIT + 1}
+      `),
+        await tx.$queryRaw<TotalsRow[]>(Prisma.sql`
+        SELECT ${billingTotalsSelectSql} FROM (${base}) sub ${where}
+      `),
+        groupKey
+          ? await tx.$queryRaw<(TotalsRow & { group_key: string; group_name: string | null })[]>(
+              Prisma.sql`
+              SELECT ${groupKey} AS group_key, MAX(sub.customer_name) AS group_name, ${billingTotalsSelectSql}
+              FROM (${base}) sub ${where}
+              GROUP BY 1
+            `
+            )
+          : [],
+      ] as const,
+    { isolationLevel: Prisma.TransactionIsolationLevel.RepeatableRead, timeout: 30_000 }
+  )
+  const [organization, settings] = await Promise.all([
     db.organization.findUnique({ where: { id: organizationId }, select: { name: true } }),
     db.appSetting.findMany({
       where: {

@@ -5,6 +5,7 @@ import type {
 import type { BillingTotals } from '@/features/billing/Lib/billingList.server'
 import type { BillingColumn } from '@/features/billing/Schema/billingListSchema'
 import { deliveryState } from '@/features/billing/Lib/deliveryState'
+import { formatCurrency, formatDateTime, formatDayKey } from '@/lib/format'
 import { vehicleName } from '@/lib/vehicle-name'
 
 /**
@@ -37,6 +38,22 @@ export function monthName(key: string, locale: string): string {
     year: 'numeric',
     timeZone: 'UTC',
   }).format(new Date(Date.UTC(y, m - 1, 1)))
+}
+
+/**
+ * The formatters a report is written with, in the browser and on the server
+ * alike, so Print and the files agree: the reader's language for month
+ * names (the report is for the workshop's own staff, like the screen it came
+ * from), and the workshop's clock, date format and currency from the report.
+ */
+export function reportFormatters(report: BillingReportData, locale: string): ReportFormatters {
+  return {
+    day: (key) => formatDayKey(key, report.dateFormat, locale),
+    dateTime: (iso) =>
+      formatDateTime(iso, report.dateFormat, report.timeFormat, report.timeZone, locale),
+    money: (amount) => formatCurrency(amount, report.currencyCode, report.currencyFormat),
+    month: (key) => monthName(key, locale),
+  }
 }
 
 /** Whole calendar days from one YYYY-MM-DD key to another. */

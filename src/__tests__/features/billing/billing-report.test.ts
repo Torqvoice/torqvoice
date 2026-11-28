@@ -9,13 +9,21 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
 const queries = vi.hoisted(() => ({ calls: [] as { sql: string; values: unknown[] }[] }))
+const tx = vi.hoisted(() => ({ options: undefined as unknown }))
+const logo = vi.hoisted(() => ({ path: '' }))
 const answers = vi.hoisted(() => ({
   rows: [] as Record<string, unknown>[],
   groups: [] as Record<string, unknown>[],
 }))
 
-vi.mock('@/lib/db', () => ({
-  db: {
+vi.mock('@/lib/resolve-upload-path', () => ({ resolveUploadPath: () => logo.path }))
+vi.mock('@/lib/db', () => {
+  const db = {
+    // One snapshot for rows, totals and subtotals; the queries run on `db` here.
+    $transaction: vi.fn(async (run: (client: unknown) => unknown, options: unknown) => {
+      tx.options = options
+      return run(db)
+    }),
     $queryRaw: vi.fn(async (query: { sql: string; values: unknown[] }) => {
       queries.calls.push({ sql: query.sql, values: query.values })
       if (query.sql.includes('AS group_key')) return answers.groups
@@ -36,8 +44,9 @@ vi.mock('@/lib/db', () => ({
         { key: 'workshop.currencyCode', value: 'GBP' },
       ]),
     },
-  },
-}))
+  }
+  return { db }
+})
 // Far from UTC, so a day boundary read on the wrong clock shows.
 vi.mock('@/lib/workshop-timezone', () => ({
   workshopTimeZone: async () => 'Pacific/Auckland',
@@ -59,11 +68,22 @@ vi.mock('@/lib/with-auth', () => ({
 
 import { getBillingRows } from '@/features/billing/Actions/getBillingRows'
 import { billingDateWindow } from '@/features/billing/Lib/billingList.server'
-import { loadBillingReport } from '@/features/billing/Lib/billingReport.server'
-import { billingReportCsv, excelDateFormat } from '@/features/billing/Lib/billingReportFiles.server'
+import {
+  type BillingReportData,
+  loadBillingReport,
+  logoDataUri,
+} from '@/features/billing/Lib/billingReport.server'
+import {
+  billingReportCsv,
+  billingReportPdf,
+  billingReportXlsx,
+  excelDateFormat,
+  worksheetName,
+} from '@/features/billing/Lib/billingReportFiles.server'
 import {
   buildReportModel,
   labelSpan,
+  reportFormatters,
   type ReportFormatters,
   type Translate,
 } from '@/features/billing/Lib/billingReportModel'
@@ -181,6 +201,11 @@ describe('loading a report', () => {
     expect(report.rows[1].balance).toBe(60)
     expect(report.workshop.name).toBe('ZZ Test Garage')
     expect(report.currencyCode).toBe('GBP')
+  })
+
+  it('reads rows, totals and subtotals from one snapshot', async () => {
+    await loadBillingReport('org-1', { groupBy: 'customer' }, ['invoice'])
+    expect(tx.options).toMatchObject({ isolationLevel: 'RepeatableRead' })
   })
 
   it('counts age in workshop days', async () => {
@@ -347,5 +372,74 @@ describe('report settings', () => {
     expect(parseBillingColumns('balance,invoice,nonsense')).toEqual(['invoice', 'balance'])
     expect(parseBillingColumns('')).toContain('title')
     expect(parseBillingColumns(undefined)).not.toContain('age')
+  })
+})
+
+function baseReport(over: Partial<BillingReportData> = {}): BillingReportData {
+  return {
+    workshop: { name: 'ZZ Test Garage', address: '', phone: '', email: '' },
+    filters: {},
+    groupBy: null,
+    columns: ['invoice', 'date', 'balance'],
+    timeZone: 'Pacific/Auckland',
+    dateFormat: 'dd/MM/yyyy',
+    timeFormat: '24h',
+    currencyCode: 'GBP',
+    currencyFormat: 'symbol',
+    generatedAt: '2026-11-20T12:00:00.000Z',
+    rows: [],
+    truncated: false,
+    totals: { count: 6200, invoiced: 0, paid: 0, outstanding: 0 },
+    groups: [],
+    ...over,
+  }
+}
+
+describe('report files', () => {
+  it('names the sheet something Excel accepts, whatever the title', () => {
+    expect(worksheetName("'Unpaid invoices'")).toBe('Unpaid invoices')
+    expect(worksheetName('History')).toBe('Report')
+    expect(worksheetName(' history ')).toBe('Report')
+    expect(worksheetName('Q4: debtors/late')).toBe('Q4  debtors late')
+    expect(worksheetName('x'.repeat(40))).toHaveLength(31)
+    expect(worksheetName("''")).toBe('Report')
+  })
+
+  it('builds a workbook for a title Excel would refuse as a sheet name', async () => {
+    const model = buildReportModel(baseReport({ title: "'History'" }), t, f)
+    const bytes = await billingReportXlsx(model, baseReport(), "'History'")
+    expect(bytes.subarray(0, 2).toString()).toBe('PK')
+  })
+
+  it('makes the PDF when the report stops short of every invoice', async () => {
+    const report = baseReport({ truncated: true })
+    const model = buildReportModel(report, t, f)
+    expect(model.notice).toBeTruthy()
+    const bytes = await billingReportPdf(model, 'Page {page} of {pages}')
+    expect(bytes.subarray(0, 5).toString()).toBe('%PDF-')
+  }, 20_000)
+
+  it('redraws a WebP logo as PNG, which the PDF can draw', async () => {
+    const sharp = (await import('sharp')).default
+    const { mkdtemp, writeFile } = await import('node:fs/promises')
+    const { tmpdir } = await import('node:os')
+    const { join } = await import('node:path')
+    const dir = await mkdtemp(join(tmpdir(), 'billing-logo-'))
+    logo.path = join(dir, 'logo.webp')
+    await writeFile(
+      logo.path,
+      await sharp({ create: { width: 4, height: 4, channels: 3, background: '#336699' } })
+        .webp()
+        .toBuffer()
+    )
+    expect(await logoDataUri('uploads/logo.webp')).toMatch(/^data:image\/png;base64,/)
+    await writeFile(logo.path, 'not an image')
+    expect(await logoDataUri('uploads/logo.webp')).toBeUndefined()
+  })
+
+  it("writes dates in the reader's language in Print as in the PDF", () => {
+    const formatters = reportFormatters(baseReport({ dateFormat: 'd MMM yyyy' }), 'es')
+    expect(formatters.day('2026-12-03')).toBe('3 dic 2026')
+    expect(formatters.month('2026-12')).toMatch(/diciembre/)
   })
 })

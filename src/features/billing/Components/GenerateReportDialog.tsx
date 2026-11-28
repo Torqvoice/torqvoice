@@ -4,7 +4,6 @@ import { FileSpreadsheet, FileText, Loader2, Printer, Sheet } from 'lucide-react
 import { useLocale, useTranslations } from 'next-intl'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
-import { useFormatCurrency } from '@/components/currency-settings-context'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -26,8 +25,8 @@ import {
 import type { BillingReportData } from '@/features/billing/Lib/billingReport.server'
 import {
   buildReportModel,
-  monthName,
   type ReportModel,
+  reportFormatters,
   type Translate,
 } from '@/features/billing/Lib/billingReportModel'
 import type {
@@ -35,7 +34,6 @@ import type {
   BillingListInput,
   BillingReportFormat,
 } from '@/features/billing/Schema/billingListSchema'
-import { useFormatDate } from '@/lib/use-format-date'
 import { cn } from '@/lib/utils'
 
 const FORMATS: { value: BillingReportFormat; icon: typeof Printer }[] = [
@@ -83,8 +81,6 @@ export function GenerateReportDialog({
   const t = useTranslations('billing.report')
   const translate: Translate = (key, values) => t(key as never, values as never)
   const locale = useLocale()
-  const { formatDay, formatDateTime } = useFormatDate()
-  const formatCurrency = useFormatCurrency()
   const [format, setFormat] = useState<BillingReportFormat>('print')
   const [title, setTitle] = useState('')
   const [busy, setBusy] = useState(false)
@@ -114,12 +110,7 @@ export function GenerateReportDialog({
   }, [printing, t])
 
   const modelFor = (report: BillingReportData) =>
-    buildReportModel(report, translate, {
-      day: formatDay,
-      dateTime: formatDateTime,
-      money: (amount) => formatCurrency(amount, report.currencyCode),
-      month: (key) => monthName(key, locale),
-    })
+    buildReportModel(report, translate, reportFormatters(report, locale))
 
   const generate = async () => {
     setBusy(true)

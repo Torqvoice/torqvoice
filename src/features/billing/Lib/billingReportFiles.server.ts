@@ -59,6 +59,19 @@ export function excelDateFormat(pattern: string): string {
 }
 
 /**
+ * A report title as a name Excel accepts for a sheet: at most 31
+ * characters, none of \\ / ? * [ ] :, no apostrophe at either end, and not
+ * the reserved "History".
+ */
+export function worksheetName(title: string): string {
+  const name = title
+    .replace(/[\\/?*[\]:]/g, ' ')
+    .slice(0, 31)
+    .replace(/^[\s']+|[\s']+$/g, '')
+  return name && name.toLowerCase() !== 'history' ? name : 'Report'
+}
+
+/**
  * The report as a workbook: the letterhead and filters on top, then the
  * table with real numbers and dates (so it sums and sorts), group headings
  * and subtotals when grouped, and the total. The header row is frozen and
@@ -71,9 +84,7 @@ export async function billingReportXlsx(
 ): Promise<Buffer> {
   const workbook = new ExcelJS.Workbook()
   workbook.created = new Date(report.generatedAt)
-  const sheet = workbook.addWorksheet(
-    sheetName.slice(0, 31).replace(/[\\/?*[\]:]/g, ' ') || 'Report'
-  )
+  const sheet = workbook.addWorksheet(worksheetName(sheetName))
   const width = model.headers.length
   const dateFormat = excelDateFormat(report.dateFormat)
   const moneyFormat = '#,##0.00'
