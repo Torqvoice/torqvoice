@@ -62,6 +62,7 @@ import {
   BillingGroupMenu,
 } from '@/features/billing/Components/BillingViewMenus'
 import { GenerateReportDialog } from '@/features/billing/Components/GenerateReportDialog'
+import { BREAKPOINT_CLASS, fittingColumns } from '@/features/billing/Lib/billingColumnFit'
 import { rememberBillingColumns } from '@/features/billing/Lib/billingColumnsCookie'
 import { daysBetween, monthName } from '@/features/billing/Lib/billingReportModel'
 import { useDateSettings } from '@/components/date-settings-context'
@@ -159,23 +160,6 @@ const STATUS_TABS = LIST_STATUS_TABS.billing.map((value) => ({
   titleKey: STATUS_TITLE_KEYS[value],
 }))
 
-/**
- * The table width (px) each column needs before it shows, matching the
- * container classes on its cells: @3xl status, @4xl customer, @5xl age,
- * delivery and paid, @7xl vehicle and plate. A spanning row counts only the
- * columns showing, because in a fixed table a span past them adds an empty
- * column that takes room from the title.
- */
-const COLUMN_MIN_WIDTH: Partial<Record<BillingColumn, number>> = {
-  status: 768,
-  customer: 896,
-  age: 1024,
-  delivery: 1024,
-  paid: 1024,
-  vehicle: 1280,
-  plate: 1280,
-}
-
 const NO_SUMMARY = {
   totalRevenue: 0,
   totalPaid: 0,
@@ -262,10 +246,22 @@ export default function BillingClient({
     observer.observe(el)
     return () => observer.disconnect()
   }, [tableRef])
-  const spanColumns =
-    tableWidth === null
-      ? columns.length
-      : columns.filter((c) => tableWidth >= (COLUMN_MIN_WIDTH[c] ?? 0)).length || 1
+  const fitting = tableWidth === null ? null : fittingColumns(columns, tableWidth)
+  const spanColumns = fitting ? fitting.size : columns.length
+  /** A column's cell class: hidden when it does not fit (or, before measuring, by breakpoint). */
+  const fit = (column: BillingColumn) =>
+    fitting ? (fitting.has(column) ? '' : 'hidden') : (BREAKPOINT_CLASS[column] ?? '')
+  // A column that made way shows under the title instead: the customer, else the vehicle.
+  const customerUnderTitle = fitting
+    ? show.has('customer') && !fitting.has('customer')
+      ? ''
+      : 'hidden'
+    : '@4xl:hidden'
+  const vehicleUnderTitle = fitting
+    ? show.has('vehicle') && !fitting.has('vehicle') && customerUnderTitle === 'hidden'
+      ? ''
+      : 'hidden'
+    : 'hidden @4xl:block @7xl:hidden'
 
   const createQueryString = useCallback(
     (params: Record<string, string>) => {
@@ -719,29 +715,58 @@ export default function BillingClient({
                     onClick={() => handleRowClick(record)}
                     className="w-full rounded-lg border bg-card p-3 text-left active:bg-muted/50"
                   >
+                    {/* The chosen columns only, as on the table and in the report. */}
                     <div className="flex items-start justify-between gap-3">
-                      <span className="min-w-0 flex-1 truncate font-medium">{record.title}</span>
-                      <span className="shrink-0 font-semibold">{fmt(record.totalAmount)}</span>
+                      <span className="min-w-0 flex-1 truncate font-medium">
+                        {show.has('title')
+                          ? record.title
+                          : show.has('invoice')
+                            ? record.invoiceNumber || '\u2014'
+                            : (record.customer?.name ?? '\u2014')}
+                      </span>
+                      {show.has('total') && (
+                        <span className="shrink-0 font-semibold">{fmt(record.totalAmount)}</span>
+                      )}
                     </div>
                     <div className="mt-1 space-y-0.5 text-xs text-muted-foreground">
-                      {record.vehicle && (
+                      {(show.has('vehicle') || show.has('plate')) && record.vehicle && (
                         <p className="truncate">
-                          {vehicleName(record.vehicle)}
-                          {record.vehicle.licensePlate && ` · ${record.vehicle.licensePlate}`}
+                          {[
+                            show.has('vehicle') && vehicleName(record.vehicle),
+                            show.has('plate') && record.vehicle.licensePlate,
+                          ]
+                            .filter(Boolean)
+                            .join(' · ')}
                         </p>
                       )}
-                      {record.customer && <p className="truncate">{record.customer.name}</p>}
+                      {show.has('customer') &&
+                        (show.has('title') || show.has('invoice')) &&
+                        record.customer && <p className="truncate">{record.customer.name}</p>}
                     </div>
                     <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
-                      {getStatusBadge(record.status)}
-                      {getDeliveryBadge(record)}
-                      <span className={cn('font-medium', getBalanceColor(record.status))}>
-                        {t('history.columnBalance')}: {fmt(balance)}
-                      </span>
-                      <span className="font-mono text-muted-foreground">
-                        {formatDate(new Date(record.serviceDate))}
-                      </span>
-                      {record.invoiceNumber && (
+                      {show.has('status') && getStatusBadge(record.status)}
+                      {show.has('delivery') && getDeliveryBadge(record)}
+                      {show.has('paid') && (
+                        <span className="text-muted-foreground">
+                          {t(BILLING_COLUMN_KEYS.paid)}: {fmt(record.totalPaid)}
+                        </span>
+                      )}
+                      {show.has('balance') && (
+                        <span className={cn('font-medium', getBalanceColor(record.status))}>
+                          {t('history.columnBalance')}: {fmt(balance)}
+                        </span>
+                      )}
+                      {show.has('date') && (
+                        <span className="font-mono text-muted-foreground">
+                          {formatDate(new Date(record.serviceDate))}
+                        </span>
+                      )}
+                      {show.has('age') && (
+                        <span className="text-muted-foreground">
+                          {t(BILLING_COLUMN_KEYS.age)}: {ageDays(record)}
+                        </span>
+                      )}
+                      {show.has('invoice') && show.has('title') && record.invoiceNumber && (
                         <span className="font-mono text-muted-foreground">
                           {record.invoiceNumber}
                         </span>
@@ -764,10 +789,9 @@ export default function BillingClient({
             <TableRow>
               {/* The title takes what the others leave. The amounts keep room
                   for a seven-figure sum; the rest join as the table widens
-                  (status at about 770px, customer at 900px, age, paid and
-                  delivery at 1000px, vehicle and plate at 1300px), and until
-                  then the customer or the vehicle is the title's second line.
-                  Columns left out in the Columns menu never show. */}
+                  while they fit (see fittingColumns), and a column that made
+                  way, the customer or else the vehicle, is the title's second
+                  line. Columns left out in the Columns menu never show. */}
               {show.has('invoice') && (
                 <TableHead className="w-[104px]">
                   <button
@@ -793,7 +817,7 @@ export default function BillingClient({
                 </TableHead>
               )}
               {show.has('vehicle') && (
-                <TableHead className="hidden w-[15%] @7xl:table-cell">
+                <TableHead className={cn('w-[15%]', fit('vehicle'))}>
                   <button
                     type="button"
                     className="flex items-center hover:text-foreground"
@@ -805,12 +829,12 @@ export default function BillingClient({
                 </TableHead>
               )}
               {show.has('plate') && (
-                <TableHead className="hidden w-[96px] @7xl:table-cell">
+                <TableHead className={cn('w-[96px]', fit('plate'))}>
                   {t(BILLING_COLUMN_KEYS.plate)}
                 </TableHead>
               )}
               {show.has('customer') && (
-                <TableHead className="hidden w-[18%] @4xl:table-cell">
+                <TableHead className={cn('w-[18%]', fit('customer'))}>
                   <button
                     type="button"
                     className="flex items-center hover:text-foreground"
@@ -834,7 +858,7 @@ export default function BillingClient({
                 </TableHead>
               )}
               {show.has('age') && (
-                <TableHead className="hidden w-[96px] text-right @5xl:table-cell">
+                <TableHead className={cn('w-[96px] text-right', fit('age'))}>
                   {t(BILLING_COLUMN_KEYS.age)}
                 </TableHead>
               )}
@@ -851,7 +875,7 @@ export default function BillingClient({
                 </TableHead>
               )}
               {show.has('delivery') && (
-                <TableHead className="hidden w-[96px] @5xl:table-cell">
+                <TableHead className={cn('w-[96px]', fit('delivery'))}>
                   <button
                     type="button"
                     className="flex items-center hover:text-foreground"
@@ -863,7 +887,7 @@ export default function BillingClient({
                 </TableHead>
               )}
               {show.has('paid') && (
-                <TableHead className="hidden w-[120px] text-right @5xl:table-cell">
+                <TableHead className={cn('w-[120px] text-right', fit('paid'))}>
                   {t(BILLING_COLUMN_KEYS.paid)}
                 </TableHead>
               )}
@@ -873,7 +897,7 @@ export default function BillingClient({
                 </TableHead>
               )}
               {show.has('status') && (
-                <TableHead className="hidden w-[96px] @3xl:table-cell">
+                <TableHead className={cn('w-[96px]', fit('status'))}>
                   {t(BILLING_COLUMN_KEYS.status)}
                 </TableHead>
               )}
@@ -928,19 +952,29 @@ export default function BillingClient({
                         <TableCell>
                           <p className="truncate">{record.title}</p>
                           {show.has('customer') && record.customer && (
-                            <p className="truncate text-xs text-muted-foreground @4xl:hidden">
+                            <p
+                              className={cn(
+                                'truncate text-xs text-muted-foreground',
+                                customerUnderTitle
+                              )}
+                            >
                               {record.customer.name}
                             </p>
                           )}
                           {show.has('vehicle') && record.vehicle && (
-                            <p className="hidden truncate text-xs text-muted-foreground @4xl:block @7xl:hidden">
+                            <p
+                              className={cn(
+                                'truncate text-xs text-muted-foreground',
+                                vehicleUnderTitle
+                              )}
+                            >
                               {vehicleName(record.vehicle)}
                             </p>
                           )}
                         </TableCell>
                       )}
                       {show.has('vehicle') && (
-                        <TableCell className="hidden truncate @7xl:table-cell">
+                        <TableCell className={cn('truncate', fit('vehicle'))}>
                           {record.vehicle ? (
                             <TableCellLink href={`/vehicles/${record.vehicle.id}`}>
                               {vehicleName(record.vehicle)}
@@ -951,12 +985,12 @@ export default function BillingClient({
                         </TableCell>
                       )}
                       {show.has('plate') && (
-                        <TableCell className="hidden truncate font-mono text-xs @7xl:table-cell">
+                        <TableCell className={cn('truncate font-mono text-xs', fit('plate'))}>
                           {record.vehicle?.licensePlate || '\u2014'}
                         </TableCell>
                       )}
                       {show.has('customer') && (
-                        <TableCell className="hidden truncate @4xl:table-cell">
+                        <TableCell className={cn('truncate', fit('customer'))}>
                           {record.customer ? (
                             <TableCellLink href={`/customers/${record.customer.id}`}>
                               {record.customer.name}
@@ -970,7 +1004,7 @@ export default function BillingClient({
                         <TableCell>{formatDate(new Date(record.serviceDate))}</TableCell>
                       )}
                       {show.has('age') && (
-                        <TableCell className="hidden text-right tabular-nums @5xl:table-cell">
+                        <TableCell className={cn('text-right tabular-nums', fit('age'))}>
                           {ageDays(record)}
                         </TableCell>
                       )}
@@ -980,12 +1014,12 @@ export default function BillingClient({
                         </TableCell>
                       )}
                       {show.has('delivery') && (
-                        <TableCell className="hidden @5xl:table-cell">
+                        <TableCell className={fit('delivery')}>
                           {getDeliveryBadge(record)}
                         </TableCell>
                       )}
                       {show.has('paid') && (
-                        <TableCell className="hidden truncate text-right @5xl:table-cell">
+                        <TableCell className={cn('truncate text-right', fit('paid'))}>
                           {fmt(record.totalPaid)}
                         </TableCell>
                       )}
@@ -1000,7 +1034,7 @@ export default function BillingClient({
                         </TableCell>
                       )}
                       {show.has('status') && (
-                        <TableCell className="hidden @3xl:table-cell">
+                        <TableCell className={fit('status')}>
                           {getStatusBadge(record.status)}
                         </TableCell>
                       )}
