@@ -151,9 +151,17 @@ export function InstallBanner({ appName = DEFAULT_APP_NAME, iconUrl = null }: In
   if (!canInstall || dismissed) return null
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 animate-in slide-in-from-bottom duration-300">
-      <div className="border-t bg-background/80 backdrop-blur-lg">
-        <div className="mx-auto flex max-w-xl items-center gap-3 px-4 py-3">
+    // A floating card, never a full-width bar: on a phone it sits above the
+    // bottom tab bar (3.5rem plus the safe area, the same room the layout keeps
+    // free with pb-14), and on a wider screen it keeps to the bottom right so
+    // the sidebar foot with the account menu stays reachable.
+    <div
+      role="region"
+      aria-label={title}
+      className="fixed inset-x-3 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-40 animate-in slide-in-from-bottom-4 fade-in duration-300 md:inset-x-auto md:right-4 md:bottom-4 md:w-96"
+    >
+      <div className="rounded-xl border bg-background/95 shadow-lg backdrop-blur-lg">
+        <div className="flex items-center gap-3 p-3">
           <Image
             src={iconUrl ?? '/icons/icon-192.png'}
             alt={appName}
