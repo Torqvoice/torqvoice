@@ -43,6 +43,7 @@ describe('InstallBanner', () => {
     expect(card.className).toContain('bottom-[calc(4rem+env(safe-area-inset-bottom))]')
     // A fixed-width card at the right on wider screens, away from the sidebar.
     expect(card.className).toContain('md:right-4')
+    expect(card.className).toContain('md:bottom-24')
     expect(card.className).toContain('md:w-96')
     expect(card.className).toContain('md:inset-x-auto')
   })

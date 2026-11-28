@@ -154,11 +154,12 @@ export function InstallBanner({ appName = DEFAULT_APP_NAME, iconUrl = null }: In
     // A floating card, never a full-width bar: on a phone it sits above the
     // bottom tab bar (3.5rem plus the safe area, the same room the layout keeps
     // free with pb-14), and on a wider screen it keeps to the bottom right so
-    // the sidebar foot with the account menu stays reachable.
+    // the sidebar foot with the account menu stays reachable, lifted above the
+    // support launcher that sits 24px from that corner on a non-touch screen.
     <div
       role="region"
       aria-label={title}
-      className="fixed inset-x-3 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-40 animate-in slide-in-from-bottom-4 fade-in duration-300 md:inset-x-auto md:right-4 md:bottom-4 md:w-96"
+      className="fixed inset-x-3 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-40 animate-in slide-in-from-bottom-4 fade-in duration-300 md:inset-x-auto md:right-4 md:bottom-24 md:w-96"
     >
       <div className="rounded-xl border bg-background/95 shadow-lg backdrop-blur-lg">
         <div className="flex items-center gap-3 p-3">
