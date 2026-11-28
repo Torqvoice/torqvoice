@@ -28,7 +28,15 @@
     "filterUnviewedHint": "Faturas enviadas que nunca foram abertas",
     "filterCompleted": "Só concluídas",
     "filterCompletedHint": "Mostra só as ordens de reparação marcadas como concluídas. Fica guardado para a próxima vez.",
-    "statusCancelled": "Anulada"
+    "statusCancelled": "Anulada",
+    "dateRange": "Data da fatura",
+    "allDates": "Todas as datas",
+    "clearDates": "Limpar o período",
+    "columns": "Colunas",
+    "columnsReset": "Repor predefinição",
+    "groupBy": "Agrupar por",
+    "groupNone": "Sem agrupamento",
+    "groupSums": "Total {invoiced} · Pago {paid} · Por receber {outstanding}"
   },
   "recurring": {
     "title": "Recorrente",
@@ -92,5 +100,88 @@
     "resume": "Retomar",
     "delete": "Eliminar",
     "removeRow": "Remover linha"
+  },
+  "report": {
+    "generate": "Gerar relatório",
+    "generateShort": "Relatório",
+    "defaultTitle": "Relatório de faturação",
+    "dialogTitle": "Gerar relatório",
+    "dialogDescription": "O relatório usa os filtros, o período, o agrupamento e as colunas que tem no ecrã, e inclui todas as faturas correspondentes, não só as carregadas.",
+    "includes": "{count, plural, one {# fatura} other {# faturas}}: {description}",
+    "columnCount": "{count, plural, one {# coluna} other {# colunas}}, conforme escolhido em Colunas",
+    "overLimit": "Só cabem as primeiras {limit} faturas num relatório. Os totais continuam a abranger todas as faturas.",
+    "format": "Formato",
+    "formats": {
+      "print": "Imprimir",
+      "pdf": "PDF",
+      "xlsx": "Excel",
+      "csv": "CSV"
+    },
+    "formatHints": {
+      "print": "Abre a janela de impressão do navegador",
+      "pdf": "Um ficheiro para enviar ou guardar",
+      "xlsx": "Um livro com totais que batem certo",
+      "csv": "Para contabilidade e outras importações"
+    },
+    "titleLabel": "Título do relatório",
+    "cancel": "Cancelar",
+    "generatePrint": "Imprimir",
+    "generateDownload": "Transferir",
+    "failed": "Não foi possível gerar o relatório. Tente novamente.",
+    "columns": {
+      "invoice": "Fatura n.º",
+      "title": "Título",
+      "vehicle": "Viatura",
+      "plate": "Matrícula",
+      "customer": "Cliente",
+      "date": "Data",
+      "age": "Antiguidade (dias)",
+      "status": "Estado",
+      "delivery": "Entrega",
+      "total": "Total",
+      "paid": "Pago",
+      "balance": "Saldo"
+    },
+    "status": {
+      "all": "Todas",
+      "paid": "Paga",
+      "partial": "Parcial",
+      "unpaid": "Por pagar",
+      "cancelled": "Anulada"
+    },
+    "delivery": {
+      "sent": "Enviada",
+      "viewed": "Aberta"
+    },
+    "groupBy": {
+      "customer": "Cliente",
+      "month": "Mês",
+      "status": "Estado"
+    },
+    "chips": {
+      "invoiceDate": "Data da fatura",
+      "allDates": "Todas as datas",
+      "status": "Estado",
+      "notViewed": "Não abertas",
+      "completedOnly": "Só concluídas",
+      "search": "Pesquisa",
+      "groupedBy": "Agrupado por",
+      "sortedBy": "Ordenado por",
+      "ascending": "crescente",
+      "descending": "decrescente"
+    },
+    "noCustomer": "Sem cliente",
+    "noDate": "Sem data",
+    "invoiceCount": "{count, plural, one {# fatura} other {# faturas}}",
+    "generated": "Gerado a {date} ({zone})",
+    "summary": {
+      "invoices": "Faturas",
+      "invoiced": "Faturado",
+      "paid": "Pago",
+      "outstanding": "Por receber"
+    },
+    "totalLine": "Total, {count, plural, one {# fatura} other {# faturas}}",
+    "truncated": "A mostrar as primeiras {shown} de {count} faturas. Os totais abrangem todas; restrinja o filtro para listar as restantes.",
+    "pageOf": "Página {page} de {pages}"
   }
 }

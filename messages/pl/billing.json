@@ -28,7 +28,15 @@
     "filterUnviewedHint": "Faktury wysłane, ale nigdy nieotwarte",
     "filterCompleted": "Tylko zakończone",
     "filterCompletedHint": "Pokazuj tylko zlecenia oznaczone jako zakończone. Zapamiętywane na następny raz.",
-    "statusCancelled": "Anulowana"
+    "statusCancelled": "Anulowana",
+    "dateRange": "Data faktury",
+    "allDates": "Wszystkie daty",
+    "clearDates": "Wyczyść zakres dat",
+    "columns": "Kolumny",
+    "columnsReset": "Przywróć domyślne",
+    "groupBy": "Grupuj według",
+    "groupNone": "Bez grupowania",
+    "groupSums": "Suma {invoiced} · Opłacone {paid} · Zaległe {outstanding}"
   },
   "recurring": {
     "title": "Cykliczne",
@@ -92,5 +100,88 @@
     "resume": "Wznów",
     "delete": "Usuń",
     "removeRow": "Usuń wiersz"
+  },
+  "report": {
+    "generate": "Generuj raport",
+    "generateShort": "Raport",
+    "defaultTitle": "Raport rozliczeń",
+    "dialogTitle": "Generuj raport",
+    "dialogDescription": "Raport uwzględnia filtry, zakres dat, grupowanie i kolumny widoczne na ekranie oraz obejmuje wszystkie pasujące faktury, nie tylko wczytane.",
+    "includes": "{count, plural, one {# faktura} few {# faktury} many {# faktur} other {# faktury}}: {description}",
+    "columnCount": "{count, plural, one {# kolumna} few {# kolumny} many {# kolumn} other {# kolumny}}, zgodnie z wyborem w menu Kolumny",
+    "overLimit": "W jednym raporcie mieści się tylko pierwsze {limit} faktur. Sumy nadal obejmują wszystkie faktury.",
+    "format": "Format",
+    "formats": {
+      "print": "Drukuj",
+      "pdf": "PDF",
+      "xlsx": "Excel",
+      "csv": "CSV"
+    },
+    "formatHints": {
+      "print": "Otwiera okno drukowania przeglądarki",
+      "pdf": "Plik do wysłania lub zachowania",
+      "xlsx": "Skoroszyt ze zgodnymi sumami",
+      "csv": "Do księgowości i innych importów"
+    },
+    "titleLabel": "Tytuł raportu",
+    "cancel": "Anuluj",
+    "generatePrint": "Drukuj",
+    "generateDownload": "Pobierz",
+    "failed": "Nie udało się utworzyć raportu. Spróbuj ponownie.",
+    "columns": {
+      "invoice": "Faktura nr",
+      "title": "Tytuł",
+      "vehicle": "Pojazd",
+      "plate": "Tablica",
+      "customer": "Klient",
+      "date": "Data",
+      "age": "Wiek (dni)",
+      "status": "Status",
+      "delivery": "Dostarczenie",
+      "total": "Suma",
+      "paid": "Opłacone",
+      "balance": "Saldo"
+    },
+    "status": {
+      "all": "Wszystkie",
+      "paid": "Opłacone",
+      "partial": "Częściowe",
+      "unpaid": "Nieopłacone",
+      "cancelled": "Anulowana"
+    },
+    "delivery": {
+      "sent": "Wysłana",
+      "viewed": "Otwarta"
+    },
+    "groupBy": {
+      "customer": "Klient",
+      "month": "Miesiąc",
+      "status": "Status"
+    },
+    "chips": {
+      "invoiceDate": "Data faktury",
+      "allDates": "Wszystkie daty",
+      "status": "Status",
+      "notViewed": "Nieotwarte",
+      "completedOnly": "Tylko zakończone",
+      "search": "Wyszukiwanie",
+      "groupedBy": "Grupowanie według",
+      "sortedBy": "Sortowanie według",
+      "ascending": "rosnąco",
+      "descending": "malejąco"
+    },
+    "noCustomer": "Brak klienta",
+    "noDate": "Brak daty",
+    "invoiceCount": "{count, plural, one {# faktura} few {# faktury} many {# faktur} other {# faktury}}",
+    "generated": "Wygenerowano {date} ({zone})",
+    "summary": {
+      "invoices": "Faktury",
+      "invoiced": "Zafakturowano",
+      "paid": "Opłacone",
+      "outstanding": "Zaległe"
+    },
+    "totalLine": "Suma, {count, plural, one {# faktura} few {# faktury} many {# faktur} other {# faktury}}",
+    "truncated": "Wyświetlono pierwsze {shown} z {count} faktur. Sumy obejmują wszystkie; zawęź filtr, aby zobaczyć resztę.",
+    "pageOf": "Strona {page} z {pages}"
   }
 }

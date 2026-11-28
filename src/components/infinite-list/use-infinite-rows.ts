@@ -219,6 +219,8 @@ export function useInfiniteRows<
     total,
     /** The first batch, with whatever else the server sends alongside it. */
     firstPage,
+    /** Every batch loaded so far, for what later batches send alongside their rows. */
+    pages,
     hasMore,
     /** More than the first batch has been loaded. */
     grown: pages.length > 1,

@@ -23,6 +23,10 @@ vi.mock('@/lib/db', () => ({
     }),
   },
 }))
+// Far from UTC, so a day boundary read on the wrong clock shows.
+vi.mock('@/lib/workshop-timezone', () => ({
+  workshopTimeZone: async () => 'Pacific/Auckland',
+}))
 vi.mock('@/lib/with-auth', () => ({
   withAuth: async (
     run: (ctx: { organizationId: string }) => Promise<unknown>,
@@ -131,6 +135,31 @@ describe('walking the list batch by batch', () => {
           k: keysFor(sortBy, i),
         }))
         for (const size of [1, 7, 50]) {
+          const { seen, expected } = walk(rows, parts, size)
+          expect(seen).toEqual(expected)
+        }
+      })
+    }
+  }
+
+  // Grouped, the group's own sort parts come first; the walk must still show
+  // every invoice once, groups kept together.
+  const groupKeys: Record<string, (i: number) => KeyValue[]> = {
+    // Two customers share a name; invoices with no customer group last.
+    customer: (i) => (i % 8 === 0 ? [null, null] : [['Ola', 'Ola', 'Kari'][i % 3], `c${i % 3}`]),
+    month: (i) => [`2026-0${1 + (i % 4)}`],
+    status: (i) => [i % 4],
+  }
+  for (const groupBy of Object.keys(groupKeys)) {
+    for (const sortBy of ['', 'total', 'customer']) {
+      it(`shows every invoice once, grouped by ${groupBy}, sorted by ${sortBy || 'default'}`, () => {
+        const parts = billingListSort(sortBy || undefined, 'asc', groupBy)
+        const rows = Array.from({ length: 61 }, (_, i) => ({
+          id: `r${String(i).padStart(3, '0')}`,
+          k: [...groupKeys[groupBy](i), ...keysFor(sortBy, i)],
+        }))
+        expect(parts).toHaveLength(rows[0].k.length)
+        for (const size of [1, 9, 50]) {
           const { seen, expected } = walk(rows, parts, size)
           expect(seen).toEqual(expected)
         }

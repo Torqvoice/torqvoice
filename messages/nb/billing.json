@@ -28,7 +28,15 @@
     "filterUnviewedHint": "Fakturaer som er sendt, men aldri åpnet",
     "filterCompleted": "Kun fullførte",
     "filterCompletedHint": "Vis bare arbeidsordrer som er merket som fullført. Huskes til neste gang.",
-    "statusCancelled": "Kansellert"
+    "statusCancelled": "Kansellert",
+    "dateRange": "Fakturadato",
+    "allDates": "Alle datoer",
+    "clearDates": "Fjern datoperioden",
+    "columns": "Kolonner",
+    "columnsReset": "Tilbakestill til standard",
+    "groupBy": "Grupper etter",
+    "groupNone": "Ingen gruppering",
+    "groupSums": "Totalt {invoiced} · Betalt {paid} · Utestående {outstanding}"
   },
   "recurring": {
     "title": "Gjentakende",
@@ -92,5 +100,88 @@
     "resume": "Gjenoppta",
     "delete": "Slett",
     "removeRow": "Fjern rad"
+  },
+  "report": {
+    "generate": "Lag rapport",
+    "generateShort": "Rapport",
+    "defaultTitle": "Faktureringsrapport",
+    "dialogTitle": "Lag rapport",
+    "dialogDescription": "Rapporten bruker filtrene, datoperioden, grupperingen og kolonnene du har på skjermen, og tar med alle fakturaer som passer, ikke bare de som er lastet inn.",
+    "includes": "{count, plural, one {# faktura} other {# fakturaer}}: {description}",
+    "columnCount": "{count, plural, one {# kolonne} other {# kolonner}}, som valgt under Kolonner",
+    "overLimit": "Bare de første {limit} fakturaene får plass i én rapport. Summene dekker likevel alle fakturaene.",
+    "format": "Format",
+    "formats": {
+      "print": "Skriv ut",
+      "pdf": "PDF",
+      "xlsx": "Excel",
+      "csv": "CSV"
+    },
+    "formatHints": {
+      "print": "Åpner utskriftsvinduet i nettleseren",
+      "pdf": "En fil å sende eller ta vare på",
+      "xlsx": "En arbeidsbok med summer som går opp",
+      "csv": "For regnskap og annen import"
+    },
+    "titleLabel": "Rapporttittel",
+    "cancel": "Avbryt",
+    "generatePrint": "Skriv ut",
+    "generateDownload": "Last ned",
+    "failed": "Rapporten kunne ikke lages. Prøv igjen.",
+    "columns": {
+      "invoice": "Faktura nr.",
+      "title": "Tittel",
+      "vehicle": "Kjøretøy",
+      "plate": "Reg.nr",
+      "customer": "Kunde",
+      "date": "Dato",
+      "age": "Alder (dager)",
+      "status": "Status",
+      "delivery": "Levering",
+      "total": "Totalt",
+      "paid": "Betalt",
+      "balance": "Saldo"
+    },
+    "status": {
+      "all": "Alle",
+      "paid": "Betalt",
+      "partial": "Delvis",
+      "unpaid": "Ubetalt",
+      "cancelled": "Kansellert"
+    },
+    "delivery": {
+      "sent": "Sendt",
+      "viewed": "Åpnet"
+    },
+    "groupBy": {
+      "customer": "Kunde",
+      "month": "Måned",
+      "status": "Status"
+    },
+    "chips": {
+      "invoiceDate": "Fakturadato",
+      "allDates": "Alle datoer",
+      "status": "Status",
+      "notViewed": "Ikke åpnet",
+      "completedOnly": "Kun fullførte",
+      "search": "Søk",
+      "groupedBy": "Gruppert etter",
+      "sortedBy": "Sortert etter",
+      "ascending": "stigende",
+      "descending": "synkende"
+    },
+    "noCustomer": "Ingen kunde",
+    "noDate": "Ingen dato",
+    "invoiceCount": "{count, plural, one {# faktura} other {# fakturaer}}",
+    "generated": "Laget {date} ({zone})",
+    "summary": {
+      "invoices": "Fakturaer",
+      "invoiced": "Fakturert",
+      "paid": "Betalt",
+      "outstanding": "Utestående"
+    },
+    "totalLine": "Totalt, {count, plural, one {# faktura} other {# fakturaer}}",
+    "truncated": "Viser de første {shown} av {count} fakturaer. Summene dekker alle; snevre inn filteret for å vise resten.",
+    "pageOf": "Side {page} av {pages}"
   }
 }

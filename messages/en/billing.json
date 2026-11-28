@@ -28,7 +28,15 @@
     "filterUnviewed": "Not viewed",
     "filterUnviewedHint": "Invoices that were sent but have never been opened",
     "filterCompleted": "Completed only",
-    "filterCompletedHint": "Show only work orders marked completed. Remembered for next time."
+    "filterCompletedHint": "Show only work orders marked completed. Remembered for next time.",
+    "dateRange": "Invoice date",
+    "allDates": "All dates",
+    "clearDates": "Clear the date range",
+    "columns": "Columns",
+    "columnsReset": "Reset to default",
+    "groupBy": "Group by",
+    "groupNone": "No grouping",
+    "groupSums": "Total {invoiced} · Paid {paid} · Outstanding {outstanding}"
   },
   "recurring": {
     "title": "Recurring",
@@ -92,5 +100,88 @@
     "resume": "Resume",
     "delete": "Delete",
     "removeRow": "Remove row"
+  },
+  "report": {
+    "generate": "Generate report",
+    "generateShort": "Report",
+    "defaultTitle": "Billing report",
+    "dialogTitle": "Generate report",
+    "dialogDescription": "The report uses the filters, date range, grouping and columns you have on screen, and includes every matching invoice, not only the ones loaded.",
+    "includes": "{count, plural, one {# invoice} other {# invoices}}: {description}",
+    "columnCount": "{count, plural, one {# column} other {# columns}}, as chosen in Columns",
+    "overLimit": "Only the first {limit} invoices fit in one report. The totals still cover every invoice.",
+    "format": "Format",
+    "formats": {
+      "print": "Print",
+      "pdf": "PDF",
+      "xlsx": "Excel",
+      "csv": "CSV"
+    },
+    "formatHints": {
+      "print": "Opens your browser's print dialog",
+      "pdf": "A file to send or keep",
+      "xlsx": "A workbook with totals that add up",
+      "csv": "For bookkeeping and other imports"
+    },
+    "titleLabel": "Report title",
+    "cancel": "Cancel",
+    "generatePrint": "Print",
+    "generateDownload": "Download",
+    "failed": "The report could not be made. Try again.",
+    "columns": {
+      "invoice": "Invoice #",
+      "title": "Title",
+      "vehicle": "Vehicle",
+      "plate": "Plate",
+      "customer": "Customer",
+      "date": "Date",
+      "age": "Age (days)",
+      "status": "Status",
+      "delivery": "Delivery",
+      "total": "Total",
+      "paid": "Paid",
+      "balance": "Balance"
+    },
+    "status": {
+      "all": "All",
+      "paid": "Paid",
+      "partial": "Partial",
+      "unpaid": "Unpaid",
+      "cancelled": "Cancelled"
+    },
+    "delivery": {
+      "sent": "Sent",
+      "viewed": "Viewed"
+    },
+    "groupBy": {
+      "customer": "Customer",
+      "month": "Month",
+      "status": "Status"
+    },
+    "chips": {
+      "invoiceDate": "Invoice date",
+      "allDates": "All dates",
+      "status": "Status",
+      "notViewed": "Not viewed",
+      "completedOnly": "Completed only",
+      "search": "Search",
+      "groupedBy": "Grouped by",
+      "sortedBy": "Sorted by",
+      "ascending": "ascending",
+      "descending": "descending"
+    },
+    "noCustomer": "No customer",
+    "noDate": "No date",
+    "invoiceCount": "{count, plural, one {# invoice} other {# invoices}}",
+    "generated": "Generated {date} ({zone})",
+    "summary": {
+      "invoices": "Invoices",
+      "invoiced": "Invoiced",
+      "paid": "Paid",
+      "outstanding": "Outstanding"
+    },
+    "totalLine": "Total, {count, plural, one {# invoice} other {# invoices}}",
+    "truncated": "Showing the first {shown} of {count} invoices. The totals cover all of them; narrow the filter to list the rest.",
+    "pageOf": "Page {page} of {pages}"
   }
 }

@@ -28,7 +28,15 @@
     "filterUnviewedHint": "Facturen die zijn verzonden maar nooit geopend",
     "filterCompleted": "Alleen afgerond",
     "filterCompletedHint": "Toon alleen werkorders die als afgerond zijn gemarkeerd. Wordt onthouden voor de volgende keer.",
-    "statusCancelled": "Geannuleerd"
+    "statusCancelled": "Geannuleerd",
+    "dateRange": "Factuurdatum",
+    "allDates": "Alle datums",
+    "clearDates": "Periode wissen",
+    "columns": "Kolommen",
+    "columnsReset": "Standaard herstellen",
+    "groupBy": "Groeperen op",
+    "groupNone": "Geen groepering",
+    "groupSums": "Totaal {invoiced} · Betaald {paid} · Openstaand {outstanding}"
   },
   "recurring": {
     "title": "Terugkerend",
@@ -92,5 +100,88 @@
     "resume": "Hervatten",
     "delete": "Verwijderen",
     "removeRow": "Rij verwijderen"
+  },
+  "report": {
+    "generate": "Rapport maken",
+    "generateShort": "Rapport",
+    "defaultTitle": "Factureringsrapport",
+    "dialogTitle": "Rapport maken",
+    "dialogDescription": "Het rapport gebruikt de filters, periode, groepering en kolommen die u op het scherm ziet, en bevat alle overeenkomende facturen, niet alleen de geladen.",
+    "includes": "{count, plural, one {# factuur} other {# facturen}}: {description}",
+    "columnCount": "{count, plural, one {# kolom} other {# kolommen}}, zoals gekozen bij Kolommen",
+    "overLimit": "Alleen de eerste {limit} facturen passen in één rapport. De totalen omvatten nog steeds alle facturen.",
+    "format": "Formaat",
+    "formats": {
+      "print": "Afdrukken",
+      "pdf": "PDF",
+      "xlsx": "Excel",
+      "csv": "CSV"
+    },
+    "formatHints": {
+      "print": "Opent het afdrukvenster van uw browser",
+      "pdf": "Een bestand om te versturen of te bewaren",
+      "xlsx": "Een werkmap met kloppende totalen",
+      "csv": "Voor de boekhouding en andere imports"
+    },
+    "titleLabel": "Rapporttitel",
+    "cancel": "Annuleren",
+    "generatePrint": "Afdrukken",
+    "generateDownload": "Downloaden",
+    "failed": "Het rapport kon niet worden gemaakt. Probeer het opnieuw.",
+    "columns": {
+      "invoice": "Factuur nr.",
+      "title": "Titel",
+      "vehicle": "Voertuig",
+      "plate": "Kenteken",
+      "customer": "Klant",
+      "date": "Datum",
+      "age": "Leeftijd (dagen)",
+      "status": "Status",
+      "delivery": "Bezorging",
+      "total": "Totaal",
+      "paid": "Betaald",
+      "balance": "Saldo"
+    },
+    "status": {
+      "all": "Alle",
+      "paid": "Betaald",
+      "partial": "Gedeeltelijk",
+      "unpaid": "Onbetaald",
+      "cancelled": "Geannuleerd"
+    },
+    "delivery": {
+      "sent": "Verzonden",
+      "viewed": "Bekeken"
+    },
+    "groupBy": {
+      "customer": "Klant",
+      "month": "Maand",
+      "status": "Status"
+    },
+    "chips": {
+      "invoiceDate": "Factuurdatum",
+      "allDates": "Alle datums",
+      "status": "Status",
+      "notViewed": "Niet bekeken",
+      "completedOnly": "Alleen afgerond",
+      "search": "Zoeken",
+      "groupedBy": "Gegroepeerd op",
+      "sortedBy": "Gesorteerd op",
+      "ascending": "oplopend",
+      "descending": "aflopend"
+    },
+    "noCustomer": "Geen klant",
+    "noDate": "Geen datum",
+    "invoiceCount": "{count, plural, one {# factuur} other {# facturen}}",
+    "generated": "Gemaakt op {date} ({zone})",
+    "summary": {
+      "invoices": "Facturen",
+      "invoiced": "Gefactureerd",
+      "paid": "Betaald",
+      "outstanding": "Openstaand"
+    },
+    "totalLine": "Totaal, {count, plural, one {# factuur} other {# facturen}}",
+    "truncated": "De eerste {shown} van {count} facturen worden getoond. De totalen omvatten ze allemaal; verfijn het filter om de rest te zien.",
+    "pageOf": "Pagina {page} van {pages}"
   }
 }
